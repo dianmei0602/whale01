@@ -37,6 +37,34 @@ final class ReliabilityTests: XCTestCase {
         XCTAssertTrue(RealDataGuard.finalReply(for: .stock, usedTools: ["search_stock"], proposed: "股价20元").contains("没有取得真实行情"))
     }
 
+    func testNaturalClarificationsAreNotReplacedByTemplates() {
+        let weatherQuestion = "告诉我城市和日期，我就去查最新预报。"
+        XCTAssertEqual(
+            RealDataGuard.finalReply(for: .weather, usedTools: [], proposed: weatherQuestion),
+            weatherQuestion
+        )
+        let homeQuestion = "你家具体在哪条街？也可以先把它保存成“家庭地址”，下次说回家就能直接用。"
+        XCTAssertEqual(
+            RealDataGuard.finalReply(for: .homeNavigation, usedTools: [], proposed: homeQuestion),
+            homeQuestion
+        )
+        XCTAssertTrue(RealDataGuard.isSafeWithoutEvidence("我这次没拿到可核对的实时数据。", for: .news))
+    }
+
+    func testMultiSourceResearchCountsAsCurrentEvidence() throws {
+        let data: [String: Any] = [
+            "source": "deepseek_multi_search",
+            "fetchedAt": ToolDate.iso(Date())
+        ]
+        XCTAssertTrue(ToolEvidencePolicy.accepts(tool: "research_web", data: data))
+        XCTAssertTrue(
+            RealDataGuard.hasRequiredEvidence(
+                for: .news,
+                usedTools: ["research_web"]
+            )
+        )
+    }
+
     func testTodoKeepsIncompleteTimesAsDraftsAndDoesNotAddEdits() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!

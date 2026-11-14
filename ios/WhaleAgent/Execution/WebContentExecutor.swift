@@ -1,10 +1,14 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// Fetches public web pages and search result pages on-device. The result is
 /// source material only: callers must not treat a snippet as the page body.
 struct WebContentExecutor {
     private let session: URLSession
     private let redirectGuard = PublicRedirectGuard()
+    private let deepSeek = DeepSeekWebClient()
 
     init() {
         let configuration = URLSessionConfiguration.ephemeral
@@ -14,10 +18,29 @@ struct WebContentExecutor {
         session = URLSession(configuration: configuration)
     }
 
-    func search(query: String, limit: Int = 6, timeout: TimeInterval = 25) async throws -> JSONValue {
+    func search(
+        query: String,
+        originalQuestion: String? = nil,
+        limit: Int = 6,
+        includeContent: Bool = true,
+        timeout: TimeInterval = 25
+    ) async throws -> JSONValue {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             throw ToolExecutionError(code: "empty_query", message: "搜索关键词不能为空")
+        }
+        if LocalAgentConfig.isConfigured {
+            do {
+                return try await deepSeek.search(
+                    query: trimmed,
+                    originalQuestion: originalQuestion,
+                    limit: limit,
+                    includeContent: includeContent
+                )
+            } catch {
+                // Keep public-web search available during provider outages,
+                // quota exhaustion or accounts without Search API access.
+            }
         }
         var components = URLComponents(string: "https://www.bing.com/search")!
         components.queryItems = [
@@ -46,6 +69,40 @@ struct WebContentExecutor {
         ])
     }
 
+    func research(
+        queries: [String],
+        originalQuestion: String,
+        limit: Int = 6,
+        timeout: TimeInterval = 25
+    ) async throws -> JSONValue {
+        let cleaned = queries
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        guard let first = cleaned.first else {
+            throw ToolExecutionError(code: "empty_query", message: "至少需要一个搜索角度")
+        }
+        if LocalAgentConfig.isConfigured {
+            do {
+                return try await deepSeek.research(
+                    queries: cleaned,
+                    originalQuestion: originalQuestion,
+                    limit: limit
+                )
+            } catch {
+                // A provider-side multi-search failure should not block a
+                // useful single-query answer. The regular search path has its
+                // own public-web fallback.
+            }
+        }
+        return try await search(
+            query: first,
+            originalQuestion: originalQuestion,
+            limit: min(max(limit, 3), 8),
+            includeContent: true,
+            timeout: timeout
+        )
+    }
+
     func fetch(urlString: String, maxChars: Int = 6000, timeout: TimeInterval = 25) async throws -> JSONValue {
         let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = URL(string: trimmed),
@@ -53,6 +110,11 @@ struct WebContentExecutor {
               ["http", "https"].contains(scheme),
               url.host != nil else {
             throw ToolExecutionError(code: "invalid_url", message: "只支持 http/https 链接")
+        }
+        try PublicURLPolicy.validate(url)
+        if LocalAgentConfig.isConfigured,
+           let deepSeekResult = try? await deepSeek.fetch(urlString: trimmed, maxChars: maxChars) {
+            return deepSeekResult
         }
         let (data, response) = try await loadData(url: url, timeout: timeout)
         guard let http = response as? HTTPURLResponse, (200..<400).contains(http.statusCode) else {

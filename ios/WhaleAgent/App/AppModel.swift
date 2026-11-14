@@ -1309,7 +1309,7 @@ private enum ToolResultLinks {
     static func extract(tool: String, data: JSONValue?) -> [ResultLink] {
         guard let object = data?.objectValue else { return [] }
         switch tool {
-        case "search_web":
+        case "search_web", "research_web":
             return (object["results"]?.arrayValue ?? []).compactMap { row in
                 guard
                     let item = row.objectValue,

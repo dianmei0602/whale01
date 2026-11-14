@@ -738,6 +738,7 @@ struct ToolLinkCard: View {
     private var icon: String {
         switch tool {
         case "search_web": return "magnifyingglass"
+        case "research_web": return "text.magnifyingglass"
         case "fetch_web_content": return "safari"
         case "search_merchant_prices": return "tag"
         default: return "link"

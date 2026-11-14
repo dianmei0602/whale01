@@ -237,6 +237,8 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(RealDataGuard.intent(for: "附近有咖啡店吗"), RealDataIntent.nearbyPlaces)
         XCTAssertEqual(RealDataGuard.intent(for: "明天会下雨吗"), RealDataIntent.weather)
         XCTAssertNil(RealDataGuard.intent(for: "我回家了"))
+        XCTAssertNil(RealDataGuard.intent(for: "回家"))
+        XCTAssertNil(RealDataGuard.intent(for: "回答写成回家了"))
         XCTAssertNil(RealDataGuard.intent(for: "把照片发过去"))
     }
 

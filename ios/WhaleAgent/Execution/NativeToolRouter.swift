@@ -808,6 +808,18 @@ final class NativeToolRouter {
         case "search_web":
             return try await web.search(
                 query: try pending.arguments.requiredString("query"),
+                originalQuestion: pending.arguments.optionalString("originalQuestion"),
+                limit: pending.arguments.optionalInt("limit") ?? 6,
+                includeContent: pending.arguments.optionalBool("includeContent") ?? true
+            )
+        case "research_web":
+            let queries = pending.arguments.optionalStringArray("queries") ?? []
+            guard !queries.isEmpty else {
+                throw ToolExecutionError(code: "invalid_arguments", message: "queries 至少需要一个搜索角度")
+            }
+            return try await web.research(
+                queries: queries,
+                originalQuestion: try pending.arguments.requiredString("originalQuestion"),
                 limit: pending.arguments.optionalInt("limit") ?? 6
             )
         case "fetch_web_content":

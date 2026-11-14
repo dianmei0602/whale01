@@ -47,6 +47,7 @@ final class PermissionCenter: ObservableObject {
         "set_memory": [],
         "delete_memory": [],
         "search_web": [],
+        "research_web": [],
         "fetch_web_content": [],
         "search_merchant_prices": []
     ]

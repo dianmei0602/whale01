@@ -183,15 +183,6 @@ actor LocalAgentEngine: AgentTransport {
             permissions: permissions,
             taskState: LocalTaskState(goal: text, constraints: ["timezone": TimeZone.current.identifier, "userConstraints": text])
         )
-        if let clarification = RealDataGuard.preflightReply(for: text) {
-            history.append(
-                DSMessage(role: "assistant", content: clarification, tool_calls: nil, tool_call_id: nil, name: nil)
-            )
-            saveHistory(history, for: conversation)
-            turns.removeValue(forKey: turn.turnId)
-            saveTurns()
-            return makeResponse(status: "completed", turn: turn, reply: clarification, pending: [])
-        }
 
         let message = try await callModel(history: history, permissions: permissions, taskState: turn.taskState)
         return try await advance(message: message, history: &history, turn: &turn)
@@ -340,9 +331,33 @@ actor LocalAgentEngine: AgentTransport {
         let proposedReply = message.content?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let context = latestTurnContext(history)
         let intent = RealDataGuard.intent(for: context.userText)
+        var candidate = proposedReply
+        if let intent,
+           !RealDataGuard.hasRequiredEvidence(for: intent, usedTools: context.tools),
+           !RealDataGuard.isSafeWithoutEvidence(proposedReply, for: intent) {
+            var repairHistory = history
+            repairHistory.append(
+                DSMessage(
+                    role: "system",
+                    content: "上一版回答缺少本轮可核对的外部事实。请改成自然、具体的用户回复：如果只缺参数就简短追问；如果工具失败或数据缺失就说明没拿到。不要套用固定句式，不要陈述天气、地点、路线、价格、行情或最新资讯等未经工具确认的事实。",
+                    tool_calls: nil,
+                    tool_call_id: nil,
+                    name: nil
+                )
+            )
+            if let repaired = try? await callModel(
+                history: repairHistory,
+                permissions: turn.permissions,
+                taskState: turn.taskState,
+                toolsEnabled: false
+            ), let text = repaired.content?.trimmingCharacters(in: .whitespacesAndNewlines),
+               RealDataGuard.isSafeWithoutEvidence(text, for: intent) {
+                candidate = text
+            }
+        }
         var reply = intent.map {
-            RealDataGuard.finalReply(for: $0, usedTools: context.tools, proposed: proposedReply)
-        } ?? proposedReply
+            RealDataGuard.finalReply(for: $0, usedTools: context.tools, proposed: candidate)
+        } ?? candidate
         let evidenceMissing = intent != nil && reply != proposedReply
         if evidenceMissing { turn.taskState?.remaining = ["取得本轮可核对的真实数据"] }
         if turn.taskState?.hasUnresolvedResults == true {
@@ -403,7 +418,12 @@ actor LocalAgentEngine: AgentTransport {
         return (userText, Set(successfulIds.compactMap { callNames[$0] }))
     }
 
-    private func callModel(history: [DSMessage], permissions: [String: String], taskState: LocalTaskState? = nil) async throws -> DSMessage {
+    private func callModel(
+        history: [DSMessage],
+        permissions: [String: String],
+        taskState: LocalTaskState? = nil,
+        toolsEnabled: Bool = true
+    ) async throws -> DSMessage {
         var messages = [
             DSMessage(role: "system", content: systemPrompt(permissions: permissions, requestText: latestTurnContext(history).userText), tool_calls: nil, tool_call_id: nil, name: nil)
         ]
@@ -417,11 +437,12 @@ actor LocalAgentEngine: AgentTransport {
         }
         messages.append(contentsOf: Self.trimmedHistory(history, limit: 30))
         let suppressTools = RealDataGuard.suppressesTools(context.userText)
+        let shouldExposeTools = toolsEnabled && !suppressTools
 
         let requestBody = DSRequest(
             model: LocalAgentConfig.model,
             messages: messages,
-            tools: suppressTools ? nil : tools.map { tool in
+            tools: shouldExposeTools ? tools.map { tool in
                 DSTool(
                     function: DSToolFunction(
                         name: tool.name,
@@ -429,8 +450,8 @@ actor LocalAgentEngine: AgentTransport {
                         parameters: tool.inputSchema
                     )
                 )
-            },
-            tool_choice: suppressTools ? nil : "auto",
+            } : nil,
+            tool_choice: shouldExposeTools ? "auto" : nil,
             stream: false,
             max_tokens: 2048,
             temperature: 0.3

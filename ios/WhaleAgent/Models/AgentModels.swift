@@ -135,6 +135,7 @@ enum ToolCatalog {
         case "set_memory": return "保存偏好"
         case "delete_memory": return "删除偏好"
         case "search_web": return "搜索网页"
+        case "research_web": return "多角度查证"
         case "fetch_web_content": return "读取网页"
         case "search_merchant_prices": return "查商户价格"
         case "get_current_location": return "读取当前位置"
@@ -193,6 +194,8 @@ enum ToolCatalog {
             return args.optionalString("key") ?? args.optionalString("id") ?? "删除偏好"
         case "search_web":
             return args.optionalString("query") ?? "网页搜索"
+        case "research_web":
+            return args.optionalStringArray("queries")?.joined(separator: " · ") ?? "多角度查证"
         case "fetch_web_content":
             return args.optionalString("url") ?? "读取网页正文"
         case "search_merchant_prices":

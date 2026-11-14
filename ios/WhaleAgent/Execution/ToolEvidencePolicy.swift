@@ -1,7 +1,7 @@
 import Foundation
 
 enum ToolEvidencePolicy {
-    static let liveTools: Set<String> = ["get_weather", "get_current_location", "search_places", "open_navigation", "get_tech_news", "get_stock_quote", "get_stock_kline", "get_stock_intraday", "search_merchant_prices", "search_web", "fetch_web_content"]
+    static let liveTools: Set<String> = ["get_weather", "get_current_location", "search_places", "open_navigation", "get_tech_news", "get_stock_quote", "get_stock_kline", "get_stock_intraday", "search_merchant_prices", "search_web", "research_web", "fetch_web_content"]
 
     static func accepts(tool: String, data: [String: Any]?, now: Date = Date()) -> Bool {
         guard let data, data["simulated"] as? Bool != true else { return false }

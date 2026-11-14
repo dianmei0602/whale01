@@ -52,7 +52,7 @@ struct OperationRecord: Identifiable, Equatable, Codable {
             return "music.note"
         case "get_weather": return "cloud.sun.fill"
         case "get_activity_summary": return "figure.walk"
-        case "search_web", "fetch_web_content": return "safari.fill"
+        case "search_web", "research_web", "fetch_web_content": return "safari.fill"
         case "search_merchant_prices": return "yensign.circle.fill"
         case "list_memory", "set_memory", "delete_memory": return "brain.head.profile"
         case "ocr_document": return "doc.viewfinder"
@@ -578,7 +578,7 @@ enum ToolPresentation {
             return "music.note"
         case "summarize_shared_content": return "doc.text"
         case "list_memory", "set_memory", "delete_memory": return "brain.head.profile"
-        case "search_web", "fetch_web_content": return "safari"
+        case "search_web", "research_web", "fetch_web_content": return "safari"
         case "search_merchant_prices": return "yensign.circle"
         default: return "sparkles"
         }
@@ -653,6 +653,8 @@ enum ToolPresentation {
             return args.optionalString("key") ?? "删除一条偏好"
         case "search_web":
             return args.optionalString("query") ?? "搜索网页来源"
+        case "research_web":
+            return args.optionalStringArray("queries")?.joined(separator: " · ") ?? "多角度查证"
         case "fetch_web_content":
             return args.optionalString("url") ?? "读取网页正文"
         case "search_merchant_prices":
@@ -760,6 +762,10 @@ enum ToolPresentation {
         case "search_web":
             let count = object.optionalInt("count") ?? 0
             return count == 0 ? "没有找到网页来源" : "找到 \(count) 个网页来源 · 需再读正文"
+        case "research_web":
+            let count = object.optionalInt("count") ?? 0
+            let queries = object["queries"]?.arrayValue?.count ?? 0
+            return count == 0 ? "没有找到可核对资料" : "从 \(queries) 个角度整理 \(count) 个来源"
         case "fetch_web_content":
             let title = object.optionalString("title") ?? "网页"
             let chars = object.optionalInt("charCount") ?? 0

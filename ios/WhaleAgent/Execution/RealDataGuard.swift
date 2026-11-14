@@ -75,7 +75,10 @@ enum RealDataGuard {
         let compact = text.replacingOccurrences(of: " ", with: "")
         let phrases = ["导航回家", "带我回家", "送我回家", "怎么回家", "回家怎么走", "回家路线", "回家的路线"]
         if phrases.contains(where: compact.contains) { return true }
-        return ["回家", "我要回家", "我想回家", "回我家"].contains(compact)
+        // A bare "回家" is commonly produced by input-method or speech
+        // autocorrection. Without an explicit travel verb or route context,
+        // let the model clarify instead of forcing a navigation task.
+        return ["我要回家", "我想回家", "回我家"].contains(compact)
     }
 
     static func homeAddress(in memories: [MemoryPreference]) -> String? {
@@ -93,12 +96,6 @@ enum RealDataGuard {
         return markers.contains { trimmed.contains($0) }
     }
 
-    static func preflightReply(for text: String) -> String? {
-        guard intent(for: text) == .homeNavigation else { return nil }
-        guard homeAddress(in: MemoryStore.shared.list()) == nil else { return nil }
-        return "我还不知道你的真实家庭地址，不能规划回家路线。请告诉我具体地址；也可以在设置里保存一条“家庭地址”，以后直接说回家。"
-    }
-
     static func toolInstruction(for intent: RealDataIntent) -> String? {
         switch intent {
         case .homeNavigation:
@@ -112,7 +109,7 @@ enum RealDataGuard {
         case .nearbyPlaces:
             return "用户询问附近地点。必须调用 search_places；用户明确地区时按该地区搜索，只有围绕手机当前位置时传 locationMode=current。以本轮真实结果为准，不编造店名、距离或地址。"
         case .news:
-            return "实时资讯需要 get_tech_news 或 search_web/fetch_web_content 的本轮成功结果，注明来源和获取时间；不得把模型知识当最新新闻。"
+            return "实时资讯需要 get_tech_news 或 research_web/search_web/fetch_web_content 的本轮成功结果，注明来源和获取时间；不得把模型知识当最新新闻。"
         case .stock:
             return "股价需要 get_stock_quote/get_stock_kline/get_stock_intraday 的真实成功结果，注明报价时间；search_stock 不是报价证据，延迟未知不得标成实时。"
         case .merchantPrice:
@@ -122,23 +119,9 @@ enum RealDataGuard {
 
     static func finalReply(for intent: RealDataIntent, usedTools: Set<String>, proposed: String) -> String {
         if let required = intent.requiredTool, usedTools.contains(required) { return proposed }
-        if intent == .news, !usedTools.isDisjoint(with: ["search_web", "fetch_web_content"]) { return proposed }
+        if intent == .news, !usedTools.isDisjoint(with: ["search_web", "research_web", "fetch_web_content"]) { return proposed }
         if intent == .stock, !usedTools.isDisjoint(with: ["get_stock_kline", "get_stock_intraday"]) { return proposed }
-        if isClarifying(proposed, for: intent) {
-            // No external facts are allowed through the clarification path.
-            // Emit a known missing-slot response rather than trusting arbitrary
-            // prose that happens to contain a question or a location keyword.
-            switch intent {
-            case .weather: return "你想查询哪个城市、哪一天的天气？"
-            case .news: return "你想了解哪个主题的最新资讯？"
-            case .stock: return "你想查哪只股票或指数？请提供名称或代码。"
-            case .merchantPrice: return "你想查哪家门店？请提供门店名称或来源链接。"
-            case .navigation: return "你想去哪里？请提供具体地点。"
-            case .homeNavigation: return "请提供具体家庭地址，我才能解析目的地。"
-            case .nearbyPlaces: return "你想找什么地点，按当前位置还是指定地区搜索？"
-            case .currentLocation: break
-            }
-        }
+        if isSafeWithoutEvidence(proposed, for: intent) { return proposed }
 
         switch intent {
         case .homeNavigation:
@@ -160,6 +143,54 @@ enum RealDataGuard {
         case .news: return "这次没有取得可核对的最新资讯，暂时不能给出实时新闻结论。请稍后重试。"
         case .stock: return "这次没有取得真实行情，不能确认股价或涨跌。请稍后重试。"
         case .merchantPrice: return "这次没有取得门店价格证据，不能确认人均或套餐价格。请提供门店名称或来源链接。"
+        }
+    }
+
+    static func hasRequiredEvidence(for intent: RealDataIntent, usedTools: Set<String>) -> Bool {
+        if let required = intent.requiredTool, usedTools.contains(required) { return true }
+        if intent == .news, !usedTools.isDisjoint(with: ["search_web", "research_web", "fetch_web_content"]) { return true }
+        if intent == .stock, !usedTools.isDisjoint(with: ["get_stock_kline", "get_stock_intraday"]) { return true }
+        return false
+    }
+
+    /// A natural clarification or an explicit statement that live evidence is
+    /// missing is safe to keep. The guard should only replace prose that
+    /// asserts unsupported external facts or claims an action completed.
+    static func isSafeWithoutEvidence(_ reply: String, for intent: RealDataIntent? = nil) -> Bool {
+        let trimmed = reply.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed.count <= 240 else { return false }
+        let lower = trimmed.lowercased()
+        let uncertainty = ["不知道", "没拿到", "没有拿到", "没有取得", "没有查到", "暂时查不到", "还缺", "需要你", "请告诉我", "告诉我具体", "can't confirm", "cannot confirm", "don't know"]
+        if uncertainty.contains(where: { lower.contains($0) }) { return true }
+        if containsAny(trimmed, ["？", "?"]), !assertsUnsupportedFact(trimmed, for: intent) { return true }
+        return isClarifying(trimmed, for: intent) && !assertsUnsupportedFact(trimmed, for: intent)
+    }
+
+    private static func assertsUnsupportedFact(_ reply: String, for intent: RealDataIntent?) -> Bool {
+        let completion = ["已规划", "已经规划", "已经找到", "已经打开", "已创建", "已经创建", "已发送", "已经发送", "已加入", "已保存", "正在播放", "播放中", "已出发", "带你回家", "已经到家", "已经完成"]
+        if completion.contains(where: reply.contains) { return true }
+        let genericFacts = reply.range(
+            of: "[0-9０-９]|度|摄氏|元|公里|分钟|路况|路线|股价|上涨|下跌|人均|报价",
+            options: .regularExpression
+        ) != nil
+        if genericFacts { return true }
+        switch intent {
+        case .weather:
+            return reply.range(of: "晴|雨|雪|阴天|多云|气温|温度", options: .regularExpression) != nil
+        case .news:
+            return reply.range(of: "今天|昨日|近日|发布|宣布|最新消息", options: .regularExpression) != nil
+        case .stock:
+            return reply.range(of: "涨|跌|收于|报收|成交|市值|市盈率", options: .regularExpression) != nil
+        case .merchantPrice:
+            return reply.range(of: "价格|套餐|人均|收费|菜单", options: .regularExpression) != nil
+        case .nearbyPlaces:
+            return reply.range(of: "(附近|周边).{0,16}(有|是|距离)|距离.{0,10}[0-9]|[0-9].{0,10}(米|公里)|营业中", options: .regularExpression) != nil
+        case .homeNavigation, .navigation:
+            return reply.range(of: "(目的地|位置|地址)(是|为|在)|(正在|已经)(导航|前往)|路线.{0,8}(已|规划)", options: .regularExpression) != nil
+        case .currentLocation:
+            return reply.range(of: "你(?:现在)?(?:在|位于)(?!哪)|当前位于|定位显示", options: .regularExpression) != nil
+        case .none:
+            return false
         }
     }
 
