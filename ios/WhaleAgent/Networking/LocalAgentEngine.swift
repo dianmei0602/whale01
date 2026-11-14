@@ -16,13 +16,11 @@ enum LocalAgentConfig {
     static let model = "deepseek-chat"
     static let endpoint = URL(string: "https://api.deepseek.com/chat/completions")!
 
+    /// The key never ships inside the app bundle. It is read from the
+    /// user's own Keychain entry, entered once in Settings → 服务连接.
     static var apiKey: String {
-        if let personal = DeepSeekKeyStore.value, !personal.isEmpty { return personal }
-        guard BuildIdentity.distribution != "public" else { return "" }
-        let value = (Bundle.main.object(forInfoDictionaryKey: "DeepSeekAPIKey") as? String) ?? ""
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, !trimmed.hasPrefix("$(") else { return "" }
-        return trimmed
+        let personal = DeepSeekKeyStore.value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return personal
     }
 
     static var isConfigured: Bool { !apiKey.isEmpty }

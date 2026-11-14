@@ -471,26 +471,26 @@ final class CoreTests: XCTestCase {
         XCTAssertNil(DirectContentClient.parseQuote(symbol: "sh600519", body: "1~2~3"))
     }
 
-    func testDailyQuotePoolRepeatsOnlyAfterTenDays() {
-        XCTAssertEqual(DailyQuote.pool.count, 480)
-        XCTAssertEqual(Set(DailyQuote.pool).count, 480)
+    func testDailyQuotePoolRepeatsOnlyAfterThirtyDays() {
+        XCTAssertEqual(DailyQuote.pool.count, 1440)
+        XCTAssertEqual(Set(DailyQuote.pool).count, 1440)
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
         let start = calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 0))!
         var indexes = Set<Int>()
-        for slot in 0..<480 {
+        for slot in 0..<1440 {
             let date = calendar.date(byAdding: .minute, value: slot * 30, to: start)!
             XCTAssertTrue(indexes.insert(DailyQuote.slotIndex(at: date, calendar: calendar)).inserted)
         }
-        XCTAssertEqual(indexes.count, 480)
+        XCTAssertEqual(indexes.count, 1440)
     }
 
     func testDailyQuoteCorpusKeepsReviewedMetadata() {
-        XCTAssertEqual(DailyQuote.items.count, 480)
-        XCTAssertEqual(Set(DailyQuote.items.map(\.id)).count, 480)
+        XCTAssertEqual(DailyQuote.items.count, 1440)
+        XCTAssertEqual(Set(DailyQuote.items.map(\.id)).count, 1440)
         XCTAssertEqual(Set(DailyQuote.items.map(\.theme)).count, 6)
-        XCTAssertEqual(DailyQuote.poolCycleHours, 240)
-        XCTAssertEqual(DailyQuote.poolCycleDays, 10)
+        XCTAssertEqual(DailyQuote.poolCycleHours, 720)
+        XCTAssertEqual(DailyQuote.poolCycleDays, 30)
         XCTAssertTrue(DailyQuote.items.allSatisfy { !$0.source.isEmpty && !$0.locator.isEmpty })
         XCTAssertTrue(DailyQuote.items.allSatisfy { $0.displayText.hasSuffix("——\($0.source)") })
     }

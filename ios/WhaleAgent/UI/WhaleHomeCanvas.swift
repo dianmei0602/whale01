@@ -27,6 +27,7 @@ struct WhaleHomeCanvas: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var textSize
     @State private var weatherExpanded = ProcessInfo.processInfo.environment["WHALE_DEMO_WEATHER"] == "1"
+    @State private var manualCity = UserDefaults.standard.string(forKey: "home.weather.city") ?? ""
 
     private static let weatherCacheKey = "home-weather-v1"
     private static let weatherRefreshInterval: TimeInterval = 8 * 60 * 60
@@ -41,7 +42,6 @@ struct WhaleHomeCanvas: View {
             VStack(alignment: .leading, spacing: 10) {
                 if showQuote { dailyQuote }
                 todayCard
-                InlinePlaybackView(model: model, onOpen: onOpenMusic)
                 categoryGrid
                 AssistantActivityView(model: model)
                 if !model.messages.isEmpty {
@@ -197,39 +197,13 @@ struct WhaleHomeCanvas: View {
 
     private var weatherCard: some View {
         VStack(alignment: .leading, spacing: 13) {
-            if locationStatus != "granted" {
-                HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: "location.circle.fill")
-                        .whaleFont(size: 28, weight: .medium)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(WhaleTheme.coral, WhaleTheme.coral.opacity(0.12))
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(locationStatus == "denied" ? "定位权限未开启" : "查看所在地的真实天气")
-                            .whaleFont(size: 17, weight: .semibold)
-                            .foregroundStyle(WhaleTheme.ink)
-                        Text("授权后显示温度、降水和穿衣建议。")
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    Spacer(minLength: 4)
+            if let today = weatherDays.first {
+                weatherSummary(today)
+                if locationStatus != "granted" {
+                    Label("定位未开启 · 显示上次位置 \(weatherLocation)", systemImage: "mappin.slash")
+                        .whaleFont(size: 12, weight: .medium)
+                        .foregroundStyle(WhaleTheme.muted)
                 }
-
-                Button(locationStatus == "denied" ? "去系统设置" : "开启定位并查看") {
-                    if locationStatus == "denied" {
-                        model.openSystemSettings()
-                    } else {
-                        Task {
-                            await model.requestPermission("location")
-                            if model.permissionsSnapshot["location"] == "granted" {
-                                await loadWeather(force: true)
-                            }
-                        }
-                    }
-                }
-                .whaleFont(size: 14, weight: .semibold)
-                .foregroundStyle(WhaleTheme.accent)
-                .buttonStyle(.plain)
             } else if let weatherError {
                 VStack(alignment: .leading, spacing: 7) {
                     Text("暂时没有取得天气数据")
@@ -239,66 +213,95 @@ struct WhaleHomeCanvas: View {
                         .whaleFont(size: 13)
                         .foregroundStyle(WhaleTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
-                    Button("重新查询") {
-                        Task { await loadWeather(force: true) }
+                    HStack(spacing: 16) {
+                        Button("重新查询") {
+                            Task { await loadWeather(force: true) }
+                        }
+                        .whaleFont(size: 14, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                        .buttonStyle(.plain)
+                        if locationStatus == "denied" {
+                            Button("去系统设置") { model.openSystemSettings() }
+                                .whaleFont(size: 14, weight: .medium)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .buttonStyle(.plain)
+                        }
                     }
-                    .whaleFont(size: 14, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.accent)
-                    .buttonStyle(.plain)
                 }
-            } else if let today = weatherDays.first {
-                Button {
-                    withAnimation(.snappy(duration: 0.2)) { weatherExpanded.toggle() }
-                } label: {
-                    HStack(alignment: .center, spacing: 14) {
-                        Image(systemName: today.icon)
-                            .symbolRenderingMode(.palette)
-                            .foregroundStyle(WhaleTheme.coral, WhaleTheme.moon)
-                            .whaleFont(size: 31, weight: .medium)
-                            .frame(width: 52, height: 52)
-                            .background(WhaleTheme.coral.opacity(0.09), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+                manualCityEntry
+            } else if locationStatus == "granted" || weatherLoading {
+                HStack(spacing: 10) {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(WhaleTheme.accent)
+                    Text("正在读取所在地天气…")
+                        .whaleFont(size: 14)
+                        .foregroundStyle(WhaleTheme.muted)
+                    Spacer(minLength: 0)
+                }
+                .frame(height: 48)
+            } else {
+                locationPermissionPrompt
+                manualCityEntry
+            }
+        }
+        .whaleCard(padding: 18)
+    }
 
-                        VStack(alignment: .leading, spacing: 5) {
-                            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                Text(weather?.current?.summary ?? today.summary)
-                                    .whaleFont(size: 20, weight: .bold, design: .rounded)
-                                    .foregroundStyle(WhaleTheme.ink)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.75)
-                                Spacer(minLength: 0)
-                                Text(currentTemperatureText)
-                                    .whaleFont(size: 34, weight: .bold, design: .rounded)
-                                    .foregroundStyle(WhaleTheme.ink)
-                            }
-                            Text(weatherMetaLine(today))
+    private func weatherSummary(_ today: WeatherDaySummary) -> some View {
+        VStack(alignment: .leading, spacing: 13) {
+            Button {
+                withAnimation(.snappy(duration: 0.2)) { weatherExpanded.toggle() }
+            } label: {
+                HStack(alignment: .center, spacing: 14) {
+                    Image(systemName: today.icon)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(WhaleTheme.coral, WhaleTheme.moon)
+                        .whaleFont(size: 31, weight: .medium)
+                        .frame(width: 52, height: 52)
+                        .background(WhaleTheme.coral.opacity(0.09), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text(weather?.current?.summary ?? today.summary)
+                                .whaleFont(size: 20, weight: .bold, design: .rounded)
+                                .foregroundStyle(WhaleTheme.ink)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
+                            Spacer(minLength: 0)
+                            Text(currentTemperatureText)
+                                .whaleFont(size: 34, weight: .bold, design: .rounded)
+                                .foregroundStyle(WhaleTheme.ink)
+                        }
+                        Text(weatherMetaLine(today))
                             .whaleFont(size: 13, weight: .medium)
                             .foregroundStyle(WhaleTheme.muted)
                             .lineLimit(1)
                             .minimumScaleFactor(0.85)
-                        }
-
-                        Spacer(minLength: 4)
-
-                        if weatherLoading {
-                            ProgressView()
-                                .controlSize(.small)
-                                .tint(WhaleTheme.accent)
-                        } else {
-                            Image(systemName: weatherExpanded ? "chevron.up" : "chevron.down")
-                                .whaleFont(size: 13, weight: .bold)
-                                .foregroundStyle(WhaleTheme.muted)
-                        }
                     }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("天气详情")
 
-                if !weatherExpanded, let current = weather?.current {
-                    weatherQuickStats(current)
-                }
+                    Spacer(minLength: 4)
 
-                if weatherExpanded {
+                    if weatherLoading {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(WhaleTheme.accent)
+                    } else {
+                        Image(systemName: weatherExpanded ? "chevron.up" : "chevron.down")
+                            .whaleFont(size: 13, weight: .bold)
+                            .foregroundStyle(WhaleTheme.muted)
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("天气详情")
+
+            if !weatherExpanded, let current = weather?.current {
+                weatherQuickStats(current)
+            }
+
+            if weatherExpanded {
                 if let hours = weather?.hours, !hours.isEmpty {
                     Rectangle()
                         .fill(WhaleTheme.line)
@@ -341,21 +344,78 @@ struct WhaleHomeCanvas: View {
                     .buttonStyle(.plain)
                     .accessibilityLabel("刷新天气")
                 }
-                }
-            } else {
-                HStack(spacing: 10) {
-                    ProgressView()
-                        .controlSize(.small)
-                        .tint(WhaleTheme.accent)
-                    Text("正在读取所在地天气…")
-                        .whaleFont(size: 14)
-                        .foregroundStyle(WhaleTheme.muted)
-                    Spacer(minLength: 0)
-                }
-                .frame(height: 48)
             }
         }
-        .whaleCard(padding: 18)
+    }
+
+    private var locationPermissionPrompt: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 12) {
+                Image(systemName: "location.circle.fill")
+                    .whaleFont(size: 28, weight: .medium)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(WhaleTheme.coral, WhaleTheme.coral.opacity(0.12))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(locationStatus == "denied" ? "定位权限未开启" : "查看真实天气")
+                        .whaleFont(size: 17, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Text("可以开启定位，也可以直接输入城市名查询。")
+                        .whaleFont(size: 13)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 4)
+            }
+
+            Button(locationStatus == "denied" ? "去系统设置开启定位" : "使用当前位置") {
+                if locationStatus == "denied" {
+                    model.openSystemSettings()
+                } else {
+                    Task {
+                        await model.requestPermission("location")
+                        if model.permissionsSnapshot["location"] == "granted" {
+                            await loadWeather(force: true)
+                        }
+                    }
+                }
+            }
+            .whaleFont(size: 14, weight: .semibold)
+            .foregroundStyle(WhaleTheme.accent)
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var manualCityEntry: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "building.2")
+                .foregroundStyle(WhaleTheme.muted)
+            TextField("输入城市，如 杭州 / 北京", text: $manualCity)
+                .font(.system(size: 15))
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .submitLabel(.search)
+                .onSubmit { queryManualCity() }
+                .accessibilityIdentifier("weather-manual-city")
+            Button("查询") { queryManualCity() }
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(trimmedManualCity.isEmpty ? WhaleTheme.muted : WhaleTheme.accent)
+                .disabled(trimmedManualCity.isEmpty)
+                .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 42)
+        .background(WhaleTheme.soft.opacity(0.55), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private var trimmedManualCity: String {
+        manualCity.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func queryManualCity() {
+        let city = trimmedManualCity
+        guard !city.isEmpty else { return }
+        UserDefaults.standard.set(city, forKey: "home.weather.city")
+        Task { await loadWeather(force: true, city: city) }
     }
 
     private var currentTemperatureText: String {
@@ -481,12 +541,17 @@ struct WhaleHomeCanvas: View {
     }
 
     private func loadWeatherIfNeeded() async {
-        guard locationStatus == "granted" else { return }
+        // Cached data always renders first: a missing location permission must
+        // not blank the card the user already saw.
         restoreCachedWeatherIfNeeded()
         if weatherCacheIsFresh { return }
         if weatherLoading, weatherLoadIsStale { weatherLoading = false }
         guard !weatherLoading else { return }
-        await loadWeather(force: false)
+        if locationStatus == "granted" {
+            await loadWeather(force: false)
+        } else if !trimmedManualCity.isEmpty {
+            await loadWeather(force: false, city: trimmedManualCity)
+        }
     }
 
     /// Rehydrates the last successful payload so a cold launch renders instantly.
@@ -524,8 +589,14 @@ struct WhaleHomeCanvas: View {
         return Date().timeIntervalSince(started) > 20
     }
 
-    private func loadWeather(force: Bool) async {
-        guard locationStatus == "granted" else { return }
+    private func loadWeather(force: Bool, city: String? = nil) async {
+        let fallbackCity: String? = locationStatus == "granted" ? nil : trimmedManualCity
+        let requested = (city ?? fallbackCity ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !requested.isEmpty || locationStatus == "granted" else {
+            weatherLoading = false
+            weatherError = "没有定位权限。输入城市名也能查询真实天气，或在系统设置中开启定位。"
+            return
+        }
         if weatherLoading {
             guard weatherLoadIsStale else { return }
             weatherLoading = false
@@ -554,11 +625,13 @@ struct WhaleHomeCanvas: View {
         let start = calendar.startOfDay(for: Date())
         let end = calendar.date(byAdding: .day, value: 6, to: start) ?? start.addingTimeInterval(518_400)
         do {
-            let data = try await WeatherExecutor().query(arguments: [
+            var arguments: [String: JSONValue] = [
                 "startAt": .string(ToolDate.iso(start)),
                 "endAt": .string(ToolDate.iso(end)),
                 "timezone": .string(TimeZone.current.identifier)
-            ])
+            ]
+            if !requested.isEmpty { arguments["locationName"] = .string(requested) }
+            let data = try await WeatherExecutor().query(arguments: arguments)
             let days = WeatherDaySummary.list(from: data)
             guard !days.isEmpty else {
                 weatherError = "天气接口本次没有返回逐日预报，请稍后重试。"

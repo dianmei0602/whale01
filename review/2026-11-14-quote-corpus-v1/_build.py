@@ -21,8 +21,8 @@ with open(SRC, encoding="utf-8") as f:
                          locator=locator, tone=tone, status="pending"))
 
 errors = []
-if len(rows) != 480:
-    errors.append(f"total is {len(rows)}, expected 480")
+if len(rows) != 1440:
+    errors.append(f"total is {len(rows)}, expected 1440")
 
 seen_ids = {}
 seen_text = {}
@@ -46,8 +46,8 @@ counts = {t: 0 for t in THEMES}
 for q in rows:
     counts[q["theme"]] = counts.get(q["theme"], 0) + 1
 for t in THEMES:
-    if counts[t] != 80:
-        errors.append(f"theme {t} has {counts[t]}, expected 80")
+    if counts[t] != 240:
+        errors.append(f"theme {t} has {counts[t]}, expected 240")
 
 if errors:
     print("VALIDATION FAILED")
@@ -75,7 +75,7 @@ for q in rows:
     n = len(re.sub(r"[\s，。；：！？、“”‘’《》·]", "", q["text"]))
     len_map.setdefault(q["theme"], []).append(n)
 
-print("OK 480 quotes")
+print("OK 1440 quotes")
 for t in THEMES:
     arr = len_map[t]
     print(f"  {t}: {len(arr)} 条, 最短 {min(arr)} 字, 最长 {max(arr)} 字, 平均 {sum(arr)/len(arr):.1f} 字")

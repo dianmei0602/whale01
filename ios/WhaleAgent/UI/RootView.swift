@@ -14,33 +14,12 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
+    @GestureState private var pagerDrag: CGFloat = 0
 
     var body: some View {
-        TabView(selection: $page) {
-            // Keep only the visible tab's input/picker/accessibility subtree mounted.
-            // Durable drafts, playback and conversation state belong to the model/stores.
-            ZStack {
-                if page == .conversation {
-                    ConversationTabView(model: model, bottomInset: 0,
-                        onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
-                        onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
-                        .safeAreaInset(edge: .bottom, spacing: 0) { ConversationComposerBar(model: model, draft: $composerDraft) }
-                }
-            }.tabItem { Label("助手", systemImage: "bubble.left.and.bubble.right") }.tag(AppTab.conversation)
-            ZStack {
-                if page == .discover {
-                    DiscoverView(selection: $discoverChannel, appModel: model, onSettings: { showSettings = true })
-                }
-            }.tabItem { Label("发现", systemImage: "square.grid.2x2") }.tag(AppTab.discover)
-            ZStack {
-                if page == .records {
-                    TodoView(model: model, embedded: true, onBackToChat: { page = .conversation }, bottomBarInset: 0)
-                }
-            }.tabItem { Label("待办", systemImage: "checklist") }.tag(AppTab.records)
-        }
+        pager
+        .safeAreaInset(edge: .bottom, spacing: 0) { WhaleRootTabBar(selection: $page) }
         .tint(WhaleTheme.accent)
-        .toolbarBackground(WhaleTheme.chrome, for: .tabBar)
-        .toolbarBackground(.visible, for: .tabBar)
         .preferredColorScheme(colorScheme)
         .dynamicTypeSize(preferredTextSize)
         .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
@@ -83,9 +62,88 @@ struct RootView: View {
             showRecords = false; showSettings = false; page = .conversation
         }
     }
+
+    // MARK: - Horizontal pager
+
+    /// Three main entries sit side by side. The pager follows the finger and
+    /// settles on the nearest page; Discover owns its own horizontal gestures,
+    /// so the root pager stands down while that tab is visible.
+    private var pager: some View {
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                conversationPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .conversation)
+                    .allowsHitTesting(page == .conversation)
+                discoverPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .discover)
+                    .allowsHitTesting(page == .discover)
+                recordsPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .records)
+                    .allowsHitTesting(page == .records)
+            }
+            .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
+            .animation(.interactiveSpring(response: 0.34, dampingFraction: 0.88), value: page)
+            .simultaneousGesture(pagerGesture(width: geo.size.width))
+        }
+    }
+
+    private var conversationPage: some View {
+        ConversationTabView(model: model, bottomInset: 0,
+            onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
+            onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
+            .safeAreaInset(edge: .bottom, spacing: 0) { ConversationComposerBar(model: model, draft: $composerDraft) }
+    }
+
+    private var discoverPage: some View {
+        DiscoverView(selection: $discoverChannel, appModel: model,
+                     onSettings: { showSettings = true },
+                     onSwitchTab: { tab in move(to: tab) })
+    }
+
+    private var recordsPage: some View {
+        TodoView(model: model, embedded: true, onBackToChat: { page = .conversation }, bottomBarInset: 0)
+    }
+
+    private func pagerGesture(width: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 18)
+            .updating($pagerDrag) { value, state, _ in
+                guard page != .discover else { return }
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                state = rubberBanded(dx)
+            }
+            .onEnded { value in
+                guard page != .discover else { return }
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                let projected = value.predictedEndTranslation.width
+                if projected < -width * 0.20 || dx < -width * 0.28 {
+                    move(to: page.pagerNext)
+                } else if projected > width * 0.20 || dx > width * 0.28 {
+                    move(to: page.pagerPrevious)
+                }
+            }
+    }
+
+    private func rubberBanded(_ dx: CGFloat) -> CGFloat {
+        if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
+            return dx / 3
+        }
+        return dx
+    }
+
+    private func move(to tab: AppTab) {
+        guard tab != page else { return }
+        UISelectionFeedbackGenerator().selectionChanged()
+        withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { page = tab }
+    }
+
     private func openDiscover(_ channel: DiscoverChannel) {
         discoverChannel = channel
-        page = .discover
+        move(to: .discover)
     }
     private var colorScheme: ColorScheme? {
         appearance == "light" ? .light : appearance == "dark" ? .dark : nil
@@ -95,6 +153,78 @@ struct RootView: View {
         if ProcessInfo.processInfo.environment["WHALE_DEMO_LARGE_TEXT"] == "1" { return .accessibility3 }
 #endif
         return systemTextSize
+    }
+}
+
+private extension AppTab {
+    var pagerIndex: Int {
+        switch self {
+        case .conversation: return 0
+        case .discover: return 1
+        case .records: return 2
+        case .settings: return 0
+        }
+    }
+    var pagerNext: AppTab {
+        switch self {
+        case .conversation: return .discover
+        case .discover: return .records
+        default: return .records
+        }
+    }
+    var pagerPrevious: AppTab {
+        switch self {
+        case .records: return .discover
+        case .discover: return .conversation
+        default: return .conversation
+        }
+    }
+}
+
+/// Opaque bottom bar that keeps the old native tab bar metrics while the
+/// content above it can be paged horizontally.
+struct WhaleRootTabBar: View {
+    @Binding var selection: AppTab
+
+    var body: some View {
+        HStack(spacing: 0) {
+            item(.conversation, title: "助手", icon: "bubble.left.and.bubble.right")
+            item(.discover, title: "发现", icon: "square.grid.2x2")
+            item(.records, title: "待办", icon: "checklist")
+        }
+        .padding(.top, 7)
+        .padding(.bottom, 1)
+        .background(WhaleTheme.chrome)
+        .overlay(alignment: .top) {
+            Rectangle().fill(WhaleTheme.line.opacity(0.7)).frame(height: 0.5)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("root-tab-bar")
+    }
+
+    private func item(_ tab: AppTab, title: String, icon: String) -> some View {
+        let selected = selection == tab
+        return Button {
+            guard selection != tab else { return }
+            UISelectionFeedbackGenerator().selectionChanged()
+            withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { selection = tab }
+        } label: {
+            VStack(spacing: 3) {
+                Image(systemName: icon)
+                    .font(.system(size: 19, weight: .semibold))
+                    .symbolVariant(selected ? .fill : .none)
+                Text(title)
+                    .font(.system(size: 10.5, weight: selected ? .semibold : .medium))
+            }
+            .foregroundStyle(selected ? WhaleTheme.accent : WhaleTheme.muted)
+            .frame(maxWidth: .infinity)
+            .frame(height: 46)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityIdentifier("tab-" + tab.rawValue)
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 

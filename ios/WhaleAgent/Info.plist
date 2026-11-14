@@ -31,10 +31,6 @@
       </array>
     </dict>
   </array>
-  <key>WhaleAPIToken</key>
-  <string>$(WHALE_API_TOKEN)</string>
-  <key>DeepSeekAPIKey</key>
-  <string>$(DEEPSEEK_API_KEY)</string>
   <key>LSRequiresIPhoneOS</key>
   <true/>
   <key>LSApplicationQueriesSchemes</key>
@@ -88,9 +84,17 @@
   <key>NSAppTransportSecurity</key>
   <dict>
     <key>NSAllowsArbitraryLoads</key>
-    <true/>
+    <false/>
     <key>NSAllowsLocalNetworking</key>
     <true/>
+    <key>NSExceptionDomains</key>
+    <dict>
+      <key>localhost</key>
+      <dict>
+        <key>NSExceptionAllowsInsecureHTTPLoads</key>
+        <true/>
+      </dict>
+    </dict>
   </dict>
 </dict>
 </plist>

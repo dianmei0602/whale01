@@ -4,13 +4,18 @@ struct DiscoverView: View {
     @Binding var selection: DiscoverChannel
     @ObservedObject var appModel: AppModel
     let onSettings: () -> Void
+    let onSwitchTab: (AppTab) -> Void
     @State private var path = NavigationPath()
+    @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
+    @GestureState private var channelDrag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void) {
+    init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
+         onSwitchTab: @escaping (AppTab) -> Void) {
         _selection = selection
         self.onSettings = onSettings
+        self.onSwitchTab = onSwitchTab
         _store = StateObject(wrappedValue: DiscoverChannelStore.shared)
         self.appModel = appModel
     }
@@ -31,10 +36,15 @@ struct DiscoverView: View {
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                                 .accessibilityElement(children: .contain)
                                 .accessibilityIdentifier("discover-content-" + selection.rawValue)
-                                .transition(.opacity)
+                                .offset(x: reduceMotion ? 0 : channelDrag * 0.18)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: slideFrom).combined(with: .opacity),
+                                    removal: .move(edge: slideFrom == .trailing ? .leading : .trailing).combined(with: .opacity)
+                                ))
                         }
                     }
-                    .animation(reduceMotion ? nil : .easeOut(duration: 0.16), value: selection)
+                    .simultaneousGesture(channelSwipe)
+                    .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: selection)
                     .background(Color.clear)
                     .toolbar(.hidden, for: .navigationBar)
                     .task {
@@ -97,6 +107,34 @@ struct DiscoverView: View {
                 }
             }
         }
+    }
+
+    /// Swiping inside a channel steps to the neighbouring channel; past the
+    /// first or last channel it hands the swipe back to the main pager.
+    private var channelSwipe: some Gesture {
+        DragGesture(minimumDistance: 18)
+            .updating($channelDrag) { value, state, _ in
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                state = dx
+            }
+            .onEnded { value in
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15, abs(dx) > 56 else { return }
+                stepChannel(dx < 0 ? 1 : -1)
+            }
+    }
+
+    private func stepChannel(_ delta: Int) {
+        let all = DiscoverChannel.allCases
+        guard let index = all.firstIndex(of: selection) else { return }
+        let next = index + delta
+        guard all.indices.contains(next) else {
+            onSwitchTab(delta > 0 ? .records : .conversation)
+            return
+        }
+        slideFrom = delta > 0 ? .trailing : .leading
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) { selection = all[next] }
     }
 
     private var header: some View {

@@ -1,7 +1,7 @@
 import Foundation
 
-/// 每日一句：每 30 分钟轮换一次。480 条有明确出处的金句构成一个
-/// 10 天（240 小时）的不重复循环；37 与 480 互质，任意连续 480 个
+/// 每日一句：每 30 分钟轮换一次。1440 条有明确出处的金句构成一个
+/// 30 天（720 小时）的不重复循环；37 与 1440 互质，任意连续 1440 个
 /// 半小时时段正好覆盖整池，循环结束后重新排列。
 enum DailyQuote {
     typealias Item = DailyQuoteCorpus.Item
@@ -10,7 +10,7 @@ enum DailyQuote {
     static let slotMinutes = 30
     static let items: [Item] = DailyQuoteCorpus.items
     static let pool: [String] = items.map(\.displayText)
-    static let poolCycleHours = 240
+    static let poolCycleHours = 720
     static let poolCycleDays = poolCycleHours / 24
 
     static func slotIndex(at date: Date, calendar: Calendar = .current) -> Int {

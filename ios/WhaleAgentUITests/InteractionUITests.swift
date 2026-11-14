@@ -1,6 +1,10 @@
 import XCTest
 
 final class InteractionUITests: XCTestCase {
+    private func tab(_ app: XCUIApplication, _ name: String) -> XCUIElement {
+        app.buttons["tab-" + name]
+    }
+
     private func launch() -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
@@ -11,7 +15,7 @@ final class InteractionUITests: XCTestCase {
     }
     func testThreeTabsKeepDiscoverySeparateFromTheAssistant() {
         let app = launch()
-        XCTAssertTrue(app.tabBars.buttons["助手"].waitForExistence(timeout: 10))
+        XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
         let inspiration = app.buttons["home-inspiration-card"]
         XCTAssertTrue(inspiration.waitForExistence(timeout: 10))
         let today = app.otherElements["home-today-card"]
@@ -23,38 +27,38 @@ final class InteractionUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["天气暂未更新"].exists)
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "BOSS")).firstMatch.exists)
         attach("home-inspiration-weather")
-        XCTAssertTrue(app.tabBars.buttons["待办"].exists)
-        XCTAssertTrue(app.tabBars.buttons["发现"].exists)
-        XCTAssertLessThan(app.tabBars.buttons["助手"].frame.midX, app.tabBars.buttons["发现"].frame.midX)
-        XCTAssertLessThan(app.tabBars.buttons["发现"].frame.midX, app.tabBars.buttons["待办"].frame.midX)
-        app.tabBars.buttons["待办"].tap()
+        XCTAssertTrue(tab(app, "records").exists)
+        XCTAssertTrue(tab(app, "discover").exists)
+        XCTAssertLessThan(tab(app, "conversation").frame.midX, tab(app, "discover").frame.midX)
+        XCTAssertLessThan(tab(app, "discover").frame.midX, tab(app, "records").frame.midX)
+        tab(app, "records").tap()
         XCTAssertTrue(app.buttons["回到对话"].waitForExistence(timeout: 5))
-        app.tabBars.buttons["发现"].tap()
+        tab(app, "discover").tap()
         let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         capture.name = "discovery-after-tab-tap"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(app.buttons["discover-channel-game"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["discover-channel-weibo"].exists)
         app.buttons["discover-channel-game"].tap()
         XCTAssertTrue(app.otherElements["discover-content-game"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.tabBars.buttons["发现"].isHittable)
+        XCTAssertTrue(tab(app, "discover").isHittable)
         XCTAssertFalse(app.buttons["返回发现"].exists)
-        app.tabBars.buttons["助手"].tap()
+        tab(app, "conversation").tap()
         XCTAssertTrue(app.staticTexts["常用操作"].waitForExistence(timeout: 5))
     }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
-        app.tabBars.buttons["发现"].tap()
+        tab(app, "discover").tap()
         let navigation = app.otherElements["discover-fixed-header"]
         XCTAssertTrue(navigation.waitForExistence(timeout: 10))
         let navFrame = navigation.frame
-        let tabsFrame = app.tabBars.firstMatch.frame
+        let tabsFrame = tab(app, "conversation").frame
         let selectorY = app.buttons["discover-channel-ai"].frame.minY
         for channel in ["game", "headline", "market", "ai"] {
             app.buttons["discover-channel-" + channel].tap()
             XCTAssertTrue(app.otherElements["discover-content-" + channel].waitForExistence(timeout: 10))
             XCTAssertEqual(navigation.frame.minY, navFrame.minY, accuracy: 1)
             XCTAssertEqual(navigation.frame.height, navFrame.height, accuracy: 1)
-            XCTAssertEqual(app.tabBars.firstMatch.frame.minY, tabsFrame.minY, accuracy: 1)
+            XCTAssertEqual(tab(app, "conversation").frame.minY, tabsFrame.minY, accuracy: 1)
             XCTAssertEqual(app.buttons["discover-channel-ai"].frame.minY, selectorY, accuracy: 1)
             XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.exists)
             attach("fixed-shell-" + channel)
@@ -62,7 +66,7 @@ final class InteractionUITests: XCTestCase {
     }
     func testUnifiedFeedsHaveNoCategoryControlsAndKeepChannelBarPinned() {
         let app = launch()
-        app.tabBars.buttons["发现"].tap()
+        tab(app, "discover").tap()
         for channel in ["ai", "headline"] {
             app.buttons["discover-channel-" + channel].tap()
             let content = app.otherElements["discover-content-" + channel]
@@ -81,7 +85,7 @@ final class InteractionUITests: XCTestCase {
             XCTAssertFalse(app.staticTexts["公开 RSS · 阅读全文请跳转原文"].exists)
             attach("unified-feed-" + channel)
         }
-        app.tabBars.buttons["助手"].tap()
+        tab(app, "conversation").tap()
         let homeScroll = app.scrollViews.firstMatch
         for channel in ["ai", "market", "game", "music", "headline", "weibo"] {
             if !app.buttons["home-channel-" + channel].exists { homeScroll.swipeUp() }
@@ -105,11 +109,11 @@ final class InteractionUITests: XCTestCase {
         composer.tap()
         composer.typeText("draft preserved without sending")
         app.buttons["收起键盘"].tap()
-        app.tabBars.buttons["发现"].tap()
+        tab(app, "discover").tap()
         let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         capture.name = "draft-after-discovery-tab"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(app.buttons["discover-channel-music"].waitForExistence(timeout: 10))
-        app.tabBars.buttons["助手"].tap()
+        tab(app, "conversation").tap()
         XCTAssertTrue((app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.value as? String ?? "").contains("draft preserved"))
         app.terminate()
         app.launch()

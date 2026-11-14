@@ -9,7 +9,7 @@ const source = path.join(root, "review", "2026-11-14-quote-corpus-v1", "quotes.s
 const target = path.join(root, "ios", "WhaleAgent", "Models", "DailyQuoteCorpus.swift");
 const items = JSON.parse(fs.readFileSync(source, "utf8"));
 
-if (items.length !== 480) throw new Error(`expected 480 quotes, got ${items.length}`);
+if (items.length !== 1440) throw new Error(`expected 1440 quotes, got ${items.length}`);
 if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error("duplicate quote ids");
 for (const item of items) {
   for (const key of ["id", "theme", "text", "source", "locator", "tone"]) {
@@ -22,7 +22,7 @@ const lines = [
   "import Foundation",
   "",
   "/// 由 review/2026-11-14-quote-corpus-v1/quotes.sample.json 生成的离线金句语料。",
-  "/// 共 480 条，覆盖 6 个主题。请通过 tools/generate_daily_quote.mjs 重新生成，勿手工编辑。",
+  "/// 共 1440 条，覆盖 6 个主题。请通过 tools/generate_daily_quote.mjs 重新生成，勿手工编辑。",
   "enum DailyQuoteCorpus {",
   "    struct Item: Equatable, Identifiable {",
   "        let id: String",
@@ -48,7 +48,7 @@ if (order.some((prefix) => !groups.has(prefix))) throw new Error("missing theme 
 
 for (const prefix of order) {
   const group = groups.get(prefix);
-  if (group.length !== 80) throw new Error(`${prefix} expected 80 quotes, got ${group.length}`);
+  if (group.length !== 240) throw new Error(`${prefix} expected 240 quotes, got ${group.length}`);
   lines.push(`    private static let ${prefix}Items: [Item] = [`);
   for (const item of group) {
     lines.push(

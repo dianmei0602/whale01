@@ -87,6 +87,14 @@ struct ConversationTabView: View {
                     .buttonStyle(.plain).accessibilityLabel("返回助手首页")
             }
             Text("鲸鱼").font(.title2.bold()).foregroundStyle(WhaleTheme.ink)
+            if let track = model.playback.track {
+                Button(action: onOpenMusic) {
+                    MiniVinylView(track: track, isPlaying: model.playback.isPlaying)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("正在播放 \(track.title)，打开音乐")
+                .accessibilityIdentifier("home-mini-vinyl")
+            }
             Spacer()
             Menu {
                 Button("新对话", systemImage: "square.and.pencil") { model.newConversation(); goToStarter() }

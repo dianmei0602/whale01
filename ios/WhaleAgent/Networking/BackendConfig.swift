@@ -13,11 +13,10 @@ enum BackendConfig {
         "http://localhost:8787"
     ]
 
+    /// Tokens are user-supplied at runtime; no build-time fallback exists.
     static var authToken: String {
-        if let stored = UserDefaults.standard.string(forKey: apiTokenKey), !stored.isEmpty {
-            return stored
-        }
-        return (Bundle.main.object(forInfoDictionaryKey: "WhaleAPIToken") as? String) ?? ""
+        (UserDefaults.standard.string(forKey: apiTokenKey) ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     static var currentBaseURLString: String {
