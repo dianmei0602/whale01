@@ -11,13 +11,16 @@ final class ChineseChroniclesUITests: XCTestCase {
 
     func testPrimaryTabsExposeDistinctContent() {
         XCTAssertTrue(app.otherElements["overview-hero"].waitForExistence(timeout: 8))
+        attachScreenshot(named: "01-overview")
 
         app.buttons["tab-timeline"].tap()
         XCTAssertTrue(app.otherElements["timeline-header"].waitForExistence(timeout: 4))
-        XCTAssertTrue(app.scrollViews["timeline-scroll"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["timeline-scroll"].exists)
+        attachScreenshot(named: "02-timeline")
 
         app.buttons["tab-index"].tap()
         XCTAssertTrue(app.otherElements["search-empty"].waitForExistence(timeout: 4))
+        attachScreenshot(named: "03-search")
     }
 
     func testSearchOpensDynastyDetail() {
@@ -36,6 +39,7 @@ final class ChineseChroniclesUITests: XCTestCase {
             app.descendants(matching: .any)["dynasty-detail-qin"].waitForExistence(timeout: 5)
         )
         XCTAssertTrue(app.staticTexts["秦"].exists)
+        attachScreenshot(named: "04-dynasty-detail")
     }
 
     func testTimelineContainsParallelRegimes() {
@@ -44,5 +48,12 @@ final class ChineseChroniclesUITests: XCTestCase {
         XCTAssertTrue(app.buttons["timeline-dynasty-liao"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["timeline-dynasty-northern-song"].exists)
         XCTAssertTrue(app.buttons["timeline-dynasty-western-xia"].exists)
+    }
+
+    private func attachScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

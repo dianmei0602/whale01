@@ -8,6 +8,7 @@ ios/compile.log
 ios/test.log
 ios/interaction-test.log
 ios/ChineseChronicles/Resources/build-identity.json
+release/
 *.ipa
 *.ipa.enc
 *.xcresult
