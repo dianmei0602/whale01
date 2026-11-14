@@ -21,7 +21,7 @@ enum ChronicleTab: String, CaseIterable {
         case .overview:
             return "square.grid.2x2"
         case .timeline:
-            return "timeline.selection"
+            return "chart.xyaxis.line"
         case .index:
             return "text.magnifyingglass"
         }
@@ -49,6 +49,7 @@ struct RootView: View {
                 .allowsHitTesting(selection == .index)
                 .accessibilityHidden(selection != .index)
         }
+        .tint(ChronicleTheme.cinnabar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             tabBar
         }

@@ -13,4 +13,5 @@ release/
 *.ipa.enc
 *.xcresult
 .swiftpm/
+.artifacts-ui/
 

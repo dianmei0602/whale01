@@ -52,7 +52,7 @@ struct ChronicleIndexView: View {
             Text("从一处名字进入历史")
                 .font(ChronicleTheme.title)
                 .foregroundStyle(ChronicleTheme.ink)
-            Text("可以试试“长安”“王安石”“靖康”或“丝绸之路”。搜索只在本机资料中进行。")
+            Text("可以试试“长安”“秦始皇”“靖康”或“丝绸之路”。搜索只在本机资料中进行。")
                 .font(ChronicleTheme.bodySerif)
                 .foregroundStyle(ChronicleTheme.secondaryInk)
 
