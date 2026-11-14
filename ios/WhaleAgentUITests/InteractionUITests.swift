@@ -60,7 +60,10 @@ final class InteractionUITests: XCTestCase {
             XCTAssertEqual(navigation.frame.height, navFrame.height, accuracy: 1)
             XCTAssertEqual(tab(app, "conversation").frame.minY, tabsFrame.minY, accuracy: 1)
             XCTAssertEqual(app.buttons["discover-channel-ai"].frame.minY, selectorY, accuracy: 1)
-            XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.exists)
+            // The root pager keeps all three pages mounted side by side, so the
+            // composer still exists in the tree; it must simply not be reachable
+            // while Discover is the visible page.
+            XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.isHittable)
             attach("fixed-shell-" + channel)
         }
     }
