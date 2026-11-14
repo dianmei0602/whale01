@@ -80,7 +80,5 @@ jobs:
           path: |
             ios/test.log
             ios/interaction-test.log
-            ios/build/InteractionResults.xcresult
             ios/build/interaction-attachments
-            ios/build/TestResults.xcresult
           if-no-files-found: warn

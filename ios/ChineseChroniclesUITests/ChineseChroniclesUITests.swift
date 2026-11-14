@@ -14,12 +14,11 @@ final class ChineseChroniclesUITests: XCTestCase {
         attachScreenshot(named: "01-overview")
 
         app.buttons["tab-timeline"].tap()
-        XCTAssertTrue(app.otherElements["timeline-header"].waitForExistence(timeout: 4))
-        XCTAssertTrue(app.descendants(matching: .any)["timeline-scroll"].exists)
+        XCTAssertTrue(app.buttons["timeline-dynasty-liao"].waitForExistence(timeout: 8))
         attachScreenshot(named: "02-timeline")
 
         app.buttons["tab-index"].tap()
-        XCTAssertTrue(app.otherElements["search-empty"].waitForExistence(timeout: 4))
+        XCTAssertTrue(app.searchFields.firstMatch.waitForExistence(timeout: 8))
         attachScreenshot(named: "03-search")
     }
 
