@@ -91,6 +91,16 @@ jobs:
             ios/build/WhaleAgent-Sideload.sha256
             ios/build/WhaleAgent-Sideload.manifest.json
 
+      - name: Upload direct unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhaleAgent-Sideload-ipa-0.7.18-direct
+          retention-days: 3
+          path: |
+            ios/build/WhaleAgent-Sideload.ipa
+            ios/build/WhaleAgent-Sideload.sha256
+            ios/build/WhaleAgent-Sideload.manifest.json
+
       - name: Show build identity
         working-directory: ios
         run: |
