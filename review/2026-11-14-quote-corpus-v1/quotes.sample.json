@@ -1,0 +1,4322 @@
+[
+  {
+    "id": "XS-001",
+    "theme": "修身自省",
+    "text": "吾日三省吾身：为人谋而不忠乎？",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "沉稳",
+    "status": "pending"
+  },
+  {
+    "id": "XS-002",
+    "theme": "修身自省",
+    "text": "见贤思齐焉，见不贤而内自省也。",
+    "source": "《论语》",
+    "locator": "论语·里仁",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-003",
+    "theme": "修身自省",
+    "text": "君子坦荡荡，小人长戚戚。",
+    "source": "《论语》",
+    "locator": "论语·述而",
+    "tone": "坦荡",
+    "status": "pending"
+  },
+  {
+    "id": "XS-004",
+    "theme": "修身自省",
+    "text": "德不孤，必有邻。",
+    "source": "《论语》",
+    "locator": "论语·里仁",
+    "tone": "温润",
+    "status": "pending"
+  },
+  {
+    "id": "XS-005",
+    "theme": "修身自省",
+    "text": "己所不欲，勿施于人。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "克制",
+    "status": "pending"
+  },
+  {
+    "id": "XS-006",
+    "theme": "修身自省",
+    "text": "躬自厚而薄责于人。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "宽厚",
+    "status": "pending"
+  },
+  {
+    "id": "XS-007",
+    "theme": "修身自省",
+    "text": "过而不改，是谓过矣。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "警醒",
+    "status": "pending"
+  },
+  {
+    "id": "XS-008",
+    "theme": "修身自省",
+    "text": "君子求诸己，小人求诸人。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-009",
+    "theme": "修身自省",
+    "text": "不迁怒，不贰过。",
+    "source": "《论语》",
+    "locator": "论语·雍也",
+    "tone": "克制",
+    "status": "pending"
+  },
+  {
+    "id": "XS-010",
+    "theme": "修身自省",
+    "text": "君子喻于义，小人喻于利。",
+    "source": "《论语》",
+    "locator": "论语·里仁",
+    "tone": "守正",
+    "status": "pending"
+  },
+  {
+    "id": "XS-011",
+    "theme": "修身自省",
+    "text": "富贵不能淫，贫贱不能移，威武不能屈。",
+    "source": "《孟子》",
+    "locator": "孟子·滕文公下",
+    "tone": "刚正",
+    "status": "pending"
+  },
+  {
+    "id": "XS-012",
+    "theme": "修身自省",
+    "text": "行有不得者，皆反求诸己。",
+    "source": "《孟子》",
+    "locator": "孟子·离娄上",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-013",
+    "theme": "修身自省",
+    "text": "爱人者，人恒爱之；敬人者，人恒敬之。",
+    "source": "《孟子》",
+    "locator": "孟子·离娄下",
+    "tone": "温厚",
+    "status": "pending"
+  },
+  {
+    "id": "XS-014",
+    "theme": "修身自省",
+    "text": "穷则独善其身，达则兼善天下。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心上",
+    "tone": "通达",
+    "status": "pending"
+  },
+  {
+    "id": "XS-015",
+    "theme": "修身自省",
+    "text": "养心莫善于寡欲。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "清简",
+    "status": "pending"
+  },
+  {
+    "id": "XS-016",
+    "theme": "修身自省",
+    "text": "知人者智，自知者明。",
+    "source": "《道德经》",
+    "locator": "第三十三章",
+    "tone": "明澈",
+    "status": "pending"
+  },
+  {
+    "id": "XS-017",
+    "theme": "修身自省",
+    "text": "胜人者有力，自胜者强。",
+    "source": "《道德经》",
+    "locator": "第三十三章",
+    "tone": "自强",
+    "status": "pending"
+  },
+  {
+    "id": "XS-018",
+    "theme": "修身自省",
+    "text": "知足不辱，知止不殆。",
+    "source": "《道德经》",
+    "locator": "第四十四章",
+    "tone": "知止",
+    "status": "pending"
+  },
+  {
+    "id": "XS-019",
+    "theme": "修身自省",
+    "text": "上善若水，水善利万物而不争。",
+    "source": "《道德经》",
+    "locator": "第八章",
+    "tone": "柔韧",
+    "status": "pending"
+  },
+  {
+    "id": "XS-020",
+    "theme": "修身自省",
+    "text": "慎终如始，则无败事。",
+    "source": "《道德经》",
+    "locator": "第六十四章",
+    "tone": "持重",
+    "status": "pending"
+  },
+  {
+    "id": "XS-021",
+    "theme": "修身自省",
+    "text": "故君子必慎其独也。",
+    "source": "《大学》",
+    "locator": "大学·诚意",
+    "tone": "慎独",
+    "status": "pending"
+  },
+  {
+    "id": "XS-022",
+    "theme": "修身自省",
+    "text": "富润屋，德润身。",
+    "source": "《大学》",
+    "locator": "大学·诚意",
+    "tone": "修身",
+    "status": "pending"
+  },
+  {
+    "id": "XS-023",
+    "theme": "修身自省",
+    "text": "苟日新，日日新，又日新。",
+    "source": "《大学》",
+    "locator": "大学·盘铭",
+    "tone": "日新",
+    "status": "pending"
+  },
+  {
+    "id": "XS-024",
+    "theme": "修身自省",
+    "text": "知止而后有定，定而后能静。",
+    "source": "《大学》",
+    "locator": "大学·经一章",
+    "tone": "安定",
+    "status": "pending"
+  },
+  {
+    "id": "XS-025",
+    "theme": "修身自省",
+    "text": "自天子以至于庶人，壹是皆以修身为本。",
+    "source": "《大学》",
+    "locator": "大学·经一章",
+    "tone": "根本",
+    "status": "pending"
+  },
+  {
+    "id": "XS-026",
+    "theme": "修身自省",
+    "text": "莫见乎隐，莫显乎微，故君子慎其独也。",
+    "source": "《中庸》",
+    "locator": "第一章",
+    "tone": "慎独",
+    "status": "pending"
+  },
+  {
+    "id": "XS-027",
+    "theme": "修身自省",
+    "text": "博学之，审问之，慎思之，明辨之，笃行之。",
+    "source": "《中庸》",
+    "locator": "第二十章",
+    "tone": "笃行",
+    "status": "pending"
+  },
+  {
+    "id": "XS-028",
+    "theme": "修身自省",
+    "text": "人不知而不愠，不亦君子乎。",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "从容",
+    "status": "pending"
+  },
+  {
+    "id": "XS-029",
+    "theme": "修身自省",
+    "text": "不患人之不己知，患不知人也。",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-030",
+    "theme": "修身自省",
+    "text": "君子和而不同，小人同而不和。",
+    "source": "《论语》",
+    "locator": "论语·子路",
+    "tone": "和而不同",
+    "status": "pending"
+  },
+  {
+    "id": "XS-031",
+    "theme": "修身自省",
+    "text": "君子泰而不骄，小人骄而不泰。",
+    "source": "《论语》",
+    "locator": "论语·子路",
+    "tone": "沉稳",
+    "status": "pending"
+  },
+  {
+    "id": "XS-032",
+    "theme": "修身自省",
+    "text": "君子欲讷于言而敏于行。",
+    "source": "《论语》",
+    "locator": "论语·里仁",
+    "tone": "笃实",
+    "status": "pending"
+  },
+  {
+    "id": "XS-033",
+    "theme": "修身自省",
+    "text": "人而无信，不知其可也。",
+    "source": "《论语》",
+    "locator": "论语·为政",
+    "tone": "守信",
+    "status": "pending"
+  },
+  {
+    "id": "XS-034",
+    "theme": "修身自省",
+    "text": "知之为知之，不知为不知，是知也。",
+    "source": "《论语》",
+    "locator": "论语·为政",
+    "tone": "诚实",
+    "status": "pending"
+  },
+  {
+    "id": "XS-035",
+    "theme": "修身自省",
+    "text": "见善如不及，见不善如探汤。",
+    "source": "《论语》",
+    "locator": "论语·季氏",
+    "tone": "向善",
+    "status": "pending"
+  },
+  {
+    "id": "XS-036",
+    "theme": "修身自省",
+    "text": "君子成人之美，不成人之恶。",
+    "source": "《论语》",
+    "locator": "论语·颜渊",
+    "tone": "仁厚",
+    "status": "pending"
+  },
+  {
+    "id": "XS-037",
+    "theme": "修身自省",
+    "text": "主忠信，无友不如己者，过则勿惮改。",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "改过",
+    "status": "pending"
+  },
+  {
+    "id": "XS-038",
+    "theme": "修身自省",
+    "text": "静以修身，俭以养德。",
+    "source": "诸葛亮",
+    "locator": "诫子书",
+    "tone": "清静",
+    "status": "pending"
+  },
+  {
+    "id": "XS-039",
+    "theme": "修身自省",
+    "text": "非淡泊无以明志，非宁静无以致远。",
+    "source": "诸葛亮",
+    "locator": "诫子书",
+    "tone": "淡泊",
+    "status": "pending"
+  },
+  {
+    "id": "XS-040",
+    "theme": "修身自省",
+    "text": "勿以恶小而为之，勿以善小而不为。",
+    "source": "《三国志》",
+    "locator": "蜀书·先主传·刘备遗诏",
+    "tone": "向善",
+    "status": "pending"
+  },
+  {
+    "id": "CS-001",
+    "theme": "处世智慧",
+    "text": "君子周而不比，小人比而不周。",
+    "source": "《论语》",
+    "locator": "论语·为政",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "CS-002",
+    "theme": "处世智慧",
+    "text": "成事不说，遂事不谏，既往不咎。",
+    "source": "《论语》",
+    "locator": "论语·八佾",
+    "tone": "通达",
+    "status": "pending"
+  },
+  {
+    "id": "CS-003",
+    "theme": "处世智慧",
+    "text": "敏于事而慎于言。",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "谨言",
+    "status": "pending"
+  },
+  {
+    "id": "CS-004",
+    "theme": "处世智慧",
+    "text": "三人行，必有我师焉。",
+    "source": "《论语》",
+    "locator": "论语·述而",
+    "tone": "谦逊",
+    "status": "pending"
+  },
+  {
+    "id": "CS-005",
+    "theme": "处世智慧",
+    "text": "不念旧恶，怨是用希。",
+    "source": "《论语》",
+    "locator": "论语·公冶长",
+    "tone": "宽和",
+    "status": "pending"
+  },
+  {
+    "id": "CS-006",
+    "theme": "处世智慧",
+    "text": "小不忍则乱大谋。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "克制",
+    "status": "pending"
+  },
+  {
+    "id": "CS-007",
+    "theme": "处世智慧",
+    "text": "人无远虑，必有近忧。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "远见",
+    "status": "pending"
+  },
+  {
+    "id": "CS-008",
+    "theme": "处世智慧",
+    "text": "众恶之，必察焉；众好之，必察焉。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "清醒",
+    "status": "pending"
+  },
+  {
+    "id": "CS-009",
+    "theme": "处世智慧",
+    "text": "道不同，不相为谋。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "分明",
+    "status": "pending"
+  },
+  {
+    "id": "CS-010",
+    "theme": "处世智慧",
+    "text": "工欲善其事，必先利其器。",
+    "source": "《论语》",
+    "locator": "论语·卫灵公",
+    "tone": "务实",
+    "status": "pending"
+  },
+  {
+    "id": "CS-011",
+    "theme": "处世智慧",
+    "text": "无欲速，无见小利。",
+    "source": "《论语》",
+    "locator": "论语·子路",
+    "tone": "持重",
+    "status": "pending"
+  },
+  {
+    "id": "CS-012",
+    "theme": "处世智慧",
+    "text": "君子耻其言而过其行。",
+    "source": "《论语》",
+    "locator": "论语·宪问",
+    "tone": "笃行",
+    "status": "pending"
+  },
+  {
+    "id": "CS-013",
+    "theme": "处世智慧",
+    "text": "不患寡而患不均，不患贫而患不安。",
+    "source": "《论语》",
+    "locator": "论语·季氏",
+    "tone": "公心",
+    "status": "pending"
+  },
+  {
+    "id": "CS-014",
+    "theme": "处世智慧",
+    "text": "既来之，则安之。",
+    "source": "《论语》",
+    "locator": "论语·季氏",
+    "tone": "从容",
+    "status": "pending"
+  },
+  {
+    "id": "CS-015",
+    "theme": "处世智慧",
+    "text": "四海之内，皆兄弟也。",
+    "source": "《论语》",
+    "locator": "论语·颜渊",
+    "tone": "宽厚",
+    "status": "pending"
+  },
+  {
+    "id": "CS-016",
+    "theme": "处世智慧",
+    "text": "忠告而善道之，不可则止，毋自辱焉。",
+    "source": "《论语》",
+    "locator": "论语·颜渊",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "CS-017",
+    "theme": "处世智慧",
+    "text": "君子之交淡若水，小人之交甘若醴。",
+    "source": "《庄子》",
+    "locator": "庄子·山木",
+    "tone": "清淡",
+    "status": "pending"
+  },
+  {
+    "id": "CS-018",
+    "theme": "处世智慧",
+    "text": "吾生也有涯，而知也无涯。",
+    "source": "《庄子》",
+    "locator": "庄子·养生主",
+    "tone": "清醒",
+    "status": "pending"
+  },
+  {
+    "id": "CS-019",
+    "theme": "处世智慧",
+    "text": "井蛙不可以语于海者，拘于虚也。",
+    "source": "《庄子》",
+    "locator": "庄子·秋水",
+    "tone": "开阔",
+    "status": "pending"
+  },
+  {
+    "id": "CS-020",
+    "theme": "处世智慧",
+    "text": "夏虫不可以语于冰者，笃于时也。",
+    "source": "《庄子》",
+    "locator": "庄子·秋水",
+    "tone": "开阔",
+    "status": "pending"
+  },
+  {
+    "id": "CS-021",
+    "theme": "处世智慧",
+    "text": "相濡以沫，不如相忘于江湖。",
+    "source": "《庄子》",
+    "locator": "庄子·大宗师",
+    "tone": "旷达",
+    "status": "pending"
+  },
+  {
+    "id": "CS-022",
+    "theme": "处世智慧",
+    "text": "君子藏器于身，待时而动。",
+    "source": "《周易》",
+    "locator": "周易·系辞下",
+    "tone": "蓄势",
+    "status": "pending"
+  },
+  {
+    "id": "CS-023",
+    "theme": "处世智慧",
+    "text": "二人同心，其利断金。",
+    "source": "《周易》",
+    "locator": "周易·系辞上",
+    "tone": "同心",
+    "status": "pending"
+  },
+  {
+    "id": "CS-024",
+    "theme": "处世智慧",
+    "text": "穷则变，变则通，通则久。",
+    "source": "《周易》",
+    "locator": "周易·系辞下",
+    "tone": "变通",
+    "status": "pending"
+  },
+  {
+    "id": "CS-025",
+    "theme": "处世智慧",
+    "text": "满招损，谦受益。",
+    "source": "《尚书》",
+    "locator": "尚书·大禹谟",
+    "tone": "谦逊",
+    "status": "pending"
+  },
+  {
+    "id": "CS-026",
+    "theme": "处世智慧",
+    "text": "多行不义，必自毙。",
+    "source": "《左传》",
+    "locator": "左传·隐公元年",
+    "tone": "警世",
+    "status": "pending"
+  },
+  {
+    "id": "CS-027",
+    "theme": "处世智慧",
+    "text": "居安思危，思则有备，有备无患。",
+    "source": "《左传》",
+    "locator": "左传·襄公十一年",
+    "tone": "远见",
+    "status": "pending"
+  },
+  {
+    "id": "CS-028",
+    "theme": "处世智慧",
+    "text": "人谁无过？过而能改，善莫大焉。",
+    "source": "《左传》",
+    "locator": "左传·宣公二年",
+    "tone": "宽厚",
+    "status": "pending"
+  },
+  {
+    "id": "CS-029",
+    "theme": "处世智慧",
+    "text": "防民之口，甚于防川。",
+    "source": "《国语》",
+    "locator": "国语·周语上",
+    "tone": "警世",
+    "status": "pending"
+  },
+  {
+    "id": "CS-030",
+    "theme": "处世智慧",
+    "text": "从善如登，从恶如崩。",
+    "source": "《国语》",
+    "locator": "国语·周语下",
+    "tone": "警醒",
+    "status": "pending"
+  },
+  {
+    "id": "CS-031",
+    "theme": "处世智慧",
+    "text": "前事不忘，后事之师。",
+    "source": "《战国策》",
+    "locator": "战国策·赵策一",
+    "tone": "明鉴",
+    "status": "pending"
+  },
+  {
+    "id": "CS-032",
+    "theme": "处世智慧",
+    "text": "亡羊而补牢，未为迟也。",
+    "source": "《战国策》",
+    "locator": "战国策·楚策四",
+    "tone": "补救",
+    "status": "pending"
+  },
+  {
+    "id": "CS-033",
+    "theme": "处世智慧",
+    "text": "鹬蚌相争，渔翁得利。",
+    "source": "《战国策》",
+    "locator": "战国策·燕策二",
+    "tone": "警世",
+    "status": "pending"
+  },
+  {
+    "id": "CS-034",
+    "theme": "处世智慧",
+    "text": "桃李不言，下自成蹊。",
+    "source": "《史记》",
+    "locator": "史记·李将军列传",
+    "tone": "厚德",
+    "status": "pending"
+  },
+  {
+    "id": "CS-035",
+    "theme": "处世智慧",
+    "text": "智者千虑，必有一失；愚者千虑，必有一得。",
+    "source": "《史记》",
+    "locator": "史记·淮阴侯列传",
+    "tone": "谦逊",
+    "status": "pending"
+  },
+  {
+    "id": "CS-036",
+    "theme": "处世智慧",
+    "text": "忠言逆耳利于行，毒药苦口利于病。",
+    "source": "《史记》",
+    "locator": "史记·留侯世家",
+    "tone": "恳切",
+    "status": "pending"
+  },
+  {
+    "id": "CS-037",
+    "theme": "处世智慧",
+    "text": "仓廪实而知礼节，衣食足而知荣辱。",
+    "source": "《管子》",
+    "locator": "管子·牧民",
+    "tone": "务实",
+    "status": "pending"
+  },
+  {
+    "id": "CS-038",
+    "theme": "处世智慧",
+    "text": "十年树木，百年树人。",
+    "source": "《管子》",
+    "locator": "管子·权修",
+    "tone": "长远",
+    "status": "pending"
+  },
+  {
+    "id": "CS-039",
+    "theme": "处世智慧",
+    "text": "路遥知马力，日久见人心。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "明察",
+    "status": "pending"
+  },
+  {
+    "id": "CS-040",
+    "theme": "处世智慧",
+    "text": "画虎画皮难画骨，知人知面不知心。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "警世",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-001",
+    "theme": "心境审美",
+    "text": "采菊东篱下，悠然见南山。",
+    "source": "陶渊明",
+    "locator": "饮酒·其五",
+    "tone": "悠然",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-002",
+    "theme": "心境审美",
+    "text": "结庐在人境，而无车马喧。",
+    "source": "陶渊明",
+    "locator": "饮酒·其五",
+    "tone": "清静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-003",
+    "theme": "心境审美",
+    "text": "此中有真意，欲辨已忘言。",
+    "source": "陶渊明",
+    "locator": "饮酒·其五",
+    "tone": "澄明",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-004",
+    "theme": "心境审美",
+    "text": "暧暧远人村，依依墟里烟。",
+    "source": "陶渊明",
+    "locator": "归园田居·其一",
+    "tone": "温暖",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-005",
+    "theme": "心境审美",
+    "text": "久在樊笼里，复得返自然。",
+    "source": "陶渊明",
+    "locator": "归园田居·其一",
+    "tone": "舒展",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-006",
+    "theme": "心境审美",
+    "text": "明月松间照，清泉石上流。",
+    "source": "王维",
+    "locator": "山居秋暝",
+    "tone": "空灵",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-007",
+    "theme": "心境审美",
+    "text": "行到水穷处，坐看云起时。",
+    "source": "王维",
+    "locator": "终南别业",
+    "tone": "自在",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-008",
+    "theme": "心境审美",
+    "text": "空山不见人，但闻人语响。",
+    "source": "王维",
+    "locator": "鹿柴",
+    "tone": "幽静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-009",
+    "theme": "心境审美",
+    "text": "江流天地外，山色有无中。",
+    "source": "王维",
+    "locator": "汉江临泛",
+    "tone": "辽阔",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-010",
+    "theme": "心境审美",
+    "text": "大漠孤烟直，长河落日圆。",
+    "source": "王维",
+    "locator": "使至塞上",
+    "tone": "苍茫",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-011",
+    "theme": "心境审美",
+    "text": "掬水月在手，弄花香满衣。",
+    "source": "于良史",
+    "locator": "春山夜月",
+    "tone": "清雅",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-012",
+    "theme": "心境审美",
+    "text": "曲径通幽处，禅房花木深。",
+    "source": "常建",
+    "locator": "题破山寺后禅院",
+    "tone": "幽深",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-013",
+    "theme": "心境审美",
+    "text": "山光悦鸟性，潭影空人心。",
+    "source": "常建",
+    "locator": "题破山寺后禅院",
+    "tone": "澄澈",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-014",
+    "theme": "心境审美",
+    "text": "孤舟蓑笠翁，独钓寒江雪。",
+    "source": "柳宗元",
+    "locator": "江雪",
+    "tone": "孤清",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-015",
+    "theme": "心境审美",
+    "text": "千山鸟飞绝，万径人踪灭。",
+    "source": "柳宗元",
+    "locator": "江雪",
+    "tone": "寂静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-016",
+    "theme": "心境审美",
+    "text": "野旷天低树，江清月近人。",
+    "source": "孟浩然",
+    "locator": "宿建德江",
+    "tone": "清旷",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-017",
+    "theme": "心境审美",
+    "text": "绿树村边合，青山郭外斜。",
+    "source": "孟浩然",
+    "locator": "过故人庄",
+    "tone": "恬淡",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-018",
+    "theme": "心境审美",
+    "text": "春眠不觉晓，处处闻啼鸟。",
+    "source": "孟浩然",
+    "locator": "春晓",
+    "tone": "轻快",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-019",
+    "theme": "心境审美",
+    "text": "无可奈何花落去，似曾相识燕归来。",
+    "source": "晏殊",
+    "locator": "浣溪沙·一曲新词酒一杯",
+    "tone": "怅惘",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-020",
+    "theme": "心境审美",
+    "text": "昨夜西风凋碧树，独上高楼，望尽天涯路。",
+    "source": "晏殊",
+    "locator": "蝶恋花·槛菊愁烟兰泣露",
+    "tone": "辽阔",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-021",
+    "theme": "心境审美",
+    "text": "今宵酒醒何处？杨柳岸，晓风残月。",
+    "source": "柳永",
+    "locator": "雨霖铃·寒蝉凄切",
+    "tone": "清冷",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-022",
+    "theme": "心境审美",
+    "text": "但愿人长久，千里共婵娟。",
+    "source": "苏轼",
+    "locator": "水调歌头·明月几时有",
+    "tone": "温润",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-023",
+    "theme": "心境审美",
+    "text": "人有悲欢离合，月有阴晴圆缺。",
+    "source": "苏轼",
+    "locator": "水调歌头·明月几时有",
+    "tone": "旷达",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-024",
+    "theme": "心境审美",
+    "text": "竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。",
+    "source": "苏轼",
+    "locator": "定风波·莫听穿林打叶声",
+    "tone": "旷达",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-025",
+    "theme": "心境审美",
+    "text": "回首向来萧瑟处，归去，也无风雨也无晴。",
+    "source": "苏轼",
+    "locator": "定风波·莫听穿林打叶声",
+    "tone": "澄明",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-026",
+    "theme": "心境审美",
+    "text": "不识庐山真面目，只缘身在此山中。",
+    "source": "苏轼",
+    "locator": "题西林壁",
+    "tone": "清醒",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-027",
+    "theme": "心境审美",
+    "text": "欲把西湖比西子，淡妆浓抹总相宜。",
+    "source": "苏轼",
+    "locator": "饮湖上初晴后雨·其二",
+    "tone": "明丽",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-028",
+    "theme": "心境审美",
+    "text": "小舟从此逝，江海寄余生。",
+    "source": "苏轼",
+    "locator": "临江仙·夜饮东坡醒复醉",
+    "tone": "洒脱",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-029",
+    "theme": "心境审美",
+    "text": "山高月小，水落石出。",
+    "source": "苏轼",
+    "locator": "后赤壁赋",
+    "tone": "清朗",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-030",
+    "theme": "心境审美",
+    "text": "白露横江，水光接天。",
+    "source": "苏轼",
+    "locator": "赤壁赋",
+    "tone": "浩渺",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-031",
+    "theme": "心境审美",
+    "text": "寄蜉蝣于天地，渺沧海之一粟。",
+    "source": "苏轼",
+    "locator": "赤壁赋",
+    "tone": "旷远",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-032",
+    "theme": "心境审美",
+    "text": "惟江上之清风，与山间之明月。",
+    "source": "苏轼",
+    "locator": "赤壁赋",
+    "tone": "清逸",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-033",
+    "theme": "心境审美",
+    "text": "落霞与孤鹜齐飞，秋水共长天一色。",
+    "source": "王勃",
+    "locator": "滕王阁序",
+    "tone": "绚烂",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-034",
+    "theme": "心境审美",
+    "text": "海内存知己，天涯若比邻。",
+    "source": "王勃",
+    "locator": "送杜少府之任蜀州",
+    "tone": "温暖",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-035",
+    "theme": "心境审美",
+    "text": "海上生明月，天涯共此时。",
+    "source": "张九龄",
+    "locator": "望月怀远",
+    "tone": "辽阔",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-036",
+    "theme": "心境审美",
+    "text": "春江潮水连海平，海上明月共潮生。",
+    "source": "张若虚",
+    "locator": "春江花月夜",
+    "tone": "浩荡",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-037",
+    "theme": "心境审美",
+    "text": "人生代代无穷已，江月年年望相似。",
+    "source": "张若虚",
+    "locator": "春江花月夜",
+    "tone": "悠远",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-038",
+    "theme": "心境审美",
+    "text": "停车坐爱枫林晚，霜叶红于二月花。",
+    "source": "杜牧",
+    "locator": "山行",
+    "tone": "明艳",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-039",
+    "theme": "心境审美",
+    "text": "天阶夜色凉如水，卧看牵牛织女星。",
+    "source": "杜牧",
+    "locator": "秋夕",
+    "tone": "清寂",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-040",
+    "theme": "心境审美",
+    "text": "春水碧于天，画船听雨眠。",
+    "source": "韦庄",
+    "locator": "菩萨蛮·人人尽说江南好",
+    "tone": "闲适",
+    "status": "pending"
+  },
+  {
+    "id": "DX-001",
+    "theme": "读书学习",
+    "text": "学而时习之，不亦说乎。",
+    "source": "《论语》",
+    "locator": "论语·学而",
+    "tone": "欣然",
+    "status": "pending"
+  },
+  {
+    "id": "DX-002",
+    "theme": "读书学习",
+    "text": "温故而知新，可以为师矣。",
+    "source": "《论语》",
+    "locator": "论语·为政",
+    "tone": "温习",
+    "status": "pending"
+  },
+  {
+    "id": "DX-003",
+    "theme": "读书学习",
+    "text": "学而不思则罔，思而不学则殆。",
+    "source": "《论语》",
+    "locator": "论语·为政",
+    "tone": "警醒",
+    "status": "pending"
+  },
+  {
+    "id": "DX-004",
+    "theme": "读书学习",
+    "text": "敏而好学，不耻下问。",
+    "source": "《论语》",
+    "locator": "论语·公冶长",
+    "tone": "谦逊",
+    "status": "pending"
+  },
+  {
+    "id": "DX-005",
+    "theme": "读书学习",
+    "text": "知之者不如好之者，好之者不如乐之者。",
+    "source": "《论语》",
+    "locator": "论语·雍也",
+    "tone": "乐学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-006",
+    "theme": "读书学习",
+    "text": "默而识之，学而不厌，诲人不倦。",
+    "source": "《论语》",
+    "locator": "论语·述而",
+    "tone": "笃学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-007",
+    "theme": "读书学习",
+    "text": "发愤忘食，乐以忘忧。",
+    "source": "《论语》",
+    "locator": "论语·述而",
+    "tone": "专注",
+    "status": "pending"
+  },
+  {
+    "id": "DX-008",
+    "theme": "读书学习",
+    "text": "不愤不启，不悱不发。",
+    "source": "《论语》",
+    "locator": "论语·述而",
+    "tone": "启发",
+    "status": "pending"
+  },
+  {
+    "id": "DX-009",
+    "theme": "读书学习",
+    "text": "学如不及，犹恐失之。",
+    "source": "《论语》",
+    "locator": "论语·泰伯",
+    "tone": "勤勉",
+    "status": "pending"
+  },
+  {
+    "id": "DX-010",
+    "theme": "读书学习",
+    "text": "笃信好学，守死善道。",
+    "source": "《论语》",
+    "locator": "论语·泰伯",
+    "tone": "坚定",
+    "status": "pending"
+  },
+  {
+    "id": "DX-011",
+    "theme": "读书学习",
+    "text": "逝者如斯夫，不舍昼夜。",
+    "source": "《论语》",
+    "locator": "论语·子罕",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "DX-012",
+    "theme": "读书学习",
+    "text": "日知其所亡，月无忘其所能。",
+    "source": "《论语》",
+    "locator": "论语·子张",
+    "tone": "日积",
+    "status": "pending"
+  },
+  {
+    "id": "DX-013",
+    "theme": "读书学习",
+    "text": "博学而笃志，切问而近思。",
+    "source": "《论语》",
+    "locator": "论语·子张",
+    "tone": "笃实",
+    "status": "pending"
+  },
+  {
+    "id": "DX-014",
+    "theme": "读书学习",
+    "text": "仕而优则学，学而优则仕。",
+    "source": "《论语》",
+    "locator": "论语·子张",
+    "tone": "通达",
+    "status": "pending"
+  },
+  {
+    "id": "DX-015",
+    "theme": "读书学习",
+    "text": "青，取之于蓝，而青于蓝。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "进取",
+    "status": "pending"
+  },
+  {
+    "id": "DX-016",
+    "theme": "读书学习",
+    "text": "不积跬步，无以至千里。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "积累",
+    "status": "pending"
+  },
+  {
+    "id": "DX-017",
+    "theme": "读书学习",
+    "text": "不积小流，无以成江海。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "积累",
+    "status": "pending"
+  },
+  {
+    "id": "DX-018",
+    "theme": "读书学习",
+    "text": "锲而舍之，朽木不折；锲而不舍，金石可镂。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "坚持",
+    "status": "pending"
+  },
+  {
+    "id": "DX-019",
+    "theme": "读书学习",
+    "text": "吾尝终日而思矣，不如须臾之所学也。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "务实",
+    "status": "pending"
+  },
+  {
+    "id": "DX-020",
+    "theme": "读书学习",
+    "text": "君子博学而日参省乎己。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "DX-021",
+    "theme": "读书学习",
+    "text": "玉不琢，不成器；人不学，不知道。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-022",
+    "theme": "读书学习",
+    "text": "学然后知不足，教然后知困。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "DX-023",
+    "theme": "读书学习",
+    "text": "独学而无友，则孤陋而寡闻。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "切磋",
+    "status": "pending"
+  },
+  {
+    "id": "DX-024",
+    "theme": "读书学习",
+    "text": "善学者，师逸而功倍。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "得法",
+    "status": "pending"
+  },
+  {
+    "id": "DX-025",
+    "theme": "读书学习",
+    "text": "读书百遍，而义自见。",
+    "source": "《三国志》",
+    "locator": "魏书·董遇传·裴注引《魏略》",
+    "tone": "精读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-026",
+    "theme": "读书学习",
+    "text": "读书破万卷，下笔如有神。",
+    "source": "杜甫",
+    "locator": "奉赠韦左丞丈二十二韵",
+    "tone": "厚积",
+    "status": "pending"
+  },
+  {
+    "id": "DX-027",
+    "theme": "读书学习",
+    "text": "腹有诗书气自华。",
+    "source": "苏轼",
+    "locator": "和董传留别",
+    "tone": "儒雅",
+    "status": "pending"
+  },
+  {
+    "id": "DX-028",
+    "theme": "读书学习",
+    "text": "旧书不厌百回读，熟读深思子自知。",
+    "source": "苏轼",
+    "locator": "送安惇秀才失解西归",
+    "tone": "精思",
+    "status": "pending"
+  },
+  {
+    "id": "DX-029",
+    "theme": "读书学习",
+    "text": "纸上得来终觉浅，绝知此事要躬行。",
+    "source": "陆游",
+    "locator": "冬夜读书示子聿",
+    "tone": "躬行",
+    "status": "pending"
+  },
+  {
+    "id": "DX-030",
+    "theme": "读书学习",
+    "text": "古人学问无遗力，少壮工夫老始成。",
+    "source": "陆游",
+    "locator": "冬夜读书示子聿",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "DX-031",
+    "theme": "读书学习",
+    "text": "问渠那得清如许？为有源头活水来。",
+    "source": "朱熹",
+    "locator": "观书有感·其一",
+    "tone": "澄明",
+    "status": "pending"
+  },
+  {
+    "id": "DX-032",
+    "theme": "读书学习",
+    "text": "半亩方塘一鉴开，天光云影共徘徊。",
+    "source": "朱熹",
+    "locator": "观书有感·其一",
+    "tone": "清朗",
+    "status": "pending"
+  },
+  {
+    "id": "DX-033",
+    "theme": "读书学习",
+    "text": "循序而渐进，熟读而精思。",
+    "source": "朱熹",
+    "locator": "读书之要",
+    "tone": "得法",
+    "status": "pending"
+  },
+  {
+    "id": "DX-034",
+    "theme": "读书学习",
+    "text": "业精于勤，荒于嬉；行成于思，毁于随。",
+    "source": "韩愈",
+    "locator": "进学解",
+    "tone": "勤勉",
+    "status": "pending"
+  },
+  {
+    "id": "DX-035",
+    "theme": "读书学习",
+    "text": "人之能为人，由腹有诗书。",
+    "source": "韩愈",
+    "locator": "符读书城南",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-036",
+    "theme": "读书学习",
+    "text": "非学无以广才，非志无以成学。",
+    "source": "诸葛亮",
+    "locator": "诫子书",
+    "tone": "立志",
+    "status": "pending"
+  },
+  {
+    "id": "DX-037",
+    "theme": "读书学习",
+    "text": "夫学须静也，才须学也。",
+    "source": "诸葛亮",
+    "locator": "诫子书",
+    "tone": "清静",
+    "status": "pending"
+  },
+  {
+    "id": "DX-038",
+    "theme": "读书学习",
+    "text": "幼而学者，如日出之光；老而学者，如秉烛夜行。",
+    "source": "《颜氏家训》",
+    "locator": "颜氏家训·勉学",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-039",
+    "theme": "读书学习",
+    "text": "积财千万，不如薄伎在身。",
+    "source": "《颜氏家训》",
+    "locator": "颜氏家训·勉学",
+    "tone": "务实",
+    "status": "pending"
+  },
+  {
+    "id": "DX-040",
+    "theme": "读书学习",
+    "text": "读书有三到：谓心到、眼到、口到。",
+    "source": "朱熹",
+    "locator": "训学斋规",
+    "tone": "专注",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-001",
+    "theme": "励志进取",
+    "text": "天行健，君子以自强不息。",
+    "source": "《周易》",
+    "locator": "周易·乾卦",
+    "tone": "刚健",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-002",
+    "theme": "励志进取",
+    "text": "地势坤，君子以厚德载物。",
+    "source": "《周易》",
+    "locator": "周易·坤卦",
+    "tone": "厚德",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-003",
+    "theme": "励志进取",
+    "text": "天将降大任于是人也，必先苦其心志。",
+    "source": "《孟子》",
+    "locator": "孟子·告子下",
+    "tone": "磨砺",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-004",
+    "theme": "励志进取",
+    "text": "生于忧患，死于安乐。",
+    "source": "《孟子》",
+    "locator": "孟子·告子下",
+    "tone": "警醒",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-005",
+    "theme": "励志进取",
+    "text": "自反而缩，虽千万人，吾往矣。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑上",
+    "tone": "勇毅",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-006",
+    "theme": "励志进取",
+    "text": "尽信书，则不如无书。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "独立",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-007",
+    "theme": "励志进取",
+    "text": "大人者，不失其赤子之心者也。",
+    "source": "《孟子》",
+    "locator": "孟子·离娄下",
+    "tone": "赤诚",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-008",
+    "theme": "励志进取",
+    "text": "老骥伏枥，志在千里。",
+    "source": "曹操",
+    "locator": "龟虽寿",
+    "tone": "壮心",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-009",
+    "theme": "励志进取",
+    "text": "烈士暮年，壮心不已。",
+    "source": "曹操",
+    "locator": "龟虽寿",
+    "tone": "壮心",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-010",
+    "theme": "励志进取",
+    "text": "山不厌高，海不厌深。",
+    "source": "曹操",
+    "locator": "短歌行",
+    "tone": "胸襟",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-011",
+    "theme": "励志进取",
+    "text": "周公吐哺，天下归心。",
+    "source": "曹操",
+    "locator": "短歌行",
+    "tone": "求贤",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-012",
+    "theme": "励志进取",
+    "text": "长风破浪会有时，直挂云帆济沧海。",
+    "source": "李白",
+    "locator": "行路难·其一",
+    "tone": "豪迈",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-013",
+    "theme": "励志进取",
+    "text": "天生我材必有用，千金散尽还复来。",
+    "source": "李白",
+    "locator": "将进酒",
+    "tone": "自信",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-014",
+    "theme": "励志进取",
+    "text": "仰天大笑出门去，我辈岂是蓬蒿人。",
+    "source": "李白",
+    "locator": "南陵别儿童入京",
+    "tone": "昂扬",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-015",
+    "theme": "励志进取",
+    "text": "欲穷千里目，更上一层楼。",
+    "source": "王之涣",
+    "locator": "登鹳雀楼",
+    "tone": "登攀",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-016",
+    "theme": "励志进取",
+    "text": "会当凌绝顶，一览众山小。",
+    "source": "杜甫",
+    "locator": "望岳",
+    "tone": "雄阔",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-017",
+    "theme": "励志进取",
+    "text": "尔曹身与名俱灭，不废江河万古流。",
+    "source": "杜甫",
+    "locator": "戏为六绝句·其二",
+    "tone": "笃定",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-018",
+    "theme": "励志进取",
+    "text": "千淘万漉虽辛苦，吹尽狂沙始到金。",
+    "source": "刘禹锡",
+    "locator": "浪淘沙·其八",
+    "tone": "坚韧",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-019",
+    "theme": "励志进取",
+    "text": "沉舟侧畔千帆过，病树前头万木春。",
+    "source": "刘禹锡",
+    "locator": "酬乐天扬州初逢席上见赠",
+    "tone": "新生",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-020",
+    "theme": "励志进取",
+    "text": "莫道桑榆晚，为霞尚满天。",
+    "source": "刘禹锡",
+    "locator": "酬乐天咏老见示",
+    "tone": "不老",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-021",
+    "theme": "励志进取",
+    "text": "野火烧不尽，春风吹又生。",
+    "source": "白居易",
+    "locator": "赋得古原草送别",
+    "tone": "顽强",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-022",
+    "theme": "励志进取",
+    "text": "不畏浮云遮望眼，自缘身在最高层。",
+    "source": "王安石",
+    "locator": "登飞来峰",
+    "tone": "高远",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-023",
+    "theme": "励志进取",
+    "text": "墙角数枝梅，凌寒独自开。",
+    "source": "王安石",
+    "locator": "梅花",
+    "tone": "清坚",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-024",
+    "theme": "励志进取",
+    "text": "遥知不是雪，为有暗香来。",
+    "source": "王安石",
+    "locator": "梅花",
+    "tone": "清芬",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-025",
+    "theme": "励志进取",
+    "text": "咬定青山不放松，立根原在破岩中。",
+    "source": "郑燮",
+    "locator": "竹石",
+    "tone": "坚定",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-026",
+    "theme": "励志进取",
+    "text": "千磨万击还坚劲，任尔东西南北风。",
+    "source": "郑燮",
+    "locator": "竹石",
+    "tone": "坚韧",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-027",
+    "theme": "励志进取",
+    "text": "粉骨碎身浑不怕，要留清白在人间。",
+    "source": "于谦",
+    "locator": "石灰吟",
+    "tone": "清白",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-028",
+    "theme": "励志进取",
+    "text": "不要人夸好颜色，只留清气满乾坤。",
+    "source": "王冕",
+    "locator": "墨梅",
+    "tone": "清高",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-029",
+    "theme": "励志进取",
+    "text": "我自横刀向天笑，去留肝胆两昆仑。",
+    "source": "谭嗣同",
+    "locator": "狱中题壁",
+    "tone": "慷慨",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-030",
+    "theme": "励志进取",
+    "text": "男儿何不带吴钩，收取关山五十州。",
+    "source": "李贺",
+    "locator": "南园十三首·其五",
+    "tone": "豪情",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-031",
+    "theme": "励志进取",
+    "text": "莫等闲，白了少年头，空悲切。",
+    "source": "岳飞",
+    "locator": "满江红·写怀",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-032",
+    "theme": "励志进取",
+    "text": "三十功名尘与土，八千里路云和月。",
+    "source": "岳飞",
+    "locator": "满江红·写怀",
+    "tone": "壮怀",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-033",
+    "theme": "励志进取",
+    "text": "努力尽今夕，少年犹可夸。",
+    "source": "苏轼",
+    "locator": "守岁",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-034",
+    "theme": "励志进取",
+    "text": "博观而约取，厚积而薄发。",
+    "source": "苏轼",
+    "locator": "稼说送张琥",
+    "tone": "积累",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-035",
+    "theme": "励志进取",
+    "text": "古之立大事者，不惟有超世之才，亦必有坚忍不拔之志。",
+    "source": "苏轼",
+    "locator": "晁错论",
+    "tone": "坚忍",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-036",
+    "theme": "励志进取",
+    "text": "绳锯木断，水滴石穿。",
+    "source": "《鹤林玉露》",
+    "locator": "鹤林玉露",
+    "tone": "恒心",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-037",
+    "theme": "励志进取",
+    "text": "宝剑锋从磨砺出，梅花香自苦寒来。",
+    "source": "《警世贤文》",
+    "locator": "警世贤文",
+    "tone": "磨砺",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-038",
+    "theme": "励志进取",
+    "text": "千锤万凿出深山，烈火焚烧若等闲。",
+    "source": "于谦",
+    "locator": "石灰吟",
+    "tone": "无畏",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-039",
+    "theme": "励志进取",
+    "text": "路漫漫其修远兮，吾将上下而求索。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "求索",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-040",
+    "theme": "励志进取",
+    "text": "亦余心之所善兮，虽九死其犹未悔。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "执着",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-001",
+    "theme": "家国天下",
+    "text": "先天下之忧而忧，后天下之乐而乐。",
+    "source": "范仲淹",
+    "locator": "岳阳楼记",
+    "tone": "忧乐",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-002",
+    "theme": "家国天下",
+    "text": "不以物喜，不以己悲。",
+    "source": "范仲淹",
+    "locator": "岳阳楼记",
+    "tone": "旷达",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-003",
+    "theme": "家国天下",
+    "text": "居庙堂之高则忧其民，处江湖之远则忧其君。",
+    "source": "范仲淹",
+    "locator": "岳阳楼记",
+    "tone": "忧国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-004",
+    "theme": "家国天下",
+    "text": "位卑未敢忘忧国。",
+    "source": "陆游",
+    "locator": "病起书怀",
+    "tone": "忧国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-005",
+    "theme": "家国天下",
+    "text": "王师北定中原日，家祭无忘告乃翁。",
+    "source": "陆游",
+    "locator": "示儿",
+    "tone": "赤诚",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-006",
+    "theme": "家国天下",
+    "text": "僵卧孤村不自哀，尚思为国戍轮台。",
+    "source": "陆游",
+    "locator": "十一月四日风雨大作·其二",
+    "tone": "报国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-007",
+    "theme": "家国天下",
+    "text": "夜阑卧听风吹雨，铁马冰河入梦来。",
+    "source": "陆游",
+    "locator": "十一月四日风雨大作·其二",
+    "tone": "壮怀",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-008",
+    "theme": "家国天下",
+    "text": "人生自古谁无死？留取丹心照汗青。",
+    "source": "文天祥",
+    "locator": "过零丁洋",
+    "tone": "丹心",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-009",
+    "theme": "家国天下",
+    "text": "臣心一片磁针石，不指南方不肯休。",
+    "source": "文天祥",
+    "locator": "扬子江",
+    "tone": "忠贞",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-010",
+    "theme": "家国天下",
+    "text": "天地有正气，杂然赋流形。",
+    "source": "文天祥",
+    "locator": "正气歌",
+    "tone": "浩然",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-011",
+    "theme": "家国天下",
+    "text": "苟利国家生死以，岂因祸福避趋之。",
+    "source": "林则徐",
+    "locator": "赴戍登程口占示家人·其二",
+    "tone": "担当",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-012",
+    "theme": "家国天下",
+    "text": "天下兴亡，匹夫有责。",
+    "source": "顾炎武",
+    "locator": "日知录·正始",
+    "tone": "担当",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-013",
+    "theme": "家国天下",
+    "text": "风声雨声读书声，声声入耳；家事国事天下事，事事关心。",
+    "source": "顾宪成",
+    "locator": "东林书院对联",
+    "tone": "关切",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-014",
+    "theme": "家国天下",
+    "text": "捐躯赴国难，视死忽如归。",
+    "source": "曹植",
+    "locator": "白马篇",
+    "tone": "慷慨",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-015",
+    "theme": "家国天下",
+    "text": "闲居非吾志，甘心赴国忧。",
+    "source": "曹植",
+    "locator": "杂诗·其五",
+    "tone": "报国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-016",
+    "theme": "家国天下",
+    "text": "鞠躬尽瘁，死而后已。",
+    "source": "诸葛亮",
+    "locator": "后出师表",
+    "tone": "尽忠",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-017",
+    "theme": "家国天下",
+    "text": "受任于败军之际，奉命于危难之间。",
+    "source": "诸葛亮",
+    "locator": "出师表",
+    "tone": "担当",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-018",
+    "theme": "家国天下",
+    "text": "亲贤臣，远小人，此先汉所以兴隆也。",
+    "source": "诸葛亮",
+    "locator": "出师表",
+    "tone": "明鉴",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-019",
+    "theme": "家国天下",
+    "text": "汉贼不两立，王业不偏安。",
+    "source": "诸葛亮",
+    "locator": "后出师表",
+    "tone": "坚定",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-020",
+    "theme": "家国天下",
+    "text": "人固有一死，或重于泰山，或轻于鸿毛。",
+    "source": "司马迁",
+    "locator": "报任安书",
+    "tone": "生死",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-021",
+    "theme": "家国天下",
+    "text": "常思奋不顾身，而殉国家之急。",
+    "source": "司马迁",
+    "locator": "报任安书",
+    "tone": "赴义",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-022",
+    "theme": "家国天下",
+    "text": "匈奴未灭，何以家为。",
+    "source": "《史记》",
+    "locator": "史记·卫将军骠骑列传",
+    "tone": "壮志",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-023",
+    "theme": "家国天下",
+    "text": "燕雀安知鸿鹄之志哉。",
+    "source": "《史记》",
+    "locator": "史记·陈涉世家",
+    "tone": "志向",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-024",
+    "theme": "家国天下",
+    "text": "王侯将相宁有种乎。",
+    "source": "《史记》",
+    "locator": "史记·陈涉世家",
+    "tone": "不屈",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-025",
+    "theme": "家国天下",
+    "text": "大风起兮云飞扬，威加海内兮归故乡。",
+    "source": "刘邦",
+    "locator": "大风歌",
+    "tone": "雄浑",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-026",
+    "theme": "家国天下",
+    "text": "明犯强汉者，虽远必诛。",
+    "source": "《汉书》",
+    "locator": "汉书·陈汤传",
+    "tone": "威毅",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-027",
+    "theme": "家国天下",
+    "text": "国虽大，好战必亡；天下虽安，忘战必危。",
+    "source": "《司马法》",
+    "locator": "司马法·仁本",
+    "tone": "警世",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-028",
+    "theme": "家国天下",
+    "text": "皮之不存，毛将焉附。",
+    "source": "《左传》",
+    "locator": "左传·僖公十四年",
+    "tone": "依存",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-029",
+    "theme": "家国天下",
+    "text": "辅车相依，唇亡齿寒。",
+    "source": "《左传》",
+    "locator": "左传·僖公五年",
+    "tone": "依存",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-030",
+    "theme": "家国天下",
+    "text": "民为贵，社稷次之，君为轻。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "民本",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-031",
+    "theme": "家国天下",
+    "text": "得道者多助，失道者寡助。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑下",
+    "tone": "道义",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-032",
+    "theme": "家国天下",
+    "text": "天时不如地利，地利不如人和。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑下",
+    "tone": "人和",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-033",
+    "theme": "家国天下",
+    "text": "域民不以封疆之界，固国不以山溪之险。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑下",
+    "tone": "仁政",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-034",
+    "theme": "家国天下",
+    "text": "乐以天下，忧以天下。",
+    "source": "《孟子》",
+    "locator": "孟子·梁惠王下",
+    "tone": "忧乐",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-035",
+    "theme": "家国天下",
+    "text": "老吾老，以及人之老；幼吾幼，以及人之幼。",
+    "source": "《孟子》",
+    "locator": "孟子·梁惠王上",
+    "tone": "仁爱",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-036",
+    "theme": "家国天下",
+    "text": "民为邦本，本固邦宁。",
+    "source": "《尚书》",
+    "locator": "尚书·五子之歌",
+    "tone": "民本",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-037",
+    "theme": "家国天下",
+    "text": "克勤于邦，克俭于家。",
+    "source": "《尚书》",
+    "locator": "尚书·大禹谟",
+    "tone": "勤俭",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-038",
+    "theme": "家国天下",
+    "text": "为天地立心，为生民立命。",
+    "source": "张载",
+    "locator": "横渠语录",
+    "tone": "宏愿",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-039",
+    "theme": "家国天下",
+    "text": "一寸山河一寸金。",
+    "source": "《金史》",
+    "locator": "金史·左企弓传",
+    "tone": "山河",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-040",
+    "theme": "家国天下",
+    "text": "寄意寒星荃不察，我以我血荐轩辕。",
+    "source": "鲁迅",
+    "locator": "自题小像",
+    "tone": "赤诚",
+    "status": "pending"
+  },
+  {
+    "id": "XS-041",
+    "theme": "修身自省",
+    "text": "人须在事上磨，方立得住。",
+    "source": "《传习录》",
+    "locator": "卷上·陆澄录",
+    "tone": "磨炼",
+    "status": "pending"
+  },
+  {
+    "id": "XS-042",
+    "theme": "修身自省",
+    "text": "种树者必培其根，种德者必养其心。",
+    "source": "《传习录》",
+    "locator": "卷上·薛侃录",
+    "tone": "养心",
+    "status": "pending"
+  },
+  {
+    "id": "XS-043",
+    "theme": "修身自省",
+    "text": "学须反己，若徒责人，只见人不是，不见自己非。",
+    "source": "《传习录》",
+    "locator": "卷下·黄以方录",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-044",
+    "theme": "修身自省",
+    "text": "不贵于无过，而贵于能改过。",
+    "source": "《传习录》",
+    "locator": "卷上·陆澄录",
+    "tone": "改过",
+    "status": "pending"
+  },
+  {
+    "id": "XS-045",
+    "theme": "修身自省",
+    "text": "悔悟是去病之药，然以改之为贵。",
+    "source": "《传习录》",
+    "locator": "卷上·陆澄录",
+    "tone": "改过",
+    "status": "pending"
+  },
+  {
+    "id": "XS-046",
+    "theme": "修身自省",
+    "text": "心即理也，天下又有心外之事、心外之理乎？",
+    "source": "《传习录》",
+    "locator": "卷上·徐爱录",
+    "tone": "本心",
+    "status": "pending"
+  },
+  {
+    "id": "XS-047",
+    "theme": "修身自省",
+    "text": "无善无恶心之体，有善有恶意之动。",
+    "source": "《传习录》",
+    "locator": "卷下·黄以方录",
+    "tone": "心性",
+    "status": "pending"
+  },
+  {
+    "id": "XS-048",
+    "theme": "修身自省",
+    "text": "知善知恶是良知，为善去恶是格物。",
+    "source": "《传习录》",
+    "locator": "卷下·黄以方录",
+    "tone": "良知",
+    "status": "pending"
+  },
+  {
+    "id": "XS-049",
+    "theme": "修身自省",
+    "text": "千圣皆过影，良知乃吾师。",
+    "source": "王阳明",
+    "locator": "长生",
+    "tone": "良知",
+    "status": "pending"
+  },
+  {
+    "id": "XS-050",
+    "theme": "修身自省",
+    "text": "未有知而不行者，知而不行，只是未知。",
+    "source": "《传习录》",
+    "locator": "卷上·徐爱录",
+    "tone": "知行",
+    "status": "pending"
+  },
+  {
+    "id": "XS-051",
+    "theme": "修身自省",
+    "text": "君子有诸己而后求诸人。",
+    "source": "《大学》",
+    "locator": "大学·絜矩章",
+    "tone": "反求",
+    "status": "pending"
+  },
+  {
+    "id": "XS-052",
+    "theme": "修身自省",
+    "text": "好人之所恶，恶人之所好，是谓拂人之性。",
+    "source": "《大学》",
+    "locator": "大学·絜矩章",
+    "tone": "警醒",
+    "status": "pending"
+  },
+  {
+    "id": "XS-053",
+    "theme": "修身自省",
+    "text": "忠恕违道不远，施诸己而不愿，亦勿施于人。",
+    "source": "《中庸》",
+    "locator": "第十三章",
+    "tone": "忠恕",
+    "status": "pending"
+  },
+  {
+    "id": "XS-054",
+    "theme": "修身自省",
+    "text": "君子素其位而行，不愿乎其外。",
+    "source": "《中庸》",
+    "locator": "第十四章",
+    "tone": "安分",
+    "status": "pending"
+  },
+  {
+    "id": "XS-055",
+    "theme": "修身自省",
+    "text": "射有似乎君子，失诸正鹄，反求诸其身。",
+    "source": "《中庸》",
+    "locator": "第十四章",
+    "tone": "反求",
+    "status": "pending"
+  },
+  {
+    "id": "XS-056",
+    "theme": "修身自省",
+    "text": "凡事豫则立，不豫则废。",
+    "source": "《中庸》",
+    "locator": "第二十章",
+    "tone": "预备",
+    "status": "pending"
+  },
+  {
+    "id": "XS-057",
+    "theme": "修身自省",
+    "text": "诚者，天之道也；诚之者，人之道也。",
+    "source": "《中庸》",
+    "locator": "第二十章",
+    "tone": "诚明",
+    "status": "pending"
+  },
+  {
+    "id": "XS-058",
+    "theme": "修身自省",
+    "text": "君子戒慎乎其所不睹，恐惧乎其所不闻。",
+    "source": "《中庸》",
+    "locator": "第一章",
+    "tone": "敬畏",
+    "status": "pending"
+  },
+  {
+    "id": "XS-059",
+    "theme": "修身自省",
+    "text": "吾未见能见其过而内自讼者也。",
+    "source": "《论语》",
+    "locator": "论语·公冶长",
+    "tone": "自省",
+    "status": "pending"
+  },
+  {
+    "id": "XS-060",
+    "theme": "修身自省",
+    "text": "修己以敬，修己以安人。",
+    "source": "《论语》",
+    "locator": "论语·宪问",
+    "tone": "修己",
+    "status": "pending"
+  },
+  {
+    "id": "XS-061",
+    "theme": "修身自省",
+    "text": "君子有三戒：少之时，血气未定，戒之在色。",
+    "source": "《论语》",
+    "locator": "论语·季氏",
+    "tone": "节制",
+    "status": "pending"
+  },
+  {
+    "id": "XS-062",
+    "theme": "修身自省",
+    "text": "持其志，无暴其气。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑上",
+    "tone": "持志",
+    "status": "pending"
+  },
+  {
+    "id": "XS-063",
+    "theme": "修身自省",
+    "text": "君子深造之以道，欲其自得之也。",
+    "source": "《孟子》",
+    "locator": "孟子·离娄下",
+    "tone": "自得",
+    "status": "pending"
+  },
+  {
+    "id": "XS-064",
+    "theme": "修身自省",
+    "text": "仁者如射，射者正己而后发。",
+    "source": "《孟子》",
+    "locator": "孟子·公孙丑上",
+    "tone": "正己",
+    "status": "pending"
+  },
+  {
+    "id": "XS-065",
+    "theme": "修身自省",
+    "text": "万物皆备于我矣，反身而诚，乐莫大焉。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心上",
+    "tone": "反身",
+    "status": "pending"
+  },
+  {
+    "id": "XS-066",
+    "theme": "修身自省",
+    "text": "人不可以无耻，无耻之耻，无耻矣。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心上",
+    "tone": "知耻",
+    "status": "pending"
+  },
+  {
+    "id": "XS-067",
+    "theme": "修身自省",
+    "text": "耻之于人大矣，为机变之巧者，无所用耻焉。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心上",
+    "tone": "知耻",
+    "status": "pending"
+  },
+  {
+    "id": "XS-068",
+    "theme": "修身自省",
+    "text": "君子之守，修其身而天下平。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "修身",
+    "status": "pending"
+  },
+  {
+    "id": "XS-069",
+    "theme": "修身自省",
+    "text": "身不行道，不行于妻子。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "躬行",
+    "status": "pending"
+  },
+  {
+    "id": "XS-070",
+    "theme": "修身自省",
+    "text": "言近而指远者，善言也。",
+    "source": "《孟子》",
+    "locator": "孟子·尽心下",
+    "tone": "修养",
+    "status": "pending"
+  },
+  {
+    "id": "XS-071",
+    "theme": "修身自省",
+    "text": "栖守道德者，寂寞一时；依阿权势者，凄凉万古。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "守德",
+    "status": "pending"
+  },
+  {
+    "id": "XS-072",
+    "theme": "修身自省",
+    "text": "德者才之主，才者德之奴。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "德才",
+    "status": "pending"
+  },
+  {
+    "id": "XS-073",
+    "theme": "修身自省",
+    "text": "心地干净，方可读书学古。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "心净",
+    "status": "pending"
+  },
+  {
+    "id": "XS-074",
+    "theme": "修身自省",
+    "text": "立身不高一步立，如尘里振衣、泥中濯足，如何超达？",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "立身",
+    "status": "pending"
+  },
+  {
+    "id": "XS-075",
+    "theme": "修身自省",
+    "text": "人犯一苟字，便不能振；人犯一俗字，便不可医。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "戒苟",
+    "status": "pending"
+  },
+  {
+    "id": "XS-076",
+    "theme": "修身自省",
+    "text": "有真性情，须有真涵养；有大识见，乃有大文章。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "涵养",
+    "status": "pending"
+  },
+  {
+    "id": "XS-077",
+    "theme": "修身自省",
+    "text": "律己宜带秋气，处世宜带春气。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "XS-078",
+    "theme": "修身自省",
+    "text": "少年人须有老成之识见，老成人须有少年之襟怀。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "胸襟",
+    "status": "pending"
+  },
+  {
+    "id": "XS-079",
+    "theme": "修身自省",
+    "text": "人品之不高，总为一利字看不破。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "戒利",
+    "status": "pending"
+  },
+  {
+    "id": "XS-080",
+    "theme": "修身自省",
+    "text": "知者不惑，仁者不忧，勇者不惧。",
+    "source": "《论语》",
+    "locator": "论语·子罕",
+    "tone": "通达",
+    "status": "pending"
+  },
+  {
+    "id": "CS-041",
+    "theme": "处世智慧",
+    "text": "径路窄处，留一步与人行；滋味浓的，减三分让人尝。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "让利",
+    "status": "pending"
+  },
+  {
+    "id": "CS-042",
+    "theme": "处世智慧",
+    "text": "处世让一步为高，退步即进步的张本。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "退让",
+    "status": "pending"
+  },
+  {
+    "id": "CS-043",
+    "theme": "处世智慧",
+    "text": "交友须带三分侠气，做人要存一点素心。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "交友",
+    "status": "pending"
+  },
+  {
+    "id": "CS-044",
+    "theme": "处世智慧",
+    "text": "不责人小过，不发人阴私，不念人旧恶。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "宽厚",
+    "status": "pending"
+  },
+  {
+    "id": "CS-045",
+    "theme": "处世智慧",
+    "text": "攻人之恶毋太严，要思其堪受。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "CS-046",
+    "theme": "处世智慧",
+    "text": "宁默毋躁，宁拙毋巧。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "守拙",
+    "status": "pending"
+  },
+  {
+    "id": "CS-047",
+    "theme": "处世智慧",
+    "text": "完名美节，不宜独任，分些与人。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "分享",
+    "status": "pending"
+  },
+  {
+    "id": "CS-048",
+    "theme": "处世智慧",
+    "text": "文章做到极处，无有他奇，只是恰好。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "恰好",
+    "status": "pending"
+  },
+  {
+    "id": "CS-049",
+    "theme": "处世智慧",
+    "text": "人品做到极处，无有他异，只是本然。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "本然",
+    "status": "pending"
+  },
+  {
+    "id": "CS-050",
+    "theme": "处世智慧",
+    "text": "居逆境中，周身皆针砭药石，砥节砺行而不觉。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "逆境",
+    "status": "pending"
+  },
+  {
+    "id": "CS-051",
+    "theme": "处世智慧",
+    "text": "处顺境内，满前尽兵刃戈矛，销膏靡骨而不知。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "顺境",
+    "status": "pending"
+  },
+  {
+    "id": "CS-052",
+    "theme": "处世智慧",
+    "text": "淡泊之士，必为浓艳者所疑。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "淡泊",
+    "status": "pending"
+  },
+  {
+    "id": "CS-053",
+    "theme": "处世智慧",
+    "text": "宁为小人所忌毁，毋为小人所媚悦。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "立身",
+    "status": "pending"
+  },
+  {
+    "id": "CS-054",
+    "theme": "处世智慧",
+    "text": "花看半开，酒饮微醉，此中大有佳趣。",
+    "source": "《菜根谭》",
+    "locator": "明·洪应明",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "CS-055",
+    "theme": "处世智慧",
+    "text": "大事难事看担当，逆境顺境看襟度。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "担当",
+    "status": "pending"
+  },
+  {
+    "id": "CS-056",
+    "theme": "处世智慧",
+    "text": "临喜临怒看涵养，群行群止看识见。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "涵养",
+    "status": "pending"
+  },
+  {
+    "id": "CS-057",
+    "theme": "处世智慧",
+    "text": "闭门阅佛书，开门接佳客，出门寻山水。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "清趣",
+    "status": "pending"
+  },
+  {
+    "id": "CS-058",
+    "theme": "处世智慧",
+    "text": "留七分正经以度生，留三分痴呆以防死。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "分寸",
+    "status": "pending"
+  },
+  {
+    "id": "CS-059",
+    "theme": "处世智慧",
+    "text": "逢人不说人间事，便是人间无事人。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "守口",
+    "status": "pending"
+  },
+  {
+    "id": "CS-060",
+    "theme": "处世智慧",
+    "text": "佳思忽来，书能下酒；侠情一往，云可赠人。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "豪情",
+    "status": "pending"
+  },
+  {
+    "id": "CS-061",
+    "theme": "处世智慧",
+    "text": "世途虽纷华，常思泉下的光景，则利欲之心自淡。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "淡泊",
+    "status": "pending"
+  },
+  {
+    "id": "CS-062",
+    "theme": "处世智慧",
+    "text": "田园有真乐，不潇洒终为忙人。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "洒脱",
+    "status": "pending"
+  },
+  {
+    "id": "CS-063",
+    "theme": "处世智慧",
+    "text": "眼里无点灰尘，方可读书千卷。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "清明",
+    "status": "pending"
+  },
+  {
+    "id": "CS-064",
+    "theme": "处世智慧",
+    "text": "交友之先宜察，交友之后宜信。",
+    "source": "《小窗幽记》",
+    "locator": "明·陈继儒",
+    "tone": "交友",
+    "status": "pending"
+  },
+  {
+    "id": "CS-065",
+    "theme": "处世智慧",
+    "text": "学业之不进，总为一懒字丢不开。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "戒懒",
+    "status": "pending"
+  },
+  {
+    "id": "CS-066",
+    "theme": "处世智慧",
+    "text": "心能辨事非，处事方能决断。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "决断",
+    "status": "pending"
+  },
+  {
+    "id": "CS-067",
+    "theme": "处世智慧",
+    "text": "不忘廉耻，立身自不卑污。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "廉耻",
+    "status": "pending"
+  },
+  {
+    "id": "CS-068",
+    "theme": "处世智慧",
+    "text": "处世要代人作想，读书须切己用功。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "体谅",
+    "status": "pending"
+  },
+  {
+    "id": "CS-069",
+    "theme": "处世智慧",
+    "text": "肯救人坑坎中，便是活菩萨。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "济人",
+    "status": "pending"
+  },
+  {
+    "id": "CS-070",
+    "theme": "处世智慧",
+    "text": "能脱身牢笼外，便是大英雄。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "超脱",
+    "status": "pending"
+  },
+  {
+    "id": "CS-071",
+    "theme": "处世智慧",
+    "text": "贫无可奈惟求俭，拙亦何妨只要勤。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "勤俭",
+    "status": "pending"
+  },
+  {
+    "id": "CS-072",
+    "theme": "处世智慧",
+    "text": "凡事谨守规模，必不大错。",
+    "source": "《围炉夜话》",
+    "locator": "清·王永彬",
+    "tone": "守度",
+    "status": "pending"
+  },
+  {
+    "id": "CS-073",
+    "theme": "处世智慧",
+    "text": "相识满天下，知心能几人。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "知己",
+    "status": "pending"
+  },
+  {
+    "id": "CS-074",
+    "theme": "处世智慧",
+    "text": "责人之心责己，恕己之心恕人。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "恕道",
+    "status": "pending"
+  },
+  {
+    "id": "CS-075",
+    "theme": "处世智慧",
+    "text": "宁可人负我，切莫我负人。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "守己",
+    "status": "pending"
+  },
+  {
+    "id": "CS-076",
+    "theme": "处世智慧",
+    "text": "平生不做皱眉事，世上应无切齿人。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "无愧",
+    "status": "pending"
+  },
+  {
+    "id": "CS-077",
+    "theme": "处世智慧",
+    "text": "忍得一时之气，免得百日之忧。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "忍让",
+    "status": "pending"
+  },
+  {
+    "id": "CS-078",
+    "theme": "处世智慧",
+    "text": "是非只为多开口，烦恼皆因强出头。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "慎言",
+    "status": "pending"
+  },
+  {
+    "id": "CS-079",
+    "theme": "处世智慧",
+    "text": "钱财如粪土，仁义值千金。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "重义",
+    "status": "pending"
+  },
+  {
+    "id": "CS-080",
+    "theme": "处世智慧",
+    "text": "君子爱财，取之有道。",
+    "source": "《增广贤文》",
+    "locator": "增广贤文",
+    "tone": "取予",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-041",
+    "theme": "心境审美",
+    "text": "春听鸟声，夏听蝉声，秋听虫声，冬听雪声。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "清听",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-042",
+    "theme": "心境审美",
+    "text": "花不可以无蝶，山不可以无泉。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "相映",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-043",
+    "theme": "心境审美",
+    "text": "因雪想高士，因花想美人。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "联想",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-044",
+    "theme": "心境审美",
+    "text": "梅令人高，兰令人幽，菊令人野，莲令人淡。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "花品",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-045",
+    "theme": "心境审美",
+    "text": "山之光，水之声，月之色，花之香。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "清赏",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-046",
+    "theme": "心境审美",
+    "text": "云映日而成霞，泉挂岩而成瀑。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "自然",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-047",
+    "theme": "心境审美",
+    "text": "春者，天之本怀；秋者，天之别调。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "时序",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-048",
+    "theme": "心境审美",
+    "text": "文章是案头之山水，山水是地上之文章。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "文心",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-049",
+    "theme": "心境审美",
+    "text": "若无花月美人，不愿生此世界。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "钟情",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-050",
+    "theme": "心境审美",
+    "text": "天下有一人知己，可以不恨。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "知己",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-051",
+    "theme": "心境审美",
+    "text": "关关雎鸠，在河之洲。",
+    "source": "《诗经》",
+    "locator": "国风·周南·关雎",
+    "tone": "清婉",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-052",
+    "theme": "心境审美",
+    "text": "蒹葭苍苍，白露为霜。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·蒹葭",
+    "tone": "苍茫",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-053",
+    "theme": "心境审美",
+    "text": "所谓伊人，在水一方。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·蒹葭",
+    "tone": "悠远",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-054",
+    "theme": "心境审美",
+    "text": "桃之夭夭，灼灼其华。",
+    "source": "《诗经》",
+    "locator": "国风·周南·桃夭",
+    "tone": "明丽",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-055",
+    "theme": "心境审美",
+    "text": "昔我往矣，杨柳依依。",
+    "source": "《诗经》",
+    "locator": "小雅·采薇",
+    "tone": "低回",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-056",
+    "theme": "心境审美",
+    "text": "今我来思，雨雪霏霏。",
+    "source": "《诗经》",
+    "locator": "小雅·采薇",
+    "tone": "苍凉",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-057",
+    "theme": "心境审美",
+    "text": "月出皎兮，佼人僚兮。",
+    "source": "《诗经》",
+    "locator": "国风·陈风·月出",
+    "tone": "清皎",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-058",
+    "theme": "心境审美",
+    "text": "呦呦鹿鸣，食野之苹。",
+    "source": "《诗经》",
+    "locator": "小雅·鹿鸣",
+    "tone": "和乐",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-059",
+    "theme": "心境审美",
+    "text": "月落乌啼霜满天，江枫渔火对愁眠。",
+    "source": "张继",
+    "locator": "枫桥夜泊",
+    "tone": "清寂",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-060",
+    "theme": "心境审美",
+    "text": "姑苏城外寒山寺，夜半钟声到客船。",
+    "source": "张继",
+    "locator": "枫桥夜泊",
+    "tone": "空远",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-061",
+    "theme": "心境审美",
+    "text": "两个黄鹂鸣翠柳，一行白鹭上青天。",
+    "source": "杜甫",
+    "locator": "绝句·两个黄鹂鸣翠柳",
+    "tone": "明快",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-062",
+    "theme": "心境审美",
+    "text": "窗含西岭千秋雪，门泊东吴万里船。",
+    "source": "杜甫",
+    "locator": "绝句·两个黄鹂鸣翠柳",
+    "tone": "开阔",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-063",
+    "theme": "心境审美",
+    "text": "随风潜入夜，润物细无声。",
+    "source": "杜甫",
+    "locator": "春夜喜雨",
+    "tone": "温润",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-064",
+    "theme": "心境审美",
+    "text": "晓看红湿处，花重锦官城。",
+    "source": "杜甫",
+    "locator": "春夜喜雨",
+    "tone": "鲜妍",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-065",
+    "theme": "心境审美",
+    "text": "日出江花红胜火，春来江水绿如蓝。",
+    "source": "白居易",
+    "locator": "忆江南·江南好",
+    "tone": "明艳",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-066",
+    "theme": "心境审美",
+    "text": "乱花渐欲迷人眼，浅草才能没马蹄。",
+    "source": "白居易",
+    "locator": "钱塘湖春行",
+    "tone": "春意",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-067",
+    "theme": "心境审美",
+    "text": "几处早莺争暖树，谁家新燕啄春泥。",
+    "source": "白居易",
+    "locator": "钱塘湖春行",
+    "tone": "生趣",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-068",
+    "theme": "心境审美",
+    "text": "明月别枝惊鹊，清风半夜鸣蝉。",
+    "source": "辛弃疾",
+    "locator": "西江月·夜行黄沙道中",
+    "tone": "清夜",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-069",
+    "theme": "心境审美",
+    "text": "稻花香里说丰年，听取蛙声一片。",
+    "source": "辛弃疾",
+    "locator": "西江月·夜行黄沙道中",
+    "tone": "丰年",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-070",
+    "theme": "心境审美",
+    "text": "云破月来花弄影。",
+    "source": "张先",
+    "locator": "天仙子·水调数声持酒听",
+    "tone": "幽丽",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-071",
+    "theme": "心境审美",
+    "text": "三秋桂子，十里荷花。",
+    "source": "柳永",
+    "locator": "望海潮·东南形胜",
+    "tone": "繁华",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-072",
+    "theme": "心境审美",
+    "text": "疏影横斜水清浅，暗香浮动月黄昏。",
+    "source": "林逋",
+    "locator": "山园小梅·其一",
+    "tone": "清逸",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-073",
+    "theme": "心境审美",
+    "text": "天地有大美而不言，四时有明法而不议。",
+    "source": "《庄子》",
+    "locator": "庄子·知北游",
+    "tone": "大美",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-074",
+    "theme": "心境审美",
+    "text": "水静犹明，而况精神乎。",
+    "source": "《庄子》",
+    "locator": "庄子·天道",
+    "tone": "澄静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-075",
+    "theme": "心境审美",
+    "text": "虚室生白，吉祥止止。",
+    "source": "《庄子》",
+    "locator": "庄子·人间世",
+    "tone": "虚静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-076",
+    "theme": "心境审美",
+    "text": "大音希声，大象无形。",
+    "source": "《道德经》",
+    "locator": "第四十一章",
+    "tone": "含蓄",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-077",
+    "theme": "心境审美",
+    "text": "大巧若拙，大辩若讷。",
+    "source": "《道德经》",
+    "locator": "第四十五章",
+    "tone": "守拙",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-078",
+    "theme": "心境审美",
+    "text": "致虚极，守静笃。",
+    "source": "《道德经》",
+    "locator": "第十六章",
+    "tone": "守静",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-079",
+    "theme": "心境审美",
+    "text": "飘风不终朝，骤雨不终日。",
+    "source": "《道德经》",
+    "locator": "第二十三章",
+    "tone": "从容",
+    "status": "pending"
+  },
+  {
+    "id": "XJ-080",
+    "theme": "心境审美",
+    "text": "知足者富，强行者有志。",
+    "source": "《道德经》",
+    "locator": "第三十三章",
+    "tone": "知足",
+    "status": "pending"
+  },
+  {
+    "id": "DX-041",
+    "theme": "读书学习",
+    "text": "知是行之始，行是知之成。",
+    "source": "《传习录》",
+    "locator": "卷上·徐爱录",
+    "tone": "知行",
+    "status": "pending"
+  },
+  {
+    "id": "DX-042",
+    "theme": "读书学习",
+    "text": "少年读书，如隙中窥月；中年读书，如庭中望月；老年读书，如台上玩月。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "境界",
+    "status": "pending"
+  },
+  {
+    "id": "DX-043",
+    "theme": "读书学习",
+    "text": "藏书不难，能看为难。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "藏书",
+    "status": "pending"
+  },
+  {
+    "id": "DX-044",
+    "theme": "读书学习",
+    "text": "看书不难，能读为难。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "精读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-045",
+    "theme": "读书学习",
+    "text": "读书不难，能用为难。",
+    "source": "《幽梦影》",
+    "locator": "清·张潮",
+    "tone": "致用",
+    "status": "pending"
+  },
+  {
+    "id": "DX-046",
+    "theme": "读书学习",
+    "text": "博学于文，约之以礼。",
+    "source": "《论语》",
+    "locator": "论语·雍也",
+    "tone": "博约",
+    "status": "pending"
+  },
+  {
+    "id": "DX-047",
+    "theme": "读书学习",
+    "text": "好仁不好学，其蔽也愚。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-048",
+    "theme": "读书学习",
+    "text": "好知不好学，其蔽也荡。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-049",
+    "theme": "读书学习",
+    "text": "好信不好学，其蔽也贼。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-050",
+    "theme": "读书学习",
+    "text": "好直不好学，其蔽也绞。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-051",
+    "theme": "读书学习",
+    "text": "好勇不好学，其蔽也乱。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-052",
+    "theme": "读书学习",
+    "text": "好刚不好学，其蔽也狂。",
+    "source": "《论语》",
+    "locator": "论语·阳货",
+    "tone": "好学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-053",
+    "theme": "读书学习",
+    "text": "不闻不若闻之，闻之不若见之。",
+    "source": "《荀子》",
+    "locator": "荀子·儒效",
+    "tone": "闻见",
+    "status": "pending"
+  },
+  {
+    "id": "DX-054",
+    "theme": "读书学习",
+    "text": "闻之不若见之，见之不若知之。",
+    "source": "《荀子》",
+    "locator": "荀子·儒效",
+    "tone": "求知",
+    "status": "pending"
+  },
+  {
+    "id": "DX-055",
+    "theme": "读书学习",
+    "text": "知之而不行，虽敦必困。",
+    "source": "《荀子》",
+    "locator": "荀子·儒效",
+    "tone": "践行",
+    "status": "pending"
+  },
+  {
+    "id": "DX-056",
+    "theme": "读书学习",
+    "text": "善学者尽其理，善行者究其难。",
+    "source": "《荀子》",
+    "locator": "荀子·大略",
+    "tone": "穷理",
+    "status": "pending"
+  },
+  {
+    "id": "DX-057",
+    "theme": "读书学习",
+    "text": "目不能两视而明，耳不能两听而聪。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "专心",
+    "status": "pending"
+  },
+  {
+    "id": "DX-058",
+    "theme": "读书学习",
+    "text": "记问之学，不足以为人师。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "自得",
+    "status": "pending"
+  },
+  {
+    "id": "DX-059",
+    "theme": "读书学习",
+    "text": "时过然后学，则勤苦而难成。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "DX-060",
+    "theme": "读书学习",
+    "text": "道而弗牵，强而弗抑，开而弗达。",
+    "source": "《礼记》",
+    "locator": "礼记·学记",
+    "tone": "启发",
+    "status": "pending"
+  },
+  {
+    "id": "DX-061",
+    "theme": "读书学习",
+    "text": "君子壹教，弟子壹学，亟成。",
+    "source": "《荀子》",
+    "locator": "荀子·大略",
+    "tone": "专一",
+    "status": "pending"
+  },
+  {
+    "id": "DX-062",
+    "theme": "读书学习",
+    "text": "少年易老学难成，一寸光阴不可轻。",
+    "source": "朱熹",
+    "locator": "偶成",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "DX-063",
+    "theme": "读书学习",
+    "text": "未觉池塘春草梦，阶前梧叶已秋声。",
+    "source": "朱熹",
+    "locator": "偶成",
+    "tone": "流光",
+    "status": "pending"
+  },
+  {
+    "id": "DX-064",
+    "theme": "读书学习",
+    "text": "读书不觉已春深，一寸光阴一寸金。",
+    "source": "王贞白",
+    "locator": "白鹿洞二首·其一",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "DX-065",
+    "theme": "读书学习",
+    "text": "富家不用买良田，书中自有千钟粟。",
+    "source": "赵恒",
+    "locator": "劝学诗",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-066",
+    "theme": "读书学习",
+    "text": "安居不用架高堂，书中自有黄金屋。",
+    "source": "赵恒",
+    "locator": "劝学诗",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-067",
+    "theme": "读书学习",
+    "text": "男儿欲遂平生志，五经勤向窗前读。",
+    "source": "赵恒",
+    "locator": "劝学诗",
+    "tone": "立志",
+    "status": "pending"
+  },
+  {
+    "id": "DX-068",
+    "theme": "读书学习",
+    "text": "读书之乐乐何如，绿满窗前草不除。",
+    "source": "翁森",
+    "locator": "四时读书乐·春",
+    "tone": "春读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-069",
+    "theme": "读书学习",
+    "text": "读书之乐乐无穷，瑶琴一曲来薰风。",
+    "source": "翁森",
+    "locator": "四时读书乐·夏",
+    "tone": "夏读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-070",
+    "theme": "读书学习",
+    "text": "读书之乐乐陶陶，起弄明月霜天高。",
+    "source": "翁森",
+    "locator": "四时读书乐·秋",
+    "tone": "秋读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-071",
+    "theme": "读书学习",
+    "text": "读书之乐何处寻，数点梅花天地心。",
+    "source": "翁森",
+    "locator": "四时读书乐·冬",
+    "tone": "冬读",
+    "status": "pending"
+  },
+  {
+    "id": "DX-072",
+    "theme": "读书学习",
+    "text": "蹉跎莫遣韶光老，人生唯有读书好。",
+    "source": "翁森",
+    "locator": "四时读书乐·春",
+    "tone": "劝学",
+    "status": "pending"
+  },
+  {
+    "id": "DX-073",
+    "theme": "读书学习",
+    "text": "书卷多情似故人，晨昏忧乐每相亲。",
+    "source": "于谦",
+    "locator": "观书",
+    "tone": "亲书",
+    "status": "pending"
+  },
+  {
+    "id": "DX-074",
+    "theme": "读书学习",
+    "text": "眼前直下三千字，胸次全无一点尘。",
+    "source": "于谦",
+    "locator": "观书",
+    "tone": "清心",
+    "status": "pending"
+  },
+  {
+    "id": "DX-075",
+    "theme": "读书学习",
+    "text": "活水源流随处满，东风花柳逐时新。",
+    "source": "于谦",
+    "locator": "观书",
+    "tone": "日新",
+    "status": "pending"
+  },
+  {
+    "id": "DX-076",
+    "theme": "读书学习",
+    "text": "金鞍玉勒寻芳客，未信我庐别有春。",
+    "source": "于谦",
+    "locator": "观书",
+    "tone": "自得",
+    "status": "pending"
+  },
+  {
+    "id": "DX-077",
+    "theme": "读书学习",
+    "text": "学而不已，阖棺乃止。",
+    "source": "《韩诗外传》",
+    "locator": "韩诗外传",
+    "tone": "终身",
+    "status": "pending"
+  },
+  {
+    "id": "DX-078",
+    "theme": "读书学习",
+    "text": "君子之学也，以美其身。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "为己",
+    "status": "pending"
+  },
+  {
+    "id": "DX-079",
+    "theme": "读书学习",
+    "text": "学莫便乎近其人。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "亲师",
+    "status": "pending"
+  },
+  {
+    "id": "DX-080",
+    "theme": "读书学习",
+    "text": "学之经莫速乎好其人，隆礼次之。",
+    "source": "《荀子》",
+    "locator": "荀子·劝学",
+    "tone": "尊师",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-041",
+    "theme": "励志进取",
+    "text": "朝饮木兰之坠露兮，夕餐秋菊之落英。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "高洁",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-042",
+    "theme": "励志进取",
+    "text": "制芰荷以为衣兮，集芙蓉以为裳。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "自洁",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-043",
+    "theme": "励志进取",
+    "text": "民生各有所乐兮，余独好修以为常。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "好修",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-044",
+    "theme": "励志进取",
+    "text": "乘骐骥以驰骋兮，来吾道夫先路。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "先行",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-045",
+    "theme": "励志进取",
+    "text": "日月忽其不淹兮，春与秋其代序。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-046",
+    "theme": "励志进取",
+    "text": "老冉冉其将至兮，恐修名之不立。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "立名",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-047",
+    "theme": "励志进取",
+    "text": "青云衣兮白霓裳，举长矢兮射天狼。",
+    "source": "屈原",
+    "locator": "九歌·东君",
+    "tone": "雄奇",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-048",
+    "theme": "励志进取",
+    "text": "身既死兮神以灵，魂魄毅兮为鬼雄。",
+    "source": "屈原",
+    "locator": "九歌·国殇",
+    "tone": "刚烈",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-049",
+    "theme": "励志进取",
+    "text": "如切如磋，如琢如磨。",
+    "source": "《诗经》",
+    "locator": "国风·卫风·淇奥",
+    "tone": "琢磨",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-050",
+    "theme": "励志进取",
+    "text": "有匪君子，终不可谖兮。",
+    "source": "《诗经》",
+    "locator": "国风·卫风·淇奥",
+    "tone": "君子",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-051",
+    "theme": "励志进取",
+    "text": "岂曰无衣？与子同袍。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·无衣",
+    "tone": "同袍",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-052",
+    "theme": "励志进取",
+    "text": "修我戈矛，与子同仇。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·无衣",
+    "tone": "同仇",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-053",
+    "theme": "励志进取",
+    "text": "靡不有初，鲜克有终。",
+    "source": "《诗经》",
+    "locator": "大雅·荡",
+    "tone": "有终",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-054",
+    "theme": "励志进取",
+    "text": "夙兴夜寐，靡有朝矣。",
+    "source": "《诗经》",
+    "locator": "国风·卫风·氓",
+    "tone": "勤勉",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-055",
+    "theme": "励志进取",
+    "text": "高山仰止，景行行止。",
+    "source": "《诗经》",
+    "locator": "小雅·车舝",
+    "tone": "景仰",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-056",
+    "theme": "励志进取",
+    "text": "周虽旧邦，其命维新。",
+    "source": "《诗经》",
+    "locator": "大雅·文王",
+    "tone": "维新",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-057",
+    "theme": "励志进取",
+    "text": "少壮不努力，老大徒伤悲。",
+    "source": "汉乐府",
+    "locator": "长歌行",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-058",
+    "theme": "励志进取",
+    "text": "百川东到海，何时复西归。",
+    "source": "汉乐府",
+    "locator": "长歌行",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-059",
+    "theme": "励志进取",
+    "text": "黑发不知勤学早，白首方悔读书迟。",
+    "source": "颜真卿",
+    "locator": "劝学",
+    "tone": "勤学",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-060",
+    "theme": "励志进取",
+    "text": "三更灯火五更鸡，正是男儿读书时。",
+    "source": "颜真卿",
+    "locator": "劝学",
+    "tone": "勤学",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-061",
+    "theme": "励志进取",
+    "text": "青春须早为，岂能长少年。",
+    "source": "孟郊",
+    "locator": "劝学",
+    "tone": "惜春",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-062",
+    "theme": "励志进取",
+    "text": "击石乃有火，不击元无烟。",
+    "source": "孟郊",
+    "locator": "劝学",
+    "tone": "磨砺",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-063",
+    "theme": "励志进取",
+    "text": "人学始知道，不学非自然。",
+    "source": "孟郊",
+    "locator": "劝学",
+    "tone": "为学",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-064",
+    "theme": "励志进取",
+    "text": "万事须己运，他得非我贤。",
+    "source": "孟郊",
+    "locator": "劝学",
+    "tone": "自力",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-065",
+    "theme": "励志进取",
+    "text": "少年辛苦终身事，莫向光阴惰寸功。",
+    "source": "杜荀鹤",
+    "locator": "题弟侄书堂",
+    "tone": "惜时",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-066",
+    "theme": "励志进取",
+    "text": "窗竹影摇书案上，野泉声入砚池中。",
+    "source": "杜荀鹤",
+    "locator": "题弟侄书堂",
+    "tone": "清苦",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-067",
+    "theme": "励志进取",
+    "text": "不经一番寒彻骨，怎得梅花扑鼻香。",
+    "source": "黄蘖禅师",
+    "locator": "上堂开示颂",
+    "tone": "磨砺",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-068",
+    "theme": "励志进取",
+    "text": "大鹏一日同风起，扶摇直上九万里。",
+    "source": "李白",
+    "locator": "上李邕",
+    "tone": "凌云",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-069",
+    "theme": "励志进取",
+    "text": "九万里风鹏正举。",
+    "source": "李清照",
+    "locator": "渔家傲·天接云涛连晓雾",
+    "tone": "豪迈",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-070",
+    "theme": "励志进取",
+    "text": "生当作人杰，死亦为鬼雄。",
+    "source": "李清照",
+    "locator": "夏日绝句",
+    "tone": "刚烈",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-071",
+    "theme": "励志进取",
+    "text": "何须浅碧深红色，自是花中第一流。",
+    "source": "李清照",
+    "locator": "鹧鸪天·桂花",
+    "tone": "自信",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-072",
+    "theme": "励志进取",
+    "text": "时人不识凌云木，直待凌云始道高。",
+    "source": "杜荀鹤",
+    "locator": "小松",
+    "tone": "晚成",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-073",
+    "theme": "励志进取",
+    "text": "志不强者智不达。",
+    "source": "《墨子》",
+    "locator": "墨子·修身",
+    "tone": "立志",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-074",
+    "theme": "励志进取",
+    "text": "言不信者行不果。",
+    "source": "《墨子》",
+    "locator": "墨子·修身",
+    "tone": "守信",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-075",
+    "theme": "励志进取",
+    "text": "士不可以不弘毅，任重而道远。",
+    "source": "《论语》",
+    "locator": "论语·泰伯",
+    "tone": "担当",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-076",
+    "theme": "励志进取",
+    "text": "三军可夺帅也，匹夫不可夺志也。",
+    "source": "《论语》",
+    "locator": "论语·子罕",
+    "tone": "守志",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-077",
+    "theme": "励志进取",
+    "text": "岁寒，然后知松柏之后凋也。",
+    "source": "《论语》",
+    "locator": "论语·子罕",
+    "tone": "坚贞",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-078",
+    "theme": "励志进取",
+    "text": "不降其志，不辱其身。",
+    "source": "《论语》",
+    "locator": "论语·微子",
+    "tone": "守节",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-079",
+    "theme": "励志进取",
+    "text": "穷且益坚，不坠青云之志。",
+    "source": "王勃",
+    "locator": "滕王阁序",
+    "tone": "穷坚",
+    "status": "pending"
+  },
+  {
+    "id": "LZ-080",
+    "theme": "励志进取",
+    "text": "老当益壮，宁移白首之心。",
+    "source": "王勃",
+    "locator": "滕王阁序",
+    "tone": "老壮",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-041",
+    "theme": "家国天下",
+    "text": "岂曰无衣？与子同泽。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·无衣",
+    "tone": "同泽",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-042",
+    "theme": "家国天下",
+    "text": "修我甲兵，与子偕行。",
+    "source": "《诗经》",
+    "locator": "国风·秦风·无衣",
+    "tone": "偕行",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-043",
+    "theme": "家国天下",
+    "text": "我心匪石，不可转也。",
+    "source": "《诗经》",
+    "locator": "国风·邶风·柏舟",
+    "tone": "坚贞",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-044",
+    "theme": "家国天下",
+    "text": "我心匪席，不可卷也。",
+    "source": "《诗经》",
+    "locator": "国风·邶风·柏舟",
+    "tone": "不屈",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-045",
+    "theme": "家国天下",
+    "text": "知我者，谓我心忧；不知我者，谓我何求。",
+    "source": "《诗经》",
+    "locator": "国风·王风·黍离",
+    "tone": "忧思",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-046",
+    "theme": "家国天下",
+    "text": "民亦劳止，汔可小康。",
+    "source": "《诗经》",
+    "locator": "大雅·民劳",
+    "tone": "民瘼",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-047",
+    "theme": "家国天下",
+    "text": "长太息以掩涕兮，哀民生之多艰。",
+    "source": "屈原",
+    "locator": "离骚",
+    "tone": "忧民",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-048",
+    "theme": "家国天下",
+    "text": "诚既勇兮又以武，终刚强兮不可凌。",
+    "source": "屈原",
+    "locator": "九歌·国殇",
+    "tone": "刚强",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-049",
+    "theme": "家国天下",
+    "text": "带长剑兮挟秦弓，首身离兮心不惩。",
+    "source": "屈原",
+    "locator": "九歌·国殇",
+    "tone": "死节",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-050",
+    "theme": "家国天下",
+    "text": "鸟飞反故乡兮，狐死必首丘。",
+    "source": "屈原",
+    "locator": "九章·哀郢",
+    "tone": "故国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-051",
+    "theme": "家国天下",
+    "text": "皇天之不纯命兮，何百姓之震愆。",
+    "source": "屈原",
+    "locator": "九章·哀郢",
+    "tone": "哀民",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-052",
+    "theme": "家国天下",
+    "text": "望长楸而太息兮，涕淫淫其若霰。",
+    "source": "屈原",
+    "locator": "九章·哀郢",
+    "tone": "去国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-053",
+    "theme": "家国天下",
+    "text": "国破山河在，城春草木深。",
+    "source": "杜甫",
+    "locator": "春望",
+    "tone": "兴亡",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-054",
+    "theme": "家国天下",
+    "text": "感时花溅泪，恨别鸟惊心。",
+    "source": "杜甫",
+    "locator": "春望",
+    "tone": "忧时",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-055",
+    "theme": "家国天下",
+    "text": "烽火连三月，家书抵万金。",
+    "source": "杜甫",
+    "locator": "春望",
+    "tone": "离乱",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-056",
+    "theme": "家国天下",
+    "text": "剑外忽传收蓟北，初闻涕泪满衣裳。",
+    "source": "杜甫",
+    "locator": "闻官军收河南河北",
+    "tone": "喜极",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-057",
+    "theme": "家国天下",
+    "text": "却看妻子愁何在，漫卷诗书喜欲狂。",
+    "source": "杜甫",
+    "locator": "闻官军收河南河北",
+    "tone": "还乡",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-058",
+    "theme": "家国天下",
+    "text": "出师未捷身先死，长使英雄泪满襟。",
+    "source": "杜甫",
+    "locator": "蜀相",
+    "tone": "惜才",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-059",
+    "theme": "家国天下",
+    "text": "三顾频烦天下计，两朝开济老臣心。",
+    "source": "杜甫",
+    "locator": "蜀相",
+    "tone": "尽瘁",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-060",
+    "theme": "家国天下",
+    "text": "秦时明月汉时关，万里长征人未还。",
+    "source": "王昌龄",
+    "locator": "出塞",
+    "tone": "边关",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-061",
+    "theme": "家国天下",
+    "text": "但使龙城飞将在，不教胡马度阴山。",
+    "source": "王昌龄",
+    "locator": "出塞",
+    "tone": "守边",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-062",
+    "theme": "家国天下",
+    "text": "黄沙百战穿金甲，不破楼兰终不还。",
+    "source": "王昌龄",
+    "locator": "从军行·其四",
+    "tone": "誓师",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-063",
+    "theme": "家国天下",
+    "text": "醉卧沙场君莫笑，古来征战几人回。",
+    "source": "王翰",
+    "locator": "凉州词",
+    "tone": "悲壮",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-064",
+    "theme": "家国天下",
+    "text": "羌笛何须怨杨柳，春风不度玉门关。",
+    "source": "王之涣",
+    "locator": "凉州词",
+    "tone": "边寒",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-065",
+    "theme": "家国天下",
+    "text": "靖康耻，犹未雪；臣子恨，何时灭。",
+    "source": "岳飞",
+    "locator": "满江红·写怀",
+    "tone": "雪耻",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-066",
+    "theme": "家国天下",
+    "text": "待从头、收拾旧山河，朝天阙。",
+    "source": "岳飞",
+    "locator": "满江红·写怀",
+    "tone": "复国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-067",
+    "theme": "家国天下",
+    "text": "醉里挑灯看剑，梦回吹角连营。",
+    "source": "辛弃疾",
+    "locator": "破阵子·为陈同甫赋壮词以寄之",
+    "tone": "壮怀",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-068",
+    "theme": "家国天下",
+    "text": "了却君王天下事，赢得生前身后名。",
+    "source": "辛弃疾",
+    "locator": "破阵子·为陈同甫赋壮词以寄之",
+    "tone": "功名",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-069",
+    "theme": "家国天下",
+    "text": "天下熙熙，皆为利来；天下攘攘，皆为利往。",
+    "source": "《史记》",
+    "locator": "史记·货殖列传",
+    "tone": "世情",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-070",
+    "theme": "家国天下",
+    "text": "运筹帷幄之中，决胜千里之外。",
+    "source": "《史记》",
+    "locator": "史记·高祖本纪",
+    "tone": "谋略",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-071",
+    "theme": "家国天下",
+    "text": "强弩之末，力不能入鲁缟。",
+    "source": "《汉书》",
+    "locator": "汉书·韩安国传",
+    "tone": "势衰",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-072",
+    "theme": "家国天下",
+    "text": "水至清则无鱼，人至察则无徒。",
+    "source": "《汉书》",
+    "locator": "汉书·东方朔传",
+    "tone": "宽察",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-073",
+    "theme": "家国天下",
+    "text": "临渊羡鱼，不如退而结网。",
+    "source": "《汉书》",
+    "locator": "汉书·董仲舒传",
+    "tone": "实干",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-074",
+    "theme": "家国天下",
+    "text": "当断不断，反受其乱。",
+    "source": "《史记》",
+    "locator": "史记·齐悼惠王世家",
+    "tone": "决断",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-075",
+    "theme": "家国天下",
+    "text": "前车之覆，后车之鉴。",
+    "source": "《汉书》",
+    "locator": "汉书·贾谊传",
+    "tone": "鉴戒",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-076",
+    "theme": "家国天下",
+    "text": "精诚所至，金石为开。",
+    "source": "《后汉书》",
+    "locator": "后汉书·广陵思王荆传",
+    "tone": "精诚",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-077",
+    "theme": "家国天下",
+    "text": "志士不饮盗泉之水，廉者不受嗟来之食。",
+    "source": "《后汉书》",
+    "locator": "后汉书·列女传",
+    "tone": "廉节",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-078",
+    "theme": "家国天下",
+    "text": "大丈夫当雄飞，安能雌伏。",
+    "source": "《后汉书》",
+    "locator": "后汉书·赵典传",
+    "tone": "雄飞",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-079",
+    "theme": "家国天下",
+    "text": "男儿要当死于边野，以马革裹尸还葬耳。",
+    "source": "《后汉书》",
+    "locator": "后汉书·马援传",
+    "tone": "报国",
+    "status": "pending"
+  },
+  {
+    "id": "GJ-080",
+    "theme": "家国天下",
+    "text": "疾风知劲草，板荡识诚臣。",
+    "source": "李世民",
+    "locator": "赐萧瑀",
+    "tone": "忠贞",
+    "status": "pending"
+  }
+]

@@ -18,6 +18,7 @@ struct WhaleHomeCanvas: View {
     @State private var weatherLoading = false
     @State private var weatherError: String?
     @State private var weatherStartedAt: Date?
+    @State private var weatherFetchedAt: Date?
     @AppStorage("whale.home.showQuote") private var showQuote = true
     @State private var quoteExpanded = false
     @State private var showWeatherDetail = false
@@ -26,6 +27,14 @@ struct WhaleHomeCanvas: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var textSize
     @State private var weatherExpanded = ProcessInfo.processInfo.environment["WHALE_DEMO_WEATHER"] == "1"
+
+    private static let weatherCacheKey = "home-weather-v1"
+    private static let weatherRefreshInterval: TimeInterval = 8 * 60 * 60
+
+    private struct CachedWeather: Codable {
+        let fetchedAt: Date
+        let payload: JSONValue
+    }
 
     var body: some View {
         ScrollView {
@@ -155,12 +164,17 @@ struct WhaleHomeCanvas: View {
             Button {
                 withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) { quoteExpanded.toggle() }
             } label: {
+                let quote = DailyQuote.item(at: context.date)
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "quote.opening").font(.system(size: 22, weight: .semibold)).foregroundStyle(WhaleTheme.accent)
-                    Text(DailyQuote.text(at: context.date)).whaleFont(size: 20, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.ink).lineSpacing(4)
-                        .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 2)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(quote.text).whaleFont(size: 20, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.ink).lineSpacing(4)
+                            .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
+                        Text(quote.source).font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(WhaleTheme.muted).lineLimit(1)
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityElement(children: .combine)
                     Image(systemName: quoteExpanded ? "chevron.up" : "chevron.down")
                         .font(.caption).foregroundStyle(WhaleTheme.muted)
                 }.frame(minHeight: 44, alignment: .center).whaleCard(padding: 16).overlay(alignment: .leading) { RoundedRectangle(cornerRadius: 2, style: .continuous).fill(WhaleTheme.accent.opacity(0.85)).frame(width: 3).padding(.vertical, 14) }
@@ -467,10 +481,42 @@ struct WhaleHomeCanvas: View {
     }
 
     private func loadWeatherIfNeeded() async {
-        guard locationStatus == "granted", weatherDays.isEmpty else { return }
+        guard locationStatus == "granted" else { return }
+        restoreCachedWeatherIfNeeded()
+        if weatherCacheIsFresh { return }
         if weatherLoading, weatherLoadIsStale { weatherLoading = false }
         guard !weatherLoading else { return }
         await loadWeather(force: false)
+    }
+
+    /// Rehydrates the last successful payload so a cold launch renders instantly.
+    /// The cache lives in Caches and is safe to delete at any time.
+    private func restoreCachedWeatherIfNeeded() {
+        guard weatherDays.isEmpty else { return }
+        guard let cached = DiscoverDiskCache.load(CachedWeather.self, key: Self.weatherCacheKey) else { return }
+        applyWeather(cached.payload, fetchedAt: cached.fetchedAt)
+    }
+
+    private func applyWeather(_ data: JSONValue, fetchedAt: Date) {
+        let days = WeatherDaySummary.list(from: data)
+        guard !days.isEmpty else { return }
+        weatherDays = days
+        weather = WeatherSnapshot.from(data)
+        weatherLocation = data.objectValue?.optionalString("locationName") ?? "当前位置"
+        weatherFetchedAt = fetchedAt
+        weatherError = nil
+    }
+
+    /// Fresh means: fetched less than 8 hours ago and the forecast still starts today.
+    private var weatherCacheIsFresh: Bool {
+        guard !weatherDays.isEmpty, let fetchedAt = weatherFetchedAt else { return false }
+        guard Date().timeIntervalSince(fetchedAt) < Self.weatherRefreshInterval else { return false }
+        return weatherDays.first?.date == Self.dayKey(Date())
+    }
+
+    private static func dayKey(_ date: Date) -> String {
+        let parts = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
     }
 
     private var weatherLoadIsStale: Bool {
@@ -484,7 +530,7 @@ struct WhaleHomeCanvas: View {
             guard weatherLoadIsStale else { return }
             weatherLoading = false
         }
-        if !force, !weatherDays.isEmpty { return }
+        if !force, weatherCacheIsFresh { return }
         weatherLoading = true
         weatherError = nil
         let startedAt = Date()
@@ -494,7 +540,9 @@ struct WhaleHomeCanvas: View {
             guard !Task.isCancelled, weatherLoading, weatherStartedAt == startedAt else { return }
             weatherLoading = false
             weatherStartedAt = nil
-            weatherError = "天气查询超时，请点按刷新天气重试。"
+            if weatherDays.isEmpty {
+                weatherError = "天气查询超时，请点按刷新天气重试。"
+            }
         }
         defer {
             watchdog.cancel()
@@ -516,12 +564,13 @@ struct WhaleHomeCanvas: View {
                 weatherError = "天气接口本次没有返回逐日预报，请稍后重试。"
                 return
             }
-            weatherDays = days
-            weather = WeatherSnapshot.from(data)
-            weatherLocation = data.objectValue?.optionalString("locationName") ?? "当前位置"
-            weatherError = nil
+            let fetchedAt = Date()
+            applyWeather(data, fetchedAt: fetchedAt)
+            DiscoverDiskCache.save(CachedWeather(fetchedAt: fetchedAt, payload: data), key: Self.weatherCacheKey)
         } catch {
-            weatherError = error.localizedDescription
+            if weatherDays.isEmpty {
+                weatherError = error.localizedDescription
+            }
         }
     }
 
