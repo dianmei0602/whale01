@@ -160,7 +160,7 @@ enum RealDataGuard {
         let trimmed = reply.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, trimmed.count <= 240 else { return false }
         let lower = trimmed.lowercased()
-        let uncertainty = ["不知道", "没拿到", "没有拿到", "没有取得", "没有查到", "暂时查不到", "还缺", "需要你", "请告诉我", "告诉我具体", "can't confirm", "cannot confirm", "don't know"]
+        let uncertainty = ["不知道", "没拿到", "没有拿到", "没有取得", "没有查到", "暂时查不到", "还缺", "需要你", "告诉我", "请提供", "can't confirm", "cannot confirm", "don't know"]
         if uncertainty.contains(where: { lower.contains($0) }) { return true }
         if containsAny(trimmed, ["？", "?"]), !assertsUnsupportedFact(trimmed, for: intent) { return true }
         return isClarifying(trimmed, for: intent) && !assertsUnsupportedFact(trimmed, for: intent)
