@@ -1,0 +1,101 @@
+name: Push Quick Validation
+run-name: "${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'interaction' && 'Manual iOS interaction regression' || 'Push quick validation' }} · ${{ github.ref_name }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: Quick compilation or full simulator interaction regression
+        type: choice
+        options: [quick, interaction]
+        default: quick
+  push:
+    paths:
+      - "ios/**"
+      - "!ios/**/*.md"
+      - "tools/validate_chronicles.mjs"
+      - "tools/build_identity.py"
+      - ".github/workflows/ios-*.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - "!ios/**/*.md"
+      - "tools/validate_chronicles.mjs"
+      - "tools/build_identity.py"
+      - ".github/workflows/ios-*.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-validation-${{ inputs.scope || 'quick' }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Optional: enable this if the repo has a backend/ with "npm test".
+  # Job-level if cannot use hashFiles(), so keep it off until you actually have one.
+  backend:
+    if: false
+    name: Backend fixture regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run controlled backend tests
+        working-directory: backend
+        run: npm test
+
+  build:
+    if: ${{ inputs.scope != 'interaction' }}
+    name: Compile app and test targets without simulator boot
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Show Apple toolchain
+        run: xcodebuild -version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Validate bundled chronicle corpus
+        run: node tools/validate_chronicles.mjs --check
+      - name: Generate source identity
+        run: python3 tools/build_identity.py
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Compile app and both test bundles
+        working-directory: ios
+        run: |
+          set -euo pipefail
+          for SCHEME in ChineseChronicles ChineseChroniclesInteractions; do
+            xcodebuild \
+              -project ChineseChronicles.xcodeproj \
+              -scheme "$SCHEME" \
+              -configuration Debug \
+              -sdk iphonesimulator \
+              -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath build \
+              MARKETING_VERSION=0.1.0 \
+              CURRENT_PROJECT_VERSION="1.${{ github.run_attempt }}" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              build-for-testing | tee -a compile.log
+          done
+      - name: Upload compile log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-quick-compile-log
+          path: ios/compile.log
+          retention-days: 7
+          if-no-files-found: warn
+
+  interaction:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'interaction' }}
+    name: Manually requested full regression
+    uses: ./.github/workflows/ios-ui-tests.yml

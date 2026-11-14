@@ -1,0 +1,1184 @@
+{
+  "schemaVersion": "1.0",
+  "contentVersion": "2026.11.15-seed1",
+  "title": "中国朝代编年史",
+  "subtitle": "沿着时间，看见制度的更替与文明的延续",
+  "editorialNote": "本版以传统历史叙事为主轴，并单独标出并存政权、分裂时期和纪年异说。古代年代常存在不同考订，页面中的“约”“通行纪年”“存在异说”是资料状态，不是装饰。",
+  "reviewedAt": "2026-11-15",
+  "eras": [
+    {
+      "id": "pre-qin",
+      "title": "先秦",
+      "range": "约前 2070 — 前 256",
+      "startYear": -2070,
+      "endYear": -256,
+      "summary": "从传统记载中的夏、商、周，到列国竞争与制度变革。早期年代多有异说，需要结合文献与考古材料阅读。"
+    },
+    {
+      "id": "qin-han",
+      "title": "秦汉",
+      "range": "前 221 — 220",
+      "startYear": -221,
+      "endYear": 220,
+      "summary": "统一帝国制度成形，郡县、文书行政、律令与中央官僚体系持续演化。"
+    },
+    {
+      "id": "wei-jin-nanbei",
+      "title": "魏晋南北朝",
+      "range": "220 — 589",
+      "startYear": 220,
+      "endYear": 589,
+      "summary": "政权更迭频繁，南北社会与制度分化，同时伴随人口流动与文化交流。"
+    },
+    {
+      "id": "sui-tang",
+      "title": "隋唐",
+      "range": "581 — 907",
+      "startYear": 581,
+      "endYear": 907,
+      "summary": "结束长期分裂，重建统一秩序；科举、律令和都城制度影响深远。"
+    },
+    {
+      "id": "five-dynasties-song",
+      "title": "五代辽宋夏金",
+      "range": "907 — 1279",
+      "startYear": 907,
+      "endYear": 1279,
+      "summary": "多个政权长期并立。北宋、辽、西夏与金等关系不能用一条单线王朝序列概括。"
+    },
+    {
+      "id": "yuan-ming-qing",
+      "title": "元明清",
+      "range": "1271 — 1912",
+      "startYear": 1271,
+      "endYear": 1912,
+      "summary": "统一疆域、行政治理、海上交流与帝制转型交织的晚期帝国时期。"
+    }
+  ],
+  "dynasties": [
+    {
+      "id": "xia",
+      "name": "夏",
+      "subtitle": "传统记载中的第一个王朝",
+      "startYear": -2070,
+      "endYear": -1600,
+      "startLabel": "约前 2070 年",
+      "endLabel": "约前 1600 年",
+      "role": "disputed",
+      "eraId": "pre-qin",
+      "accent": "#9B6A4F",
+      "capital": "阳城、斟鄩等，具体地望与考古对应仍有讨论",
+      "founder": "禹",
+      "summary": "夏见于后世文献的传统叙事，常被视为王朝时代的开端。其年代、疆域和考古对应问题在学界仍有不同认识，因此本页不把传统年代当作毫无争议的定论。",
+      "aliases": ["夏后氏"],
+      "sourceIds": ["shangshu", "shiji", "xiashangzhou"]
+    },
+    {
+      "id": "shang",
+      "name": "商",
+      "subtitle": "甲骨文与青铜文明",
+      "startYear": -1600,
+      "endYear": -1046,
+      "startLabel": "约前 1600 年",
+      "endLabel": "约前 1046 年",
+      "role": "disputed",
+      "eraId": "pre-qin",
+      "accent": "#8E5E3C",
+      "capital": "亳、殷等，晚期以殷为中心",
+      "founder": "汤",
+      "summary": "商代留下甲骨文、青铜器与考古遗址等多重材料。开始年代是流行断代框架中的约数，具体边界仍有学术讨论。",
+      "aliases": ["殷", "殷商"],
+      "sourceIds": ["shangshu", "shiji", "xiashangzhou"]
+    },
+    {
+      "id": "western-zhou",
+      "name": "西周",
+      "subtitle": "分封、礼制与天命观",
+      "startYear": -1046,
+      "endYear": -771,
+      "startLabel": "前 1046 年",
+      "endLabel": "前 771 年",
+      "role": "mainline",
+      "eraId": "pre-qin",
+      "accent": "#62725D",
+      "capital": "丰镐",
+      "founder": "周武王",
+      "summary": "西周以宗法和分封组织政治秩序，“天命”观念也在此时期获得系统表达。武王伐纣的绝对年代有不同研究结论。",
+      "aliases": ["周"],
+      "sourceIds": ["shangshu", "shiji", "xiashangzhou"]
+    },
+    {
+      "id": "eastern-zhou",
+      "name": "东周",
+      "subtitle": "王权衰微与列国秩序",
+      "startYear": -770,
+      "endYear": -256,
+      "startLabel": "前 770 年",
+      "endLabel": "前 256 年",
+      "role": "mainline",
+      "eraId": "pre-qin",
+      "accent": "#76826A",
+      "capital": "洛邑",
+      "founder": "周平王",
+      "summary": "东周王室仍在，但实际政治重心逐渐转向诸侯列国。习惯上又分为春秋与战国两个阶段，分期边界并非单一事件。",
+      "aliases": ["周", "春秋战国"],
+      "sourceIds": ["shiji"]
+    },
+    {
+      "id": "qin",
+      "name": "秦",
+      "subtitle": "首次建立中央集权统一帝国",
+      "startYear": -221,
+      "endYear": -207,
+      "startLabel": "前 221 年",
+      "endLabel": "前 207 年",
+      "role": "mainline",
+      "eraId": "qin-han",
+      "accent": "#2F2B28",
+      "capital": "咸阳",
+      "founder": "秦始皇",
+      "summary": "秦统一六国后推行郡县制，并统一文字、度量衡等制度。其统治时间较短，却为此后帝国行政提供了重要参照。",
+      "aliases": ["秦朝"],
+      "sourceIds": ["shiji"]
+    },
+    {
+      "id": "western-han",
+      "name": "西汉",
+      "subtitle": "帝国制度的发展",
+      "startYear": -202,
+      "endYear": 9,
+      "startLabel": "前 202 年",
+      "endLabel": "公元 9 年",
+      "role": "mainline",
+      "eraId": "qin-han",
+      "accent": "#936B3A",
+      "capital": "长安",
+      "founder": "汉高祖刘邦",
+      "summary": "西汉延续并调整秦制，中央官僚、地方行政和边疆关系持续发展。后世常以“汉”作为这一政治共同体的长期标识。",
+      "aliases": ["前汉", "汉"],
+      "sourceIds": ["shiji", "hanshu"]
+    },
+    {
+      "id": "xin",
+      "name": "新",
+      "subtitle": "王莽代汉与短暂改制",
+      "startYear": 9,
+      "endYear": 23,
+      "startLabel": "公元 9 年",
+      "endLabel": "公元 23 年",
+      "role": "mainline",
+      "eraId": "qin-han",
+      "accent": "#A1523E",
+      "capital": "常安",
+      "founder": "王莽",
+      "summary": "王莽代汉建立新朝，推行多项改制，但政权很快在动荡中覆灭。新朝被放在汉代编年之间显示，不等于把它简单视为长期稳定的王朝。",
+      "aliases": ["新朝"],
+      "sourceIds": ["hanshu"]
+    },
+    {
+      "id": "eastern-han",
+      "name": "东汉",
+      "subtitle": "重建汉室与豪族政治",
+      "startYear": 25,
+      "endYear": 220,
+      "startLabel": "公元 25 年",
+      "endLabel": "公元 220 年",
+      "role": "mainline",
+      "eraId": "qin-han",
+      "accent": "#B07A45",
+      "capital": "洛阳",
+      "founder": "汉光武帝刘秀",
+      "summary": "东汉恢复汉室统治，政治中心东移。中后期外戚、宦官和地方势力增长，最终进入三国时期。",
+      "aliases": ["后汉", "汉"],
+      "sourceIds": ["houhanshu"]
+    },
+    {
+      "id": "three-kingdoms",
+      "name": "三国",
+      "subtitle": "魏、蜀、吴鼎立",
+      "startYear": 220,
+      "endYear": 280,
+      "startLabel": "公元 220 年",
+      "endLabel": "公元 280 年",
+      "role": "divided",
+      "eraId": "wei-jin-nanbei",
+      "accent": "#6A5947",
+      "capital": "魏都洛阳；蜀都成都；吴都建业等",
+      "founder": "曹丕、刘备、孙权相继称帝",
+      "summary": "魏、蜀、吴分别控制不同地区，长期并立。时间轴将它们合并为“三国时期”，是为了展示阶段，而不是抹去三个政权的差异。",
+      "aliases": ["魏蜀吴", "曹魏", "蜀汉", "东吴"],
+      "sourceIds": ["sanguozhi"]
+    },
+    {
+      "id": "western-jin",
+      "name": "西晋",
+      "subtitle": "短暂统一与八王之乱",
+      "startYear": 266,
+      "endYear": 316,
+      "startLabel": "公元 266 年",
+      "endLabel": "公元 316 年",
+      "role": "mainline",
+      "eraId": "wei-jin-nanbei",
+      "accent": "#5E6F66",
+      "capital": "洛阳",
+      "founder": "晋武帝司马炎",
+      "summary": "西晋完成短暂统一，但宗室冲突与政治失衡迅速削弱中央。其结束通常与北方政局剧变相连。",
+      "aliases": ["晋", "司马晋"],
+      "sourceIds": ["jinshu"]
+    },
+    {
+      "id": "eastern-jin",
+      "name": "东晋",
+      "subtitle": "南渡后的晋室",
+      "startYear": 317,
+      "endYear": 420,
+      "startLabel": "公元 317 年",
+      "endLabel": "公元 420 年",
+      "role": "mainline",
+      "eraId": "wei-jin-nanbei",
+      "accent": "#68786F",
+      "capital": "建康",
+      "founder": "晋元帝司马睿",
+      "summary": "晋室南迁后在建康延续，北方则进入多个政权并立的时期。单看东晋一条线不足以概括当时的整体政治格局。",
+      "aliases": ["晋", "司马晋"],
+      "sourceIds": ["jinshu"]
+    },
+    {
+      "id": "northern-southern",
+      "name": "南北朝",
+      "subtitle": "南北政权长期并立",
+      "startYear": 420,
+      "endYear": 589,
+      "startLabel": "公元 420 年",
+      "endLabel": "公元 589 年",
+      "role": "divided",
+      "eraId": "wei-jin-nanbei",
+      "accent": "#576A63",
+      "capital": "南朝多都建康；北朝都城屡有迁移",
+      "founder": "南北各政权先后建立",
+      "summary": "南朝与北朝并非单一王朝。此条目以时期方式呈现多个政权的共同更替，详情需要按具体政权进一步区分。",
+      "aliases": ["南朝", "北朝"],
+      "sourceIds": ["songshu", "weishu"]
+    },
+    {
+      "id": "sui",
+      "name": "隋",
+      "subtitle": "重新统一与制度整合",
+      "startYear": 581,
+      "endYear": 618,
+      "startLabel": "公元 581 年",
+      "endLabel": "公元 618 年",
+      "role": "mainline",
+      "eraId": "sui-tang",
+      "accent": "#8C4A3F",
+      "capital": "大兴",
+      "founder": "隋文帝杨坚",
+      "summary": "隋朝结束长期南北分裂，并推进官制、律令与交通建设。王朝存续较短，但其制度遗产延续到唐代。",
+      "aliases": ["隋朝"],
+      "sourceIds": ["suishu"]
+    },
+    {
+      "id": "tang",
+      "name": "唐",
+      "subtitle": "开放而多面的帝国",
+      "startYear": 618,
+      "endYear": 907,
+      "startLabel": "公元 618 年",
+      "endLabel": "公元 907 年",
+      "role": "mainline",
+      "eraId": "sui-tang",
+      "accent": "#B4693D",
+      "capital": "长安；东都洛阳",
+      "founder": "唐高祖李渊",
+      "summary": "唐代在前期形成强盛的中央帝国秩序，中后期的藩镇、财政和社会结构发生变化。把它理解为一条始终同质的直线会掩盖内部转折。",
+      "aliases": ["唐朝"],
+      "sourceIds": ["jiutangshu", "xintangshu"]
+    },
+    {
+      "id": "five-ten-kingdoms",
+      "name": "五代十国",
+      "subtitle": "政权频繁更替",
+      "startYear": 907,
+      "endYear": 979,
+      "startLabel": "公元 907 年",
+      "endLabel": "公元 979 年",
+      "role": "divided",
+      "eraId": "five-dynasties-song",
+      "accent": "#806C52",
+      "capital": "北方五代都城多在开封、洛阳等地",
+      "founder": "后梁朱温等相继建立政权",
+      "summary": "北方五个短命王朝与南方及其他地区的多个政权并存。该条目用于标示阶段，不能作为单一统一王朝理解。",
+      "aliases": ["五代", "十国"],
+      "sourceIds": ["xinwudaishi"]
+    },
+    {
+      "id": "liao",
+      "name": "辽",
+      "subtitle": "契丹建立的北方政权",
+      "startYear": 916,
+      "endYear": 1125,
+      "startLabel": "公元 916 年",
+      "endLabel": "公元 1125 年",
+      "role": "parallel",
+      "eraId": "five-dynasties-song",
+      "accent": "#596B73",
+      "capital": "上京临潢府等",
+      "founder": "辽太祖耶律阿保机",
+      "summary": "辽由契丹建立，与五代、北宋等政权长期并立。它以“并立政权”显示，避免把北宋误当作当时唯一政权。",
+      "aliases": ["契丹"],
+      "sourceIds": ["liaoshi"]
+    },
+    {
+      "id": "northern-song",
+      "name": "北宋",
+      "subtitle": "文官政治与城市发展",
+      "startYear": 960,
+      "endYear": 1127,
+      "startLabel": "公元 960 年",
+      "endLabel": "公元 1127 年",
+      "role": "mainline",
+      "eraId": "five-dynasties-song",
+      "accent": "#47746D",
+      "capital": "开封",
+      "founder": "宋太祖赵匡胤",
+      "summary": "北宋重建以中央为核心的文官治理，并经历商业、城市与技术的重要发展。其时辽、西夏等政权同时存在。",
+      "aliases": ["宋", "赵宋"],
+      "sourceIds": ["songshi"]
+    },
+    {
+      "id": "western-xia",
+      "name": "西夏",
+      "subtitle": "党项建立的西北政权",
+      "startYear": 1038,
+      "endYear": 1227,
+      "startLabel": "公元 1038 年",
+      "endLabel": "公元 1227 年",
+      "role": "parallel",
+      "eraId": "five-dynasties-song",
+      "accent": "#91703E",
+      "capital": "兴庆府",
+      "founder": "夏景宗李元昊",
+      "summary": "西夏与宋、辽、金等政权发生长期交往和冲突。此条目把西北政权放回同一时间尺度中。",
+      "aliases": ["大白高国", "党项夏"],
+      "sourceIds": ["songshi", "jinshi"]
+    },
+    {
+      "id": "southern-song",
+      "name": "南宋",
+      "subtitle": "临安时期的宋朝",
+      "startYear": 1127,
+      "endYear": 1279,
+      "startLabel": "公元 1127 年",
+      "endLabel": "公元 1279 年",
+      "role": "mainline",
+      "eraId": "five-dynasties-song",
+      "accent": "#4E7B72",
+      "capital": "临安",
+      "founder": "宋高宗赵构",
+      "summary": "北宋覆亡后，宋朝在南方延续。北方的金、西夏和后来的蒙古政权同时存在，构成多政权互动的局面。",
+      "aliases": ["宋", "赵宋"],
+      "sourceIds": ["songshi"]
+    },
+    {
+      "id": "jin-jurchen",
+      "name": "金",
+      "subtitle": "女真建立的北方政权",
+      "startYear": 1115,
+      "endYear": 1234,
+      "startLabel": "公元 1115 年",
+      "endLabel": "公元 1234 年",
+      "role": "parallel",
+      "eraId": "five-dynasties-song",
+      "accent": "#6E5947",
+      "capital": "会宁府、中都、汴京等，多次迁移",
+      "founder": "金太祖完颜阿骨打",
+      "summary": "金与南宋长期对峙，并控制北方广大地区。其都城和政治结构不断调整，不能用单一中心看待。",
+      "aliases": ["女真金", "大金"],
+      "sourceIds": ["jinshi"]
+    },
+    {
+      "id": "yuan",
+      "name": "元",
+      "subtitle": "蒙古帝国脉络中的中国王朝",
+      "startYear": 1271,
+      "endYear": 1368,
+      "startLabel": "公元 1271 年",
+      "endLabel": "公元 1368 年",
+      "role": "mainline",
+      "eraId": "yuan-ming-qing",
+      "accent": "#6D5541",
+      "capital": "大都",
+      "founder": "元世祖忽必烈",
+      "summary": "1271 年忽必烈定国号为元。元朝与此前蒙古诸汗国的历史相连，但本时间轴把中国王朝纪年从 1271 年起单独展示。",
+      "aliases": ["大元", "元朝"],
+      "sourceIds": ["yuanshi"]
+    },
+    {
+      "id": "ming",
+      "name": "明",
+      "subtitle": "重建汉地王朝秩序",
+      "startYear": 1368,
+      "endYear": 1644,
+      "startLabel": "公元 1368 年",
+      "endLabel": "公元 1644 年",
+      "role": "mainline",
+      "eraId": "yuan-ming-qing",
+      "accent": "#9A3E32",
+      "capital": "南京；后迁北京",
+      "founder": "明太祖朱元璋",
+      "summary": "明朝重建中央集权国家，并在不同阶段调整财税、军制与对外关系。永乐以后北京成为政治中心。",
+      "aliases": ["大明", "明朝"],
+      "sourceIds": ["mingshi"]
+    },
+    {
+      "id": "qing",
+      "name": "清",
+      "subtitle": "帝制时代的最后一个王朝",
+      "startYear": 1636,
+      "endYear": 1912,
+      "startLabel": "公元 1636 年",
+      "endLabel": "公元 1912 年",
+      "role": "mainline",
+      "eraId": "yuan-ming-qing",
+      "accent": "#4C5B59",
+      "capital": "盛京；1644 年后以北京为都",
+      "founder": "清太宗皇太极",
+      "summary": "1636 年皇太极改国号为大清；1644 年清军入关后逐步控制中原。1912 年清帝退位，帝制时代结束。",
+      "aliases": ["大清", "清朝"],
+      "sourceIds": ["qingshigao"]
+    }
+  ],
+  "events": [
+    {
+      "id": "xia-traditional-founding",
+      "dynastyId": "xia",
+      "date": {
+        "year": -2070,
+        "month": null,
+        "day": null,
+        "display": "约前 2070 年",
+        "precision": "approximate"
+      },
+      "title": "传统纪年中的夏代开端",
+      "summary": "后世文献把禹及其后的夏后氏视为王朝传统的开端。这里的年代采用现代常见断代框架中的约数。",
+      "importance": 2,
+      "tags": ["早期国家", "传统纪年"],
+      "sourceIds": ["shangshu", "shiji", "xiashangzhou"],
+      "caveat": "夏代的年代、社会形态与考古遗存对应关系均存在学术讨论。"
+    },
+    {
+      "id": "shang-traditional-founding",
+      "dynastyId": "shang",
+      "date": {
+        "year": -1600,
+        "month": null,
+        "day": null,
+        "display": "约前 1600 年",
+        "precision": "approximate"
+      },
+      "title": "商代传统纪年的开端",
+      "summary": "传统叙事以汤建立商为王朝更替的重要节点，现代常用框架将这一定点置于约公元前 1600 年。",
+      "importance": 2,
+      "tags": ["早期王朝", "商汤"],
+      "sourceIds": ["shangshu", "shiji", "xiashangzhou"],
+      "caveat": "这是约数，具体年代需要依据不同断代方案理解。"
+    },
+    {
+      "id": "pan-geng-yin",
+      "dynastyId": "shang",
+      "date": {
+        "year": -1300,
+        "month": null,
+        "day": null,
+        "display": "约前 1300 年",
+        "precision": "approximate"
+      },
+      "title": "盘庚迁殷",
+      "summary": "晚商以殷为中心留下大量甲骨卜辞和考古材料。迁殷的具体次数与年代需要结合文献和考古研究阅读。",
+      "importance": 2,
+      "tags": ["殷墟", "甲骨文"],
+      "sourceIds": ["shiji", "xiashangzhou"],
+      "caveat": "事件年代为约数，不同材料之间并非完全一致。"
+    },
+    {
+      "id": "muye",
+      "dynastyId": "western-zhou",
+      "date": {
+        "year": -1046,
+        "month": null,
+        "day": null,
+        "display": "前 1046 年",
+        "precision": "year"
+      },
+      "title": "牧野之战与西周建立",
+      "summary": "周武王在牧野击败商军，后世以此作为西周开始的标志。该年份采用夏商周断代工程的推定结果。",
+      "importance": 3,
+      "tags": ["武王伐纣", "西周"],
+      "sourceIds": ["shiji", "xiashangzhou"],
+      "caveat": "武王伐纣的绝对年代还有其他研究结论，本页仅注明所采用的主要参考。"
+    },
+    {
+      "id": "eastward-zhou",
+      "dynastyId": "eastern-zhou",
+      "date": {
+        "year": -770,
+        "month": null,
+        "day": null,
+        "display": "前 770 年",
+        "precision": "year"
+      },
+      "title": "周平王东迁",
+      "summary": "周王室将政治中心东移至洛邑，此后通常称东周。具体的迁都过程和旧都局势并不等同于一个瞬间完成的转折。",
+      "importance": 3,
+      "tags": ["平王东迁", "洛邑"],
+      "sourceIds": ["shiji"]
+    },
+    {
+      "id": "confucius-born",
+      "dynastyId": "eastern-zhou",
+      "date": {
+        "year": -551,
+        "month": null,
+        "day": null,
+        "display": "前 551 年",
+        "precision": "year"
+      },
+      "title": "孔子出生",
+      "summary": "孔子生活于春秋晚期，其思想经后世整理和解释，成为中国政治、教育与伦理传统的重要组成部分。",
+      "importance": 2,
+      "tags": ["思想", "春秋"],
+      "sourceIds": ["shiji"],
+      "caveat": null
+    },
+    {
+      "id": "warring-states-convention",
+      "dynastyId": "eastern-zhou",
+      "date": {
+        "year": -475,
+        "month": null,
+        "day": null,
+        "display": "前 475 年",
+        "precision": "disputed"
+      },
+      "title": "战国时期通行分期",
+      "summary": "春秋与战国的分界并没有唯一事件。本页采用前 475 年作为常见分期标识，便于时间轴展示。",
+      "importance": 1,
+      "tags": ["分期", "战国"],
+      "sourceIds": ["shiji"],
+      "caveat": "春秋战国分界存在不同分期方案，不能把它理解为一个同时发生的政治事件。"
+    },
+    {
+      "id": "qin-unification",
+      "dynastyId": "qin",
+      "date": {
+        "year": -221,
+        "month": null,
+        "day": null,
+        "display": "前 221 年",
+        "precision": "year"
+      },
+      "title": "秦统一六国",
+      "summary": "秦完成对六国的兼并，秦王政称皇帝，建立以郡县制为基础的中央集权帝国。",
+      "importance": 3,
+      "tags": ["统一", "郡县制", "秦始皇"],
+      "sourceIds": ["shiji"],
+      "caveat": null
+    },
+    {
+      "id": "chen-sheng",
+      "dynastyId": "qin",
+      "date": {
+        "year": -209,
+        "month": null,
+        "day": null,
+        "display": "前 209 年",
+        "precision": "year"
+      },
+      "title": "陈胜吴广起义",
+      "summary": "秦末戍卒起义成为反秦战争的重要起点之一，随后各地力量迅速卷入。",
+      "importance": 2,
+      "tags": ["起义", "秦末"],
+      "sourceIds": ["shiji"],
+      "caveat": null
+    },
+    {
+      "id": "western-han-founded",
+      "dynastyId": "western-han",
+      "date": {
+        "year": -202,
+        "month": null,
+        "day": null,
+        "display": "前 202 年",
+        "precision": "year"
+      },
+      "title": "西汉建立",
+      "summary": "刘邦在楚汉战争后建立汉政权，定都长安。汉初在秦制基础上调整统治方式。",
+      "importance": 3,
+      "tags": ["刘邦", "长安"],
+      "sourceIds": ["shiji", "hanshu"],
+      "caveat": null
+    },
+    {
+      "id": "zhang-qian",
+      "dynastyId": "western-han",
+      "date": {
+        "year": -138,
+        "month": null,
+        "day": null,
+        "display": "前 138 年",
+        "precision": "year"
+      },
+      "title": "张骞出使西域",
+      "summary": "张骞出使西域，相关往来被后世纳入丝绸之路的长期叙事。一次出使并不等于一条交通网络突然出现。",
+      "importance": 2,
+      "tags": ["西域", "交流"],
+      "sourceIds": ["shiji", "hanshu"],
+      "caveat": "出使年份有前 138 年与前 139 年等不同表述，本页采用前 138 年。"
+    },
+    {
+      "id": "wang-mang-new",
+      "dynastyId": "xin",
+      "date": {
+        "year": 9,
+        "month": null,
+        "day": null,
+        "display": "公元 9 年",
+        "precision": "year"
+      },
+      "title": "王莽代汉建新",
+      "summary": "王莽结束西汉皇统并建立新朝，随后推行改制。政权在动乱中很快失去控制。",
+      "importance": 2,
+      "tags": ["王莽", "改制"],
+      "sourceIds": ["hanshu"],
+      "caveat": null
+    },
+    {
+      "id": "eastern-han-founded",
+      "dynastyId": "eastern-han",
+      "date": {
+        "year": 25,
+        "month": null,
+        "day": null,
+        "display": "公元 25 年",
+        "precision": "year"
+      },
+      "title": "东汉建立",
+      "summary": "刘秀重建汉室，后来定都洛阳。东汉的政治结构和社会条件与西汉已有明显变化。",
+      "importance": 3,
+      "tags": ["刘秀", "洛阳"],
+      "sourceIds": ["houhanshu"],
+      "caveat": null
+    },
+    {
+      "id": "paper-improved",
+      "dynastyId": "eastern-han",
+      "date": {
+        "year": 105,
+        "month": null,
+        "day": null,
+        "display": "公元 105 年",
+        "precision": "year"
+      },
+      "title": "蔡伦改进造纸工艺",
+      "summary": "传统文献记载蔡伦在 105 年改进造纸方法。这一事件常被概括为“造纸术发明”，但纸和书写材料的发展经历了更长的过程。",
+      "importance": 2,
+      "tags": ["造纸", "技术"],
+      "sourceIds": ["houhanshu"],
+      "caveat": "“改进工艺”与传统叙事中的“发明纸张”不应简单等同。"
+    },
+    {
+      "id": "cao-pi-wei",
+      "dynastyId": "three-kingdoms",
+      "date": {
+        "year": 220,
+        "month": null,
+        "day": null,
+        "display": "公元 220 年",
+        "precision": "year"
+      },
+      "title": "曹丕代汉称帝",
+      "summary": "曹丕接受汉献帝禅让建立魏，随后刘备、孙权也相继称帝。三国鼎立格局逐步形成。",
+      "importance": 3,
+      "tags": ["曹魏", "禅让"],
+      "sourceIds": ["sanguozhi"],
+      "caveat": null
+    },
+    {
+      "id": "jin-unifies",
+      "dynastyId": "western-jin",
+      "date": {
+        "year": 280,
+        "month": null,
+        "day": null,
+        "display": "公元 280 年",
+        "precision": "year"
+      },
+      "title": "西晋灭吴",
+      "summary": "西晋灭吴，结束三国分立局面。统一并未带来长期稳定，宗室与中央权力关系很快恶化。",
+      "importance": 3,
+      "tags": ["统一", "灭吴"],
+      "sourceIds": ["jinshu"],
+      "caveat": null
+    },
+    {
+      "id": "eastern-jin-founded",
+      "dynastyId": "eastern-jin",
+      "date": {
+        "year": 317,
+        "month": null,
+        "day": null,
+        "display": "公元 317 年",
+        "precision": "year"
+      },
+      "title": "东晋建立",
+      "summary": "司马睿在建康称帝，延续晋室。北方多个政权同时存在，政治格局并非单一王朝统辖全国。",
+      "importance": 2,
+      "tags": ["南渡", "建康"],
+      "sourceIds": ["jinshu"],
+      "caveat": null
+    },
+    {
+      "id": "liu-song-founded",
+      "dynastyId": "northern-southern",
+      "date": {
+        "year": 420,
+        "month": null,
+        "day": null,
+        "display": "公元 420 年",
+        "precision": "year"
+      },
+      "title": "刘裕建宋",
+      "summary": "刘裕代晋建立宋，南朝由此开始。此后南方经历宋、齐、梁、陈等政权更替。",
+      "importance": 2,
+      "tags": ["南朝", "刘宋"],
+      "sourceIds": ["songshu"],
+      "caveat": null
+    },
+    {
+      "id": "sui-founded",
+      "dynastyId": "sui",
+      "date": {
+        "year": 581,
+        "month": null,
+        "day": null,
+        "display": "公元 581 年",
+        "precision": "year"
+      },
+      "title": "隋朝建立",
+      "summary": "杨坚代北周建立隋，随后推进中央官制、地方行政和法制整合。",
+      "importance": 2,
+      "tags": ["杨坚", "北周"],
+      "sourceIds": ["suishu"],
+      "caveat": null
+    },
+    {
+      "id": "sui-unifies",
+      "dynastyId": "sui",
+      "date": {
+        "year": 589,
+        "month": null,
+        "day": null,
+        "display": "公元 589 年",
+        "precision": "year"
+      },
+      "title": "隋灭陈，重归一统",
+      "summary": "隋灭陈，结束南北朝以来长期分裂，重新建立统一的中央政权。",
+      "importance": 3,
+      "tags": ["统一", "灭陈"],
+      "sourceIds": ["suishu"],
+      "caveat": null
+    },
+    {
+      "id": "tang-founded",
+      "dynastyId": "tang",
+      "date": {
+        "year": 618,
+        "month": null,
+        "day": null,
+        "display": "公元 618 年",
+        "precision": "year"
+      },
+      "title": "唐朝建立",
+      "summary": "李渊建立唐朝。此后唐代逐步整合隋末以来的各方势力，并形成新的政治秩序。",
+      "importance": 3,
+      "tags": ["李渊", "长安"],
+      "sourceIds": ["jiutangshu", "xintangshu"],
+      "caveat": null
+    },
+    {
+      "id": "an-lushan",
+      "dynastyId": "tang",
+      "date": {
+        "year": 755,
+        "month": null,
+        "day": null,
+        "display": "公元 755 年",
+        "precision": "year"
+      },
+      "title": "安史之乱爆发",
+      "summary": "安禄山起兵后，战乱持续多年，深刻改变唐代中央与地方权力关系、人口分布和财政结构。",
+      "importance": 3,
+      "tags": ["藩镇", "转折"],
+      "sourceIds": ["jiutangshu", "xintangshu"],
+      "caveat": null
+    },
+    {
+      "id": "tang-ended",
+      "dynastyId": "five-ten-kingdoms",
+      "date": {
+        "year": 907,
+        "month": null,
+        "day": null,
+        "display": "公元 907 年",
+        "precision": "year"
+      },
+      "title": "唐亡与后梁建立",
+      "summary": "朱温代唐建立后梁，历史叙事通常以 907 年作为五代十国阶段的开端。",
+      "importance": 3,
+      "tags": ["唐亡", "后梁"],
+      "sourceIds": ["xinwudaishi", "jiutangshu"],
+      "caveat": null
+    },
+    {
+      "id": "song-founded",
+      "dynastyId": "northern-song",
+      "date": {
+        "year": 960,
+        "month": null,
+        "day": null,
+        "display": "公元 960 年",
+        "precision": "year"
+      },
+      "title": "北宋建立",
+      "summary": "赵匡胤建立宋朝，随后逐步统一中原主要地区。北宋并不控制当时全部中国疆域。",
+      "importance": 3,
+      "tags": ["赵匡胤", "宋初"],
+      "sourceIds": ["songshi"],
+      "caveat": null
+    },
+    {
+      "id": "jingkang",
+      "dynastyId": "southern-song",
+      "date": {
+        "year": 1127,
+        "month": null,
+        "day": null,
+        "display": "公元 1127 年",
+        "precision": "year"
+      },
+      "title": "靖康之变与南宋开端",
+      "summary": "金军攻破东京，北宋灭亡；赵构随后在南方建立南宋。南北关系由此进入长期对峙。",
+      "importance": 3,
+      "tags": ["靖康", "北宋灭亡"],
+      "sourceIds": ["songshi", "jinshi"],
+      "caveat": null
+    },
+    {
+      "id": "mongol-state",
+      "dynastyId": "yuan",
+      "date": {
+        "year": 1206,
+        "month": null,
+        "day": null,
+        "display": "公元 1206 年",
+        "precision": "year"
+      },
+      "title": "成吉思汗建立大蒙古国",
+      "summary": "铁木真被推举为成吉思汗，建立大蒙古国。此后蒙古扩张的规模远超后来的元朝中国疆域。",
+      "importance": 3,
+      "tags": ["蒙古", "成吉思汗"],
+      "sourceIds": ["yuanshi"],
+      "caveat": "大蒙古国与 1271 年建立的元朝并非完全相同的纪年范围。"
+    },
+    {
+      "id": "yuan-founded",
+      "dynastyId": "yuan",
+      "date": {
+        "year": 1271,
+        "month": null,
+        "day": null,
+        "display": "公元 1271 年",
+        "precision": "year"
+      },
+      "title": "忽必烈定国号为元",
+      "summary": "忽必烈采用“元”为国号，元朝中国王朝纪年通常从此年开始。",
+      "importance": 3,
+      "tags": ["忽必烈", "国号"],
+      "sourceIds": ["yuanshi"],
+      "caveat": null
+    },
+    {
+      "id": "yamen",
+      "dynastyId": "yuan",
+      "date": {
+        "year": 1279,
+        "month": null,
+        "day": null,
+        "display": "公元 1279 年",
+        "precision": "year"
+      },
+      "title": "崖山海战与南宋覆亡",
+      "summary": "元军在崖山击败南宋残余势力，南宋政权结束。",
+      "importance": 2,
+      "tags": ["崖山", "南宋覆亡"],
+      "sourceIds": ["songshi", "yuanshi"],
+      "caveat": null
+    },
+    {
+      "id": "ming-founded",
+      "dynastyId": "ming",
+      "date": {
+        "year": 1368,
+        "month": null,
+        "day": null,
+        "display": "公元 1368 年",
+        "precision": "year"
+      },
+      "title": "明朝建立",
+      "summary": "朱元璋称帝，建立明朝并逐步完成对元朝残余势力的替代。",
+      "importance": 3,
+      "tags": ["朱元璋", "南京"],
+      "sourceIds": ["mingshi"],
+      "caveat": null
+    },
+    {
+      "id": "zheng-he",
+      "dynastyId": "ming",
+      "date": {
+        "year": 1405,
+        "month": null,
+        "day": null,
+        "display": "公元 1405 年",
+        "precision": "year"
+      },
+      "title": "郑和首次下西洋",
+      "summary": "郑和船队从明朝出发远航。远航带来外交、贸易和信息交流，但不应概括为现代意义上的全球殖民扩张。",
+      "importance": 2,
+      "tags": ["航海", "朝贡"],
+      "sourceIds": ["mingshi"],
+      "caveat": null
+    },
+    {
+      "id": "qing-proclaimed",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1636,
+        "month": null,
+        "day": null,
+        "display": "公元 1636 年",
+        "precision": "year"
+      },
+      "title": "皇太极改国号为大清",
+      "summary": "皇太极在盛京称帝并改国号为大清。1644 年清军入关后，清朝才逐步建立对中原的统治。",
+      "importance": 2,
+      "tags": ["皇太极", "盛京"],
+      "sourceIds": ["qingshigao"],
+      "caveat": null
+    },
+    {
+      "id": "ming-qing-transition",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1644,
+        "month": null,
+        "day": null,
+        "display": "公元 1644 年",
+        "precision": "year"
+      },
+      "title": "甲申之变与清军入关",
+      "summary": "李自成攻入北京、明朝中央政权崩溃，清军随后入关并逐步扩大控制。政权更替经历了持续多年的战争与整合。",
+      "importance": 3,
+      "tags": ["甲申", "入关"],
+      "sourceIds": ["mingshi", "qingshigao"],
+      "caveat": null
+    },
+    {
+      "id": "opium-war",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1840,
+        "month": null,
+        "day": null,
+        "display": "公元 1840 年",
+        "precision": "year"
+      },
+      "title": "鸦片战争爆发",
+      "summary": "英国与中国清朝之间的战争爆发，战后条约体系对清朝财政、通商和主权造成深远影响。",
+      "importance": 3,
+      "tags": ["近代", "条约体系"],
+      "sourceIds": ["qingshigao"],
+      "caveat": null
+    },
+    {
+      "id": "qing-abdication",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1912,
+        "month": null,
+        "day": null,
+        "display": "公元 1912 年",
+        "precision": "year"
+      },
+      "title": "清帝退位",
+      "summary": "清帝退位，清朝统治结束，延续两千余年的帝制时代走向终结。",
+      "importance": 3,
+      "tags": ["辛亥革命", "帝制终结"],
+      "sourceIds": ["qingshigao"],
+      "caveat": null
+    }
+  ],
+  "sources": [
+    {
+      "id": "shangshu",
+      "title": "尚书",
+      "author": "传统文献汇编",
+      "kind": "primary",
+      "citation": "《尚书》相关篇目",
+      "note": "保存早期政治与历史观念，各篇成书年代与文本传承复杂，使用时需结合版本研究。"
+    },
+    {
+      "id": "shiji",
+      "title": "史记",
+      "author": "司马迁",
+      "kind": "primary",
+      "citation": "《史记》相关本纪、世家与列传",
+      "note": "纪传体通史，包含先秦至汉武帝时期的重要叙事。后世史学对其材料来源与记载差异有持续讨论。"
+    },
+    {
+      "id": "hanshu",
+      "title": "汉书",
+      "author": "班固等",
+      "kind": "primary",
+      "citation": "《汉书》相关帝纪、志与传",
+      "note": "记西汉历史的重要纪传体史书。"
+    },
+    {
+      "id": "houhanshu",
+      "title": "后汉书",
+      "author": "范晔",
+      "kind": "primary",
+      "citation": "《后汉书》相关帝纪、志与传",
+      "note": "记东汉历史的重要史书。"
+    },
+    {
+      "id": "sanguozhi",
+      "title": "三国志",
+      "author": "陈寿",
+      "kind": "primary",
+      "citation": "《三国志》魏、蜀、吴三书",
+      "note": "三国历史的基本纪传体文献之一。"
+    },
+    {
+      "id": "jinshu",
+      "title": "晋书",
+      "author": "房玄龄等",
+      "kind": "primary",
+      "citation": "《晋书》相关帝纪、志与传",
+      "note": "唐代官修晋史，包含两晋及十六国相关内容。"
+    },
+    {
+      "id": "songshu",
+      "title": "宋书",
+      "author": "沈约",
+      "kind": "primary",
+      "citation": "《宋书》相关本纪、志与传",
+      "note": "记南朝刘宋历史的重要史书。"
+    },
+    {
+      "id": "weishu",
+      "title": "魏书",
+      "author": "魏收",
+      "kind": "primary",
+      "citation": "《魏书》相关帝纪、志与传",
+      "note": "记北魏及北方相关历史的重要史书。"
+    },
+    {
+      "id": "suishu",
+      "title": "隋书",
+      "author": "魏徵等",
+      "kind": "primary",
+      "citation": "《隋书》相关帝纪、志与传",
+      "note": "唐代官修隋史，也保存南北朝以来制度资料。"
+    },
+    {
+      "id": "jiutangshu",
+      "title": "旧唐书",
+      "author": "刘昫等",
+      "kind": "primary",
+      "citation": "《旧唐书》相关本纪、志与传",
+      "note": "后晋时期编修，记唐代历史。"
+    },
+    {
+      "id": "xintangshu",
+      "title": "新唐书",
+      "author": "欧阳修、宋祁等",
+      "kind": "primary",
+      "citation": "《新唐书》相关本纪、志与传",
+      "note": "北宋时期重修唐史，体例与部分记载可与《旧唐书》互参。"
+    },
+    {
+      "id": "xinwudaishi",
+      "title": "新五代史",
+      "author": "欧阳修",
+      "kind": "primary",
+      "citation": "《新五代史》相关本纪、传与十国世家",
+      "note": "记五代十国历史的重要史书，叙述褒贬意识较强，宜与《旧五代史》等互参。"
+    },
+    {
+      "id": "liaoshi",
+      "title": "辽史",
+      "author": "脱脱等",
+      "kind": "primary",
+      "citation": "《辽史》相关本纪、志与传",
+      "note": "元修辽史，是研究辽代政治与制度的重要传统文献。"
+    },
+    {
+      "id": "songshi",
+      "title": "宋史",
+      "author": "脱脱等",
+      "kind": "primary",
+      "citation": "《宋史》相关本纪、志与传",
+      "note": "元修宋史，篇幅宏大，也包含与周边政权关系的重要资料。"
+    },
+    {
+      "id": "jinshi",
+      "title": "金史",
+      "author": "脱脱等",
+      "kind": "primary",
+      "citation": "《金史》相关本纪、志与传",
+      "note": "元修金史，是研究金代与宋金关系的重要传统文献。"
+    },
+    {
+      "id": "yuanshi",
+      "title": "元史",
+      "author": "宋濂等",
+      "kind": "primary",
+      "citation": "《元史》相关本纪、志与传",
+      "note": "明初官修元史，成书较快，阅读时需要与其他材料互参。"
+    },
+    {
+      "id": "mingshi",
+      "title": "明史",
+      "author": "张廷玉等",
+      "kind": "primary",
+      "citation": "《明史》相关本纪、志与传",
+      "note": "清修明史，是研究明代历史的重要传统文献。"
+    },
+    {
+      "id": "qingshigao",
+      "title": "清史稿",
+      "author": "赵尔巽等",
+      "kind": "primary",
+      "citation": "《清史稿》相关本纪、志与传",
+      "note": "民国时期编纂的清史稿，属于未定稿性质，具体记载需结合其他材料。"
+    },
+    {
+      "id": "xiashangzhou",
+      "title": "夏商周断代工程 1996—2000 年阶段成果报告",
+      "author": "夏商周断代工程专家组",
+      "kind": "reference",
+      "citation": "《夏商周断代工程 1996—2000 年阶段成果报告（简本）》",
+      "note": "本版先秦若干年份采用该报告中的常见推定，但这些年代并不是没有任何学术争议的唯一答案。"
+    }
+  ]
+}
