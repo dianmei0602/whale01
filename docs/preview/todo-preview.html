@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>Nomi · 待办设计稿</title>
+<style>
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{margin:0;padding:28px 24px 40px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#eaf2fb;color:#142338;
+  background-image:radial-gradient(900px 500px at 20% -10%,#ffffff 0%,#eaf2fb 45%,#dfeaf7 100%)}
+
+.head{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.head .mark{width:30px;height:30px;border-radius:8px;background:#080b10;display:flex;align-items:center;justify-content:center;gap:5px}
+.head .mark i{width:3.5px;height:12px;border-radius:99px;background:#4fe0ff;box-shadow:0 0 5px #4fe0ff}
+.head b{font-size:15px;letter-spacing:.2px}
+h1{font-size:34px;line-height:1.2;margin:6px 0 4px;letter-spacing:-.6px}
+.lead{font-size:13.5px;color:#5e7184;margin:0 0 22px;max-width:760px}
+
+.row{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:10px;align-items:center}
+.cap{font-size:12px;color:#5e7184;font-weight:600;letter-spacing:.3px}
+
+/* 手机外壳 */
+.bezel{width:372px;height:796px;border-radius:54px;padding:9px;position:relative;
+  background:linear-gradient(160deg,#41464f,#171a1f 38%,#0f1114 68%,#31363d);
+  box-shadow:0 36px 80px rgba(20,35,56,.28),inset 0 0 0 1.5px rgba(255,255,255,.14),inset 0 0 0 6px #0a0b0d}
+.screen{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:#f1f8ff;
+  display:flex;flex-direction:column}
+.statusbar{height:50px;padding:15px 26px 0 30px;display:flex;justify-content:space-between;
+  color:#142338;font-size:14.5px;font-weight:600;flex:none}
+.statusbar .icons{display:flex;align-items:center;gap:5px}
+.statusbar .icons i{display:block;width:19px;height:10px;background:currentColor;border-radius:2px}
+.statusbar .icons i.round{width:9px;height:9px;border-radius:50%}
+.statusbar .icons i.pill{width:22px;height:10px;border-radius:3px}
+
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:9px;padding:4px 18px 0;flex:none}
+.av{width:32px;height:32px;border-radius:9px;background:#080b10;display:flex;align-items:center;justify-content:center;gap:4.5px}
+.av span{width:3.2px;height:11px;border-radius:99px;background:#4fe0ff;box-shadow:0 0 5px #4fe0ff}
+.topname{font-size:15.5px;font-weight:600;color:#142338}
+.topsub{display:flex;align-items:center;gap:5px;font-size:11px;color:#5e7184;margin-top:1px}
+.topsub i{width:5.5px;height:5.5px;border-radius:50%;background:#25c37f;display:block}
+.rbtn{margin-left:auto;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid rgba(20,35,56,.10);
+  display:grid;place-items:center;color:#142338;font-size:13px}
+
+.body{flex:1;overflow:hidden;padding:0 18px;display:flex;flex-direction:column;gap:13px}
+
+.greet{font-size:27px;font-weight:700;letter-spacing:-.5px;margin-top:8px;color:#142338}
+.date{font-size:12.5px;color:#5e7184;margin-top:3px}
+
+/* 深蓝重点卡 */
+.navy{background:#17314d;border-radius:22px;padding:15px 16px;color:#f8fbff;
+  box-shadow:0 14px 30px rgba(23,49,77,.24)}
+.navy .top{display:flex;justify-content:space-between;align-items:baseline}
+.navy .meta{font-size:11.5px;color:rgba(248,251,255,.66);font-weight:500}
+.navy .cd{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.navy h3{margin:8px 0 5px;font-size:20px;font-weight:700;letter-spacing:-.2px}
+.navy p{margin:0 0 12px;font-size:12px;color:rgba(248,251,255,.8);line-height:1.45}
+.navy .acts{display:flex;gap:8px}
+.navy .acts div{flex:1;text-align:center;font-size:12.5px;font-weight:600;padding:9px 0;border-radius:11px}
+.navy .acts .a1{background:#f8fbff;color:#17314d}
+.navy .acts .a2{background:rgba(248,251,255,.14);color:#f8fbff}
+
+/* 白卡 */
+.card{background:#fff;border:1px solid rgba(20,35,56,.09);border-radius:18px;overflow:hidden;
+  box-shadow:0 8px 20px rgba(20,35,56,.05)}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px}
+.card-head b{font-size:12.5px;font-weight:600;color:#5e7184;letter-spacing:.2px}
+.card-head span{font-size:11.5px;color:#5e7184}
+
+/* 待办行 */
+.todo{display:flex;align-items:flex-start;gap:11px;padding:11px 14px}
+.todo + .todo{border-top:1px solid rgba(20,35,56,.07)}
+.todo .ring{width:20px;height:20px;border-radius:50%;border:1.8px solid #147fe8;flex:none;margin-top:1px;position:relative}
+.todo .ring.done{background:#147fe8;border-color:#147fe8}
+.todo .ring.done::after{content:"";position:absolute;left:6px;top:3px;width:5px;height:9px;
+  border:2px solid #fff;border-top:0;border-left:0;transform:rotate(42deg)}
+.todo .txt{flex:1;min-width:0}
+.todo .t{font-size:14px;font-weight:500;color:#142338;line-height:1.3}
+.todo .t.done{color:#5e7184;text-decoration:line-through}
+.todo .m{font-size:11.5px;color:#5e7184;margin-top:3px;display:flex;gap:6px;align-items:center}
+.todo .m.warn{color:#9a6319;font-weight:600}
+.chip{font-size:10.5px;padding:2px 7px;border-radius:99px;background:#dfeeff;color:#147fe8;font-weight:600}
+.chip.warn{background:#fff2d8;color:#9a6319}
+.chip.gray{background:#f1f4f8;color:#5e7184;font-weight:500}
+
+.more{padding:10px 14px;border-top:1px solid rgba(20,35,56,.07);display:flex;justify-content:center;
+  font-size:12px;color:#147fe8;font-weight:600;background:#fbfdff}
+
+/* 底部输入坞 */
+.dock{margin:0 14px 8px;padding:7px;border-radius:999px;background:#fff;border:1px solid rgba(20,35,56,.10);
+  display:flex;align-items:center;gap:9px;flex:none;box-shadow:0 8px 18px rgba(20,35,56,.06)}
+.dock .a{width:32px;height:32px;border-radius:9px;background:#080b10;display:flex;align-items:center;justify-content:center;gap:4px;flex:none}
+.dock .a span{width:3px;height:10px;border-radius:99px;background:#4fe0ff}
+.dock .ph{flex:1;font-size:13.5px;color:#93a3b5}
+.dock .mic{width:32px;height:32px;border-radius:50%;background:#dfeeff;display:grid;place-items:center;color:#147fe8;font-size:14px;flex:none}
+
+/* 底部导航 */
+.tabbar{height:72px;border-top:1px solid rgba(20,35,56,.08);background:rgba(255,255,255,.86);
+  display:flex;align-items:center;justify-content:space-around;flex:none;padding-bottom:10px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;color:#5e7184;font-size:14px;width:96px}
+.tab .i{font-size:22px;line-height:1}
+.tab.on{color:#147fe8}
+.home{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:120px;height:4.5px;
+  border-radius:3px;background:#142338;opacity:.2}
+
+/* 对话 */
+.msgs{padding:6px 16px 0;display:flex;flex-direction:column;gap:11px;flex:1;overflow:hidden}
+.bubble{max-width:78%;font-size:13.5px;line-height:1.45;padding:10px 13px;border-radius:16px}
+.mine{align-self:flex-end;background:#147fe8;color:#fff;border-bottom-right-radius:6px}
+.theirs{align-self:flex-start;background:#fff;color:#142338;border:1px solid rgba(20,35,56,.09);border-bottom-left-radius:6px}
+
+/* 确认卡 */
+.confirm{align-self:flex-start;width:100%;background:#fff;border:1px solid rgba(20,35,56,.12);
+  border-radius:18px;padding:14px;box-shadow:0 10px 24px rgba(20,35,56,.07)}
+.confirm .ct{font-size:15px;font-weight:700;color:#142338;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+.confirm .ct i{width:18px;height:18px;border-radius:6px;background:#fff2d8;color:#9a6319;display:grid;place-items:center;font-size:11px;font-weight:700;font-style:normal}
+.kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0}
+.kv b{color:#5e7184;font-weight:500}
+.kv span{color:#142338;font-weight:600}
+.note{margin-top:9px;font-size:11.5px;color:#5e7184;background:#f6f9fd;border-radius:10px;padding:8px 10px;line-height:1.45}
+.cbtns{display:flex;gap:9px;margin-top:12px}
+.cbtns div{flex:1;text-align:center;padding:10px 0;border-radius:12px;font-size:13px;font-weight:700}
+.cbtns .ok{background:#147fe8;color:#fff}
+.cbtns .no{background:#eef3f9;color:#5e7184}
+
+.receipt{align-self:flex-start;display:flex;align-items:center;gap:8px;background:#e9fbf3;border:1px solid #bfeeda;
+  color:#0f7a56;font-size:12.5px;padding:9px 12px;border-radius:12px;font-weight:600}
+.receipt i{width:16px;height:16px;border-radius:50%;background:#25c37f;color:#fff;display:grid;place-items:center;font-size:10px;font-style:normal}
+
+/* 全部待办页 */
+.page-head{display:flex;align-items:center;padding:6px 18px 2px;flex:none}
+.page-head h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.4px}
+.page-head .n{margin-left:8px;font-size:12px;color:#5e7184;background:#dfeeff;border-radius:99px;padding:3px 8px;font-weight:600}
+.page-head .finish{margin-left:auto;font-size:13px;color:#147fe8;font-weight:600}
+.group-label{font-size:11.5px;font-weight:600;color:#5e7184;letter-spacing:.4px;padding:2px 4px}
+.list-wrap{flex:1;overflow:hidden;padding:0 18px 8px;display:flex;flex-direction:column;gap:9px}
+.hint{position:absolute;left:0;right:0;bottom:118px;text-align:center;font-size:11px;color:#93a3b5}
+
+/* 说明区 */
+.notes{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;max-width:1180px}
+.note-card{background:#fff;border:1px solid rgba(20,35,56,.09);border-radius:16px;padding:14px 16px}
+.note-card h4{margin:0 0 8px;font-size:13px;letter-spacing:.2px}
+.note-card ul{margin:0;padding-left:17px;font-size:12.5px;color:#5e7184;line-height:1.7}
+.note-card b{color:#142338}
+</style>
+</head>
+<body>
+
+<div class="head"><div class="mark"><i></i><i></i></div><b>Nomi · 待办</b></div>
+<h1>待办不是清单，是「今天少做一件事」</h1>
+<p class="lead">三屏讲完：首页只看最急的两三条，全部页按时间分组，写操作一律先确认。所有勾选都写回系统「提醒事项」，不做第二份数据。</p>
+
+<div class="row">
+
+  <!-- ① 首页 -->
+  <div class="col">
+    <div class="cap">① 首页 · 只看最急的</div>
+    <div class="bezel"><div class="screen">
+      <div class="statusbar"><span>9:41</span><div class="icons"><i class="pill"></i><i class="round"></i><i></i></div></div>
+
+      <div class="topbar">
+        <div class="av"><span></span><span></span></div>
+        <div><div class="topname">Nomi</div><div class="topsub"><i></i>在线 · 正在陪着你</div></div>
+        <div class="rbtn">人</div>
+      </div>
+
+      <div class="body">
+        <div>
+          <div class="greet">早上好</div>
+          <div class="date">11月11日 星期二</div>
+        </div>
+
+        <div class="navy">
+          <div class="top"><span class="meta">09:30–10:00 · 会议室 A</span><span class="cd">34 分钟后</span></div>
+          <h3>周会</h3>
+          <p>上周的数据还没整理，先看一版也行。</p>
+          <div class="acts"><div class="a1">问它一句</div><div class="a2">怎么去</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><b>要做的事</b><span>5 件</span></div>
+
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">交房租</div>
+              <div class="m warn">今天 18:00 前 <span class="chip warn">今天到期</span></div>
+            </div>
+          </div>
+
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">回复设计稿意见</div>
+              <div class="m">今天 · 已拖 2 天 <span class="chip gray">无截止</span></div>
+            </div>
+          </div>
+
+          <div class="more">全部 5 件 ›</div>
+        </div>
+      </div>
+
+      <div class="dock">
+        <div class="a"><span></span><span></span></div>
+        <div class="ph">跟 Nomi 说点什么</div>
+        <div class="mic">◉</div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab on"><div class="i">✦</div>Nomi</div>
+        <div class="tab"><div class="i">▦</div>今日</div>
+      </div>
+      <div class="home"></div>
+    </div></div>
+  </div>
+
+  <!-- ② 对话确认 -->
+  <div class="col">
+    <div class="cap">② 对话 · 预览 → 确认 → 回执</div>
+    <div class="bezel"><div class="screen">
+      <div class="statusbar"><span>9:41</span><div class="icons"><i class="pill"></i><i class="round"></i><i></i></div></div>
+
+      <div class="topbar">
+        <div class="av"><span></span><span></span></div>
+        <div><div class="topname">Nomi</div><div class="topsub"><i></i>在线 · 正在陪着你</div></div>
+        <div class="rbtn">人</div>
+      </div>
+
+      <div class="msgs">
+        <div class="bubble mine">加个待办：明天下午三点提醒我买牛奶</div>
+
+        <div class="confirm">
+          <div class="ct"><i>?</i>要加这条吗</div>
+          <div class="kv"><b>待办</b><span>买牛奶</span></div>
+          <div class="kv"><b>时间</b><span>明天 15:00</span></div>
+          <div class="kv"><b>清单</b><span>提醒事项 · 默认</span></div>
+          <div class="note">会写进系统「提醒事项」，明天 15:00 提醒你。不点确认不会写入。</div>
+          <div class="cbtns"><div class="ok">确认添加</div><div class="no">算了</div></div>
+        </div>
+
+        <div class="bubble theirs">已加：买牛奶 · 明天 15:00</div>
+        <div class="receipt"><i>✓</i>已写进提醒事项</div>
+      </div>
+
+      <div class="dock">
+        <div class="a"><span></span><span></span></div>
+        <div class="ph">跟 Nomi 说点什么</div>
+        <div class="mic">◉</div>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab on"><div class="i">✦</div>Nomi</div>
+        <div class="tab"><div class="i">▦</div>今日</div>
+      </div>
+      <div class="home"></div>
+    </div></div>
+  </div>
+
+  <!-- ③ 全部待办 -->
+  <div class="col">
+    <div class="cap">③ 全部待办 · 按时间分组</div>
+    <div class="bezel"><div class="screen">
+      <div class="statusbar"><span>9:41</span><div class="icons"><i class="pill"></i><i class="round"></i><i></i></div></div>
+
+      <div class="page-head">
+        <h2>待办</h2><span class="n">5</span>
+        <div class="finish">完成</div>
+      </div>
+
+      <div class="list-wrap">
+        <div class="group-label">今天</div>
+        <div class="card">
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">交房租</div>
+              <div class="m warn">18:00 前 <span class="chip warn">过期风险</span></div>
+            </div>
+          </div>
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">回复设计稿意见</div>
+              <div class="m">无截止 · 拖了 2 天</div>
+            </div>
+          </div>
+          <div class="todo">
+            <div class="ring done"></div>
+            <div class="txt">
+              <div class="t done">给妈妈回电话</div>
+              <div class="m">刚刚完成 ✓</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group-label">明天</div>
+        <div class="card">
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">买牛奶</div>
+              <div class="m">15:00 <span class="chip">提醒</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group-label">以后</div>
+        <div class="card">
+          <div class="todo">
+            <div class="ring"></div>
+            <div class="txt">
+              <div class="t">续签护照</div>
+              <div class="m">12月 3日</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">勾掉会写回系统「提醒事项」，这里和系统里永远一致</div>
+      <div class="home" style="bottom:76px"></div>
+    </div></div>
+  </div>
+
+</div>
+
+<div class="notes">
+  <div class="note-card">
+    <h4>写操作：不确认不写</h4>
+    <ul>
+      <li>说「加个待办」→ 先出<b>确认卡</b>（标题 / 时间 / 清单）</li>
+      <li>默认按钮是<b>「算了」</b>，风险按钮写清动作（确认添加）</li>
+      <li>确认后出<b>回执</b>，失败要说失败，不静默</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h4>数据：只有一份</h4>
+    <ul>
+      <li>读写都走系统<b>提醒事项</b>（EventKit），不建第二张表</li>
+      <li>Siri / 提醒事项 App / 手表天然同步</li>
+      <li>没给权限 → 整个待办区隐藏，其余卡照常</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h4>文案：给结论，不给选项</h4>
+    <ul>
+      <li>逾期只把<b>日期</b>染成琥珀，不整行染红</li>
+      <li>完成保留 1.5 秒「已完成」回执，状态不突然消失</li>
+      <li>数字必须有：<b>18:00</b>、<b>拖了 2 天</b>，不写「该做了」</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>

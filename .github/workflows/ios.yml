@@ -1,0 +1,144 @@
+﻿name: build-ipa
+
+on:
+  push:
+    branches: [main, nomi-build21-motion]
+  workflow_dispatch:
+
+jobs:
+  build:
+    # Intel 与 ARM 托管运行器会分别排队；优先使用标准 ARM 池。
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 环境信息
+        run: |
+          uname -m
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Validate classical quotes
+        working-directory: ios
+        run: python3 tools/validate_classical_quotes.py App/Resources/classical_quotes.json
+
+      # 纯逻辑回归：不需要模拟器，几十毫秒跑完。
+      # 覆盖时间解析、意图路由、物理、朗读清洗——这几块最容易改坏。
+      - name: Logic checks
+        working-directory: ios
+        run: |
+          swiftc -swift-version 5 \
+            App/Sources/Core/ScheduleParser.swift \
+            App/Sources/Core/ChatRouter.swift \
+            App/Sources/Core/TodoParser.swift \
+            App/Sources/Core/TodoGrouper.swift \
+            App/Sources/Core/TodoItem.swift \
+            App/Sources/Core/GeocodingService.swift \
+            App/Sources/Core/PhysicsBox.swift \
+            App/Sources/Core/SpeechSanitizer.swift \
+            App/Sources/Core/NotificationPlanner.swift \
+            App/Sources/Core/DeepLinkRoute.swift \
+            App/Sources/Core/MusicUtil.swift \
+            App/Sources/Core/DailyEncouragement.swift \
+            App/Sources/Core/AIModelFocus.swift \
+            App/Sources/Core/GameModels.swift \
+            App/Sources/Core/IntelligenceModels.swift \
+            App/Sources/Core/NewsModels.swift \
+            App/Sources/Core/StockDataParser.swift \
+            App/Sources/Core/StockDetailModels.swift \
+            App/Sources/Core/StockDetailParser.swift \
+            App/Sources/Core/TencentStockParser.swift \
+            App/Sources/Core/WeiboHotSearchParser.swift \
+            App/Sources/Core/ZhihuHotParser.swift \
+            App/Sources/Core/StockWatchlist.swift \
+            App/Sources/Core/SteamGameParser.swift \
+            App/Sources/Core/AppStoreGameParser.swift \
+            App/Sources/Core/GameDetailParser.swift \
+            App/Sources/Core/GameNewsParser.swift \
+            tests/logic_checks.swift \
+            -o /tmp/nomi_logic_checks
+          /tmp/nomi_logic_checks
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Build (unsigned)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project Jinri.xcodeproj \
+            -scheme Jinri \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee build.log | tail -60
+
+      - name: 把错误写进任务摘要
+        if: always()
+        working-directory: ios
+        run: |
+          {
+            echo "## 编译结果"
+            echo ""
+            if grep -q "BUILD SUCCEEDED" build.log 2>/dev/null; then
+              echo "✅ BUILD SUCCEEDED"
+            else
+              echo "❌ BUILD FAILED"
+            fi
+            echo ""
+            echo "### error 行"
+            echo ""
+            echo '```'
+            grep -E "^[^ ]+\.swift:[0-9]+:[0-9]+: error:" build.log 2>/dev/null | head -30 || echo "(没有匹配的 error 行)"
+            echo '```'
+            echo ""
+            echo "### warning 里的可疑项"
+            echo ""
+            echo '```'
+            grep -n "warning: .*never used\|warning: .*unused" build.log 2>/dev/null | head -10 || echo "(无)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 控制台打印错误
+        if: always()
+        working-directory: ios
+        run: |
+          echo "===== error: ====="
+          grep -E "^[^ ]+\.swift:[0-9]+:[0-9]+: error:" build.log | head -30 || echo "(没有匹配的 error 行)"
+          echo ""
+          echo "===== 失败时最后 40 行 ====="
+          tail -40 build.log || true
+
+      - name: 上传构建日志
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: ios/build.log
+          if-no-files-found: ignore
+
+      - name: Package IPA
+        if: success()
+        working-directory: ios
+        run: |
+          rm -rf Payload Jinri-unsigned.ipa
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/Jinri.app Payload/
+          zip -qry Jinri-unsigned.ipa Payload
+
+      - name: Upload IPA
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Jinri-unsigned
+          path: ios/Jinri-unsigned.ipa
+          if-no-files-found: error

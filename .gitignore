@@ -1,0 +1,6 @@
+ios/Jinri.xcodeproj/
+ios/App/Info.plist
+ios/build/
+ios/Payload/
+ios/*.ipa
+.DS_Store

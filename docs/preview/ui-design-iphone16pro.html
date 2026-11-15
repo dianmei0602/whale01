@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="zh-CN" data-palette="p1" data-mode="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nomi · iPhone 16 Pro 真机尺寸 / 九档表情沿用 · v4</title>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   v4 · 真机尺寸 + 角色资产复位
+   画布内 1px = 1pt（402×874 逻辑分辨率），外层用 transform:scale 展示
+   角色几何照抄 titanium-full.html；九档表情照抄 PetMood.swift
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#F1F2F0; --sf:#FFFFFF; --sf2:#F5F6F4; --stage:#E7E9E7;
+  --ink:#20242A; --ink2:#585F68; --ink3:#666D76; --line:#E1E3E5;
+  --ac:#256E90; --aci:#FFFFFF; --pos:#2E7551; --posi:#FFFFFF; --neg:#B0443B;
+  --ceramic:#FFFFFF; --ceramic2:#E2E5E4; --glass:#171C20; --groove:#384149;
+  --glow:#FFE7BE; --hi:rgba(255,255,255,.82); --sheen:rgba(255,255,255,.12); --shbase:#28323A;
+  /* 角色资产常量：五套配色都不许覆盖 */
+  --eye:#5CEBFF; --eye-glow:rgba(77,227,255,.85); --face-black:#05070A;
+  --font:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Consolas,monospace;
+  --sh1:0 1px 2px rgba(40,50,58,.07),0 4px 12px -6px rgba(40,50,58,.13);
+  --sh2:0 2px 6px rgba(40,50,58,.06),0 18px 36px -18px rgba(40,50,58,.28);
+  --sh3:0 30px 70px -28px rgba(40,50,58,.44);
+  --spring:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,1,.36,1);
+  --k:.686567; /* 276 / 402 */
+}
+@supports (color: color-mix(in srgb, red, blue)){
+  :root{
+    --sh1:0 1px 2px color-mix(in srgb,var(--shbase) 8%,transparent),0 4px 12px -6px color-mix(in srgb,var(--shbase) 13%,transparent);
+    --sh2:0 2px 6px color-mix(in srgb,var(--shbase) 7%,transparent),0 18px 36px -18px color-mix(in srgb,var(--shbase) 28%,transparent);
+    --sh3:0 30px 70px -28px color-mix(in srgb,var(--shbase) 46%,transparent);
+  }
+}
+[data-mode="dark"]{--hi:rgba(255,255,255,.14);--sheen:rgba(255,255,255,.07)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  -webkit-font-smoothing:antialiased;line-height:1.62;font-variant-numeric:tabular-nums;
+  transition:background-color .3s var(--ease),color .3s var(--ease)}
+code{font-family:var(--mono);font-size:.85em;background:var(--sf2);border:1px solid var(--line);
+  padding:1px 5px;border-radius:5px;color:var(--ink2);white-space:nowrap}
+:where(button):focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 34px}
+
+.hero{padding:58px 0 40px;border-bottom:1px solid var(--line);background:var(--sf)}
+.eyebrow{font-size:10.5px;letter-spacing:2.6px;font-weight:700;color:var(--ac);text-transform:uppercase}
+h1{font-size:44px;line-height:1.1;letter-spacing:-2px;margin:15px 0 16px;font-weight:600}
+.lead{font-size:16px;line-height:1.75;color:var(--ink2);max-width:900px;margin:0}
+.lead b{color:var(--ink);font-weight:600}
+.correction{margin-top:22px;background:color-mix(in srgb,var(--neg) 7%,var(--sf));
+  border:1px solid color-mix(in srgb,var(--neg) 26%,var(--line));border-left:3px solid var(--neg);
+  border-radius:12px;padding:14px 17px;font-size:13px;color:var(--ink2);max-width:900px;line-height:1.7}
+.correction b{color:var(--ink)}
+.sig{margin-top:20px;font-size:12px;color:var(--ink3)}
+.sig span{display:inline-block;border-top:1px solid var(--line);padding-top:10px}
+
+.toolbar{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--sf) 88%,transparent);
+  backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--line)}
+.toolbar .wrap{display:flex;align-items:center;gap:12px;min-height:60px;flex-wrap:wrap;padding-top:7px;padding-bottom:7px}
+.tb-l{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase}
+.seg{display:flex;gap:3px;background:var(--sf2);border:1px solid var(--line);border-radius:11px;padding:3px}
+.seg button{border:0;background:none;font:inherit;font-size:11.5px;font-weight:600;color:var(--ink2);
+  padding:5px 10px;border-radius:8px;cursor:pointer;min-height:30px;transition:.18s var(--ease);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--sf);color:var(--ink);box-shadow:var(--sh1)}
+.pal-pick{display:flex;gap:5px;flex-wrap:wrap}
+.pchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--sf);
+  color:var(--ink2);border-radius:999px;padding:4px 11px 4px 7px;font:inherit;font-size:11.5px;font-weight:600;
+  cursor:pointer;min-height:32px;transition:.2s var(--spring)}
+.pchip[aria-pressed="true"]{color:var(--ink);border-color:var(--ac);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 16%,transparent)}
+.pchip i{width:11px;height:11px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.10)}
+.tb-sp{flex:1}
+.tb-note{font-size:10.5px;color:var(--ink3)}
+
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+.sec-n{font:700 11px var(--mono);color:var(--ac);letter-spacing:1.4px}
+h2{font-size:27px;letter-spacing:-.9px;margin:0;font-weight:600}
+.sec-s{color:var(--ink2);font-size:13.5px;margin:0 0 26px;max-width:920px;line-height:1.72}
+h3{font-size:16px;margin:0;font-weight:600}
+.panel{background:var(--sf);border:1px solid var(--line);border-radius:20px;padding:20px 22px;box-shadow:var(--sh1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tw{background:var(--sf);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--sh1)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink3);
+  font-weight:700;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;color:var(--ink2)}
+tr:last-child td{border-bottom:0}
+td b{color:var(--ink);font-weight:600}
+.old{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--neg)}
+.ok{color:var(--pos);font-weight:700}.no{color:var(--neg);font-weight:700}
+.note{margin-top:16px;background:var(--sf2);border:1px solid var(--line);border-left:3px solid var(--ac);
+  border-radius:12px;padding:12px 15px;font-size:12.5px;color:var(--ink2);line-height:1.7}
+.note b{color:var(--ink)}
+.tagx{display:inline-block;font:600 9px var(--mono);letter-spacing:.6px;padding:2px 6px;border-radius:5px;
+  background:color-mix(in srgb,var(--ac) 11%,transparent);color:var(--ac)}
+
+/* ── 规格可视化 ── */
+.spec-fig{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+.fig-lbl{font-size:10px;letter-spacing:1.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;text-align:center}
+.ruler{position:relative;width:276px;height:600px;border-radius:38px;background:var(--sf2);
+  border:1px solid var(--line);overflow:hidden;flex:none}
+.ruler .cv{width:402px;height:874px;transform:scale(var(--k));transform-origin:top left;position:relative}
+.ruler .zone{position:absolute;left:0;right:0;background:color-mix(in srgb,var(--ac) 9%,transparent);
+  border-top:1px dashed var(--ac);border-bottom:1px dashed var(--ac)}
+.ruler .zone span{position:absolute;left:6px;top:2px;font:700 9px var(--mono);color:var(--ac)}
+.ruler .vzone{position:absolute;top:0;bottom:0;width:20px;background:color-mix(in srgb,var(--neg) 8%,transparent);
+  border-right:1px dashed var(--neg)}
+.ruler .vzone.r{right:0;left:auto;border-right:0;border-left:1px dashed var(--neg)}
+.ruler .hw-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;
+  border-radius:18.5px;background:#000}
+.ruler .hi-bar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:140px;height:5px;
+  border-radius:3px;background:var(--ink);opacity:.4}
+.ruler .axis{position:absolute;font:700 9px var(--mono);color:var(--ink3)}
+
+/* ── 九档表情 ── */
+.moods{display:grid;grid-template-columns:repeat(9,1fr);gap:10px}
+.mood{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:10px 8px 11px;
+  text-align:center;cursor:pointer;box-shadow:var(--sh1);transition:.22s var(--spring)}
+.mood:hover{transform:translateY(-3px);box-shadow:var(--sh2)}
+.mood[aria-pressed="true"]{border-color:var(--ac);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 20%,transparent),var(--sh2)}
+.mood .stage{height:74px;border-radius:10px;background:var(--face-black);display:grid;place-items:center;
+  overflow:hidden;position:relative}
+.mood .nm{font:700 10px var(--mono);letter-spacing:.3px;margin-top:8px;color:var(--ink)}
+.mood .zh{font-size:10px;color:var(--ink3);margin-top:1px}
+.mood .pm{font:600 8.5px var(--mono);color:var(--ink3);margin-top:5px;line-height:1.4}
+/* 表情几何：参数来自 PetMood.swift，展板放大 3× */
+.face{display:flex;align-items:center;justify-content:center;gap:var(--gap,7.6px);transform:rotate(var(--rot,0deg))}
+.eye{position:relative;flex:none;width:var(--ew);height:var(--eh);border-radius:999px;
+  clip-path:inset(var(--lid,0%) 0 0 0 round 999px)}
+.eye .ball{position:absolute;inset:0;border-radius:inherit;background:var(--eye);
+  box-shadow:0 0 7px var(--eye-glow)}
+.face.arcUp .eye,.face.arcDown .eye{clip-path:none;background:transparent;box-shadow:none}
+.face.arcUp .eye .ball{background:transparent;border-top:2.8px solid var(--eye);border-radius:50% 50% 0 0/100% 100% 0 0;
+  box-shadow:none;filter:drop-shadow(0 0 4px var(--eye-glow))}
+.face.arcDown .eye .ball{background:transparent;border-bottom:2.9px solid var(--eye);border-radius:0 0 50% 50%/0 0 100% 100%;
+  box-shadow:none;filter:drop-shadow(0 0 4px var(--eye-glow))}
+.face .eye.tall{border-radius:999px}
+
+/* ── Nomi 钛合金本体（几何照抄 titanium-full.html，200u × 250u） ── */
+.nomi{position:relative;width:calc(var(--u)*200);height:calc(var(--u)*250);flex:none}
+.nomi .shadow{position:absolute;left:50%;top:calc(var(--u)*206);transform:translateX(-50%);
+  width:calc(var(--u)*84);height:calc(var(--u)*14);border-radius:50%;
+  background:rgba(77,227,255,.13);filter:blur(calc(var(--u)*3))}
+.ti{position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#FFFFFF 0%,#B8BAC0 3.5%,#80838A 14%,#5F6268 40%,
+    #33363B 70%,#121316 90%,#0A0B0D 96.5%,#575A5F 98.8%,#8C8F94 100%)}
+.ti.satin{background:linear-gradient(180deg,#FFFFFF 0%,#B3B5BA 5%,#75787F 18%,#4D5056 45%,
+  #1F2126 75%,#0A0B0D 94%,#6B6E73 100%)}
+.ti .spec{position:absolute;inset:0;background:linear-gradient(135deg,
+  rgba(255,255,255,0) 24%,rgba(255,255,255,.55) 30%,rgba(255,255,255,1) 31.8%,
+  rgba(255,255,255,.72) 33.4%,rgba(255,255,255,0) 36.6%)}
+.ti .spec2{position:absolute;inset:0;background:linear-gradient(225deg,
+  rgba(255,255,255,0) 52%,rgba(255,255,255,.55) 61.5%,rgba(255,255,255,.85) 62.8%,rgba(255,255,255,0) 65.2%)}
+.ti .hot{position:absolute;inset:0;background:radial-gradient(circle at 22% 12%,
+  rgba(255,255,255,.95),rgba(255,255,255,.35) 26%,rgba(255,255,255,0) 48%)}
+.ti .brush{position:absolute;inset:0;background:repeating-linear-gradient(90deg,
+  rgba(255,255,255,.03) 0 1px,rgba(255,255,255,0) 1px 6px)}
+.ti .rim{position:absolute;inset:0;box-shadow:inset 0 2px 0 #FFF,inset 0 4px 10px rgba(255,255,255,.25),
+  inset 0 -3px 12px rgba(0,0,0,.85),inset 2px 0 0 rgba(255,255,255,.45),inset -2px 0 0 rgba(0,0,0,.55)}
+.ti.satin .spec,.ti.satin .spec2,.ti.satin .hot{display:none}
+.ti .soft{position:absolute;inset:0;background:linear-gradient(180deg,
+  rgba(255,255,255,0) 6%,rgba(255,255,255,.70) 11%,rgba(255,255,255,.92) 14.5%,rgba(255,255,255,0) 20%)}
+.nomi .head{position:absolute;left:calc(var(--u)*40);top:calc(var(--u)*40);
+  width:calc(var(--u)*120);height:calc(var(--u)*94);border-radius:calc(var(--u)*27);
+  display:grid;place-items:center;box-shadow:0 calc(var(--u)*5) calc(var(--u)*10) rgba(0,0,0,.6)}
+.nomi .screen{position:relative;overflow:hidden;width:calc(var(--u)*104);height:calc(var(--u)*78);
+  border-radius:calc(var(--u)*24);background:var(--face-black);
+  box-shadow:inset 0 3px 10px rgba(0,0,0,.95),0 0 0 calc(var(--u)*1.8) rgba(0,0,0,.92);
+  display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*26)}
+.nomi .screen .edge{position:absolute;left:0;top:19%;width:7%;height:62%;border-radius:999px;z-index:2;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0));filter:blur(calc(var(--u)*1.6))}
+.nomi .screen .cool{position:absolute;right:-14%;bottom:-24%;width:58%;height:32%;border-radius:50%;z-index:1;
+  background:rgba(102,178,255,.07);filter:blur(calc(var(--u)*7))}
+/* 大角色的竖长眼：8u × 28u，九档只改几何参数，不换形状语言 */
+.nomi .eye{position:relative;z-index:1;width:calc(var(--u)*8*var(--ewk,1));
+  height:calc(var(--u)*28*var(--ehk,1));border-radius:999px;clip-path:inset(var(--lid,0%) 0 0 0 round 999px);
+  transform:translateY(calc(var(--u)*var(--dy,0)))}
+.nomi .eye .ball{position:absolute;inset:0;border-radius:inherit;background:var(--eye);
+  box-shadow:0 0 calc(var(--u)*6) var(--eye-glow)}
+.nomi .neck{position:absolute;left:50%;transform:translateX(-50%);top:calc(var(--u)*140);
+  width:calc(var(--u)*48);height:calc(var(--u)*10);border-radius:calc(var(--u)*5)}
+.nomi .foot{position:absolute;top:calc(var(--u)*155);width:calc(var(--u)*16);height:calc(var(--u)*26);
+  border-radius:calc(var(--u)*8)}
+.nomi .foot.l{left:calc(var(--u)*72)}.nomi .foot.r{left:calc(var(--u)*112)}
+.nomi:active .head{transform:translateY(calc(var(--u)*1.5))}
+
+/* 灵动岛内：只允许眼睛局部符号，不缩放完整角色 */
+.islmini{width:104px;height:37px;border-radius:18.5px;background:#000;display:grid;place-items:center;
+  box-shadow:0 8px 22px -10px rgba(0,0,0,.5)}
+.islmini .face{gap:15px}
+.islmini .eye{width:calc(5px*var(--ewk,1));height:calc(15px*var(--ehk,1))}
+
+/* 黑底双蓝眼小图标 24–36pt */
+.av{background:var(--face-black);border-radius:22%;display:grid;place-items:center;flex:none;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.8)}
+.av .face{gap:3px}
+.av .eye{width:calc(3.2px*var(--ewk,1));height:calc(10px*var(--ehk,1))}
+.av .eye .ball{box-shadow:0 0 4px var(--eye-glow)}
+
+/* ── 尺寸梯度 ── */
+.grad{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.gcell{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:14px 10px;
+  display:flex;flex-direction:column;align-items:center;box-shadow:var(--sh1)}
+.gcell .gv{height:168px;display:flex;align-items:center;justify-content:center;width:100%}
+.gcell .t{font-size:11.5px;font-weight:600;text-align:center;line-height:1.35}
+.gcell .s{font:600 9px var(--mono);color:var(--ink3);margin-top:4px;text-align:center;line-height:1.5}
+
+/* ── 灵动岛三态 ── */
+.states{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.isl-card{background:var(--sf);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--sh1)}
+.isl-stage{height:172px;border-radius:14px;background:var(--stage);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;overflow:hidden}
+.isl{background:#000;position:relative;display:flex;align-items:center;justify-content:space-between;
+  padding:0 12px;color:#FFF}
+.isl .face{gap:6px}
+.isl .eye{width:calc(7px*var(--ewk,1));height:calc(9px*var(--ehk,1))}
+.isl .eye .ball{box-shadow:0 0 5px var(--eye-glow)}
+.isl .txt{font-size:11px;font-weight:700;letter-spacing:.2px}
+.isl.minimal{width:44px;height:36.67px;border-radius:18.33px;padding:0;justify-content:center}
+.isl.compact{width:230px;height:36.67px;border-radius:18.33px}
+.isl.expanded{width:371px;height:112px;border-radius:44px;padding:16px 18px;align-items:flex-start;
+  flex-direction:column;gap:8px;transform:scale(.66);transform-origin:center}
+.isl.expanded .row{display:flex;align-items:center;gap:10px;width:100%}
+.isl.expanded .big{font-size:15px;font-weight:700}
+.isl.expanded .sub{font-size:11px;color:#AEB9C0}
+.isl.expanded .cta{margin-left:auto;background:var(--ac);color:var(--aci);border-radius:999px;
+  padding:5px 12px;font-size:10px;font-weight:700}
+.isl-cap{font-size:11.5px;font-weight:600;margin-top:12px}
+.isl-dim{font:600 9.5px var(--mono);color:var(--ink3);margin-top:3px;line-height:1.6}
+.isl-note{font-size:11px;color:var(--ink2);margin-top:8px;line-height:1.6}
+
+/* ── 真机稿 ── */
+.stage{display:flex;gap:22px;justify-content:center;align-items:flex-start;flex-wrap:wrap;
+  padding:28px 18px;background:var(--stage);border:1px solid var(--line);border-radius:24px}
+.stage-l{width:100%;text-align:center;font-size:10px;letter-spacing:1.7px;color:var(--ink3);
+  font-weight:700;text-transform:uppercase;margin-bottom:-4px}
+.phone{width:288px;height:625px;border-radius:48px;flex:none;padding:6px;position:relative;
+  background:var(--ceramic2);box-shadow:0 0 0 1px var(--line),0 0 0 4px var(--sf),var(--sh3)}
+[data-mode="dark"] .phone{background:var(--line)}
+.pscreen{width:276px;height:600px;border-radius:42px;overflow:hidden;position:relative;background:var(--sf)}
+/* 1px = 1pt */
+.cv{width:402px;height:874px;transform:scale(var(--k));transform-origin:top left;position:relative;
+  display:flex;flex-direction:column;background:var(--sf);color:var(--ink)}
+.cv .statusbar{height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 26px 11px;font-size:15px;font-weight:700;position:relative;z-index:5}
+.cv .sysicons{display:flex;gap:5px;align-items:center}
+.cv .sysicons i{display:block;width:16px;height:9px;border-radius:2px;background:currentColor}
+.cv .sysicons i:nth-child(2){width:11px;height:11px;border-radius:50%}
+.cv .hw-island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:126px;height:37px;
+  border-radius:18.5px;background:#000;z-index:30;display:flex;align-items:center;justify-content:center}
+.cv .hw-island .face{gap:13px}
+.cv .hw-island .eye{width:calc(4px*var(--ewk,1));height:calc(12px*var(--ehk,1))}
+.cv .hw-island .eye .ball{box-shadow:0 0 6px var(--eye-glow)}
+.cv .hi-bar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:140px;height:5px;
+  border-radius:3px;background:var(--ink);opacity:.36;z-index:30}
+.cv .body{flex:1;min-height:0;padding:8px 20px 0;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.cv .h1{font-size:32px;font-weight:700;letter-spacing:-1.2px;line-height:1.15;margin:0}
+.cv .over{font-size:11px;letter-spacing:1.4px;font-weight:700;color:var(--ink3);text-transform:uppercase}
+.cv .sub{font-size:13px;color:var(--ink2)}
+.cv .card{background:var(--sf);border:1px solid var(--line);border-radius:22px;padding:14px 16px;
+  box-shadow:var(--sh1),inset 0 1px 0 var(--hi)}
+.cv .card.primary{background:var(--ac);color:var(--aci);border-color:var(--ac);box-shadow:var(--sh2)}
+.cv .card .k{font-size:10px;letter-spacing:1.1px;font-weight:700;text-transform:uppercase;opacity:.75}
+.cv .card .v{font-size:20px;font-weight:600;letter-spacing:-.5px;margin:5px 0 2px}
+.cv .card .s{font-size:12px;opacity:.85}
+.cv .mini2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.cv .mini{background:var(--sf2);border-radius:18px;padding:12px 14px}
+.cv .mini .k{font-size:9.5px;letter-spacing:1px;font-weight:700;color:var(--ink3);text-transform:uppercase}
+.cv .mini .v{font-size:22px;font-weight:600;letter-spacing:-.6px}
+.cv .mini .s{font-size:10.5px;color:var(--ink2)}
+.cv .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:13px;
+  border-top:1px solid var(--line)}
+.cv .row:first-child{border-top:0}
+.cv .charzone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;
+  background:radial-gradient(90% 70% at 50% 45%,color-mix(in srgb,var(--stage) 42%,var(--sf)),var(--sf) 82%)}
+.cv .composer{height:56px;flex:none;border-radius:999px;background:var(--sf2);display:flex;align-items:center;
+  gap:10px;padding:0 10px 0 12px;box-shadow:inset 0 1px 3px color-mix(in srgb,var(--shbase) 8%,transparent)}
+.cv .composer .ph{flex:1;font-size:13px;color:var(--ink3)}
+.cv .orb{width:36px;height:36px;border-radius:50%;background:var(--sf);border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--ac);font-size:15px;box-shadow:var(--sh1);cursor:pointer;
+  transition:transform .25s var(--spring)}
+.cv .orb:active{transform:scale(.88)}
+.cv .orb.pri{background:var(--ac);color:var(--aci);border-color:var(--ac)}
+.cv .tabbar{height:83px;flex:none;margin:0 -20px;padding:0 20px 34px;display:flex;align-items:flex-start;
+  gap:4px;background:color-mix(in srgb,var(--sf) 78%,transparent);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);position:relative}
+.cv .tab{flex:1;height:49px;border:0;background:none;color:var(--ink3);font:inherit;font-size:11px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+.cv .tab .ic{font-size:16px}
+.cv .tab[aria-selected="true"]{color:var(--ac);font-weight:700}
+.cv .pill{position:absolute;top:4px;left:20px;width:calc(50% - 22px);height:42px;border-radius:14px;
+  background:color-mix(in srgb,var(--ac) 12%,var(--sf2));transition:transform .38s var(--spring);pointer-events:none}
+.cv .grp{background:var(--sf);border-radius:18px;overflow:hidden;box-shadow:var(--sh1)}
+.cv .grp .r{display:flex;align-items:center;gap:12px;padding:11px 14px;min-height:48px}
+.cv .grp .r + .r{border-top:1px solid var(--line)}
+.cv .grp .t{font-size:14px;font-weight:600;flex:1}
+.cv .grp .s{font-size:11px;color:var(--ink2)}
+.cv .sw2{width:50px;height:30px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;
+  box-shadow:inset 0 1px 3px color-mix(in srgb,var(--shbase) 14%,transparent);transition:background-color .28s var(--ease)}
+.cv .sw2.on{background:var(--pos)}
+.cv .sw2 i{position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:var(--sf);
+  box-shadow:var(--sh1);transition:transform .32s var(--spring)}
+.cv .sw2.on i{transform:translateX(20px)}
+.cv .bubble{max-width:80%;font-size:14px;line-height:1.5;padding:11px 15px;border-radius:20px;
+  background:var(--sf2);box-shadow:var(--sh1);align-self:flex-start}
+.cv .bubble.mine{background:var(--ac);color:var(--aci);align-self:flex-end}
+.cv .locktime{font-size:78px;font-weight:300;letter-spacing:-3px;line-height:1}
+.cv .guidetop,.cv .guidebot,.cv .guidel,.cv .guider{position:absolute;z-index:40;pointer-events:none;display:none}
+.cv.showguides .guidetop,.cv.showguides .guidebot,.cv.showguides .guidel,.cv.showguides .guider{display:block}
+.cv .guidetop{top:62px;left:0;right:0;border-top:1px dashed var(--neg)}
+.cv .guidebot{bottom:34px;left:0;right:0;border-top:1px dashed var(--neg)}
+.cv .guidel{left:20px;top:0;bottom:0;border-left:1px dashed var(--neg)}
+.cv .guider{right:20px;top:0;bottom:0;border-left:1px dashed var(--neg)}
+.cv .gtag{position:absolute;z-index:41;font:700 9px var(--mono);color:var(--neg);background:var(--sf);
+  padding:1px 4px;border-radius:3px;display:none}
+.cv.showguides .gtag{display:block}
+
+.pals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.pal{background:var(--sf);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--sh1)}
+.pal[aria-current="true"]{border-color:var(--ac);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 20%,transparent),var(--sh2)}
+.pal .band{height:44px;display:flex}.pal .band i{flex:1}
+.pal .in{padding:12px 13px 14px}
+.pal .no{font:700 9px var(--mono);color:var(--ink3);letter-spacing:1px}
+.pal .t{font-size:16px;font-weight:600;margin-top:3px}
+.pal .en{font:600 9px var(--mono);color:var(--ink3);letter-spacing:1px;text-transform:uppercase}
+.pal .d{font-size:11px;color:var(--ink2);line-height:1.55;margin:8px 0 0;min-height:50px}
+.pal .use{margin-top:10px;width:100%;border:1px solid var(--line);background:var(--sf2);color:var(--ink);
+  border-radius:9px;padding:6px;font:inherit;font-size:11px;font-weight:600;cursor:pointer;min-height:32px}
+.pal[aria-current="true"] .use{background:var(--ac);color:var(--aci);border-color:var(--ac)}
+
+.checklist{background:var(--sf);border:1px solid var(--line);border-radius:20px;padding:20px 24px;box-shadow:var(--sh1)}
+.checklist ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 26px}
+.checklist li{font-size:12.5px;color:var(--ink2);padding-left:23px;position:relative;line-height:1.5}
+.checklist li::before{content:"";position:absolute;left:0;top:4px;width:13px;height:13px;
+  border:1.5px solid var(--ink3);border-radius:4px}
+footer{padding:26px 0 44px;color:var(--ink3);font-size:11px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media(max-width:1160px){.moods{grid-template-columns:repeat(5,1fr)}.grad{grid-template-columns:repeat(3,1fr)}.pals{grid-template-columns:repeat(3,1fr)}.states{grid-template-columns:1fr}}
+@media(max-width:760px){.wrap{padding:0 18px}h1{font-size:32px}.moods,.grad,.pals,.grid2,.grid3,.checklist ul{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.001ms!important;animation-duration:.001ms!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Design Language · v4 · iPhone 16 Pro / Asset Restoration</div>
+    <h1>按真机尺寸重画，角色一个零件都不改</h1>
+    <p class="lead">这一版继承 v3 的当代材质语言与 5 套语义配色，只做两件事：<b>画布对齐 iPhone 16 Pro 的 402 × 874 pt</b>（含灵动岛与安全区的精确尺寸），以及<b>把 Nomi 恢复成项目里既有的钛合金虚拟机器人</b>——九档表情、眨眼、视线跟随、说话表情节拍、看见你就笑，全部原样沿用。</p>
+    <div class="correction"><b>先纠错：</b>v2 / v3 我把角色改成了「白色陶瓷器物 + 蚀刻槽 + 亮度三档」，并把四态情绪光删掉。这违反了 <code>ios-app/docs/design-c/nomi-c-implementation.md</code> §0：「钛合金机器人本体、眼睛参数、表情和动作是 Nomi 的核心产品资产，不是可替换的装饰图标」。表情系统是产品功能，不是视觉风格的可选项。<b>本稿以此为准，v2 / v3 的角色方案作废</b>；布局、材质与配色资产保留。</div>
+    <div class="sig"><span>资产基线：nomi-c-implementation.md §0 · PetMood.swift · titanium-full.html · island-integration.md · Apple HIG Live Activities</span></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="tb-l">配色</span>
+    <div class="pal-pick" id="palPick" role="group" aria-label="切换配色"></div>
+    <span class="tb-l" style="margin-left:4px">参考线</span>
+    <div class="seg" id="guideSeg" role="group" aria-label="安全区参考线">
+      <button data-guide="off" aria-pressed="true">关</button>
+      <button data-guide="on" aria-pressed="false">显示 62 / 34 / 20</button>
+    </div>
+    <span class="tb-sp"></span>
+    <span class="tb-note">键盘 1–5 换色 · 点表情卡切九档 · 点规则行看映射</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+<!-- 01 -->
+<section>
+  <div class="sec-h"><span class="sec-n">01</span><h2>不可破坏的角色资产 · 复位清单</h2></div>
+  <p class="sec-s">下面每一项都有项目内文件作为依据，不是我重新设计的结果。列出来源，方便你逐条核对；凡是没有来源的，本稿一律不加。</p>
+  <div class="tw"><table>
+    <thead><tr><th style="width:26%">资产</th><th style="width:34%">原样沿用</th><th>依据</th></tr></thead>
+    <tbody>
+      <tr><td><b>角色本体</b></td><td>钛合金圆角方头 + 黑玻璃脸 + 两只竖长青眼 + 脖子 + 两只金属脚，无嘴</td><td><code>titanium-full.html</code> · 200u×250u，头 120×94u、屏 104×78u、眼 8×28u</td></tr>
+      <tr><td><b>材质</b></td><td>9 段钛合金渐变 + spec / spec2 / hot / brush / rim 五层叠加；脖子与脚用 satin 哑光面</td><td><code>titanium-full.html</code> · <code>PetCharacterView</code> / <code>PetCharacterCanvas</code> 现有绘制</td></tr>
+      <tr><td><b>眼睛色</b></td><td><code>#5CEBFF</code>，辉光 <code>rgba(77,227,255,.85)</code>，黑屏 <code>#05070A</code></td><td><code>titanium-full.html</code>；<code>flat-motion.html</code> 小尺寸用 <code>#4DE3FF</code></td></tr>
+      <tr><td><b>九档表情</b></td><td>calm / happy / excited / curious / focus / sideeye / tired / sleep / talk，四几何量（眼宽、眼高、间距、眼睑）+ 弧形 ∩ / ∪</td><td><code>PetMood.swift</code> · <code>EyeSpec</code> / <code>EyeShape</code> / <code>PetMood.all</code></td></tr>
+      <tr><td><b>规则映射</b></td><td>无内容→sleep；待办→sideeye；天气/空气/降温→curious；会议→focus；运动→excited；睡前→tired；点开→talk</td><td><code>PetMood.mood(forCardID:)</code> · <code>island-integration.md</code> §3</td></tr>
+      <tr><td><b>动作与交互</b></td><td>眨眼 2.5–7.5s 随机 + 22% 连眨、朗读加速；视线跟随；说话按句换表情；看见你笑+蹦+「你来啦」；点击/长按；物理盒子</td><td><code>ios-app/docs/DEVLOG.md</code> · <code>HANDOFF.md</code> · <code>FaceTracker</code> / <code>PetMotionEngine</code></td></tr>
+      <tr><td><b>尺寸层级</b></td><td>完整角色 96–132pt；对话 52–88pt；小头像 24–36pt；锁屏 60–96pt；小组件 42–62pt；岛内只留眼睛</td><td><code>nomi-c-implementation.md</code> §0 使用层级表</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>由此产生的一条硬约束：</b>眼睛青色 <code>--eye</code>、辉光 <code>--eye-glow</code>、黑屏 <code>--face-black</code> 是<b>角色资产常量</b>，不进入 21 个语义配色变量，五套配色一律不得覆盖。配色可以改界面，不能改它是谁。</div>
+</section>
+
+<!-- 02 -->
+<section>
+  <div class="sec-h"><span class="sec-n">02</span><h2>iPhone 16 Pro · 精确尺寸</h2></div>
+  <p class="sec-s">所有真机稿都在 <b>402 × 874 pt 的逻辑画布</b>上以 1px = 1pt 绘制，再用 <code>scale(0.686567)</code> 等比缩到展板大小。所以下面每个数值都能在稿子里 1:1 量出来，而不是"看起来差不多"。数据来源：Apple 官方技术规格与 HIG Live Activities。</p>
+  <div class="spec-fig">
+    <div>
+      <div class="fig-lbl" style="margin-bottom:10px">402 × 874 pt 画布 + 避让区</div>
+      <div class="ruler"><div class="cv">
+        <div class="zone" style="top:0;height:62px"><span>顶部安全区 62pt</span></div>
+        <div class="zone" style="bottom:0;height:34px"><span>底部安全区 34pt</span></div>
+        <div class="vzone"></div><div class="vzone r"></div>
+        <div class="hw-island"></div>
+        <div class="hi-bar"></div>
+        <div class="axis" style="top:70px;left:30px">状态栏 54pt</div>
+        <div class="axis" style="top:52px;right:10px">岛 126×37 · y=11</div>
+        <div class="axis" style="bottom:40px;left:30px">Home Indicator 140×5 · bottom 8</div>
+      </div></div>
+    </div>
+    <div style="flex:1;min-width:420px">
+      <div class="tw"><table>
+        <thead><tr><th>项</th><th>值</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><b>逻辑画板</b></td><td><code>402 × 874 pt</code></td><td>@3x = <code>1206 × 2622 px</code>，460 ppi，6.3"</td></tr>
+          <tr><td><b>顶部安全区</b></td><td><code>62 pt</code></td><td>状态栏框架 54pt；所有标题与可点控件从 62pt 起</td></tr>
+          <tr><td><b>底部安全区</b></td><td><code>34 pt</code></td><td>Home Indicator 140×5pt，距底 8pt</td></tr>
+          <tr><td><b>左右边距</b></td><td><code>20 pt</code></td><td>最小 16pt；Tab Bar 视觉 49 + 34 = <b>83pt</b></td></tr>
+          <tr><td><b>硬件岛</b></td><td><code>126 × 37 pt</code>，y=11</td><td>圆角 18.5pt。项目旧模拟岛写的是 <span class="old">132 × 37</span>，需改</td></tr>
+          <tr><td><b>compact 可用宽</b></td><td><code>230 pt</code></td><td>左 52.33 + 传感器区 125.34 + 右 52.33；高 36.67pt</td></tr>
+          <tr><td><b>minimal</b></td><td><code>36.67–45 × 36.67 pt</code></td><td>只放眼睛符号，不放文字</td></tr>
+          <tr><td><b>expanded</b></td><td><code>371 × 84–160 pt</code></td><td>圆角 44pt（HIG 明确值）</td></tr>
+          <tr><td><b>锁屏 Live Activity</b></td><td><code>371 × 84–160 pt</code></td><td>与 expanded 同宽</td></tr>
+          <tr><td><b>屏幕圆角</b></td><td>≈ <code>55 pt</code></td><td>稿内按 42px ≈ 61pt 视觉近似</td></tr>
+          <tr><td><b>触摸目标</b></td><td>≥ <code>44 × 44 pt</code></td><td>含顶部按钮、Tab、开关</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note" style="margin-top:14px"><b>最容易错的一处：</b>「灵动岛宽度 230pt」不是硬件药丸的宽度。硬件岛是 126×37pt；230pt 是 HIG 给的 <b>compact / minimal 呈现时内容可用的总宽</b>——左右各 52.33pt 的内容区加上中间 125.34pt 传感器区，正好 230pt。把这两个数混用，岛内布局一定会被系统裁掉。<br>另一处：项目 <code>island-integration.md</code> 里的模拟岛是 <code>132×37</code>，是 14 Pro 时代的近似值；16 Pro 应按 <b>126×37</b> 重画。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section>
+  <div class="sec-h"><span class="sec-n">03</span><h2>九档表情 · 原样沿用</h2></div>
+  <p class="sec-s">数值逐条取自 <code>PetMood.swift</code>，展板按 3× 放大便于看形；卡片上标注的是<b>原始 pt 值</b>。点任意一张，所有真机稿、小头像与灵动岛里的角色同时切到该表情——同一张参数表驱动所有尺寸，网页版与 SwiftUI 版才不会漂移。</p>
+  <div class="moods" id="moods"></div>
+  <div class="grid2" style="margin-top:20px">
+    <div class="tw"><table>
+      <thead><tr><th>今天的卡片 / 时机</th><th>表情</th><th>为什么是这张脸</th></tr></thead>
+      <tbody id="rules"></tbody>
+    </table></div>
+    <div class="panel">
+      <h3 style="margin-bottom:10px">表情不是装饰，是规则的输出</h3>
+      <p style="font-size:12.5px;color:var(--ink2);line-height:1.7;margin:0 0 12px">同一套 <code>RulesEngine</code> 先决定「有没有事、是什么事」，再决定「它用什么脸看你」。所以九档一条都不丢，它们变成规则引擎的显示层。</p>
+      <div style="font-size:12px;color:var(--ink2);line-height:1.9">
+        · <b>眨眼</b> 2.5–7.5s 随机，22% 连眨；朗读时再快 20%（<code>blinkSpeed = 0.45</code>）<br>
+        · <b>表情节拍</b> <code>SpeechPerformance</code> 把回答切句判语气（没拿到 / 提醒 / 商量 / 答应了 / 温和 / 陈述），念到哪句脸跟着变<br>
+        · <b>视线跟随</b> 眼睛位移 3.5→7.0；<code>followFace</code> 默认关（隐私），回前台自动恢复<br>
+        · <b>看见你就高兴</b> <code>hasFace</code> false→true：happy + 蹦一下 +「你来啦」，6 秒冷却<br>
+        · <b>物理盒子</b> 点击、长按、拖动、探头性格全部保留
+      </div>
+      <div class="note" style="margin-top:14px"><b>真机限制：</b>岛内只能用 SwiftUI 有限子集，CSS 那套 60fps 常驻循环搬不过去，要改成「状态驱动的一次性动画」（<code>island-integration.md</code> §4）。这是实现方式变化，<b>不是表情系统变化</b>。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 -->
+<section>
+  <div class="sec-h"><span class="sec-n">04</span><h2>角色尺寸梯度 · 六档</h2></div>
+  <p class="sec-s">照 <code>nomi-c-implementation.md</code> §0 的使用层级表。所有档位共用同一个 200u×250u 组件，只改 <code>--u</code>——头身比例永远是原样，绝不把整个角色压成一个矩形头像。最后一档是「黑底双蓝眼」小图标，它<b>只用于小头像</b>，不能代替首页与锁屏里的完整角色。</p>
+  <div class="grad" id="grad"></div>
+  <div class="note"><b>9pt 的必然结论：</b><code>pet-look.html</code> 里那句「脸的直径不到 9 像素，大图是给你调形用的」是对的。灵动岛 compact 里脸只有 9–12pt，<b>只要眼睛、没有嘴</b>是尺寸逼出来的，不是审美偏好。九档里靠眼宽 8.4–10.8pt、间距 6.2–9.6pt、眼睑 0–78% 的差别，在 9pt 下仍可区分；<code>arcUp</code> / <code>arcDown</code> 的 2.8–2.9pt 弧线是下限，不能再细。</div>
+</section>
+
+<!-- 05 -->
+<section>
+  <div class="sec-h"><span class="sec-n">05</span><h2>灵动岛 · 三态精确稿</h2></div>
+  <p class="sec-s">按 Apple HIG 的三档尺寸画，不是"差不多黑的药丸"。<b>compact 只放脸 + 一行数字，expanded 才出事件名与动作，minimal 只有一个眼睛符号</b>——这也回答了 <code>island-integration.md</code> §7 悬着的那个问题。</p>
+  <div class="states">
+    <div class="isl-card">
+      <div class="isl-stage"><div class="isl minimal" data-isl><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+        <span style="font-size:10px;color:var(--ink3)">36.67–45 × 36.67 pt</span></div>
+      <div class="isl-cap">Minimal · 只留眼睛</div>
+      <div class="isl-dim">无文字 · 单会话 / 多会话轮换时使用</div>
+      <div class="isl-note">两只眼睛占满岛高，不加倒计时，不加事件名。</div>
+    </div>
+    <div class="isl-card">
+      <div class="isl-stage"><div class="isl compact" data-isl><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div><span class="txt" id="islTime">22m</span></div>
+        <span style="font-size:10px;color:var(--ink3)">230 × 36.67 pt（左 52.33 / 中 125.34 / 右 52.33）</span></div>
+      <div class="isl-cap">Compact · 脸 + 一行数字</div>
+      <div class="isl-dim">最常用 · 圆角 18.33pt · 内容需 concentric 内缩</div>
+      <div class="isl-note">左侧两只青眼，右侧倒计时。不显示完整事件名，避免系统裁剪。</div>
+    </div>
+    <div class="isl-card">
+      <div class="isl-stage"><div class="isl expanded" data-isl>
+        <div class="row"><div class="av" style="width:28px;height:28px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <span class="big">16:00 产品评审</span><span class="cta">查看材料</span></div>
+        <div class="row"><span class="sub">线上 · 飞书　·　材料还差一页</span><span class="big" style="margin-left:auto">22m</span></div>
+        <div class="row"><span class="sub">现在出发，路上 12 分钟</span></div>
+      </div></div>
+      <div class="isl-cap">Expanded · 一行事实 + 最多两个动作</div>
+      <div class="isl-dim">371 × 84–160 pt · 圆角 44pt · 稿内按 .66 缩放展示</div>
+      <div class="isl-note">左侧 Nomi 头像，右侧倒计时，下方事件名、地点、一句建议。不常驻。</div>
+    </div>
+  </div>
+  <div class="note"><b>出现 = 有事，消失 = 没事。</b>Live Activity 最长 8 小时，系统 12 小时后强制移除；更新点只在有意义的时间（开始、10 分钟前、5 分钟前、事件开始、完成），不得用静音音频维持后台。稿里的 22m 是示例数据，真机必须由 <code>RulesEngine</code> 快照提供。</div>
+</section>
+
+<!-- 06 -->
+<section>
+  <div class="sec-h"><span class="sec-n">06</span><h2>五屏真机稿 · 402 × 874 pt</h2></div>
+  <p class="sec-s">顶部工具条可打开<b>安全区参考线</b>（62 / 34 / 20pt），用来检查所有标题、按钮、输入坞是否落在可交互区域内。角色表情跟随第 03 节的选择，配色跟随工具条。</p>
+  <div class="stage">
+    <div class="stage-l">Nomi 主屏 · 今日 · 对话 · 设置 · 锁屏　/　当前表情：<span id="stageMood">calm</span>　/　配色：<span id="stagePal">素瓷</span></div>
+
+    <!-- Nomi 主屏 -->
+    <div class="phone"><div class="pscreen"><div class="cv" data-cv>
+      <div class="statusbar"><span>9:41</span><span class="sysicons"><i></i><i></i><i></i></span></div>
+      <div class="hw-island" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+      <div class="body">
+        <div class="over">11月8日 · 周日</div>
+        <div class="h1" style="margin:4px 0 14px">晚上好</div>
+        <div class="card primary"><div class="k">下一件事 · 还有 16 分钟</div><div class="v">16:00 产品评审</div><div class="s">线上 · 飞书　·　材料还差一页</div></div>
+        <div class="charzone" data-charzone>
+          <div class="nomi" data-nomi style="--u:.62px">
+            <div class="shadow"></div>
+            <div class="ti head"><div class="spec"></div><div class="spec2"></div><div class="hot"></div><div class="brush"></div><div class="rim"></div>
+              <div class="screen"><div class="cool"></div><div class="edge"></div><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+            <div class="ti satin neck"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot l"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot r"><div class="soft"></div><div class="rim"></div></div>
+          </div>
+          <div style="font-size:12px;color:var(--ink2);margin-top:12px" data-mood-hint>平静 · 待机</div>
+        </div>
+        <div class="composer"><div class="av" style="width:30px;height:30px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <span class="ph">说点什么…</span><button class="orb pri" aria-label="发送">↑</button></div>
+        <div style="height:12px"></div>
+      </div>
+      <div class="tabbar" data-tabbar><span class="pill"></span>
+        <button class="tab" aria-selected="true"><span class="ic">✦</span>Nomi</button>
+        <button class="tab" aria-selected="false"><span class="ic">☼</span>今日</button></div>
+      <div class="hi-bar"></div>
+      <div class="guidetop"></div><div class="guidebot"></div><div class="guidel"></div><div class="guider"></div>
+      <div class="gtag" style="top:63px;left:24px">62</div><div class="gtag" style="bottom:35px;left:24px">34</div>
+    </div></div></div>
+
+    <!-- 今日 -->
+    <div class="phone"><div class="pscreen"><div class="cv" data-cv>
+      <div class="statusbar"><span>9:41</span><span class="sysicons"><i></i><i></i><i></i></span></div>
+      <div class="hw-island" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+      <div class="body">
+        <div class="over">11月8日 · 周日</div>
+        <div class="h1" style="margin:4px 0 14px">今天 1 件事</div>
+        <div class="card"><div class="k" style="color:var(--ac)">下一件事 · 16 分钟后</div><div class="v" style="color:var(--ink)">16:00 产品评审</div><div class="s" style="color:var(--ink2)">线上 · 飞书　·　材料还差一页</div></div>
+        <div class="mini2"><div class="mini"><div class="k">天气</div><div class="v">21°</div><div class="s">多云转晴 · 带伞</div></div>
+          <div class="mini"><div class="k">步数</div><div class="v">3,064</div><div class="s">目标 8,000 · 38%</div></div></div>
+        <div class="card" style="margin-top:12px;padding:6px 16px">
+          <div class="row"><span>09:30　晨会</span><span style="color:var(--ink3)">已完成</span></div>
+          <div class="row"><span>11:00　同步改稿</span><span style="color:var(--ink3)">已完成</span></div>
+          <div class="row"><span style="color:var(--ac)">16:00　产品评审</span><span style="color:var(--ac);font-weight:700">待开始</span></div>
+        </div>
+        <div style="flex:1"></div>
+      </div>
+      <div class="tabbar" data-tabbar><span class="pill"></span>
+        <button class="tab" aria-selected="false"><span class="ic">✦</span>Nomi</button>
+        <button class="tab" aria-selected="true"><span class="ic">☼</span>今日</button></div>
+      <div class="hi-bar"></div>
+      <div class="guidetop"></div><div class="guidebot"></div><div class="guidel"></div><div class="guider"></div>
+      <div class="gtag" style="top:63px;left:24px">62</div><div class="gtag" style="bottom:35px;left:24px">34</div>
+    </div></div></div>
+
+    <!-- 对话 -->
+    <div class="phone"><div class="pscreen"><div class="cv" data-cv>
+      <div class="statusbar"><span>9:41</span><span class="sysicons"><i></i><i></i><i></i></span></div>
+      <div class="hw-island" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+      <div class="body" style="gap:10px;padding-top:14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <div class="av" style="width:32px;height:32px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <div><div style="font-size:16px;font-weight:700">Nomi</div><div style="font-size:11px;color:var(--ink2)" data-mood-hint>平静 · 待机</div></div>
+        </div>
+        <div class="bubble mine">明天下午三点开会</div>
+        <div style="display:flex;gap:8px;align-items:flex-start"><div class="av" style="width:26px;height:26px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <div class="bubble">记下了，11月9日 15:00，提前 10 分钟提醒你。</div></div>
+        <div class="bubble mine">把三点的会改到四点</div>
+        <div style="display:flex;gap:8px;align-items:flex-start"><div class="av" style="width:26px;height:26px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <div class="bubble">改好了，从 15:00 挪到 16:00，时长没变。</div></div>
+        <div class="charzone" data-charzone style="border-radius:20px;margin-top:8px">
+          <div class="nomi" data-nomi style="--u:.42px">
+            <div class="shadow"></div>
+            <div class="ti head"><div class="spec"></div><div class="spec2"></div><div class="hot"></div><div class="brush"></div><div class="rim"></div>
+              <div class="screen"><div class="cool"></div><div class="edge"></div><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+            <div class="ti satin neck"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot l"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot r"><div class="soft"></div><div class="rim"></div></div>
+          </div>
+        </div>
+        <div class="composer"><button class="orb" aria-label="语音">◉</button><span class="ph">说点什么…</span><button class="orb pri" aria-label="发送">↑</button></div>
+        <div style="height:12px"></div>
+      </div>
+      <div class="hi-bar"></div>
+      <div class="guidetop"></div><div class="guidebot"></div><div class="guidel"></div><div class="guider"></div>
+    </div></div></div>
+
+    <!-- 设置 -->
+    <div class="phone"><div class="pscreen"><div class="cv" data-cv>
+      <div class="statusbar"><span>9:41</span><span class="sysicons"><i></i><i></i><i></i></span></div>
+      <div class="hw-island" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+      <div class="body" style="background:var(--sf2);margin:0 -20px;padding:12px 20px 0">
+        <div class="h1" style="font-size:28px;margin:0 0 14px">设置</div>
+        <div class="over" style="margin-bottom:6px">你的 Nomi</div>
+        <div class="grp"><div class="r"><div class="av" style="width:30px;height:30px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+          <div style="flex:1"><div class="t">林</div><div class="s">已了解 18 条记录 · 保存在本机</div></div></div></div>
+        <div class="over" style="margin:16px 0 6px">行为</div>
+        <div class="grp">
+          <div class="r"><div style="flex:1"><div class="t">声音</div><div class="s">回答时朗读 · 叶子音色</div></div><div class="sw2" data-sw2 role="switch" tabindex="0" aria-checked="false"><i></i></div></div>
+          <div class="r"><div style="flex:1"><div class="t">主动提醒</div><div class="s">每天最多 3 条 · 不抢你的事</div></div><div class="sw2 on" data-sw2 role="switch" tabindex="0" aria-checked="true"><i></i></div></div>
+        </div>
+        <div class="over" style="margin:16px 0 6px">隐私与数据</div>
+        <div class="grp">
+          <div class="r"><div class="t">隐私与数据</div><div style="color:var(--ink3)">›</div></div>
+          <div class="r"><div class="t">记忆</div><div style="color:var(--ink3)">›</div></div>
+          <div class="r"><div class="t">系统权限</div><div style="color:var(--ink3)">›</div></div>
+        </div>
+        <div style="flex:1"></div>
+      </div>
+      <div class="hi-bar"></div>
+      <div class="guidetop"></div><div class="guidebot"></div><div class="guidel"></div><div class="guider"></div>
+    </div></div></div>
+
+    <!-- 锁屏 -->
+    <div class="phone"><div class="pscreen"><div class="cv" data-cv style="background:var(--sf2)">
+      <div class="statusbar"><span>9:41</span><span class="sysicons"><i></i><i></i><i></i></span></div>
+      <div class="hw-island on" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+      <div class="body" style="align-items:center;padding-top:38px">
+        <div style="font-size:14px;color:var(--ink2);font-weight:600">11月8日 周日</div>
+        <div class="locktime">9:41</div>
+        <div class="card" style="width:100%;margin-top:22px">
+          <div class="k" style="color:var(--ac)">下一件事 · 16 分钟后</div>
+          <div class="v" style="font-size:17px">16:00 产品评审</div>
+          <div class="s" style="color:var(--ink2)">线上 · 飞书　·　材料还差一页</div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center">
+          <div class="nomi" data-nomi style="--u:.46px">
+            <div class="shadow"></div>
+            <div class="ti head"><div class="spec"></div><div class="spec2"></div><div class="hot"></div><div class="brush"></div><div class="rim"></div>
+              <div class="screen"><div class="cool"></div><div class="edge"></div><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>
+            <div class="ti satin neck"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot l"><div class="soft"></div><div class="rim"></div></div>
+            <div class="ti satin foot r"><div class="soft"></div><div class="rim"></div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--ink2);margin-bottom:26px">◯　向上轻扫解锁</div>
+      </div>
+      <div class="hi-bar"></div>
+      <div class="guidetop"></div><div class="guidebot"></div><div class="guidel"></div><div class="guider"></div>
+    </div></div></div>
+
+    <div class="stage-l" style="margin-top:4px">画布 402×874pt @3x · 顶部 62 / 底部 34 / 左右 20 · 眼睛 #5CEBFF 为资产常量，不随配色改变</div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section>
+  <div class="sec-h"><span class="sec-n">07</span><h2>五套配色 · 界面可变，角色不可变</h2></div>
+  <p class="sec-s">v3 的语义配色资产继续沿用（21 个变量、同一份 CSS、每套 12 项对比度全达标）。<b>唯一变化是边界：眼睛青色、辉光与黑屏被移出配色系统，成为角色常量。</b>换到哪一套，Nomi 都还是同一个 Nomi。</p>
+  <div class="pals" id="pals"></div>
+  <div class="note" id="palNote"></div>
+</section>
+
+<!-- 08 -->
+<section>
+  <div class="sec-h"><span class="sec-n">08</span><h2>验收清单</h2></div>
+  <p class="sec-s">把「尺寸正确」和「资产没被动过」写成可断言的条目，避免下一轮改稿又把它改回去。</p>
+  <div class="checklist"><ul>
+    <li>画布严格 402 × 874 pt，@3x 导出 1206 × 2622 px</li>
+    <li>所有标题 / 按钮 / 输入坞落在 62pt 顶、34pt 底、20pt 左右安全区内</li>
+    <li>硬件岛 126 × 37 pt、y=11；不得沿用旧的 132 × 37</li>
+    <li>compact 内容宽 230pt（52.33 + 125.34 + 52.33），minimal 36.67–45pt</li>
+    <li>expanded 与锁屏 LA 371 × 84–160pt、圆角 44pt</li>
+    <li>Home Indicator 140 × 5pt、bottom 8pt；Tab Bar 49 + 34 = 83pt</li>
+    <li>九档表情 ID、数值、顺序与 <code>PetMood.swift</code> 完全一致</li>
+    <li>规则映射（nil→sleep / todo→sideeye / meet→focus / sport→excited …）不得改写</li>
+    <li>眨眼、视线跟随、说话表情节拍、看见你就笑、物理盒子全部保留</li>
+    <li>角色 6 档尺寸共用 200u×250u 组件，头身比例不变</li>
+    <li>眼睛 <code>#5CEBFF</code> / 辉光 / 黑屏不进入配色变量，五套一律不覆盖</li>
+    <li>岛内只放眼睛局部符号；小头像不得替代首页与锁屏的完整角色</li>
+    <li>所有可点区域 ≥ 44 × 44pt；深色/浅色文字均通过 AA 对比度</li>
+    <li>Live Activity 不常驻，更新点只在有意义的时间，无静音音频</li>
+    <li><code>prefers-reduced-motion</code> 下常驻呼吸与循环动画降级</li>
+  </ul></div>
+</section>
+
+</main>
+<footer class="wrap">
+  <span>Nomi · iPhone 16 Pro 真机尺寸 + 角色资产复位 · v4 · 2026-11-10</span>
+  <span>依据：Apple Tech Specs / HIG Live Activities · nomi-c-implementation.md · PetMood.swift · titanium-full.html · island-integration.md</span>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══ 九档表情：逐条取自 PetMood.swift，不得改写数值 ═══ */
+  var MOODS = {
+    calm:    {zh:'平静', l:[9.0,9.0,0],      r:[9.0,9.0,0],      gap:7.6, rot:0,   dy:0,    shape:'circle'},
+    happy:   {zh:'开心', l:[10.6,8.4,0],     r:[10.6,8.4,0],     gap:6.6, rot:0,   dy:0,    shape:'arcUp'},
+    excited: {zh:'兴奋', l:[10.8,10.8,0],    r:[10.8,10.8,0],    gap:9.6, rot:0,   dy:-1.3,shape:'circle'},
+    curious: {zh:'好奇', l:[9.8,9.8,.06],    r:[8.4,8.4,.06],    gap:7.4, rot:-4,  dy:-1.8,shape:'circle'},
+    focus:   {zh:'专注', l:[8.4,7.2,.26],    r:[8.4,7.2,.26],    gap:6.2, rot:0,   dy:0,    shape:'circle'},
+    sideeye: {zh:'打量', l:[8.6,7.8,.26],    r:[9.4,9.0,0],      gap:8.0, rot:0,   dy:0,    shape:'circle'},
+    tired:   {zh:'困',   l:[10.4,8.6,0],     r:[10.4,8.6,0],     gap:6.6, rot:0,   dy:0,    shape:'arcDown'},
+    sleep:   {zh:'打盹', l:[9.8,8.8,.78],    r:[9.8,8.8,.78],    gap:7.4, rot:0,   dy:.5,  shape:'circle'},
+    talk:    {zh:'应一声',l:[8.6,8.6,.04],   r:[8.6,8.6,.04],    gap:7.4, rot:0,   dy:-.9, shape:'circle'}
+  };
+  var ORDER = ['calm','happy','excited','curious','focus','sideeye','tired','sleep','talk'];
+  var RULES = [
+    ['没有内容 / nil','sleep','没事的时候它就该睡着，不吵你'],
+    ['待办 todo','sideeye','「那件事……你还记得吧」'],
+    ['天气 / 空气 / 降温 rain·air·warm','curious','往外面看，提示你今天外面不一样'],
+    ['会议 meet','focus','收敛，此刻不该被打扰'],
+    ['运动窗口 sport','excited','唯一该兴奋的时刻'],
+    ['睡前 sleep','tired','它在陪你困'],
+    ['用户点开 App','talk','你叫它，它抬眼'],
+    ['看见你 hasFace','happy','微笑 + 蹦一下 +「你来啦」，6 秒冷却'],
+    ['默认 / 其他','calm','平静待机']
+  ];
+  var currentMood = 'calm';
+
+  /* 语义配色（v3 资产，21 变量） */
+  var PALETTES = {
+    p1:{name:'素瓷',en:'Porcelain',mode:'light',idea:'几乎无色，把色相留给角色那双青眼。',
+      bg:'#F1F2F0',sf:'#FFFFFF',sf2:'#F5F6F4',stage:'#E7E9E7',ink:'#20242A',ink2:'#585F68',ink3:'#666D76',line:'#E1E3E5',
+      ac:'#256E90',aci:'#FFFFFF',pos:'#2E7551',posi:'#FFFFFF',neg:'#B0443B',ceramic:'#FFFFFF',ceramic2:'#E2E5E4',
+      glass:'#171C20',groove:'#384149',glow:'#FFE7BE',hi:'rgba(255,255,255,.82)',sheen:'rgba(255,255,255,.12)',shbase:'#28323A'},
+    p2:{name:'冰川',en:'Glacier',mode:'light',idea:'冷灰蓝白底，蓝只用在可点击处。',
+      bg:'#EBF0F4',sf:'#FFFFFF',sf2:'#F2F6F9',stage:'#DFE8EF',ink:'#18242E',ink2:'#4F5E6B',ink3:'#61707E',line:'#DCE4EA',
+      ac:'#1D6AA6',aci:'#FFFFFF',pos:'#276E68',posi:'#FFFFFF',neg:'#AC4743',ceramic:'#FBFDFF',ceramic2:'#DAE5ED',
+      glass:'#111F29',groove:'#344653',glow:'#CDE9FF',hi:'rgba(255,255,255,.88)',sheen:'rgba(255,255,255,.13)',shbase:'#1B2C38'},
+    p3:{name:'陶土',en:'Terracotta',mode:'light',idea:'赤陶的暖替代米黄的旧，适合大屏。',
+      bg:'#F5EFE8',sf:'#FFFEFC',sf2:'#F7F1EA',stage:'#EDE3D8',ink:'#2C2521',ink2:'#685850',ink3:'#6D6158',line:'#E8DED4',
+      ac:'#A34A24',aci:'#FFFFFF',pos:'#46723A',posi:'#FFFFFF',neg:'#A33C34',ceramic:'#FFFCF7',ceramic2:'#E7D9CB',
+      glass:'#241C19',groove:'#4A3B33',glow:'#FFD9A6',hi:'rgba(255,255,255,.80)',sheen:'rgba(255,255,255,.11)',shbase:'#3A2A20'},
+    p4:{name:'苔庭',en:'Moss',mode:'light',idea:'低饱和灰绿，健康摘要久看不累。',
+      bg:'#EDF1EA',sf:'#FCFDFB',sf2:'#F1F5ED',stage:'#E1E8DC',ink:'#1E2A23',ink2:'#536255',ink3:'#616E63',line:'#DDE5D9',
+      ac:'#2B6B53',aci:'#FFFFFF',pos:'#36734A',posi:'#FFFFFF',neg:'#A9483D',ceramic:'#FDFEFB',ceramic2:'#DCE6D9',
+      glass:'#131F18',groove:'#354438',glow:'#DCEFC4',hi:'rgba(255,255,255,.84)',sheen:'rgba(255,255,255,.11)',shbase:'#243029'},
+    p5:{name:'夜墨',en:'Nocturne',mode:'dark',idea:'深色时钛合金与青眼对比最强，是角色的主场。',
+      bg:'#0D1114',sf:'#171C21',sf2:'#1E252B',stage:'#080B0D',ink:'#F1F4F5',ink2:'#AEB9C0',ink3:'#85929B',line:'#2B343A',
+      ac:'#84CDEC',aci:'#0A151B',pos:'#74C89E',posi:'#08130D',neg:'#E8867C',ceramic:'#E8EDEE',ceramic2:'#9FA9AD',
+      glass:'#05090B',groove:'#2C3A42',glow:'#FFE3B4',hi:'rgba(255,255,255,.14)',sheen:'rgba(255,255,255,.07)',shbase:'#000000'}
+  };
+  var KEYS=['p1','p2','p3','p4','p5'], currentPal='p1';
+  var VAR_MAP={bg:'--bg',sf:'--sf',sf2:'--sf2',stage:'--stage',ink:'--ink',ink2:'--ink2',ink3:'--ink3',line:'--line',
+    ac:'--ac',aci:'--aci',pos:'--pos',posi:'--posi',neg:'--neg',ceramic:'--ceramic',ceramic2:'--ceramic2',
+    glass:'--glass',groove:'--groove',glow:'--glow',hi:'--hi',sheen:'--sheen',shbase:'--sh-base'};
+
+  function lum(hex){
+    var h=hex.replace('#',''); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var c=[0,2,4].map(function(i){return parseInt(h.substr(i,2),16)/255;});
+    c=c.map(function(x){return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4);});
+    return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2];
+  }
+  function cr(a,b){var x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return (hi+0.05)/(lo+0.05);}
+  function fmt(v){return (Math.round(v*100)/100).toFixed(2)+':1';}
+  var CHECKS=[['ink','sf',4.5],['ink','sf2',4.5],['ink2','sf',4.5],['ink2','sf2',4.5],['ink3','sf',4.5],['ink3','sf2',4.5],
+    ['ac','sf',4.5],['ac','sf2',4.5],['aci','ac',4.5],['glow','glass',3],['posi','pos',4.5],['neg','sf',4.5]];
+  function audit(p){var min=99,fails=0;CHECKS.forEach(function(c){var v=cr(p[c[0]],p[c[1]]);if(v<min)min=v;if(v<c[2])fails++;});return{min:min,fails:fails};}
+
+  /* ── 九档表情卡 ── */
+  function eyeHTML(spec,k){
+    var w=(spec[0]*k).toFixed(2),h=(spec[1]*k).toFixed(2),lid=(spec[2]*100).toFixed(1)+'%';
+    return '<i class="eye" style="--ew:'+w+'px;--eh:'+h+'px;--lid:'+lid+'"><i class="ball"></i></i>';
+  }
+  function faceHTML(id,k,extra){
+    var m=MOODS[id],k2=k||1;
+    return '<div class="face '+(m.shape==='circle'?'':m.shape)+'" data-face="'+id+'" style="--gap:'+(m.gap*k2)+'px;--rot:'+m.rot+'deg;'+(extra||'')+'">'+
+      eyeHTML(m.l,k2)+eyeHTML(m.r,k2)+'</div>';
+  }
+  function buildMoods(){
+    var box=document.getElementById('moods');
+    ORDER.forEach(function(id){
+      var m=MOODS[id];
+      box.insertAdjacentHTML('beforeend',
+        '<button class="mood" data-mood="'+id+'" aria-pressed="'+(id==='calm')+'">'+
+        '<div class="stage">'+faceHTML(id,3)+'</div>'+
+        '<div class="nm">'+id+'</div><div class="zh">'+m.zh+'</div>'+
+        '<div class="pm">眼 '+m.l[0]+'×'+m.l[1]+'<br>距 '+m.gap+' · 睑 '+Math.round(m.l[2]*100)+'%</div></button>');
+    });
+    var rb=document.getElementById('rules');
+    RULES.forEach(function(r){
+      rb.insertAdjacentHTML('beforeend','<tr data-rule="'+r[1]+'" style="cursor:pointer"><td><b>'+r[0]+'</b></td><td><span class="tagx">'+r[1]+'</span></td><td>'+r[2]+'</td></tr>');
+    });
+  }
+
+  /* ── 角色尺寸梯度：同一组件只改 --u ── */
+  var GRAD=[
+    {t:'App 主界面 / 首屏',s:'96–132 pt · u=.62',u:.62},
+    {t:'对话回答 / 语音',s:'52–88 pt · u=.42',u:.42},
+    {t:'锁屏 Live Activity',s:'60–96 pt · u=.46',u:.46},
+    {t:'小组件',s:'42–62 pt · u=.28',u:.28},
+    {t:'灵动岛 / 岛内',s:'只留眼睛 9–12 pt',u:0},
+    {t:'小头像图标',s:'24–36 pt · 黑底双蓝眼',u:0}
+  ];
+  function nomiHTML(u){
+    return '<div class="nomi" data-nomi style="--u:'+u+'px">'+
+      '<div class="shadow"></div>'+
+      '<div class="ti head"><div class="spec"></div><div class="spec2"></div><div class="hot"></div><div class="brush"></div><div class="rim"></div>'+
+      '<div class="screen"><div class="cool"></div><div class="edge"></div><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>'+
+      '<div class="ti satin neck"><div class="soft"></div><div class="rim"></div></div>'+
+      '<div class="ti satin foot l"><div class="soft"></div><div class="rim"></div></div>'+
+      '<div class="ti satin foot r"><div class="soft"></div><div class="rim"></div></div></div>';
+  }
+  function buildGrad(){
+    var box=document.getElementById('grad');
+    GRAD.forEach(function(g,i){
+      var inner = i===4
+        ? '<div class="islmini" data-island-eyes><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>'
+        : (g.u===0
+          ? '<div class="av" style="width:34px;height:34px"><div class="face"><i class="eye"><i class="ball"></i></i><i class="eye"><i class="ball"></i></i></div></div>'
+          : nomiHTML(g.u));
+      box.insertAdjacentHTML('beforeend','<div class="gcell"><div class="gv">'+inner+'</div><div class="t">'+g.t+'</div><div class="s">'+g.s+'</div></div>');
+    });
+  }
+
+  /* ── 应用表情到所有尺寸 ── */
+  function applyMood(id){
+    var m=MOODS[id]; if(!m) return;
+    currentMood=id;
+    document.querySelectorAll('[data-mood]').forEach(function(b){
+      b.setAttribute('aria-pressed',String(b.getAttribute('data-mood')===id));
+    });
+    /* 展板 3× 面板：直接重绘 */
+    document.querySelectorAll('.mood .stage').forEach(function(s){
+      var k=s.closest('[data-mood]').getAttribute('data-mood');
+      s.innerHTML=faceHTML(k,3);
+    });
+    /* 岛三态 + 硬件岛 + 小头像：用同一张参数表，按尺寸缩放 */
+    document.querySelectorAll('[data-isl] .face, [data-island-eyes] .face, .av .face').forEach(function(f){
+      f.className='face'+(m.shape==='circle'?'':' '+m.shape);
+      f.style.setProperty('--rot',m.rot+'deg');
+      var es=f.querySelectorAll('.eye');
+      [m.l,m.r].forEach(function(spec,i){
+        if(!es[i])return;
+        /* 各尺寸保留自己的基准形状，只按九档相对 calm 的比例缩放 */
+        es[i].style.setProperty('--ewk',(spec[0]/9).toFixed(3));
+        es[i].style.setProperty('--ehk',(spec[1]/9).toFixed(3));
+        es[i].style.setProperty('--lid',(spec[2]*100).toFixed(1)+'%');
+      });
+    });
+    /* 完整角色：竖长眼按九档比例缩放，形状语言不变 */
+    document.querySelectorAll('[data-nomi]').forEach(function(n){
+      var es=n.querySelectorAll('.screen > .eye');
+      [m.l,m.r].forEach(function(spec,i){
+        if(!es[i])return;
+        es[i].style.setProperty('--ewk',(spec[0]/9).toFixed(3));
+        es[i].style.setProperty('--ehk',(spec[1]/9).toFixed(3));
+        es[i].style.setProperty('--lid',(spec[2]*100)+'%');
+        es[i].style.setProperty('--dy',m.dy.toFixed(2));
+      });
+      n.querySelector('.screen').style.setProperty('gap','calc(var(--u)*'+(26*m.gap/7.6).toFixed(1)+')');
+    });
+    document.getElementById('stageMood').textContent=id;
+    document.querySelectorAll('[data-mood-hint]').forEach(function(x){x.textContent=m.zh+' · '+id;});
+  }
+
+  /* ── 配色 ── */
+  function applyPalette(k){
+    var p=PALETTES[k]; if(!p)return;
+    currentPal=k; var root=document.documentElement;
+    Object.keys(VAR_MAP).forEach(function(key){root.style.setProperty(VAR_MAP[key],p[key]);});
+    root.setAttribute('data-palette',k); root.setAttribute('data-mode',p.mode);
+    document.querySelectorAll('[data-pal]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-pal')===k));});
+    document.querySelectorAll('[data-card]').forEach(function(c){c.setAttribute('aria-current',String(c.getAttribute('data-card')===k));});
+    document.querySelectorAll('[data-apply]').forEach(function(b){b.textContent=b.getAttribute('data-apply')===k?'当前应用':'应用这套';});
+    document.getElementById('stagePal').textContent=p.name;
+    var a=audit(p);
+    document.getElementById('palNote').innerHTML='<b>当前 P'+(KEYS.indexOf(k)+1)+' '+p.name+' '+p.en+'</b>　·　12 项对比度'+
+      (a.fails?'<span class="no"> 未全过</span>':'<span class="ok"> 全部达标</span>')+'，最低 <b>'+fmt(a.min)+'</b>。'+
+      '角色常量 <code>--eye:#5CEBFF</code> / <code>--face-black:#05070A</code> 不在这 21 个变量里，五套配色共用同一双眼睛。';
+  }
+  function buildPals(){
+    var pick=document.getElementById('palPick'),box=document.getElementById('pals');
+    KEYS.forEach(function(k,i){
+      var p=PALETTES[k],a=audit(p);
+      var band=['sf2','ac','ink2','pos','glow','ceramic2'].map(function(x){return '<i style="background:'+p[x]+'"></i>';}).join('');
+      pick.insertAdjacentHTML('beforeend','<button class="pchip" data-pal="'+k+'" aria-pressed="'+(k==='p1')+'"><i style="background:linear-gradient(135deg,'+p.sf2+' 0 45%,'+p.ac+' 45%)"></i>'+(i+1)+' '+p.name+'</button>');
+      box.insertAdjacentHTML('beforeend','<div class="pal" data-card="'+k+'" aria-current="'+(k==='p1')+'">'+
+        '<div class="band">'+band+'</div><div class="in"><div class="no">P'+(i+1)+' / '+p.mode.toUpperCase()+'</div>'+
+        '<div class="t">'+p.name+'</div><div class="en">'+p.en+'</div><p class="d">'+p.idea+'</p>'+
+        '<div style="font:600 9.5px var(--mono);color:'+(a.fails?'var(--neg)':'var(--pos)')+';margin-top:8px">最低对比度 '+fmt(a.min)+'</div>'+
+        '<button class="use" data-apply="'+k+'">'+(k==='p1'?'当前应用':'应用这套')+'</button></div></div>');
+    });
+  }
+
+  /* ── 交互 ── */
+  function init(){
+    buildMoods(); buildGrad(); buildPals();
+
+    document.getElementById('moods').addEventListener('click',function(e){
+      var b=e.target.closest('[data-mood]'); if(b) applyMood(b.getAttribute('data-mood'));
+    });
+    document.getElementById('rules').addEventListener('click',function(e){
+      var r=e.target.closest('[data-rule]'); if(r) applyMood(r.getAttribute('data-rule'));
+    });
+    document.getElementById('palPick').addEventListener('click',function(e){
+      var b=e.target.closest('[data-pal]'); if(b) applyPalette(b.getAttribute('data-pal'));
+    });
+    document.getElementById('pals').addEventListener('click',function(e){
+      var b=e.target.closest('[data-apply]'); if(b) applyPalette(b.getAttribute('data-apply'));
+    });
+    document.getElementById('guideSeg').addEventListener('click',function(e){
+      var b=e.target.closest('[data-guide]'); if(!b)return;
+      document.querySelectorAll('#guideSeg button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+      document.querySelectorAll('[data-cv]').forEach(function(c){c.classList.toggle('showguides',b.getAttribute('data-guide')==='on');});
+    });
+    document.querySelectorAll('[data-sw2]').forEach(function(sw){
+      function tog(){sw.setAttribute('aria-checked',String(sw.classList.toggle('on')));}
+      sw.addEventListener('click',tog);
+      sw.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}});
+    });
+    document.querySelectorAll('[data-tabbar]').forEach(function(bar){
+      var pill=bar.querySelector('.pill');
+      function sync(){
+        var sel=bar.querySelector('.tab[aria-selected="true"]'); if(!sel||!pill)return;
+        pill.style.transform='translateX('+(sel.getAttribute('aria-selected')==='true'?sel.offsetLeft-20:0)+'px)';
+        pill.style.width=sel.offsetWidth+'px';
+      }
+      bar.addEventListener('click',function(e){
+        var t=e.target.closest('.tab'); if(!t)return;
+        bar.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',String(x===t));});
+        sync();
+      });
+      sync();
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.altKey||e.ctrlKey||e.metaKey)return;
+      var t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return;
+      var i=parseInt(e.key,10); if(i>=1&&i<=5) applyPalette(KEYS[i-1]);
+    });
+
+    applyPalette('p1'); applyMood('calm');
+  }
+  init();
+
+  window.__NOMI__={
+    MOODS:MOODS,ORDER:ORDER,RULES:RULES,PALETTES:PALETTES,KEYS:KEYS,audit:audit,cr:cr,
+    applyMood:applyMood,applyPalette:applyPalette,
+    SPEC:{canvasW:402,canvasH:874,scale:0.686567,hardwareIsland:{w:126,h:37,top:11},
+      compactW:230,compactH:36.67,minimalMin:36.67,minimalMax:45,expandedW:371,expandedMin:84,expandedMax:160,
+      expandedRadius:44,safeTop:62,safeBottom:34,safeX:20,statusBar:54,homeW:140,homeH:5,homeBottom:8,
+      tabVisual:49,tabTotal:83,physicalPx:{w:1206,h:2622},ppi:460},
+    get mood(){return currentMood;},get palette(){return currentPal;}
+  };
+})();
+</script>
+</body>
+</html>

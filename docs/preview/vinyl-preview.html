@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>Nomi · 现在播放</title>
+<style>
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{margin:0;padding:26px 24px 34px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:#eaf2fb;color:#142338;
+  background-image:radial-gradient(900px 520px at 22% -10%,#fff 0%,#eaf2fb 46%,#dde9f6 100%)}
+.head{display:flex;align-items:center;gap:10px}
+.head .mark{width:30px;height:30px;border-radius:8px;background:#080b10;display:flex;align-items:center;justify-content:center;gap:5px}
+.head .mark i{width:3.5px;height:12px;border-radius:99px;background:#4fe0ff;box-shadow:0 0 5px #4fe0ff}
+h1{font-size:32px;margin:10px 0 4px;letter-spacing:-.6px}
+.lead{font-size:13.5px;color:#5e7184;margin:0 0 22px;max-width:700px}
+
+.row{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:10px;align-items:center}
+.cap{font-size:12px;color:#5e7184;font-weight:600}
+
+.bezel{width:372px;height:790px;border-radius:54px;padding:9px;position:relative;
+  background:linear-gradient(160deg,#41464f,#171a1f 38%,#0f1114 68%,#31363d);
+  box-shadow:0 36px 80px rgba(20,35,56,.30),inset 0 0 0 1.5px rgba(255,255,255,.14),inset 0 0 0 6px #0a0b0d}
+.screen{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:#f1f8ff;
+  display:flex;flex-direction:column}
+.statusbar{height:50px;padding:15px 26px 0 30px;display:flex;justify-content:space-between;flex:none;
+  color:#142338;font-size:14.5px;font-weight:600}
+.statusbar .icons{display:flex;align-items:center;gap:5px}
+.statusbar .icons i{display:block;width:19px;height:10px;background:currentColor;border-radius:2px}
+.statusbar .icons i.round{width:9px;height:9px;border-radius:50%}
+.statusbar .icons i.pill{width:22px;height:10px;border-radius:3px}
+
+/* 顶栏 */
+.nav{display:flex;align-items:center;padding:4px 18px 2px;flex:none}
+.nav .down{width:34px;height:34px;border-radius:12px;background:#fff;border:1px solid rgba(20,35,56,.10);
+  display:grid;place-items:center;color:#142338;font-size:15px}
+.nav .mid{flex:1;text-align:center;font-size:12px;color:#5e7184;font-weight:600;letter-spacing:.3px}
+.nav .more{width:34px;height:34px;display:grid;place-items:center;color:#5e7184;font-size:16px}
+
+/* 黑胶 */
+.stage{flex:none;display:flex;justify-content:center;padding:14px 0 4px;position:relative}
+.disc-wrap{position:relative;width:280px;height:280px}
+.disc{position:absolute;inset:6px;border-radius:50%;
+  background:
+    radial-gradient(circle at 32% 28%,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 42%),
+    repeating-radial-gradient(circle at 50% 50%,
+      #121216 0 1.2px,#0b0b0e 1.2px 2.4px,#141419 2.4px 3.6px,#090a0c 3.6px 4.8px),
+    radial-gradient(circle at 50% 50%,#18181d 0%,#0a0a0d 62%,#050507 100%);
+  box-shadow:0 26px 48px rgba(15,25,40,.34),inset 0 0 0 2px rgba(255,255,255,.05);
+  display:grid;place-items:center}
+.disc::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 210deg,rgba(255,255,255,.10),transparent 22%,transparent 70%,rgba(255,255,255,.06))}
+.label{width:104px;height:104px;border-radius:50%;position:relative;z-index:2;
+  background:linear-gradient(150deg,#4aa3e8,#1f6fd0 55%,#1559ad);
+  display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.label b{color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px}
+.hole{position:absolute;width:9px;height:9px;border-radius:50%;background:#f1f8ff;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.5);top:50%;left:50%;transform:translate(-50%,-50%)}
+/* 唱臂 */
+.arm{position:absolute;right:-6px;top:-10px;width:120px;height:12px;transform-origin:100% 50%;
+  transform:rotate(24deg);border-radius:99px;
+  background:linear-gradient(180deg,#cfd8e3,#8f9cab 55%,#6d7885);
+  box-shadow:0 4px 10px rgba(20,35,56,.25)}
+.arm::after{content:"";position:absolute;left:-10px;top:-4px;width:20px;height:20px;border-radius:5px;
+  background:linear-gradient(160deg,#e6edf5,#9aa7b6);box-shadow:0 2px 6px rgba(20,35,56,.25)}
+.pivot{position:absolute;right:-14px;top:-16px;width:34px;height:34px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#f2f6fb,#aab6c4 60%,#7e8b99);box-shadow:0 4px 10px rgba(20,35,56,.3)}
+
+/* 曲目 */
+.track{padding:6px 26px 0;text-align:center;flex:none}
+.track h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.3px;color:#142338}
+.track p{margin:6px 0 0;font-size:13px;color:#5e7184}
+.badge{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:10.5px;font-weight:600;
+  color:#147fe8;background:#dfeeff;border-radius:99px;padding:4px 10px}
+.badge i{width:5px;height:5px;border-radius:50%;background:#147fe8;display:block}
+
+/* 进度 */
+.progress{padding:20px 30px 0;flex:none}
+.bar{height:4px;border-radius:99px;background:rgba(20,35,56,.10);position:relative}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;width:38%;border-radius:99px;background:#147fe8}
+.bar .knob{position:absolute;left:38%;top:50%;width:11px;height:11px;border-radius:50%;background:#147fe8;
+  transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(20,127,232,.14)}
+.times{display:flex;justify-content:space-between;font-size:10.5px;color:#5e7184;margin-top:8px;
+  font-variant-numeric:tabular-nums}
+
+/* 控制 */
+.controls{display:flex;align-items:center;justify-content:center;gap:26px;padding:22px 0 6px;flex:none}
+.controls div{display:grid;place-items:center;color:#142338}
+.controls .side{width:46px;height:46px;font-size:18px}
+.controls .play{width:66px;height:66px;border-radius:50%;background:#147fe8;color:#fff;font-size:24px;
+  box-shadow:0 12px 24px rgba(20,127,232,.34)}
+.controls .small{width:40px;height:40px;font-size:15px;color:#5e7184}
+
+/* 歌单条 */
+.queue{margin:14px 18px 0;padding:11px 13px;border-radius:16px;background:#fff;border:1px solid rgba(20,35,56,.09);
+  display:flex;align-items:center;gap:11px;flex:none}
+.queue .ico{width:34px;height:34px;border-radius:9px;background:#dfeeff;display:grid;place-items:center;color:#147fe8;font-size:15px}
+.queue .t{flex:1;min-width:0}
+.queue .t b{display:block;font-size:13.5px;font-weight:600}
+.queue .t span{font-size:11px;color:#5e7184}
+.queue .go{color:#147fe8;font-size:12px;font-weight:600}
+
+/* 底部提示 */
+.hint{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:10.5px;color:#93a3b5}
+.home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:4.5px;
+  border-radius:3px;background:#142338;opacity:.2}
+
+/* 说明 */
+.notes{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;max-width:980px}
+.note-card{background:#fff;border:1px solid rgba(20,35,56,.09);border-radius:16px;padding:14px 16px}
+.note-card h4{margin:0 0 8px;font-size:13px}
+.note-card ul{margin:0;padding-left:17px;font-size:12.5px;color:#5e7184;line-height:1.7}
+.note-card b{color:#142338}
+</style>
+</head>
+<body>
+<div class="head"><div class="mark"><i></i><i></i></div><b>Nomi · 听音乐</b></div>
+<h1>本地音乐，黑胶界面</h1>
+<p class="lead">导入本地文件，在 Nomi 里直接解码播放：黑胶、歌名、封面、进度、上一首/下一首，全部原生。不联网、不要账号、不上传音频。</p>
+
+<div class="row">
+  <div class="col">
+    <div class="cap">正在播放</div>
+    <div class="bezel"><div class="screen">
+      <div class="statusbar"><span>23:41</span><div class="icons"><i class="pill"></i><i class="round"></i><i></i></div></div>
+
+      <div class="nav">
+        <div class="down">⌄</div>
+        <div class="mid">正在播放</div>
+        <div class="more">⋯</div>
+      </div>
+
+      <div class="stage">
+        <div class="disc-wrap">
+          <div class="disc">
+            <div class="label"><b>通勤</b><div class="hole"></div></div>
+          </div>
+          <div class="arm"></div>
+          <div class="pivot"></div>
+        </div>
+      </div>
+
+      <div class="track">
+        <h2>晴天</h2>
+        <p>周杰伦</p>
+        <div class="badge"><i></i>本地播放中</div>
+      </div>
+
+      <div class="progress">
+        <div class="bar"><div class="fill"></div><div class="knob"></div></div>
+        <div class="times"><span>1:23</span><span>4:29</span></div>
+      </div>
+
+      <div class="controls">
+        <div class="side">⏮</div>
+        <div class="play">⏸</div>
+        <div class="side">⏭</div>
+      </div>
+
+      <div class="queue">
+        <div class="ico">♪</div>
+        <div class="t"><b>我的音乐</b><span>本地文件 · 12 首</span></div>
+        <div class="go">换歌单 ›</div>
+      </div>
+
+      <div class="hint">本地播放 · 不联网</div>
+      <div class="home"></div>
+    </div></div>
+  </div>
+
+  <div class="col">
+    <div class="cap">还没有音乐时</div>
+    <div class="bezel"><div class="screen">
+      <div class="statusbar"><span>23:41</span><div class="icons"><i class="pill"></i><i class="round"></i><i></i></div></div>
+
+      <div class="nav">
+        <div class="down">⌄</div>
+        <div class="mid">正在播放</div>
+        <div class="more">⋯</div>
+      </div>
+
+      <div class="stage">
+        <div class="disc-wrap" style="opacity:.55">
+          <div class="disc">
+            <div class="label" style="background:linear-gradient(150deg,#8f9cab,#5d6a7a)">
+              <b>通勤</b><div class="hole"></div>
+            </div>
+          </div>
+          <div class="arm" style="transform:rotate(52deg);opacity:.7"></div>
+          <div class="pivot"></div>
+        </div>
+      </div>
+
+      <div class="track">
+        <h2>通勤</h2>
+        <p style="color:#9a6319">读不到曲目信息</p>
+        <div class="badge" style="color:#9a6319;background:#fff2d8">还没有音乐</div>
+      </div>
+
+      <div class="progress"><div class="bar"><div class="fill" style="width:0"></div></div>
+        <div class="times"><span>—</span><span>—</span></div></div>
+
+      <div class="controls">
+        <div class="side" style="opacity:.35">⏮</div>
+        <div class="play" style="background:#93a3b5;box-shadow:none">▶</div>
+        <div class="side" style="opacity:.35">⏭</div>
+      </div>
+
+      <div class="queue">
+        <div class="ico">↗</div>
+        <div class="t"><b>导入音乐</b><span>从「文件」里挑几首</span></div>
+        <div class="go">打开 ›</div>
+      </div>
+
+      <div class="hint">导入后会一直在 App 里，不用联网</div>
+      <div class="home"></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="notes">
+  <div class="note-card">
+    <h4>结构</h4>
+    <ul>
+      <li>顶部：黑胶唱片（播放时转，暂停停）＋唱臂</li>
+      <li>中间：<b>歌名</b> / 歌手 / 一句状态</li>
+      <li>下部：进度、上一首/播放/下一首</li>
+      <li>底部：当前歌单，点「换歌单」回列表</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h4>页面藏哪</h4>
+    <ul>
+      <li>WKWebView 放到屏幕外（1×1 像素），只听不看</li>
+      <li>后台播放靠 <b>UIBackgroundModes: audio</b>（项目已有）</li>
+      <li>曲目信息用 JS 每秒取一次，取不到就降级</li>
+    </ul>
+  </div>
+  <div class="note-card">
+    <h4>为什么不是"真播放器"</h4>
+    <ul>
+      <li>网易云无公开播放 SDK，无法直接拿音频流</li>
+      <li>所以黑胶界面的"播放"本质是控制网页里的 &lt;audio&gt;</li>
+      <li>VIP/版权曲目可能只有网页能播、或根本不能播</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
