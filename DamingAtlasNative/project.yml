@@ -24,7 +24,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.damingatlas.app
-        PRODUCT_NAME: 大明王朝
+        PRODUCT_NAME: DamingAtlas
         INFOPLIST_FILE: DamingAtlas/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: NO
         TARGETED_DEVICE_FAMILY: "1"
