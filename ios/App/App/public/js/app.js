@@ -18,8 +18,11 @@ import { renderClan, disposeClan } from './clan.js';
 import { renderStats, disposeStats } from './stats.js';
 import { renderLegend, disposeLegend } from './legend.js';
 import { renderAtlas, disposeAtlas } from './atlas.js';
+import { renderFavorites, disposeFavorites } from './favorites.js';
+import { renderReplays, disposeReplays } from './replays.js';
 import { renderNotFound } from './placeholders.js';
 import { renderMore } from './more.js';
+import { maybeShowOnboarding } from './onboarding.js';
 import { disposeFilterSheet } from './filter.js';
 import { toast } from './ui.js';
 import {
@@ -54,6 +57,8 @@ function disposePages() {
   disposeDetail();
   disposeLegend();
   disposeAtlas();
+  disposeFavorites();
+  disposeReplays();
 }
 
 ctx.rerenderHome = ({ toTop = false } = {}) => {
@@ -223,6 +228,26 @@ async function boot() {
       if (!deferReady3('atlas', () => renderAtlas(view, ctx, route))) renderAtlas(view, ctx, route);
     },
 
+    favorites() {
+      disposeSearch();
+      disposeFilterSheet();
+      disposeTimeline();
+      disposePages();
+      setChrome('full');
+      setTab('more');
+      renderFavorites(view, ctx);
+    },
+
+    replays() {
+      disposeSearch();
+      disposeFilterSheet();
+      disposeTimeline();
+      disposePages();
+      setChrome('full');
+      setTab('more');
+      renderReplays(view, ctx);
+    },
+
     clan(route) {
       disposeSearch();
       disposeFilterSheet();
@@ -308,6 +333,8 @@ async function boot() {
     graph: 'generals',
     legend: 'more',
     atlas: 'more',
+    favorites: 'more',
+    replays: 'more',
     stats: 'stats',
     more: 'more',
     detail: '',
@@ -359,6 +386,11 @@ async function boot() {
       });
     }
 
+    // 3.3 首启引导：只在真正的 #/ 首屏、数据已渲染后出现一次
+    if (route.name === 'timeline') {
+      setTimeout(() => maybeShowOnboarding(), 300);
+    }
+
     // 路由切换后把焦点交给主内容；搜索页保留输入框焦点
     if (route.name !== 'search') {
       try {
@@ -393,10 +425,10 @@ async function boot() {
   window.addEventListener('unhandledrejection', (e) => reportError('未处理的 Promise', e.reason));
   initRouter(routes);
 
-  // 2.0 可选数据晚到：补渲染图谱页
+  // 2.0 可选数据晚到：补渲染图谱页 / 推演库
   if (ctx.data.ready2) {
     ctx.data.ready2.then(() => {
-      if (document.body.dataset.route === 'graph') refreshRoute();
+      if (['graph', 'replays', 'more'].includes(document.body.dataset.route)) refreshRoute();
     });
   }
   // 3.0 考据数据晚到：补渲染详情/势力/家族/名将/图谱/总览

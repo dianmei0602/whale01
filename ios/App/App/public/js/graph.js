@@ -57,10 +57,10 @@ function eraIndexOf(eraIds) {
 }
 
 /* ---------------- 布局 ---------------- */
-function buildNodes(ctx, generals) {
+function buildNodes(ctx, generals, featuredIds = null) {
   const byId = new Map();
   for (const g of generals) {
-    if (!g || !g.id) continue;
+    if (!g || !g.id || g.featured === false) continue;
     byId.set(g.id, {
       id: g.id,
       name: g.name || g.id,
@@ -75,9 +75,10 @@ function buildNodes(ctx, generals) {
       synthetic: false,
     });
   }
-  // relations 中可能出现 generals 之外的 id：补成占位节点，保证连线完整
+  // relations 中可能出现 generals 之外的 id：只补 featured 节点，避免新增人物进图
   for (const r of ctx.data.relations) {
     for (const id of [r.source, r.target]) {
+      if (featuredIds && !featuredIds.has(id)) continue;
       if (!byId.has(id)) {
         byId.set(id, {
           id,
@@ -889,7 +890,9 @@ function updatePositions() {
 /* ---------------- 拖入数据 ---------------- */
 function renderGraphBody(root, ctx, generals) {
   if (!state || state.root !== root) return;
-  state.nodes = buildNodes(ctx, generals);
+  const featured = generals.filter((g) => g && g.id && g.featured !== false);
+  const featuredIds = new Set(featured.map((g) => g.id));
+  state.nodes = buildNodes(ctx, featured, featuredIds);
   state.eraGroups = layoutNodes(state.nodes, ctx.data.eras);
   state.layoutMode = 'expanded';
   applyLayoutPositions('expanded');

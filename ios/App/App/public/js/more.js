@@ -3,8 +3,9 @@
    ============================================================ */
 
 import { esc, icon, toast } from './ui.js';
-import { getSettings, updateSetting, resetSettings, loadRecent } from './store.js';
+import { getSettings, updateSetting, resetSettings, loadRecent, loadFavorites } from './store.js';
 import { initMenuStagger } from './motion.js';
+import { showOnboarding } from './onboarding.js';
 
 function segmented(font) {
   return `<div class="segmented" role="group" aria-label="正文字号">
@@ -25,6 +26,12 @@ function segmented(font) {
 
 function renderHTML(ctx, settings) {
   const recent = loadRecent().length;
+  const favCount = loadFavorites().length;
+  const replayCount = (ctx.data.replays || []).length;
+  const bioList = [...new Set((ctx.data.generalByName?.values?.() || []))];
+  const bioTotal = bioList.length;
+  const bioFeatured = bioList.filter((g) => g && g.featured !== false).length;
+  const peopleText = bioTotal ? `${bioTotal} 位人物` : '64 位人物';
   return `<div class="more-page">
     <header class="page-head">
       <div class="head-title">更多<span class="head-sub">设置 · 数据 · 关于</span></div>
@@ -37,14 +44,47 @@ function renderHTML(ctx, settings) {
       <div class="about-card">
         <h3>山河战纪</h3>
         <p class="about-sub">从涿鹿到加勒万 · 中国战史时间轴</p>
-        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻；3.1 新增卷首（今日一役 / 继续阅读 / 快捷入口）。全量离线，无广告、无账号、无内购。</p>
+        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻；3.1 新增卷首；3.2 关系可视化（图谱双图层 / 时代总览 / 图例与读图）；3.3 阅读闭环（进度 / 收藏 / 分享）与新手引导。全量离线，无广告、无账号、无内购。</p>
         <div class="about-meta">
-          <span>版本 <b>3.1 卷首版</b></span>
-          <span>内容 <b>120 场 · 12 期 · 40 名将</b></span>
+          <span>版本 <b>3.2 关系可视化版</b></span>
+          <span>内容 <b>${ctx.data.total} 场 · ${ctx.data.eras.length} 期 · ${peopleText}</b></span>
           <span>谱系 <b>20 势力 · 34 关系 · 14 家族</b></span>
+          <span>入谱 <b>${bioFeatured || 40} 位 · 关系图谱</b></span>
           <span>更新 <b>2026-11</b></span>
         </div>
       </div>
+
+      <button class="setting-row" type="button" data-action="onboarding" style="margin-top:12px;width:100%;text-align:left">
+        <div class="sr-main">
+          <div class="sr-label">重新查看新手引导</div>
+          <div class="sr-desc">3 步看完时间轴 / 地图 / 关系与时代总览</div>
+        </div>
+        <span class="ph-soon">3 步</span>
+      </button>
+
+      <a class="setting-row" href="privacy.html" style="margin-top:8px">
+        <div class="sr-main">
+          <div class="sr-label">隐私政策</div>
+          <div class="sr-desc">本机存储说明 · 无账号 · 无网络上传</div>
+        </div>
+        <span class="ph-soon">查看</span>
+      </a>
+
+      <a class="setting-row" href="#/favorites" style="margin-top:8px">
+        <div class="sr-main">
+          <div class="sr-label">收藏夹</div>
+          <div class="sr-desc">收藏的战役与阅读进度 · 本机保存</div>
+        </div>
+        <span class="ph-soon">${favCount} 场</span>
+      </a>
+
+      <a class="setting-row" href="#/replays" style="margin-top:8px">
+        <div class="sr-main">
+          <div class="sr-label">推演库</div>
+          <div class="sr-desc">重点战役动画推演 · 时期 / 类型筛选</div>
+        </div>
+        <span class="ph-soon">${replayCount} 场</span>
+      </a>
 
       <a class="setting-row" href="#/legend" style="margin-top:12px">
         <div class="sr-main">
@@ -114,6 +154,8 @@ function renderHTML(ctx, settings) {
         <h2 class="settings-group-title">关于</h2>
         <ul class="source-list">
           <li>3.0 考据：战役档案（时长/目的/地形/兵种/伤亡口径）、双方势力对照（面积/人口/兵力为估算区间）、势力范围示意（今省界拼合）、家族谱与联姻。</li>
+          <li>3.2 关系可视化：名将/国家双图层图谱、名将放射模式、时代总览、图例与读图、势力甘特战役事件层。</li>
+          <li>3.3 阅读体验：详情阅读进度、收藏与已读、分享（Web Share / 复制链接）、人物小传按有无省略、首启 3 步新手引导。</li>
           <li>视觉：水墨古卷 · 墨金；纹理、山脉、印章均为本地程序化生成；标准地图审图号 GS(2022)4307。</li>
           <li>隐私：全部数据与设置保存在本机，无网络请求、无统计埋点。</li>
           <li>后续：持续校核战役档案与家族谱系，扩充考据来源标注。</li>
@@ -129,7 +171,7 @@ function renderHTML(ctx, settings) {
 
       <footer class="detail-foot">
         <span class="foot-seal">山河战纪</span>
-        <br>3.1 卷首版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
+        <br>3.2 关系可视化版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
       </footer>
     </div>
   </div>`;
@@ -143,6 +185,8 @@ export function renderMore(root, ctx) {
   root.querySelector('[data-action="search"]')?.addEventListener('click', () => {
     window.location.hash = '#/search';
   });
+
+  root.querySelector('[data-action="onboarding"]')?.addEventListener('click', () => showOnboarding({ force: true }));
 
   root.querySelectorAll('.seg-btn').forEach((btn) => {
     btn.addEventListener('click', () => {

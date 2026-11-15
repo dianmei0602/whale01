@@ -81,13 +81,29 @@ function anecdoteItemHTML(item, q) {
   </a>`;
 }
 
-function personItemHTML(person, q) {
+function personItemHTML(person, q, ctx) {
   const seed = String(person.name || '名').slice(0, 1);
+  const general = ctx?.data?.generalByName?.get(person.name);
+  const hasBio = !!general;
+  const featured = hasBio && general.featured !== false;
+  const status = hasBio
+    ? featured
+      ? '名将小传 · 关系图'
+      : '重点人物 · 暂无关系图'
+    : `暂无小传 · 关联 ${person.battles.length} 场`;
+  const nameHTML = hasBio
+    ? `<a class="s-person-link" href="#/generals?g=${encodeURIComponent(general.id)}">${highlight(person.name, q)}</a>`
+    : highlight(person.name, q);
+  const hint = hasBio
+    ? featured
+      ? '点击姓名查看小传，或在关系图谱中找到他。'
+      : '点击姓名查看独立小传；该人物暂不进入关系图谱。'
+    : '暂无小传，不单独建页；可从下方关联战役了解其事迹。';
   return `<div class="s-person">
     <div class="s-person-head">
       <span class="s-person-seal" aria-hidden="true">${esc(seed)}</span>
-      <span class="s-person-name">${highlight(person.name, q)}</span>
-      <span class="s-person-count">关联 ${person.battles.length} 场</span>
+      <span class="s-person-name">${nameHTML}</span>
+      <span class="s-person-status${hasBio ? (featured ? ' is-featured' : ' is-extra') : ' is-plain'}" style="margin-left:auto;padding:1px 6px;border:1px solid rgba(201,162,39,.22);border-radius:2px;font-size:8.5px;letter-spacing:.04em;color:${featured ? 'var(--gold)' : hasBio ? 'var(--bronze)' : 'var(--mute)'};white-space:nowrap">${esc(status)}</span>
     </div>
     <div class="s-person-battles">
       ${person.battles
@@ -96,7 +112,7 @@ function personItemHTML(person, q) {
         )
         .join('')}
     </div>
-    <p class="s-anec-text" style="margin-top:8px">可在名将页查看小传与完整战绩。</p>
+    <p class="s-anec-text" style="margin-top:8px">${esc(hint)}</p>
   </div>`;
 }
 
@@ -123,7 +139,7 @@ function resultsHTML(ctx, q) {
   if (result.people.length) {
     groups.push(`<section class="search-group">
       <div class="search-group-title">名将<span class="sg-rule"></span><span class="sg-count">${result.people.length}</span></div>
-      ${result.people.map((p) => personItemHTML(p, q)).join('')}
+      ${result.people.map((p) => personItemHTML(p, q, ctx)).join('')}
     </section>`);
   }
   if (result.anecdotes.length) {
@@ -172,7 +188,7 @@ export function renderSearch(ctx, route) {
       return;
     }
     const note = personMode
-      ? `<p class="search-note search-fallback-note"><b>该人物未收录小传</b>，已为你检索「${esc(q)}」的相关战役与典故。</p>`
+      ? `<p class="search-note search-fallback-note"><b>该人物暂无小传</b>，已为你检索「${esc(q)}」的相关战役与典故。</p>`
       : '';
     body.innerHTML = note + resultsHTML(ctx, q);
     body.scrollTop = 0;
@@ -226,7 +242,7 @@ export function renderSearch(ctx, route) {
   render(initialQuery);
   if (initialQuery) {
     input.value = initialQuery;
-    status.textContent = personMode ? `该人物未收录小传，已搜索「${initialQuery}」` : `搜索「${initialQuery}」`;
+    status.textContent = personMode ? `该人物暂无小传，已搜索「${initialQuery}」` : `搜索「${initialQuery}」`;
   }
   updateClear();
   setTimeout(() => {

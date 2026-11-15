@@ -609,3 +609,22 @@ html[data-motion="reduce"] .gen-bio-loading { animation: none; }
 .bio-family { display: flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 6px; padding: 0 8px; border: 1px solid rgba(201, 162, 39, 0.28); border-radius: 3px; color: var(--paper-dim); font-size: 10px; background: rgba(201, 162, 39, 0.05); }
 .bio-family span { font-size: 8.5px; color: var(--mute); letter-spacing: 0.08em; }
 .bio-family i { margin-left: auto; font-style: normal; color: var(--gold); }
+
+/* ---------------- 3.3 P2 重点人物（featured:false） ---------------- */
+.bio-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  margin-left: 7px;
+  padding: 0 6px;
+  border: 1px solid rgba(201, 162, 39, 0.32);
+  border-radius: 2px;
+  background: rgba(201, 162, 39, 0.06);
+  color: var(--gold);
+  font-size: 8.5px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  vertical-align: 2px;
+}
+.gen-bio-card.is-extra { border-left-color: rgba(201, 162, 39, 0.32); }
+.gen-bio-card.is-extra .bio-seal { opacity: 0.82; }

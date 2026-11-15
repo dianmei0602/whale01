@@ -354,6 +354,7 @@ function buildGraph(data) {
       edgeMap.set(key, edge);
     }
     edge.relations.push(relation);
+    relation.edge = edge;
   });
   const edges = [...edgeMap.values()];
   const pairIndex = new Map();
@@ -670,7 +671,7 @@ function graphSVG(graph) {
       const dash = style.dash ? ` stroke-dasharray="${style.dash}"` : '';
       const marker = style.arrow ? ' marker-end="url(#sg-arrow)"' : '';
       const title = `${edge.fromNode.name} — ${edge.toNode.name}（${edge.type}，${edge.relations.length} 条）`;
-      return `<g class="sg-edge-group" data-edge-group="${esc(edge.key)}">
+      return `<g class="sg-edge-group" data-edge-group="${esc(edge.key)}" data-edge-type="${esc(edge.type)}">
         <path class="sg-edge-hit" data-edge="${esc(edge.key)}" d="${d}" fill="none"/>
         <path class="sg-edge sg-edge--${esc(edge.type)}" data-edge="${esc(edge.key)}" d="${d}" fill="none" stroke="${
         style.color
@@ -724,12 +725,29 @@ function filterChips(defs) {
   return `<button class="sg-chip is-active" type="button" data-filter="all" aria-pressed="true"><i>全</i><span>全部</span></button>${chips}`;
 }
 
+function typeCounts(relations) {
+  const counts = {};
+  TYPES.forEach((type) => {
+    counts[type] = 0;
+  });
+  relations.forEach((relation) => {
+    if (counts[relation.type] != null) counts[relation.type] += 1;
+  });
+  return counts;
+}
+
 function legendHTML(graph) {
+  const counts = typeCounts(graph.relations);
   const typeItems = TYPES.map((type) => {
     const style = TYPE_STYLE[type];
-    return `<span class="sg-legend-item"><i class="sg-legend-line" style="--c:${style.color};--w:${style.width}px;--dash:${
-      style.dashType
-    }${style.arrow ? ';--arrow:1' : ''}"></i>${esc(style.label)}</span>`;
+    const count = counts[type] || 0;
+    return `<button class="sg-legend-item sg-legend-toggle" type="button" data-sg-type="${esc(type)}" aria-pressed="true" aria-label="显示或隐藏${esc(
+      type
+    )}关系（${count} 条）" title="点击显示/隐藏${esc(type)}关系"><i class="sg-legend-line" style="--c:${style.color};--w:${
+      style.width
+    }px;--dash:${style.dashType}${style.arrow ? ';--arrow:1' : ''}"></i><span class="sg-legend-name">${esc(
+      style.label
+    )}</span><b class="sg-legend-count">${count}</b></button>`;
   }).join('');
   const factionCount = graph.nodes.filter((node) => node.isFaction).length;
   const extraCount = graph.nodes.filter((node) => !node.isFaction).length;
@@ -738,6 +756,7 @@ function legendHTML(graph) {
       <span class="sg-legend-title">关系</span>
       <div class="sg-legend-items">${typeItems}</div>
     </div>
+    <p class="sg-legend-hint">点按关系类型可显示 / 隐藏对应连线，右侧为条数。</p>
     <div class="sg-legend-block">
       <span class="sg-legend-title">节点</span>
       <div class="sg-legend-items">
@@ -747,6 +766,20 @@ function legendHTML(graph) {
       </div>
     </div>
     <p class="sg-legend-summary">${factionCount} 势力 + ${extraCount} 附加政权 · ${graph.relations.length} 条关系 · 按时代分环</p>
+  </section>`;
+}
+
+function relationListHTML() {
+  return `<section class="sg-relations" data-sg-relations aria-label="关系列表">
+    <button class="sg-relations-head" type="button" data-sg-action="toggle-list" aria-expanded="false" aria-controls="sgRelBody">
+      <span class="sg-relations-title">关系列表</span>
+      <span class="sg-relations-count" data-rel-count>— 条</span>
+      <span class="sg-relations-arrow" aria-hidden="true">›</span>
+    </button>
+    <div class="sg-relations-body" id="sgRelBody" hidden>
+      <ul class="sg-relations-list" data-rel-list></ul>
+      <p class="sg-rel-empty" data-rel-empty hidden>当前筛选下暂无关系</p>
+    </div>
   </section>`;
 }
 
@@ -767,6 +800,7 @@ function rootHTML(graph, filterDefs) {
       <p class="sg-stage-hint">拖动平移 · 滚轮/双指缩放 · 点节点看详情 · 点连线看说明</p>
     </div>
     ${legendHTML(graph)}
+    ${relationListHTML()}
     <p class="sg-foot">节点按时代分环排布（${layoutEpochs.map((group) => group.epoch.name).join(' · ')}）；关系据 state-relations.json。初始缩放只显示关键节点，放大到 1.2× 以上显示全部名称；布局为阅读性示意，可拖动与缩放。</p>
   </div>`;
 }
@@ -993,6 +1027,7 @@ function applyEraFilter(state, filterId) {
     btn.classList.toggle('is-active', on);
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
+  updateRelationList(state);
   updateFullLabels(state);
 }
 
@@ -1134,7 +1169,100 @@ function closePanel(state) {
   applySelection(state);
 }
 
-/* ---------------- 边说明 toast ---------------- */
+/* ---------------- 关系类型筛选 / 关系列表 ---------------- */
+function filteredRelations(state) {
+  const chip = state.filterDefs.find((item) => item.id === state.filterId);
+  const isAll = !chip || state.filterId === 'all';
+  return state.relations.filter((relation) => {
+    if (!state.enabledTypes.has(relation.type)) return false;
+    if (isAll) return true;
+    return hasOverlap(relation.startYear, relation.endYear, chip.startYear, chip.endYear);
+  });
+}
+
+function updateRelationList(state) {
+  if (!state || !state.root) return;
+  const list = state.root.querySelector('[data-rel-list]');
+  const body = state.root.querySelector('#sgRelBody');
+  const empty = state.root.querySelector('[data-rel-empty]');
+  const countEl = state.root.querySelector('[data-rel-count]');
+  const head = state.root.querySelector('[data-sg-action="toggle-list"]');
+  if (!list || !countEl) return;
+  const rows = filteredRelations(state)
+    .slice()
+    .sort((a, b) => (a.startYear == null ? 0 : a.startYear) - (b.startYear == null ? 0 : b.startYear));
+  countEl.textContent = `${rows.length} 条`;
+  list.innerHTML = rows
+    .map((relation) => {
+      const edge = relation.edge;
+      const nameA = edge ? edge.fromNode.name : relation.from;
+      const nameB = edge ? edge.toNode.name : relation.to;
+      const years = yearRange(relation.startYear, relation.endYear);
+      return `<li class="sg-rel-item-row"><button class="sg-rel-item" type="button" data-rel-id="${esc(
+        relation.id
+      )}" aria-label="${esc(`${nameA} 对 ${nameB}，${relation.type}${years ? `，${years}` : ''}`)}">
+        <span class="sg-rel-item-top">${typeChip(relation.type)}<span class="sg-rel-item-names">${esc(nameA)} — ${esc(
+        nameB
+      )}</span>${years ? `<span class="sg-rel-item-year">${esc(years)}</span>` : ''}</span>
+        <span class="sg-rel-item-note">${esc(relation.note || '暂无说明')}</span>
+      </button></li>`;
+    })
+    .join('');
+  if (empty) empty.hidden = rows.length > 0;
+  list.hidden = rows.length === 0;
+  if (body) body.hidden = !state.listOpen;
+  if (head) {
+    head.setAttribute('aria-expanded', state.listOpen ? 'true' : 'false');
+    head.classList.toggle('is-open', state.listOpen);
+  }
+}
+
+function applyTypeFilter(state) {
+  if (!state || !state.svg) return;
+  state.svg.querySelectorAll('[data-edge-group]').forEach((group) => {
+    group.classList.toggle('is-off', !state.enabledTypes.has(group.dataset.edgeType));
+  });
+  state.root.querySelectorAll('[data-sg-type]').forEach((btn) => {
+    const on = state.enabledTypes.has(btn.dataset.sgType);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  updateRelationList(state);
+  if (state.selectedId) applySelection(state);
+}
+
+function toggleType(state, type) {
+  if (!TYPES.includes(type)) return;
+  if (state.enabledTypes.has(type)) state.enabledTypes.delete(type);
+  else state.enabledTypes.add(type);
+  applyTypeFilter(state);
+}
+
+function toggleRelationList(state) {
+  state.listOpen = !state.listOpen;
+  const body = state.root.querySelector('#sgRelBody');
+  const head = state.root.querySelector('[data-sg-action="toggle-list"]');
+  if (body) body.hidden = !state.listOpen;
+  if (head) {
+    head.setAttribute('aria-expanded', state.listOpen ? 'true' : 'false');
+    head.classList.toggle('is-open', state.listOpen);
+  }
+}
+
+/* ---------------- 边说明 / 关系定位 ---------------- */
+function flashEdge(state, edgeKey) {
+  if (!state || !state.svg) return;
+  const previous = state.svg.querySelector('.sg-edge-group.is-flash');
+  if (previous) previous.classList.remove('is-flash');
+  const group = state.svg.querySelector(`[data-edge-group="${CSS.escape(edgeKey)}"]`);
+  if (!group) return;
+  group.classList.add('is-flash');
+  state.timers.push(
+    window.setTimeout(() => {
+      group.classList.remove('is-flash');
+    }, 1600)
+  );
+}
+
 function showEdgeNote(state, edgeKey) {
   const edge = state.edgeMap.get(edgeKey);
   if (!edge) return;
@@ -1148,20 +1276,34 @@ function showEdgeNote(state, edgeKey) {
     notes ? `｜${notes}` : ''
   }`;
   toast(text, 3600);
-  if (state.toastHighlightEdge) {
-    const previous = state.svg.querySelector('.sg-edge-group.is-flash');
-    if (previous) previous.classList.remove('is-flash');
+  flashEdge(state, edge.key);
+}
+
+/** 从关系列表点某项：高亮该边 + 平移画布到该关系 + toast 说明 */
+function locateRelation(state, relationId) {
+  if (!state) return;
+  const relation = state.relations.find((item) => item.id === relationId);
+  if (!relation) return;
+  if (!state.enabledTypes.has(relation.type)) {
+    toast('该关系类型已被筛选隐藏，请先在图例中开启');
+    return;
   }
-  const group = state.svg.querySelector(`[data-edge-group="${CSS.escape(edge.key)}"]`);
-  if (group) {
-    group.classList.add('is-flash');
-    state.toastHighlightEdge = group;
-    state.timers.push(
-      window.setTimeout(() => {
-        group.classList.remove('is-flash');
-        if (state.toastHighlightEdge === group) state.toastHighlightEdge = null;
-      }, 1600)
-    );
+  const edge = relation.edge;
+  if (!edge) return;
+  flashEdge(state, edge.key);
+  const years = yearRange(relation.startYear, relation.endYear);
+  toast(`${edge.fromNode.name} — ${edge.toNode.name}｜${relation.type}${years ? `｜${years}` : ''}｜${relation.note || ''}`, 3600);
+  const midX = (edge.fromNode.x + edge.toNode.x) / 2;
+  const midY = (edge.fromNode.y + edge.toNode.y) / 2;
+  const { w, h } = stageSize(state);
+  const k = clamp(Math.max(state.transform.k, 1.05), 0.45, 2.4);
+  state.transform = { k, x: w / 2 - midX * k, y: h / 2 - midY * k };
+  clampTransform(state);
+  applyTransform(state);
+  try {
+    state.stage.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' });
+  } catch (err) {
+    /* ignore */
   }
 }
 
@@ -1288,11 +1430,25 @@ function bind(state) {
         actionBtn.setAttribute('aria-pressed', state.showAllNames ? 'true' : 'false');
         actionBtn.classList.toggle('is-on', state.showAllNames);
         updateFullLabels(state);
+      } else if (action === 'toggle-list') {
+        toggleRelationList(state);
       }
       return;
     }
     const chip = event.target.closest('[data-filter]');
-    if (chip) applyEraFilter(state, chip.dataset.filter);
+    if (chip) {
+      applyEraFilter(state, chip.dataset.filter);
+      return;
+    }
+    const typeBtn = event.target.closest('[data-sg-type]');
+    if (typeBtn) {
+      toggleType(state, typeBtn.dataset.sgType);
+      return;
+    }
+    const relBtn = event.target.closest('[data-rel-id]');
+    if (relBtn) {
+      locateRelation(state, relBtn.dataset.relId);
+    }
   };
 
   const onPanelClick = (event) => {
@@ -1390,10 +1546,13 @@ function mount(host, ctx, opts, data) {
     graph,
     nodes: graph.nodes,
     edges: graph.edges,
+    relations: graph.relations,
     nodeMap: graph.nodeMap,
     relationsByNode: graph.relationsByNode,
     edgesByNode: graph.edgesByNode,
     edgeMap: new Map(graph.edges.map((edge) => [edge.key, edge])),
+    enabledTypes: new Set(TYPES),
+    listOpen: false,
     stage: shell.querySelector('#sgStage'),
     canvas: shell.querySelector('#sgCanvas'),
     svg: shell.querySelector('.sg-svg'),
@@ -1418,6 +1577,7 @@ function mount(host, ctx, opts, data) {
   bind(state);
   fitView(state);
   applySelection(state);
+  applyTypeFilter(state);
   if (opts && opts.initialEra) applyEraFilter(state, str(opts.initialEra));
 }
 

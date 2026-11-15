@@ -822,3 +822,39 @@ html[data-motion="reduce"] .mini-map .mm-dot::after { animation: none; }
 .gp-family { display: flex; align-items: center; gap: 6px; min-height: 40px; margin-top: 8px; padding: 0 8px; border: 1px solid rgba(201, 162, 39, 0.28); border-radius: 3px; color: var(--paper-dim); font-size: 10px; background: rgba(201, 162, 39, 0.05); }
 .gp-family span { font-size: 8.5px; color: var(--mute); letter-spacing: 0.08em; }
 .gp-family i { margin-left: auto; font-style: normal; color: var(--gold); }
+
+/* ---------------- 3.3 阅读闭环 ---------------- */
+.detail-actions { display: flex; align-items: center; gap: 5px; flex: 0 0 auto; }
+.detail-fav.is-fav {
+  border-color: rgba(201, 162, 39, 0.55) !important;
+  background: rgba(201, 162, 39, 0.14) !important;
+  color: var(--gold-bright);
+}
+.detail-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 70;
+  overflow: hidden;
+  background: rgba(233, 223, 200, 0.06);
+  pointer-events: none;
+}
+.detail-progress > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #e0c060 70%, #f4ead6);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+  transition: width 0.12s linear;
+}
+html[data-motion="reduce"] .detail-progress > span { transition: none; }
+.person.is-plain {
+  border-color: rgba(233, 223, 200, 0.07);
+  background: transparent;
+  color: var(--mute);
+  cursor: default;
+}
+.person.is-plain::before { background: rgba(156, 144, 123, 0.35); box-shadow: none; }
+.person.is-plain:active { transform: none; }

@@ -297,6 +297,11 @@ function detailHTML(ctx, faction) {
 
     <div class="detail-body fac-detail-body">
       ${factionTerritoryCard(ctx, faction)}
+      <a class="btn btn--ghost fac-map-link" href="#/map?faction=${encodeURIComponent(
+        faction.id
+      )}" style="width:100%;min-height:44px;margin:-2px 0 14px;letter-spacing:.1em">${icon(
+        'pin'
+      )}<span style="margin-left:6px">在地图查看版图</span></a>
       ${factionPowerStats(faction, ctx)}
 
       ${section('壹', '兴', faction.rise)}

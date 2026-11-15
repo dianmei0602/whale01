@@ -123,6 +123,7 @@ function pageHTML(ctx) {
     ['名将关系', '40 位 · 34 条关系', '#/graph', 'graph'],
     ['国家关系', '20 势力 + 14 外部势力', '#/graph?layer=state', 'state'],
     ['家族谱', '14 家族 · 世代与联姻', '#/clan/ying-qin', 'clan'],
+    ['推演库', `${(ctx.data.replays || []).length} 场重点战役动画推演`, '#/replays', 'replay'],
     ['图例与读图', '5 节图例 · 怎么读', '#/legend', 'legend'],
   ];
   return `<div class="atlas-page">

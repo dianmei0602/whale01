@@ -3,11 +3,12 @@
    仅缓存同源资源，无外链；数据亦本地缓存，离线可完整阅读。
    ============================================================ */
 
-const CACHE = 'shj-cache-v8';
+const CACHE = 'shj-cache-v9';
 
 const PRECACHE = [
   './',
   './index.html',
+  './privacy.html',
   './manifest.webmanifest',
   './css/base.css',
   './css/layout.css',
@@ -20,7 +21,10 @@ const PRECACHE = [
   './css/graph.css',
   './css/legend.css',
   './css/atlas.css',
+  './css/favorites.css',
+  './css/replays.css',
   './css/stategraph.css',
+  './css/onboarding.css',
   './css/replay.css',
   './css/motion.css',
   './css/clan.css',
@@ -43,7 +47,10 @@ const PRECACHE = [
   './js/graph.js',
   './js/legend.js',
   './js/atlas.js',
+  './js/favorites.js',
+  './js/replays.js',
   './js/stategraph.js',
+  './js/onboarding.js',
   './js/motion.js',
   './js/replay.js',
   './js/stats.js',

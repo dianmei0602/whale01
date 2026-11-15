@@ -13,7 +13,7 @@ import {
   emptyStateHTML,
 } from './ui.js';
 import { filterBattles } from './data.js';
-import { filters, hasFilters, clearFilters, filterCountText, loadRecent } from './store.js';
+import { filters, hasFilters, clearFilters, filterCountText, loadRecent, getProgress, isRead } from './store.js';
 import { navigate } from './router.js';
 import { openFilterSheet } from './filter.js';
 import { initLargeTitle, playCardFlipBack } from './motion.js';
@@ -90,12 +90,24 @@ function coverHTML(ctx) {
   const battles = data.battles || [];
   if (!battles.length) return '';
   const today = battles[dayIndex(battles.length)];
-  const recent = loadRecent()
+  const recentList = loadRecent()
     .map((id) => data.byId.get(id))
-    .find(Boolean);
-  const cont = recent || battles[0];
+    .filter(Boolean);
+  const recent = recentList[0];
+  const progressBattle = recentList.find((b) => getProgress(b.id) > 0);
+  const cont = progressBattle || recent || battles[0];
+  const contPct = getProgress(cont.id);
+  const contRead = isRead(cont.id);
   const todayEra = data.eraById.get(today.eraId);
   const contEra = data.eraById.get(cont.eraId);
+  const isContinue = !!(recent || progressBattle);
+  const contMeta = contRead
+    ? '已读完'
+    : contPct > 0
+      ? `读至 ${contPct}%`
+      : recent
+        ? '上次读到'
+        : '第一篇';
   return `<section class="tl-cover" aria-label="卷首">
     <div class="cover-top">
       <span class="cover-kicker">卷首 · 开卷</span>
@@ -112,11 +124,16 @@ function coverHTML(ctx) {
         <span class="cover-go">开卷 →</span>
       </a>
       <a class="cover-card cover-continue" href="#/battle/${encodeURIComponent(cont.id)}">
-        <span class="cover-tag">${recent ? '继续阅读' : '从这里开始'}</span>
+        <span class="cover-tag">${isContinue ? '继续阅读' : '从这里开始'}</span>
         <span class="cover-year">${esc(cont.yearText)}</span>
         <strong class="cover-name">${esc(cont.name)}</strong>
-        <span class="cover-meta">${recent ? '上次读到' : '第一篇'} · ${esc(contEra?.short || contEra?.name || '')}</span>
-        <span class="cover-go">${recent ? '续读 →' : '开读 →'}</span>
+        <span class="cover-meta">${esc(contMeta)} · ${esc(contEra?.short || contEra?.name || '')}</span>
+        ${
+          contPct > 0
+            ? `<span class="cover-progress" style="display:block;height:2px;margin-top:5px;background:rgba(233,223,200,.1);border-radius:2px;overflow:hidden"><i style="display:block;height:100%;width:${contRead ? 100 : contPct}%;background:var(--gold)"></i></span>`
+            : ''
+        }
+        <span class="cover-go">${isContinue ? '续读 →' : '开读 →'}</span>
       </a>
     </div>
     <nav class="cover-entries" aria-label="快捷入口">
@@ -165,6 +182,13 @@ function sidesHTML(battle) {
 
 function cardHTML(battle, i) {
   const deciding = battle.scale === '战略决战';
+  const pct = getProgress(battle.id);
+  const read = isRead(battle.id);
+  const progressBadge = read
+    ? `<span class="card-progress is-read" data-progress="read" style="display:inline-flex;align-items:center;height:20px;padding:0 6px;border:1px solid rgba(201,162,39,.4);border-radius:2px;font-size:8.5px;letter-spacing:.06em;color:var(--gold-bright)">已读</span>`
+    : pct > 0
+      ? `<span class="card-progress" data-progress="${pct}" style="display:inline-flex;align-items:center;height:20px;padding:0 6px;border:1px solid rgba(201,162,39,.24);border-radius:2px;font-size:8.5px;letter-spacing:.04em;color:var(--gold)">${pct}%</span>`
+      : '';
   const tags = battle.type
     .slice(0, 2)
     .map((t) => `<span class="tag${t === '抵御外侮' ? ' tag--cinnabar' : ''}">${esc(t)}</span>`)
@@ -186,6 +210,7 @@ function cardHTML(battle, i) {
     <p class="card-summary">${esc(battle.summary)}</p>
     <div class="card-foot">
       ${tags}
+      ${progressBadge}
       <span class="card-index">${pad2(i + 1)}</span>
     </div>
   </a>`;

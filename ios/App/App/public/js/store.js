@@ -4,6 +4,9 @@
 
 const SETTINGS_KEY = 'shj.settings.v1';
 const RECENT_KEY = 'shj.recent.v1';
+const FAVS_KEY = 'shj.favs.v1';
+const READ_KEY = 'shj.read.v1';
+const PROGRESS_KEY = 'shj.progress.v1';
 
 export const TYPES = ['统一战争', '抵御外侮', '农民起义', '王朝内战', '边疆经略', '事变'];
 
@@ -108,4 +111,79 @@ export function pushRecent(id) {
   } catch (err) {
     /* 静默降级 */
   }
+}
+
+/* ---------------- 收藏 / 已读 / 阅读进度 ---------------- */
+function readStore(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    const parsed = raw ? JSON.parse(raw) : fallback;
+    return parsed == null ? fallback : parsed;
+  } catch (err) {
+    return fallback;
+  }
+}
+
+function writeStore(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    /* 隐私模式 / file:// 下静默降级 */
+  }
+}
+
+export function loadFavorites() {
+  const list = readStore(FAVS_KEY, []);
+  return Array.isArray(list) ? list.filter((x) => typeof x === 'string') : [];
+}
+
+export function isFavorite(id) {
+  return !!id && loadFavorites().includes(id);
+}
+
+export function toggleFavorite(id) {
+  if (!id) return false;
+  const list = loadFavorites();
+  const idx = list.indexOf(id);
+  if (idx >= 0) list.splice(idx, 1);
+  else list.unshift(id);
+  writeStore(FAVS_KEY, list.slice(0, 200));
+  return idx < 0;
+}
+
+export function loadRead() {
+  const list = readStore(READ_KEY, []);
+  return Array.isArray(list) ? list.filter((x) => typeof x === 'string') : [];
+}
+
+export function isRead(id) {
+  return !!id && loadRead().includes(id);
+}
+
+export function markRead(id) {
+  if (!id) return false;
+  const list = loadRead();
+  if (list.includes(id)) return false;
+  list.unshift(id);
+  writeStore(READ_KEY, list.slice(0, 500));
+  return true;
+}
+
+export function loadProgress() {
+  const map = readStore(PROGRESS_KEY, {});
+  return map && typeof map === 'object' && !Array.isArray(map) ? map : {};
+}
+
+export function getProgress(id) {
+  const n = Number(loadProgress()[id]);
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n))) : 0;
+}
+
+export function setProgress(id, value) {
+  if (!id) return;
+  const pct = Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
+  const map = loadProgress();
+  if (map[id] === pct) return;
+  map[id] = pct;
+  writeStore(PROGRESS_KEY, map);
 }

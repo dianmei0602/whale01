@@ -88,6 +88,23 @@ function loadBios() {
   return biosPromise;
 }
 
+function bioStats(bios) {
+  const list = Array.isArray(bios) ? bios : [];
+  const featured = list.filter((g) => g && g.featured !== false).length;
+  return { total: list.length, featured, extra: list.length - featured };
+}
+
+function bioBadgeHTML(g) {
+  return g?.featured === false
+    ? '<span class="bio-badge" title="独立小传人物，暂不进入关系图谱">重点人物</span>'
+    : '';
+}
+
+function bioCountsText(stats) {
+  if (!stats.total) return '';
+  return `${stats.featured} 位入谱 · ${stats.total} 位立传`;
+}
+
 function biosHTML(ctx, bios) {
   if (!bios.length) {
     return `<p class="gen-bio-loading">名将小传暂未载入（data/generals.json 不可用），下方「全部将帅」仍可浏览。</p>`;
@@ -117,11 +134,13 @@ function biosHTML(ctx, bios) {
       const family = clan
         ? `<a class="bio-family" href="#/clan/${encodeURIComponent(clan.id)}"><span>所属家族</span>${esc(clan.name)}<i aria-hidden="true">›</i></a>`
         : '';
-      return `<article class="gen-bio-card" data-bio-card data-general-id="${esc(g.id || '')}">
+      return `<article class="gen-bio-card${g.featured === false ? ' is-extra' : ''}" data-bio-card data-general-id="${esc(
+        g.id || ''
+      )}">
         <header class="bio-head">
           <span class="gen-seal bio-seal" aria-hidden="true">${esc(String(g.name || '').slice(0, 1))}</span>
           <div class="bio-head-main">
-            <h3 class="bio-name">${esc(g.name || '')}${aliases.length ? `<span class="bio-alias">${esc(aliases.join(' / '))}</span>` : ''}</h3>
+            <h3 class="bio-name">${esc(g.name || '')}${aliases.length ? `<span class="bio-alias">${esc(aliases.join(' / '))}</span>` : ''}${bioBadgeHTML(g)}</h3>
             ${titleText ? `<p class="bio-title">${esc(titleText)}</p>` : ''}
             <p class="bio-meta">${esc(metaText)}</p>
           </div>
@@ -159,26 +178,30 @@ function biosHTML(ctx, bios) {
 
 /* ---------------- 小传区 / 全量区 ---------------- */
 function featuredSectionHTML(ctx, bios) {
+  const stats = bioStats(bios);
   return `<section class="gen-featured" aria-labelledby="genFeaturedTitle">
     <div class="gen-section-head">
-      <h2 class="gen-section-title" id="genFeaturedTitle">名将录<span>40 人 · 小传</span></h2>
-      <span class="gen-section-note">名将小传</span>
+      <h2 class="gen-section-title" id="genFeaturedTitle">名将录<span data-bio-count>${stats.total || ''} 位人物 · 小传</span></h2>
+      <span class="gen-section-note" data-bio-section-note>${
+        stats.total ? `${stats.featured} 位入谱 · ${stats.extra} 位重点人物` : '名将小传'
+      }</span>
     </div>
     <div id="genFeatured">${
-      bios
-        ? biosHTML(ctx, bios)
-        : '<p class="gen-bio-loading">正在载入 40 位名将小传…</p>'
+      bios ? biosHTML(ctx, bios) : '<p class="gen-bio-loading">正在载入名将小传…</p>'
     }</div>
   </section>`;
 }
 
-function introHTML(data, generals, relationCount) {
+function introHTML(data, generals, relationCount, bios) {
+  const stats = bioStats(bios);
   const eraCount = new Set(generals.flatMap((g) => g.eraList.map((e) => e.id))).size;
   const commanding = generals.filter((g) => g.count > 1).length;
   return `<section class="gen-intro">
     <div class="gen-intro-head">
       <h1>将星入册</h1>
-      <span class="gen-intro-sub">40 位立传 · ${generals.length} 位将帅在册</span>
+      <span class="gen-intro-sub" data-bio-intro-sub>${
+        stats.total ? `${stats.total} 位立传 · ${generals.length} 位将帅在册` : `名将小传载入中 · ${generals.length} 位在册`
+      }</span>
     </div>
     <div class="gen-stats-row">
       <span class="gen-stat"><b>${generals.length}</b><i>位将帅</i></span>
@@ -190,11 +213,15 @@ function introHTML(data, generals, relationCount) {
       <span class="gen-graph-cta-icon" aria-hidden="true">${icon('layers')}</span>
       <span class="gen-graph-cta-main">
         <strong>关系图谱</strong>
-        <span>40 位名将 · ${relationCount} 条关系 · 点击看小传</span>
+        <span data-bio-graph-cta>${stats.featured || 40} 位名将 · ${relationCount} 条关系 · 点击看小传</span>
       </span>
       <span class="gen-graph-cta-arrow" aria-hidden="true">›</span>
     </a>
-    <p class="gen-intro-note">小传 40 人按数据供稿撰写；全部 ${generals.length} 位将帅由 sides[].commanders 自动聚合。同一场战役中作为主将或主要将领出现即计入指挥场次；胜率按其所在一方的胜负计算，平局/未决不计胜。</p>
+    <p class="gen-intro-note" data-bio-note>${
+      stats.total
+        ? `小传 ${stats.total} 人（${stats.featured} 位入谱、${stats.extra} 位重点人物），按数据供稿撰写；全部 ${generals.length} 位将帅由 sides[].commanders 自动聚合。同一场战役中作为主将或主要将领出现即计入指挥场次；胜率按其所在一方的胜负计算，平局/未决不计胜。`
+        : `全部 ${generals.length} 位将帅由 sides[].commanders 自动聚合。同一场战役中作为主将或主要将领出现即计入指挥场次；胜率按其所在一方的胜负计算，平局/未决不计胜。`
+    }</p>
   </section>`;
 }
 
@@ -287,16 +314,19 @@ function allSectionHTML(generals) {
 function pageHTML(ctx) {
   const generals = buildGenerals(ctx.data);
   const relationCount = (ctx.data.relations || []).length;
+  const stats = bioStats(state.bios);
   return `<div class="generals-page">
     <header class="page-head">
-      <div class="head-title">名将<span class="head-sub">40 位立传 · ${generals.length} 位在册</span></div>
+      <div class="head-title">名将<span class="head-sub" data-bio-header>${
+        stats.total ? `${stats.featured} 位入谱 · ${stats.total} 位立传` : `名将小传载入中 · ${generals.length} 位关联将帅`
+      }</span></div>
       <div class="head-actions">
         <a class="icon-btn" href="#/graph" aria-label="关系图谱">${icon('layers')}</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>
     <div class="gen-body">
-      ${introHTML(ctx.data, generals, relationCount)}
+      ${introHTML(ctx.data, generals, relationCount, state.bios)}
       ${featuredSectionHTML(ctx, state.bios)}
       ${allSectionHTML(generals)}
       <p class="gen-foot">名将小传由数据文件维护；全部名册由 sides[].commanders 自动聚合，同名人物按通行姓名合并，暂未区分字号与重名。</p>
@@ -409,6 +439,27 @@ function bindEvents() {
   });
 }
 
+function updateBioCounts(root, bios) {
+  if (!root) return;
+  const stats = bioStats(bios);
+  const generals = buildGenerals(state.ctx.data);
+  const relationCount = (state.ctx.data.relations || []).length;
+  const header = root.querySelector('[data-bio-header]');
+  if (header) header.textContent = `${stats.featured} 位入谱 · ${stats.total} 位立传`;
+  const introSub = root.querySelector('[data-bio-intro-sub]');
+  if (introSub) introSub.textContent = `${stats.total} 位立传 · ${generals.length} 位将帅在册`;
+  const count = root.querySelector('[data-bio-count]');
+  if (count) count.textContent = `${stats.total} 位人物 · 小传`;
+  const sectionNote = root.querySelector('[data-bio-section-note]');
+  if (sectionNote) sectionNote.textContent = `${stats.featured} 位入谱 · ${stats.extra} 位重点人物`;
+  const graphCta = root.querySelector('[data-bio-graph-cta]');
+  if (graphCta) graphCta.textContent = `${stats.featured} 位名将 · ${relationCount} 条关系 · 点击看小传`;
+  const note = root.querySelector('[data-bio-note]');
+  if (note) {
+    note.textContent = `小传 ${stats.total} 人（${stats.featured} 位入谱、${stats.extra} 位重点人物），按数据供稿撰写；全部 ${generals.length} 位将帅由 sides[].commanders 自动聚合。同一场战役中作为主将或主要将领出现即计入指挥场次；胜率按其所在一方的胜负计算，平局/未决不计胜。`;
+  }
+}
+
 function focusGeneral(root, gid) {
   if (!gid) return;
   const reduce = document.documentElement.dataset.motion === 'reduce';
@@ -475,6 +526,7 @@ export function renderGenerals(root, ctx, route) {
     if (host) {
       host.innerHTML = biosHTML(ctx, bios);
       revealStagger(host, '.gen-bio-card', { stagger: 45, threshold: 0.04 });
+      updateBioCounts(root, bios);
       if (state.targetGeneralId) focusGeneral(host, state.targetGeneralId);
     }
   });

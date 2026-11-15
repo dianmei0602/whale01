@@ -47,7 +47,7 @@ export function parseHash(hash) {
   if (seg[0] === 'replay' && seg[1]) {
     return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
   }
-  if (['map', 'generals', 'stats', 'more', 'search', 'graph', 'legend', 'atlas'].includes(seg[0])) {
+  if (['map', 'generals', 'stats', 'more', 'search', 'graph', 'legend', 'atlas', 'favorites', 'replays'].includes(seg[0])) {
     return { name: seg[0], params: {}, query, anchor, path: pathname };
   }
   return { name: 'notfound', params: { path: pathname }, query, anchor, path: pathname };
@@ -185,6 +185,8 @@ function titleFor(route) {
     graph: '关系图谱',
     legend: '图例与读图',
     atlas: '时代总览',
+    favorites: '收藏夹',
+    replays: '推演库',
     stats: '统计',
     more: '更多',
     search: '搜索',

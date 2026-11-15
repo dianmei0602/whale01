@@ -690,3 +690,18 @@ html[data-motion="reduce"] .mp.is-selected .mp-halo {
 }
 .map-territories { pointer-events: none; }
 .map-territories .terr-prov { transition: fill-opacity 200ms ease; }
+
+
+/* ---------------- 3.3：势力版图定位（?faction=） ---------------- */
+.map-focus--faction {
+  border-color: rgba(201, 162, 39, 0.55);
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.22), rgba(201, 162, 39, 0.08));
+}
+.map-focus .mf-k--faction {
+  background: linear-gradient(180deg, #d8b64a, #b8912a);
+  color: #221a0c;
+  letter-spacing: 0.1em;
+}
+.map-territories .terr-prov.is-focus {
+  transition: fill-opacity 220ms ease, stroke-opacity 220ms ease;
+}

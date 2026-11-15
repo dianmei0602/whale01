@@ -9,9 +9,18 @@ import {
   resultSealText,
   fmtTroops,
   emptyStateHTML,
+  toast,
 } from './ui.js';
 import { inkMountain } from './ink.js';
-import { pushRecent } from './store.js';
+import {
+  pushRecent,
+  isFavorite,
+  toggleFavorite,
+  getProgress,
+  setProgress,
+  markRead,
+  isRead,
+} from './store.js';
 import { navigate, navigateBack } from './router.js';
 import { initParallax, revealStagger, initSwipeDetail, playCardFlipIn, rememberDetailFlip } from './motion.js';
 import { findPower, rangeText, precisionText, battleTerritoryHTML } from './research.js';
@@ -133,11 +142,13 @@ function anecdotesHTML(battle, ctx) {
     ? `<div class="people">${battle.people
         .map((p) => {
           const general = ctx?.data?.generalByName?.get(p);
-          const href = general ? `#/generals?g=${encodeURIComponent(general.id)}` : `#/search?q=${encodeURIComponent(p)}&note=person`;
-          const klass = general ? 'person is-general' : 'person';
-          return `<a class="${klass}" href="${href}"${
-            general ? '' : ' data-person-search="1" title="该人物未收录小传，点击搜索"'
-          }>${esc(p)}${general ? '<i class="person-dot" aria-hidden="true"></i>' : ''}</a>`;
+          if (!general) {
+            // 3.3：没有小传的人物省略跳转，不做空页面；保留姓名可读
+            return `<span class="person is-plain" title="暂无小传">${esc(p)}</span>`;
+          }
+          return `<a class="person is-general" href="#/generals?g=${encodeURIComponent(
+            general.id
+          )}">${esc(p)}<i class="person-dot" aria-hidden="true"></i></a>`;
         })
         .join('')}</div>`
     : '';
@@ -290,6 +301,89 @@ function territorySectionHTML(battle, ctx) {
   </section>`;
 }
 
+function detailShareURL(id) {
+  const base = `${location.origin}${location.pathname}`;
+  return `${base}#/battle/${encodeURIComponent(id)}`;
+}
+
+async function copyText(text) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (err) {
+    /* 继续降级 */
+  }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function shareBattle(battle) {
+  const url = detailShareURL(battle.id);
+  const payload = {
+    title: `${battle.name} · 山河战纪`,
+    text: battle.summary || `${battle.name}，${battle.yearText || ''}`,
+    url,
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(payload);
+      return;
+    } catch (err) {
+      if (err?.name === 'AbortError') return;
+      /* 其他失败走复制兜底 */
+    }
+  }
+  const ok = await copyText(url);
+  toast(ok ? '链接已复制，可粘贴分享' : '复制失败，请长按地址栏复制');
+}
+
+function setupReading(root, battle) {
+  const bar = root.querySelector('.detail-progress > span');
+  const stored = getProgress(battle.id);
+  let best = isRead(battle.id) ? Math.max(stored, 100) : stored;
+  if (bar && best > 0) bar.style.width = `${Math.min(100, best)}%`;
+  if (isRead(battle.id)) root.querySelector('.detail-page')?.setAttribute('data-read', '1');
+
+  let raf = 0;
+  let lastRead = isRead(battle.id);
+  const calc = () => {
+    raf = 0;
+    const doc = document.documentElement;
+    const max = Math.max(0, doc.scrollHeight - window.innerHeight);
+    const pct = max <= 0 ? 100 : Math.min(100, Math.max(0, Math.round((window.scrollY / max) * 100)));
+    best = Math.max(best, pct);
+    if (bar) bar.style.width = `${best}%`;
+    setProgress(battle.id, best);
+    if (best >= 92 && !lastRead) {
+      lastRead = true;
+      markRead(battle.id);
+      root.querySelector('.detail-page')?.setAttribute('data-read', '1');
+    }
+  };
+  const onScroll = () => {
+    if (!raf) raf = requestAnimationFrame(calc);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  calc();
+  return () => {
+    window.removeEventListener('scroll', onScroll);
+    if (raf) cancelAnimationFrame(raf);
+  };
+}
+
 function detailHTML(battle, ctx) {
   const era = battle.era || { index: '—', name: '未分期', themeColor: '#C9A227' };
   const nav = ctx.data.neighbors.get(battle.id) || {};
@@ -303,7 +397,14 @@ function detailHTML(battle, ctx) {
         <span class="db-era">${esc(era.name)}</span>
         <span class="db-idx">${String(era.index).padStart(2, '0')} / ${String(total).padStart(2, '0')}</span>
       </div>
-      <button class="icon-btn" type="button" data-action="search" aria-label="搜索">${icon('search')}</button>
+      <div class="detail-actions">
+        <button class="icon-btn detail-fav" type="button" data-action="fav" aria-pressed="false" aria-label="收藏">${icon(
+          'book'
+        )}</button>
+        <button class="icon-btn" type="button" data-action="share" aria-label="分享">${icon('share')}</button>
+        <button class="icon-btn" type="button" data-action="search" aria-label="搜索">${icon('search')}</button>
+      </div>
+      <span class="detail-progress" aria-hidden="true"><span></span></span>
     </header>
 
     <section class="detail-hero">
@@ -434,9 +535,27 @@ export function renderDetail(root, ctx, route) {
   });
   root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
 
+  const favBtn = root.querySelector('[data-action="fav"]');
+  const syncFav = () => {
+    if (!favBtn) return;
+    const on = isFavorite(battle.id);
+    favBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    favBtn.classList.toggle('is-fav', on);
+    favBtn.setAttribute('aria-label', on ? '取消收藏' : '收藏');
+    favBtn.setAttribute('title', on ? '取消收藏' : '收藏');
+  };
+  favBtn?.addEventListener('click', () => {
+    const on = toggleFavorite(battle.id);
+    syncFav();
+    toast(on ? '已收藏' : '已取消收藏');
+  });
+  syncFav();
+  root.querySelector('[data-action="share"]')?.addEventListener('click', () => shareBattle(battle));
+
   // ---------- 2.2 动效：Hero 视差 / 标题逐字 / 印章 spring / 分段 reveal / 左右滑 ----------
   const nav = ctx.data.neighbors.get(battle.id) || {};
   const cleanups = [
+    setupReading(root, battle),
     initParallax(root, '.hero-art', { max: 18, speed: 0.14 }),
     revealStagger(root, '.d-sec', { stagger: 55, threshold: 0.08 }),
     initSwipeDetail(root, {

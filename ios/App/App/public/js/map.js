@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    map.js — M3 战役地图：
    内置示意中国轮廓（Natural Earth 简化） + 120 场线性投影落位
    + 时期/类型筛选 + 缩放拖动 + 低缩放聚合 + 摘要卡直达详情
@@ -197,6 +197,7 @@ function pageHTML(ctx, mode) {
       mode === 'vector' ? '示意轮廓（底图回退）' : '标准地图'
     }</span></div>
       <div class="head-actions">
+        <a class="icon-btn" href="#/legend#map" aria-label="地图图例" title="地图图例">?</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>
@@ -312,6 +313,29 @@ function renderTerritories() {
   }
   const era = state.era;
   const factionById = new Map(TERR.factions.map((f) => [f.id, f]));
+  const focusId = state.factionFocus || '';
+  if (focusId) {
+    const provSet = new Set(factionProvinces(focusId));
+    const f = factionById.get(focusId) || { color: '#C9A227', name: focusId };
+    const color = f.color || '#C9A227';
+    const feats = (TERR.provinces.features || []).filter((feat) =>
+      provSet.has(normProv(feat.properties && feat.properties.name))
+    );
+    g.innerHTML = feats
+      .map(
+        (feat) =>
+          `<path class="terr-prov is-focus" data-prov="${esc(
+            normProv(feat.properties && feat.properties.name)
+          )}" d="${provPathD(feat.geometry)}" fill="${color}" fill-opacity="0.34" stroke="${color}" stroke-opacity="0.72" stroke-width="7" stroke-linejoin="round"/>`
+      )
+      .join('');
+    const note = state.root.querySelector('#mapLayerNote');
+    if (note) {
+      note.hidden = false;
+      note.textContent = `势力版图：${f.name || focusId} · ${feats.length} 省（示意，非精确疆域）`;
+    }
+    return;
+  }
   const active = TERR.territories.filter((t) => {
     if (era === 'all') return true;
     const f = factionById.get(t.factionId);
@@ -468,6 +492,126 @@ function battleQuery() {
   }
 }
 
+/* ---------------- 势力版图定位（#/map?faction=<id>） ---------------- */
+function factionQuery() {
+  const raw = String((window.location && window.location.hash) || '');
+  const m = /[?&]faction=([^&#]+)/.exec(raw);
+  if (!m) return '';
+  try {
+    return decodeURIComponent(m[1]);
+  } catch (err) {
+    return m[1];
+  }
+}
+
+function factionName(id) {
+  const f = (TERR.factions || []).find((x) => x.id === id);
+  return f ? f.name : id;
+}
+
+function factionProvinces(id) {
+  const t = (TERR.territories || []).find((x) => x.factionId === id);
+  return t ? (t.provinces || []).map(normProv) : [];
+}
+
+function setTerritoryChip(on) {
+  if (!state) return;
+  const chip = state.root.querySelector('[data-layer="territories"]');
+  if (chip) {
+    chip.classList.toggle('is-active', on);
+    chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  const lg = state.root.querySelector('#lgTerr');
+  if (lg) lg.hidden = !on;
+}
+
+function showFocusChip(inner, faction = false) {
+  if (!state) return;
+  const chip = state.root.querySelector('#mapFocus');
+  if (!chip) return;
+  chip.hidden = false;
+  chip.classList.toggle('map-focus--faction', !!faction);
+  chip.innerHTML = `${inner}<button class="mf-clear" type="button" data-focus-clear aria-label="清除定位">${icon(
+    'close'
+  )}</button>`;
+  chip.querySelector('[data-focus-clear]').addEventListener('click', () => clearFocus(true));
+}
+
+function factionBBox(provSet) {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const feat of (TERR.provinces && TERR.provinces.features) || []) {
+    const key = normProv(feat.properties && feat.properties.name);
+    if (!provSet.has(key)) continue;
+    const polys = feat.geometry.type === 'Polygon' ? [feat.geometry.coordinates] : feat.geometry.coordinates;
+    for (const poly of polys) {
+      for (const ring of poly) {
+        for (const pair of ring) {
+          const p = stdProject(pair[0], pair[1]);
+          if (p[0] < minX) minX = p[0];
+          if (p[0] > maxX) maxX = p[0];
+          if (p[1] < minY) minY = p[1];
+          if (p[1] > maxY) maxY = p[1];
+        }
+      }
+    }
+  }
+  return Number.isFinite(minX) ? { minX, minY, maxX, maxY } : null;
+}
+
+function focusOnFaction(id) {
+  if (!state || !id) return false;
+  const name = factionName(id);
+  const provs = factionProvinces(id);
+  const note = state.root.querySelector('#mapLayerNote');
+  if (!provs.length) {
+    // 空态：不开启图层，给出提示与可清除的定位条
+    state.factionFocus = '';
+    setTerritoryChip(false);
+    renderTerritories();
+    showFocusChip(
+      `<span class="mf-k mf-k--faction">势力</span><b class="mf-name">${esc(name)}</b><span class="mf-era">暂无版图数据</span>`,
+      true
+    );
+    if (note) {
+      note.hidden = false;
+      note.textContent = `势力范围：未找到「${name}」的版图数据（territories.json）`;
+    }
+    return false;
+  }
+  state.factionFocus = id;
+  state.terrOn = true;
+  state.focusTarget = '';
+  setTerritoryChip(true);
+  renderTerritories();
+  const box = factionBBox(new Set(provs));
+  if (box) {
+    const w = state.frame.clientWidth;
+    const h = state.frame.clientHeight;
+    const bs = w / mapW();
+    const cx = (box.minX + box.maxX) / 2;
+    const cy = (box.minY + box.maxY) / 2;
+    const spanX = Math.max(1, box.maxX - box.minX);
+    const spanY = Math.max(1, box.maxY - box.minY);
+    const fit = Math.min(w / (spanX * bs), h / (spanY * bs)) * 0.82;
+    state.scale = clampScale(Math.min(3.6, Math.max(1.25, fit)));
+    state.tx = w / 2 - cx * bs * state.scale;
+    state.ty = h / 2 - cy * bs * state.scale;
+    clampView();
+    applyView();
+    renderPoints(true);
+  }
+  showFocusChip(
+    `<span class="mf-k mf-k--faction">势力</span><b class="mf-name">${esc(name)}</b><span class="mf-era">版图示意 · ${provs.length} 省</span>`,
+    true
+  );
+  const status = state.root.querySelector('#mapStatus');
+  if (status) status.textContent = `已定位势力：${name}`;
+  return true;
+}
+
 function hideFocusChip() {
   const chip = state && state.root.querySelector('#mapFocus');
   if (chip) {
@@ -508,8 +652,21 @@ function focusOnBattle(id) {
 function clearFocus(resetView = false) {
   hideFocusChip();
   hidePopup();
-  if (state) state.focusTarget = null;
-  if (state && /[?&]battle=/.test(String(window.location.hash || ''))) {
+  if (state) {
+    state.focusTarget = null;
+    state.factionFocus = '';
+    if (state.terrOn) {
+      state.terrOn = false;
+      setTerritoryChip(false);
+      renderTerritories();
+      const note = state.root.querySelector('#mapLayerNote');
+      if (note) {
+        note.hidden = true;
+        note.textContent = '';
+      }
+    }
+  }
+  if (state && /[?&](battle|faction)=/.test(String(window.location.hash || ''))) {
     try {
       window.history.replaceState(null, '', '#/map');
     } catch (err) {
@@ -769,6 +926,11 @@ function bindFilters() {
     root.querySelectorAll('#mapEraRow .m-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
     hideFocusChip();
     hidePopup();
+    if (state.factionFocus) {
+      state.factionFocus = '';
+      state.terrOn = false;
+      setTerritoryChip(false);
+    }
     clearTimeout(state.animTimer);
     renderPoints(true);
     announceMapChange();
@@ -793,6 +955,11 @@ function bindFilters() {
     });
     hideFocusChip();
     hidePopup();
+    if (state.factionFocus) {
+      state.factionFocus = '';
+      state.terrOn = false;
+      setTerritoryChip(false);
+    }
     clearTimeout(state.animTimer);
     renderPoints(true);
     announceMapChange();
@@ -813,6 +980,18 @@ function bindFilters() {
     if (lg) lg.hidden = !on;
     if (!on) {
       state.terrOn = false;
+      // 手动关闭图层时一并解除势力版图聚焦，避免定位条与图层状态不一致
+      if (state.factionFocus) {
+        state.factionFocus = '';
+        hideFocusChip();
+        if (/[?&]faction=/.test(String(window.location.hash || ''))) {
+          try {
+            window.history.replaceState(null, '', '#/map');
+          } catch (err) {
+            /* 忽略 */
+          }
+        }
+      }
       renderTerritories();
       if (note) {
         note.hidden = true;
@@ -925,6 +1104,7 @@ export function renderMap(root, ctx) {
     selected: null,
     listExpanded: false,
     terrOn: false,
+    factionFocus: '',
     focusTarget: '',
     pending: 0,
     animTimer: 0,
@@ -951,6 +1131,25 @@ export function renderMap(root, ctx) {
     requestAnimationFrame(() => {
       if (state && ctx.data.byId.get(target)) focusOnBattle(target);
     });
+  }
+
+  // #/map?faction=<id>：自动开启势力范围图层并高亮定位（?battle= 优先）
+  const facTarget = factionQuery();
+  if (facTarget && !target) {
+    (async () => {
+      try {
+        await loadTerritoryData();
+        if (state) focusOnFaction(facTarget);
+      } catch (err) {
+        if (state) {
+          const note = state.root.querySelector('#mapLayerNote');
+          if (note) {
+            note.hidden = false;
+            note.textContent = '势力范围：数据加载失败（territories.json / china-provinces.json）';
+          }
+        }
+      }
+    })();
   }
 
   // 标准地图加载失败 -> 回退示意轮廓（并在提示区说明）

@@ -271,6 +271,125 @@ html[data-motion="reduce"] .sg-stage { cursor: default; }
   stroke-width: 2.4;
 }
 
+/* 被关闭的关系类型整组隐藏（命中层一并隐藏） */
+.sg-edge-group.is-off { display: none; }
+
+/* ---------------- 关系列表（折叠区） ---------------- */
+.sg-relations {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background: rgba(233, 223, 200, 0.022);
+  overflow: hidden;
+}
+.sg-relations-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 11px;
+  text-align: left;
+}
+.sg-relations-head:active { background: rgba(201, 162, 39, 0.07); }
+.sg-relations-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+}
+.sg-relations-count {
+  margin-left: auto;
+  font-family: var(--num);
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  color: var(--mute);
+}
+.sg-relations-arrow {
+  flex: 0 0 auto;
+  color: rgba(201, 162, 39, 0.6);
+  font-size: 16px;
+  line-height: 1;
+  transition: transform var(--dur) var(--ease);
+}
+.sg-relations-head.is-open .sg-relations-arrow { transform: rotate(90deg); }
+.sg-relations-body {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0 10px 10px;
+  border-top: 1px dashed var(--line-soft);
+  -webkit-overflow-scrolling: touch;
+}
+.sg-relations-body[hidden] { display: none; }
+.sg-relations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sg-relations-list[hidden] { display: none; }
+.sg-rel-item-row { margin: 0; }
+.sg-rel-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--line-soft);
+  border-radius: 3px;
+  background: rgba(233, 223, 200, 0.02);
+  text-align: left;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.sg-rel-item:active {
+  border-color: rgba(201, 162, 39, 0.45);
+  background: rgba(201, 162, 39, 0.06);
+}
+.sg-rel-item-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.sg-rel-item-names {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sg-rel-item-year {
+  flex: 0 0 auto;
+  font-family: var(--num);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.sg-rel-item-note {
+  font-size: 10.5px;
+  line-height: 1.65;
+  color: rgba(233, 223, 200, 0.72);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.sg-rel-empty {
+  padding: 10px 2px 4px;
+  margin: 0;
+  text-align: center;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+}
+.sg-rel-empty[hidden] { display: none; }
+
 /* ---------------- 图例 ---------------- */
 .sg-legend {
   display: flex;
@@ -308,6 +427,33 @@ html[data-motion="reduce"] .sg-stage { cursor: default; }
   letter-spacing: 0.02em;
   color: var(--mute);
   white-space: nowrap;
+}
+.sg-legend-toggle {
+  padding: 3px 5px;
+  margin: -3px -5px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  transition: opacity var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.sg-legend-toggle:active { background: rgba(201, 162, 39, 0.1); }
+.sg-legend-toggle[aria-pressed="false"] { opacity: 0.42; }
+.sg-legend-toggle[aria-pressed="false"] .sg-legend-count { text-decoration: line-through; }
+.sg-legend-name { color: var(--paper-dim); }
+.sg-legend-count {
+  font-family: var(--num);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--gold);
+}
+.sg-legend-hint {
+  margin: 0;
+  font-size: 8.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: rgba(156, 144, 123, 0.72);
 }
 .sg-legend-line {
   position: relative;
