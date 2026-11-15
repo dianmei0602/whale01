@@ -46,7 +46,7 @@ function renderHTML(ctx, settings) {
         <p class="about-sub">从涿鹿到加勒万 · 中国战史时间轴</p>
         <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻；3.1 新增卷首；3.2 关系可视化（图谱双图层 / 时代总览 / 图例与读图）；3.3 阅读闭环（进度 / 收藏 / 分享）与新手引导。全量离线，无广告、无账号、无内购。</p>
         <div class="about-meta">
-          <span>版本 <b>3.2 关系可视化版</b></span>
+          <span>版本 <b>3.3 体验补全版</b></span>
           <span>内容 <b>${ctx.data.total} 场 · ${ctx.data.eras.length} 期 · ${peopleText}</b></span>
           <span>谱系 <b>20 势力 · 34 关系 · 14 家族</b></span>
           <span>入谱 <b>${bioFeatured || 40} 位 · 关系图谱</b></span>
@@ -171,7 +171,7 @@ function renderHTML(ctx, settings) {
 
       <footer class="detail-foot">
         <span class="foot-seal">山河战纪</span>
-        <br>3.2 关系可视化版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
+        <br>3.3 体验补全版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
       </footer>
     </div>
   </div>`;
