@@ -13,7 +13,7 @@ let state = null;
 const CN_NUM = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 
 /* ---------------- 时间带 ---------------- */
-function bandSVG(factions, selectedId) {
+function bandSVG(factions, selectedId, ctx = null) {
   const rows = [...factions].sort((a, b) => a.startYear - b.startYear || a.endYear - b.endYear);
   const minYear = Math.min(...rows.map((f) => f.startYear), -2100);
   const maxYear = Math.max(...rows.map((f) => f.endYear), 1950);
@@ -25,6 +25,26 @@ function bandSVG(factions, selectedId) {
   const H = top + rows.length * rowH + 34;
   const x = (year) => padL + ((year - minYear) / (maxYear - minYear)) * (W - padL - padR);
   const plotW = W - padL - padR;
+  const byId = ctx?.data?.byId;
+  const battleNodes = (f, y) =>
+    (f.keyBattles || [])
+      .map((id) => (byId ? byId.get(id) : null))
+      .filter(Boolean)
+      .map((b, i) => {
+        const bx = x(b.startYear);
+        if (!Number.isFinite(bx) || bx < 4 || bx > W - 4) return '';
+        const deciding = b.scale === '战略决战';
+        const cy = y + 23;
+        return `<a class="fac-battle-node${deciding ? ' is-deciding' : ''}" href="#/battle/${encodeURIComponent(
+          b.id
+        )}" data-fac-battle="${esc(b.id)}" aria-label="${esc(b.name)}${deciding ? '（战略决战）' : ''}">
+          <title>${esc(b.name)} · ${esc(fmtYear(b.startYear))}${deciding ? ' · 战略决战' : ''}</title>
+          <circle class="fac-battle-hit" cx="${bx.toFixed(1)}" cy="${cy}" r="7"/>
+          ${deciding ? `<circle class="fac-battle-ring" cx="${bx.toFixed(1)}" cy="${cy}" r="5.4"/>` : ''}
+          <circle class="fac-battle-dot" cx="${bx.toFixed(1)}" cy="${cy}" r="${deciding ? 2.6 : 3.2}"/>
+        </a>`;
+      })
+      .join('');
 
   // 年代刻度：控制在 6–9 个，避免手机宽度下标签重叠
   const totalSpan = maxYear - minYear;
@@ -63,6 +83,7 @@ function bandSVG(factions, selectedId) {
         <text x="${labelX.toFixed(1)}" y="${y + rowH / 2 + 5}" text-anchor="${labelAnchor}" class="fac-row-year">${esc(
         f.shortYearText || ''
       )}</text>
+        ${battleNodes(f, y)}
       </g>`;
     })
     .join('');
@@ -131,9 +152,17 @@ function listHTML(ctx, selectedId) {
             ...f,
             shortYearText: `${fmtYear(f.startYear)}—${fmtYear(f.endYear)}`,
           })),
-          selectedId
+          selectedId,
+          ctx
         )}</div>
         <p class="fac-band-hint">点击色条选中势力；再点卡片查看兴衰。色条长度即国祚长短。</p>
+        <div class="fac-band-legend">
+          <span class="fbl-item"><i class="fbl-bar"></i>色条 = 国祚</span>
+          <span class="fbl-item"><i class="fbl-dot"></i>战役节点</span>
+          <span class="fbl-item"><i class="fbl-ring"></i>战略决战</span>
+          <span class="fbl-item"><i class="fbl-tick"></i>时期线</span>
+          <a class="fbl-link" href="#/legend#gantt">图例与读图 →</a>
+        </div>
       </section>
 
       <div class="fac-list-head">
@@ -305,12 +334,15 @@ function detailHTML(ctx, faction) {
 function bindList(root, ctx) {
   const band = root.querySelector('#facBand');
   band?.addEventListener('click', (e) => {
+    // 战役节点：交给 <a> 默认跳转，不触发势力行选中
+    if (e.target.closest('[data-fac-battle]')) return;
     const row = e.target.closest('[data-faction]');
     if (!row) return;
     selectFaction(root, ctx, row.dataset.faction);
   });
   band?.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.target.closest('[data-fac-battle]')) return;
     const row = e.target.closest('[data-faction]');
     if (!row) return;
     e.preventDefault();

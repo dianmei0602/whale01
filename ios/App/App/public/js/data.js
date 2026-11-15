@@ -425,11 +425,12 @@ async function loadOptional2_0() {
 
 
 async function loadOptional3_0() {
-  const [powersRes, territoriesRes, clansRes, provincesRes] = await Promise.allSettled([
+  const [powersRes, territoriesRes, clansRes, provincesRes, stateRes] = await Promise.allSettled([
     getJSON('powers.json'),
     getJSON('territories.json'),
     getJSON('clans.json'),
     getJSON('china-provinces.json'),
+    getJSON('state-relations.json'),
   ]);
   const missing = [];
   const powersRaw = powersRes.status === 'fulfilled' ? powersRes.value : (missing.push('powers.json'), []);
@@ -449,8 +450,14 @@ async function loadOptional3_0() {
   const clans = (Array.isArray(clansRaw) ? clansRaw : arr(clansRaw?.clans)).filter((c) => c && c.id);
   const clansById = new Map(clans.map((c) => [c.id, c]));
   const provinces = provincesRes.status === 'fulfilled' ? provincesRes.value : null;
+  const stateRaw = stateRes.status === 'fulfilled' ? stateRes.value : (missing.push('state-relations.json'), {});
+  const stateRelations = Array.isArray(stateRaw) ? stateRaw : arr(stateRaw?.relations);
+  const stateExtraNodes = Array.isArray(stateRaw) ? [] : arr(stateRaw?.extraNodes);
   if (missing.length) console.info(`[山河战纪] 3.0 数据暂不可用：${missing.join(', ')}`);
-  return { powers, powersByName, territories, territoriesByFaction, clans, clansById, provinces, missing };
+  return {
+    powers, powersByName, territories, territoriesByFaction, clans, clansById, provinces,
+    stateRelations, stateExtraNodes, missing,
+  };
 }
 
 /**
@@ -528,6 +535,8 @@ export async function loadData() {
         data.clans = extra.clans;
         data.clansById = extra.clansById;
         data.provinces = extra.provinces;
+        data.stateRelations = extra.stateRelations;
+        data.stateExtraNodes = extra.stateExtraNodes;
         data.missing3 = extra.missing;
         return data;
       })

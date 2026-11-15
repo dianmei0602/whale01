@@ -46,6 +46,22 @@ function renderHTML(ctx, settings) {
         </div>
       </div>
 
+      <a class="setting-row" href="#/legend" style="margin-top:12px">
+        <div class="sr-main">
+          <div class="sr-label">图例与读图</div>
+          <div class="sr-desc">时间轴 / 地图 / 关系图谱 / 甘特时间带 / 家族谱 · 5 节图例</div>
+        </div>
+        <span class="ph-soon">5 节</span>
+      </a>
+
+      <a class="setting-row" href="#/atlas" style="margin-top:8px">
+        <div class="sr-main">
+          <div class="sr-label">时代总览</div>
+          <div class="sr-desc">甘特总览 · 12 期索引 · 全站关系入口</div>
+        </div>
+        <span class="ph-soon">3.2</span>
+      </a>
+
       <section class="settings-group" style="margin-top:22px">
         <h2 class="settings-group-title">阅读设置</h2>
         <div class="setting-row">

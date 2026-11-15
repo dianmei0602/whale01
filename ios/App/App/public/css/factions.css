@@ -432,3 +432,31 @@
 .fl-band { width: 20px; height: 6px; border-radius: 2px; background: linear-gradient(90deg, #6F7B66, #C9A227, #B23A2E); }
 .fl-line { width: 16px; height: 0; border-top: 1px dashed var(--gold); }
 .fl-note { margin-left: auto; }
+
+/* ---------------- 3.2 甘特战役事件层 ---------------- */
+.fac-battle-node { cursor: pointer; }
+.fac-battle-hit { fill: transparent; }
+.fac-battle-dot { fill: #B23A2E; stroke: rgba(14, 12, 10, 0.85); stroke-width: 0.8; }
+.fac-battle-ring { fill: none; stroke: #E0C060; stroke-width: 1.4; }
+.fac-battle-node:hover .fac-battle-dot,
+.fac-battle-node:focus-visible .fac-battle-dot { fill: #E0C060; }
+.fac-battle-node:hover .fac-battle-ring,
+.fac-battle-node:focus-visible .fac-battle-ring { stroke: #F4EAD6; }
+.fac-battle-node.is-deciding .fac-battle-dot { fill: #C9A227; }
+.fac-band-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 9px 6px 0;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.1);
+  font-size: 9px;
+  color: var(--mute);
+}
+.fbl-item { display: inline-flex; align-items: center; gap: 5px; }
+.fbl-bar { width: 20px; height: 7px; border-radius: 2px; background: linear-gradient(90deg, #6F7B66, #C9A227, #B23A2E); }
+.fbl-dot { width: 7px; height: 7px; border-radius: 50%; background: #B23A2E; }
+.fbl-ring { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #E0C060; }
+.fbl-tick { width: 1px; height: 11px; background: rgba(201, 162, 39, 0.45); }
+.fbl-link { margin-left: auto; min-height: 32px; display: inline-flex; align-items: center; color: var(--gold-bright); font-size: 9.5px; }

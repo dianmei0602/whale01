@@ -16,7 +16,9 @@ let backTarget = null;
 export function parseHash(hash) {
   const raw = String(hash == null ? window.location.hash : hash).replace(/^#/, '');
   const withSlash = raw.startsWith('/') ? raw : '/' + raw;
-  const [pathname, search = ''] = withSlash.split('?');
+  const [rawPath, search = ''] = withSlash.split('?');
+  const [pathname, fragment = ''] = rawPath.split('#');
+  const anchor = fragment;
   const query = {};
   try {
     new URLSearchParams(search).forEach((value, key) => {
@@ -26,28 +28,29 @@ export function parseHash(hash) {
     /* 忽略非法 query */
   }
   const seg = pathname.split('/').filter(Boolean);
-  if (!seg.length) return { name: 'timeline', params: {}, query, path: '/' };
+  if (!seg.length) return { name: 'timeline', params: {}, query, anchor, path: '/' };
   if (seg[0] === 'battle' && seg[1]) {
-    return { name: 'detail', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
+    return { name: 'detail', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
   }
   if (seg[0] === 'factions') {
     return {
       name: 'factions',
       params: seg[1] ? { id: decodeURIComponent(seg[1]) } : {},
       query,
+      anchor,
       path: pathname,
     };
   }
   if (seg[0] === 'clan' && seg[1]) {
-    return { name: 'clan', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
+    return { name: 'clan', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
   }
   if (seg[0] === 'replay' && seg[1]) {
-    return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
+    return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
   }
-  if (['map', 'generals', 'stats', 'more', 'search', 'graph'].includes(seg[0])) {
-    return { name: seg[0], params: {}, query, path: pathname };
+  if (['map', 'generals', 'stats', 'more', 'search', 'graph', 'legend', 'atlas'].includes(seg[0])) {
+    return { name: seg[0], params: {}, query, anchor, path: pathname };
   }
-  return { name: 'notfound', params: { path: pathname }, query, path: pathname };
+  return { name: 'notfound', params: { path: pathname }, query, anchor, path: pathname };
 }
 
 function hashFor(path) {
@@ -180,6 +183,8 @@ function titleFor(route) {
     factions: '势力',
     generals: '名将',
     graph: '关系图谱',
+    legend: '图例与读图',
+    atlas: '时代总览',
     stats: '统计',
     more: '更多',
     search: '搜索',

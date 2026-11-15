@@ -135,6 +135,88 @@ function applyLayoutPositions(mode) {
   }
 }
 
+/* ---------------- 放射 / 网络视图 ---------------- */
+function setViewMode(mode) {
+  if (!state) return;
+  state.mode = mode === 'radial' ? 'radial' : 'network';
+  state.root.querySelectorAll('[data-g-mode]').forEach((btn) => {
+    const on = btn.dataset.gMode === state.mode;
+    btn.classList.toggle('is-active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  const hint = state.root.querySelector('#gRadialHint');
+  if (state.mode === 'radial') {
+    if (state.selected) applyRadialLayout();
+    else {
+      if (hint) hint.hidden = false;
+      clearRadialVisibility();
+      applyLayoutPositions(state.layoutMode);
+      updatePositions();
+      updateLabels();
+    }
+  } else {
+    if (hint) hint.hidden = true;
+    clearRadialVisibility();
+    applyLayoutPositions(state.layoutMode);
+    updatePositions();
+    updateLabels();
+  }
+}
+
+function clearRadialVisibility() {
+  if (!state?.svg) return;
+  state.svg.querySelectorAll('.g-node.is-radial-out, .g-link.is-radial-out').forEach((el) => el.classList.remove('is-radial-out'));
+}
+
+function applyRadialLayout() {
+  if (!state || state.mode !== 'radial' || !state.svg) return;
+  const selected = state.selected;
+  const hint = state.root.querySelector('#gRadialHint');
+  if (!selected) {
+    if (hint) hint.hidden = false;
+    return;
+  }
+  if (hint) hint.hidden = true;
+  const related = state.links.filter((l) => l.sourceNode.id === selected.id || l.targetNode.id === selected.id);
+  const neighborMap = new Map();
+  for (const link of related) {
+    const other = link.sourceNode.id === selected.id ? link.targetNode : link.sourceNode;
+    if (!neighborMap.has(other.id)) neighborMap.set(other.id, { node: other, type: link.type });
+  }
+  const groups = new Map();
+  for (const item of neighborMap.values()) {
+    if (!groups.has(item.type)) groups.set(item.type, []);
+    groups.get(item.type).push(item.node);
+  }
+  const types = [...groups.keys()].sort((a, b) => TYPE_ORDER.indexOf(a) - TYPE_ORDER.indexOf(b));
+  selected.x = W / 2;
+  selected.y = H / 2;
+  selected.labelDy = 38;
+  types.forEach((type, ti) => {
+    const base = (ti / Math.max(1, types.length)) * Math.PI * 2 - Math.PI / 2;
+    const list = groups.get(type);
+    list.forEach((node, ni) => {
+      const spread = list.length > 1 ? Math.min(0.92, 0.28 + 0.18 * (list.length - 1)) : 0;
+      const angle = base + (list.length > 1 ? (ni / (list.length - 1) - 0.5) * spread : 0);
+      const radius = list.length > 1 && ni % 2 === 1 ? 196 : 236;
+      node.x = W / 2 + Math.cos(angle) * radius;
+      node.y = H / 2 + Math.sin(angle) * radius;
+      node.labelDy = 34 + (ni % 2) * 16;
+    });
+  });
+  state.svg.querySelectorAll('.g-node').forEach((el) => {
+    const id = el.dataset.node;
+    el.classList.toggle('is-radial-out', id !== selected.id && !neighborMap.has(id));
+  });
+  state.svg.querySelectorAll('.g-link').forEach((el) => {
+    const on = el.dataset.source === selected.id || el.dataset.target === selected.id;
+    el.classList.toggle('is-radial-out', !on);
+  });
+  updatePositions();
+  updateLabels();
+}
+
+
 /* ---------------- SVG ---------------- */
 function nodeColor(node) {
   return node.era?.themeColor || '#C9A227';
@@ -215,11 +297,23 @@ function graphPageHTML(ctx) {
       <button class="icon-btn" type="button" data-action="back" aria-label="返回名将页">${icon('back')}</button>
       <div class="head-title">关系图谱<span class="head-sub">40 位名将 · ${ctx.data.relations.length} 条关系</span></div>
       <div class="head-actions">
+        <a class="icon-btn" href="#/legend#graph" aria-label="图例与读图" title="图例与读图">?</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>
 
     <div class="graph-body">
+      <div class="graph-switch-row">
+        <div class="g-layer-seg" role="group" aria-label="图谱图层">
+          <a class="g-layer-btn is-active" href="#/graph" aria-current="page">名将关系</a>
+          <a class="g-layer-btn" href="#/graph?layer=state">国家关系</a>
+        </div>
+        <div class="g-view-seg" role="group" aria-label="名将视图">
+          <button class="g-view-btn is-active" type="button" data-g-mode="network" aria-pressed="true">网络</button>
+          <button class="g-view-btn" type="button" data-g-mode="radial" aria-pressed="false">放射</button>
+        </div>
+      </div>
+
       <div class="g-filter-row no-scrollbar" aria-label="按时期筛选">${eraChips}</div>
 
       <div class="graph-toolbar">
@@ -239,6 +333,11 @@ function graphPageHTML(ctx) {
       <div class="graph-stage" id="graphStage">
         <div class="graph-canvas" id="graphCanvas">
           <div class="graph-loading" id="graphLoading">正在整理将星关系…</div>
+        </div>
+        <div class="g-radial-hint" id="gRadialHint" hidden>
+          <b>放射模式</b>
+          <span>点选一位名将作为中心</span>
+          <small>一级按关系类型分叉，二级为对端人物</small>
         </div>
         <p class="graph-hint">缩放 ≥1.2× 显示全部标签 · 拖动节点 · 双指缩放 / 平移</p>
       </div>
@@ -314,6 +413,7 @@ function showPanel(node) {
     /* 忽略 */
   }
   highlightSelection();
+  if (state.mode === 'radial') applyRadialLayout();
   if (state.panelDragCleanup) state.panelDragCleanup();
   state.panelDragCleanup = initDrawerSpring(panel, { onClose: () => hidePanel(), handle: panel.querySelector('.gp-head') });
 }
@@ -337,6 +437,14 @@ function hidePanel() {
     /* 忽略 */
   }
   highlightSelection();
+  if (state.mode === 'radial') {
+    const hint = state.root.querySelector('#gRadialHint');
+    if (hint) hint.hidden = false;
+    clearRadialVisibility();
+    applyLayoutPositions(state.layoutMode);
+    updatePositions();
+    updateLabels();
+  }
 }
 
 /* ---------------- 视图变换 ---------------- */
@@ -424,7 +532,10 @@ function labelRect(node, text) {
 
 function updateLabels() {
   if (!state || !state.svg || !state.nodes.length) return;
-  const allMode = state.showAllLabels || state.transform.k >= ZOOM_ALL_LABELS;
+  const allMode =
+    state.showAllLabels ||
+    state.transform.k >= ZOOM_ALL_LABELS ||
+    (state.mode === 'radial' && !!state.selected);
   const filter = state.filterEra !== 'all' ? state.ctx.data.eraById.get(state.filterEra) : null;
   const selected = state.selected;
   const decide = new Map();
@@ -697,8 +808,14 @@ function bindGraph() {
     if (btn.dataset.graphAction === 'zoom-out') zoomAt(w / 2, h / 2, 1 / 1.4);
     if (btn.dataset.graphAction === 'reset') {
       fitView();
-      animateLayout(state.layoutMode);
+      if (state.mode === 'radial' && state.selected) applyRadialLayout();
+      else animateLayout(state.layoutMode);
     }
+  });
+
+  state.root.querySelector('.g-view-seg')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-g-mode]');
+    if (btn) setViewMode(btn.dataset.gMode);
   });
 
   state.root.querySelector('.g-layout-seg').addEventListener('click', (e) => {
@@ -802,11 +919,78 @@ function renderGraphBody(root, ctx, generals) {
   bindGraph();
   applyEraFilter();
   updateLabels();
+  if (state.mode === 'radial') setViewMode('radial');
+}
+
+/* ---------------- 国家关系图层 ---------------- */
+let stateGraphPromise = null;
+function loadStateGraph() {
+  if (!stateGraphPromise) stateGraphPromise = import('./stategraph.js');
+  return stateGraphPromise;
+}
+
+function statePageHTML(ctx) {
+  const extraCount = (ctx.data?.stateExtraNodes || []).length;
+  return `<div class="graph-page g-state-page">
+    <header class="page-head">
+      <button class="icon-btn" type="button" data-action="back" aria-label="返回名将图谱">${icon('back')}</button>
+      <div class="head-title">关系图谱<span class="head-sub">国家关系 · 20 势力${extraCount ? ` + ${extraCount} 附加政权` : ' + 附加政权'}</span></div>
+      <div class="head-actions">
+        <a class="icon-btn" href="#/legend#graph" aria-label="图例与读图" title="图例与读图">?</a>
+        <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
+      </div>
+    </header>
+    <div class="graph-body">
+      <div class="graph-switch-row">
+        <div class="g-layer-seg" role="group" aria-label="图谱图层">
+          <a class="g-layer-btn" href="#/graph">名将关系</a>
+          <a class="g-layer-btn is-active" href="#/graph?layer=state" aria-current="page">国家关系</a>
+        </div>
+      </div>
+      <div class="g-state-host" id="stateGraphHost"><div class="graph-loading">正在整理国家关系…</div></div>
+    </div>
+  </div>`;
+}
+
+function renderStateLayer(root, ctx) {
+  root.innerHTML = statePageHTML(ctx);
+  state = {
+    root,
+    ctx,
+    layer: 'state',
+    module: null,
+    stage: null,
+    panel: null,
+  };
+  root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/generals'));
+  root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
+  const host = root.querySelector('#stateGraphHost');
+  loadStateGraph()
+    .then((mod) => {
+      if (!state || state.layer !== 'state' || state.root !== root) return;
+      state.module = mod;
+      mod.renderStateGraph(host, ctx, { layer: 'state' });
+    })
+    .catch((err) => {
+      console.error('[山河战纪] 国家关系组件加载失败', err);
+      if (host) {
+        host.innerHTML = `<div class="page-body">${emptyStateHTML({
+          title: '国家关系数据准备中',
+          desc: 'stategraph 组件或 state-relations.json 暂不可用；名将关系层仍可正常使用。',
+          actions: '<a class="btn btn--gold" href="#/graph">返回名将关系</a>',
+        })}</div>`;
+      }
+    });
 }
 
 /* ---------------- 入口 ---------------- */
-export function renderGraph(root, ctx) {
+export function renderGraph(root, ctx, route) {
   disposeGraph();
+  const layer = route?.query?.layer === 'state' ? 'state' : 'generals';
+  if (layer === 'state') {
+    renderStateLayer(root, ctx);
+    return;
+  }
   const relations = ctx.data?.relations || [];
   if (!relations.length) {
     root.innerHTML = `<div class="graph-page">
@@ -830,6 +1014,8 @@ export function renderGraph(root, ctx) {
   state = {
     root,
     ctx,
+    layer: 'generals',
+    mode: route?.query?.layer === 'radial' ? 'radial' : 'network',
     nodes: [],
     links: [],
     svg: null,
@@ -864,6 +1050,16 @@ export function renderGraph(root, ctx) {
 }
 
 export function disposeGraph() {
+  if (state?.layer === 'state') {
+    try {
+      state.module?.disposeStateGraph?.();
+    } catch (err) {
+      /* 忽略 */
+    }
+    state = null;
+    document.getElementById('graphPanel')?.remove();
+    return;
+  }
   if (state) {
     if (state.labelRaf) cancelAnimationFrame(state.labelRaf);
     if (state.layoutRaf) cancelAnimationFrame(state.layoutRaf);

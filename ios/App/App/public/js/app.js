@@ -16,6 +16,8 @@ import { renderGraph, disposeGraph } from './graph.js';
 import { renderReplay, disposeReplay } from './replay.js';
 import { renderClan, disposeClan } from './clan.js';
 import { renderStats, disposeStats } from './stats.js';
+import { renderLegend, disposeLegend } from './legend.js';
+import { renderAtlas, disposeAtlas } from './atlas.js';
 import { renderNotFound } from './placeholders.js';
 import { renderMore } from './more.js';
 import { disposeFilterSheet } from './filter.js';
@@ -50,6 +52,8 @@ function disposePages() {
   disposeClan();
   disposeStats();
   disposeDetail();
+  disposeLegend();
+  disposeAtlas();
 }
 
 ctx.rerenderHome = ({ toTop = false } = {}) => {
@@ -116,15 +120,28 @@ async function boot() {
     setTimeout(() => attempt(0), 160);
   };
 
+  const deferReady3 = (routeName, fn) => {
+    if (!ctx.data.ready3 || ctx.data.missing3 !== undefined) return false;
+    view.innerHTML = skeletonHTML(4);
+    ctx.data.ready3
+      .then(() => {
+        if (document.body.dataset.route === routeName) fn();
+      })
+      .catch(() => {
+        if (document.body.dataset.route === routeName) fn();
+      });
+    return true;
+  };
+
   const routes = {
-    timeline() {
+    timeline(route) {
       clearTimeout(skeletonTimer);
       disposeSearch();
       disposeFilterSheet();
       disposePages();
       setChrome('full');
       setTab('timeline');
-      renderTimeline(view, ctx);
+      renderTimeline(view, ctx, route);
     },
 
     detail(route) {
@@ -176,14 +193,34 @@ async function boot() {
       renderFactions(view, ctx, route);
     },
 
-    graph() {
+    graph(route) {
       disposeSearch();
       disposeFilterSheet();
       disposeTimeline();
       disposePages();
       setChrome('full');
       setTab('generals');
-      renderGraph(view, ctx);
+      renderGraph(view, ctx, route);
+    },
+
+    legend(route) {
+      disposeSearch();
+      disposeFilterSheet();
+      disposeTimeline();
+      disposePages();
+      setChrome('full');
+      setTab('more');
+      renderLegend(view, ctx, route);
+    },
+
+    atlas(route) {
+      disposeSearch();
+      disposeFilterSheet();
+      disposeTimeline();
+      disposePages();
+      setChrome('full');
+      setTab('more');
+      if (!deferReady3('atlas', () => renderAtlas(view, ctx, route))) renderAtlas(view, ctx, route);
     },
 
     clan(route) {
@@ -269,6 +306,8 @@ async function boot() {
     clan: 'factions',
     generals: 'generals',
     graph: 'generals',
+    legend: 'more',
+    atlas: 'more',
     stats: 'stats',
     more: 'more',
     detail: '',
@@ -360,11 +399,11 @@ async function boot() {
       if (document.body.dataset.route === 'graph') refreshRoute();
     });
   }
-  // 3.0 考据数据晚到：补渲染详情/势力/家族/名将
+  // 3.0 考据数据晚到：补渲染详情/势力/家族/名将/图谱/总览
   if (ctx.data.ready3) {
     ctx.data.ready3.then(() => {
       const route = document.body.dataset.route;
-      if (['detail', 'factions', 'clan', 'generals'].includes(route)) refreshRoute();
+      if (['detail', 'factions', 'clan', 'generals', 'graph', 'atlas'].includes(route)) refreshRoute();
     });
   }
 

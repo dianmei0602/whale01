@@ -3,7 +3,7 @@
    仅缓存同源资源，无外链；数据亦本地缓存，离线可完整阅读。
    ============================================================ */
 
-const CACHE = 'shj-cache-v6';
+const CACHE = 'shj-cache-v8';
 
 const PRECACHE = [
   './',
@@ -18,6 +18,9 @@ const PRECACHE = [
   './css/generals.css',
   './css/factions.css',
   './css/graph.css',
+  './css/legend.css',
+  './css/atlas.css',
+  './css/stategraph.css',
   './css/replay.css',
   './css/motion.css',
   './css/clan.css',
@@ -38,6 +41,9 @@ const PRECACHE = [
   './js/generals.js',
   './js/factions.js',
   './js/graph.js',
+  './js/legend.js',
+  './js/atlas.js',
+  './js/stategraph.js',
   './js/motion.js',
   './js/replay.js',
   './js/stats.js',
@@ -79,6 +85,7 @@ const PRECACHE = [
   './data/territories.json',
   './data/clans.json',
   './data/china-provinces.json',
+  './data/state-relations.json',
 ];
 
 self.addEventListener('install', (event) => {

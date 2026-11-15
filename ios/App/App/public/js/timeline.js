@@ -423,7 +423,7 @@ function setupObservers(root, ctx) {
 }
 
 /* ---------------- 主渲染 ---------------- */
-export function renderTimeline(root, ctx) {
+export function renderTimeline(root, ctx, route) {
   disposeTimeline();
   activeEraId = '';
 
@@ -460,4 +460,10 @@ export function renderTimeline(root, ctx) {
   bindEvents(root, ctx);
   setupObservers(root, ctx);
   playCardFlipBack(root);
+  if (route?.anchor) {
+    requestAnimationFrame(() => {
+      const sec = root.querySelector(`.era-section[data-era="${CSS.escape(route.anchor)}"]`) || document.getElementById(route.anchor);
+      if (sec) sec.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
 }
