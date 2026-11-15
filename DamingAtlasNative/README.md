@@ -25,6 +25,12 @@ open DamingAtlas.xcodeproj
 
 当前机器是 Windows，无法执行 Xcode 编译或 iOS Simulator 真机验收。请在 macOS 上生成工程并用 iPhone 16 Pro 模拟器验证。
 
+## 自动构建 IPA
+
+公开构建分支 `daming-atlas-build` 会通过 GitHub Actions 的 macOS runner 生成未签名真机 IPA，并发布到仓库 Releases。工作流位于根目录 `.github/workflows/build-daming-atlas-ipa.yml`。
+
+未签名 IPA 不能直接安装到普通 iPhone。下载后使用 Sideloadly 或 AltStore，以自己的 Apple ID 重新签名；免费开发者签名通常 7 天到期。正式分发需要 Apple Developer 证书与匹配的 provisioning profile。
+
 ## 数据同步
 
 内容包由内容构建器生成，不要直接编辑 `Resources/content-bundle.json`：

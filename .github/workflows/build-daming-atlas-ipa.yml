@@ -1,0 +1,79 @@
+name: Build Daming Atlas IPA
+
+on:
+  push:
+    branches:
+      - daming-atlas-build
+    paths:
+      - "DamingAtlasNative/**"
+      - ".github/workflows/build-daming-atlas-ipa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-unsigned-ipa:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: DamingAtlasNative
+        run: xcodegen generate
+
+      - name: Build device app without signing
+        working-directory: DamingAtlasNative
+        run: |
+          xcodebuild \
+            -project DamingAtlas.xcodeproj \
+            -scheme DamingAtlas \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package unsigned IPA
+        working-directory: DamingAtlasNative
+        run: |
+          APP_PATH="build/Build/Products/Release-iphoneos/大明王朝.app"
+          test -d "$APP_PATH"
+          rm -rf ipa
+          mkdir -p ipa/Payload
+          cp -R "$APP_PATH" ipa/Payload/
+          cd ipa
+          zip -qry ../DamingAtlas-unsigned.ipa Payload
+          cd ..
+          shasum -a 256 DamingAtlas-unsigned.ipa > DamingAtlas-unsigned.ipa.sha256
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DamingAtlas-unsigned-${{ github.run_number }}
+          path: |
+            DamingAtlasNative/DamingAtlas-unsigned.ipa
+            DamingAtlasNative/DamingAtlas-unsigned.ipa.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish download release
+        working-directory: DamingAtlasNative
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: daming-atlas-ipa-${{ github.run_number }}
+        run: |
+          gh release create "$TAG" \
+            DamingAtlas-unsigned.ipa \
+            DamingAtlas-unsigned.ipa.sha256 \
+            --title "大明王朝 IPA #${GITHUB_RUN_NUMBER}" \
+            --notes "自动构建的未签名 iOS 真机包。请使用 Sideloadly、AltStore 或 Xcode 以你的 Apple ID 重新签名后安装。讯飞密钥不包含在 IPA 中。"
