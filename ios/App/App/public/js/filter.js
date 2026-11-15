@@ -149,7 +149,29 @@ export function openFilterSheet(ctx) {
   });
 
   const onKey = (e) => {
-    if (e.key === 'Escape') closeFilterSheet();
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeFilterSheet();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const focusables = [...sheet.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )].filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (!sheet.contains(active)) {
+      e.preventDefault();
+      first.focus();
+    } else if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
   };
   openSheet.onKey = onKey;
   document.addEventListener('keydown', onKey);

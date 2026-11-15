@@ -162,7 +162,7 @@ function featuredSectionHTML(ctx, bios) {
   return `<section class="gen-featured" aria-labelledby="genFeaturedTitle">
     <div class="gen-section-head">
       <h2 class="gen-section-title" id="genFeaturedTitle">名将录<span>40 人 · 小传</span></h2>
-      <span class="gen-section-note">M3.5 内容</span>
+      <span class="gen-section-note">名将小传</span>
     </div>
     <div id="genFeatured">${
       bios
@@ -299,7 +299,7 @@ function pageHTML(ctx) {
       ${introHTML(ctx.data, generals, relationCount)}
       ${featuredSectionHTML(ctx, state.bios)}
       ${allSectionHTML(generals)}
-      <p class="gen-foot">名将小传为 M3.5 数据；全部名册由 sides[].commanders 自动聚合，同名人物按通行姓名合并，暂未区分字号与重名。</p>
+      <p class="gen-foot">名将小传由数据文件维护；全部名册由 sides[].commanders 自动聚合，同名人物按通行姓名合并，暂未区分字号与重名。</p>
     </div>
   </div>`;
 }

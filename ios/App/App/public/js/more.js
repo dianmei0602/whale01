@@ -37,9 +37,9 @@ function renderHTML(ctx, settings) {
       <div class="about-card">
         <h3>山河战纪</h3>
         <p class="about-sub">从涿鹿到加勒万 · 中国战史时间轴</p>
-        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻。全量离线，无广告、无账号、无内购。</p>
+        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻；3.1 新增卷首（今日一役 / 继续阅读 / 快捷入口）。全量离线，无广告、无账号、无内购。</p>
         <div class="about-meta">
-          <span>版本 <b>3.0 考据版</b></span>
+          <span>版本 <b>3.1 卷首版</b></span>
           <span>内容 <b>120 场 · 12 期 · 40 名将</b></span>
           <span>谱系 <b>20 势力 · 34 关系 · 14 家族</b></span>
           <span>更新 <b>2026-11</b></span>
@@ -113,7 +113,7 @@ function renderHTML(ctx, settings) {
 
       <footer class="detail-foot">
         <span class="foot-seal">山河战纪</span>
-        <br>3.0 考据版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
+        <br>3.1 卷首版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
       </footer>
     </div>
   </div>`;

@@ -292,7 +292,7 @@ function svgDefs(uid) {
     <pattern id="${uid}-grid" width="10" height="10" patternUnits="userSpaceOnUse">
       <path d="M10 0H0V10" fill="none" stroke="#C9A227" stroke-opacity="0.05" stroke-width="0.22"/>
     </pattern>
-    <filter id="${uid}-glow" x="-40%" y="-40%" width="180%" height="180%">
+    <filter id="${uid}-glowf" x="-40%" y="-40%" width="180%" height="180%">
       <feGaussianBlur stdDeviation="0.9"/>
     </filter>
     ${marker('gold', '#E0C060')}
@@ -601,7 +601,7 @@ function arrowMarkup(geom, uid, index, reduce) {
   const { style, x1, y1, cx, cy, x2, y2, lx, ly, text } = geom;
   const delay = reduce ? '0ms' : `${Math.min(index, 8) * 80}ms`;
   const dash = style.dash ? ` stroke-dasharray="${style.dash}"` : '';
-  const filter = style.glow ? ` filter="url(#${uid}-glow)"` : '';
+  const filter = style.glow ? ` filter="url(#${uid}-glowf)"` : '';
   const label = text
     ? `<text class="rp-arrow-label" x="${f(lx)}" y="${f(ly)}" text-anchor="middle" fill="${style.color}">${esc(text)}</text>`
     : '';

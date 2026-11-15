@@ -231,7 +231,7 @@ function timelineHTML(ctx, visibleIds) {
   return `<div class="timeline" id="timeline">${sections.join('')}
     <footer class="timeline-end">
       ${seal('卷终', { size: 'sm', cls: 'end-seal', vertical: false })}
-      <p>山河未已 · 战史长卷待续<br>M2 将扩充至 12 期 · 120 场</p>
+      <p>山河未已 · 十二期一百二十场已全<br>考据与版图持续修订</p>
       <button class="btn btn--ghost" type="button" data-action="back-top">${icon('arrow')} 回到卷首</button>
     </footer>
   </div>`;

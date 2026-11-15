@@ -3,7 +3,7 @@
    仅缓存同源资源，无外链；数据亦本地缓存，离线可完整阅读。
    ============================================================ */
 
-const CACHE = 'shj-cache-v5';
+const CACHE = 'shj-cache-v6';
 
 const PRECACHE = [
   './',
@@ -42,6 +42,7 @@ const PRECACHE = [
   './js/replay.js',
   './js/stats.js',
   './js/china-geo.js',
+  './js/pwa.js',
   './js/territory.js',
   './js/research.js',
   './js/clan.js',
@@ -50,6 +51,7 @@ const PRECACHE = [
   './assets/huiwen.svg',
   './assets/cloud-band.svg',
   './assets/mountains.svg',
+  './assets/standard-map.jpg',
   './assets/favicon.svg',
   './assets/apple-touch-icon-180.png',
   './assets/icon-180.png',

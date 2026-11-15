@@ -3,8 +3,9 @@
    ============================================================ */
 
 import { loadData } from './data.js';
+import { initPWA, initUpdateBar } from './pwa.js';
 import { loadSettings } from './store.js';
-import { initRouter, navigate, setHomeScroll } from './router.js';
+import { initRouter, navigate, refreshRoute, setHomeScroll } from './router.js';
 import { renderTimeline, disposeTimeline } from './timeline.js';
 import { renderDetail, disposeDetail } from './detail.js';
 import { renderSearch, disposeSearch } from './search.js';
@@ -289,6 +290,10 @@ async function boot() {
     const route = event.detail.route;
     const prev = event.detail.prev;
 
+    // 路由切换的读屏播报（视觉上不可见）
+    const live = document.getElementById('route-live');
+    if (live) live.textContent = (document.title || '').replace('山河战纪 · ', '') + ' 页面';
+
     // ---------- 路由 push / pop 方向转场（incoming） ----------
     const push =
       route.name === 'detail' ||
@@ -325,29 +330,41 @@ async function boot() {
     }
   });
 
+  initPWA();
+  initUpdateBar();
   initRipple();
   initTabBounce();
   initSwitchBounce();
   initFlipCards();
+
+  // 全局兜底：未捕获异常 / Promise 拒绝不让页面静默失败
+  let lastErrorAt = 0;
+  const reportError = (label, err) => {
+    console.error(`[山河战纪] ${label}`, err);
+    const now = Date.now();
+    if (now - lastErrorAt < 4000) return;
+    lastErrorAt = now;
+    try {
+      toast('页面出现异常，可返回卷首重试');
+    } catch (e) {
+      /* ignore */
+    }
+  };
+  window.addEventListener('error', (e) => reportError('未捕获错误', e.error || e.message));
+  window.addEventListener('unhandledrejection', (e) => reportError('未处理的 Promise', e.reason));
   initRouter(routes);
 
   // 2.0 可选数据晚到：补渲染图谱页
   if (ctx.data.ready2) {
     ctx.data.ready2.then(() => {
-      if (document.body.dataset.route === 'graph') {
-        const path = window.location.hash.replace(/^#/, '') || '/';
-        navigate(path);
-      }
+      if (document.body.dataset.route === 'graph') refreshRoute();
     });
   }
   // 3.0 考据数据晚到：补渲染详情/势力/家族/名将
   if (ctx.data.ready3) {
     ctx.data.ready3.then(() => {
       const route = document.body.dataset.route;
-      if (['detail', 'factions', 'clan', 'generals'].includes(route)) {
-        const path = window.location.hash.replace(/^#/, '') || '/';
-        navigate(path);
-      }
+      if (['detail', 'factions', 'clan', 'generals'].includes(route)) refreshRoute();
     });
   }
 

@@ -96,7 +96,7 @@ function personItemHTML(person, q) {
         )
         .join('')}
     </div>
-    <p class="s-anec-text" style="margin-top:8px">名将小传与完整战绩将在 M3 名将页上线。</p>
+    <p class="s-anec-text" style="margin-top:8px">可在名将页查看小传与完整战绩。</p>
   </div>`;
 }
 
@@ -168,7 +168,7 @@ export function renderSearch(ctx, route) {
     if (!q) {
       body.innerHTML = initialHTML(ctx);
       revealStagger(body, '.hot-chip, .recent-item, .search-hint', { stagger: 30, wave: 10 });
-      if (status) status.textContent = '搜索首屏已就绪';
+      if (status) status.textContent = '输入关键字，检索战役、人物、地名或典故';
       return;
     }
     const note = personMode
@@ -198,6 +198,11 @@ export function renderSearch(ctx, route) {
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeSearch();
   });
+  // 焦点在结果/按钮上时 Esc 也能关闭（否则只对输入框生效）
+  const onDocKey = (e) => {
+    if (e.key === 'Escape' && screen && document.body.contains(screen)) closeSearch();
+  };
+  document.addEventListener('keydown', onDocKey);
 
   clearBtn.addEventListener('click', () => {
     input.value = '';
@@ -233,7 +238,7 @@ export function renderSearch(ctx, route) {
   }, 60);
 
   cleanupFns.push(() => {
-    /* 事件随节点移除而回收 */
+    document.removeEventListener('keydown', onDocKey);
   });
 }
 

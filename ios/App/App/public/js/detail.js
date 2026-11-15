@@ -47,7 +47,7 @@ function paragraphs(text, cls = 'd-p') {
     .split(/\n+/)
     .map((s) => s.trim())
     .filter(Boolean);
-  if (!chunks.length) return `<p class="${cls}">这一段史料暂缺，M2 将补齐。</p>`;
+  if (!chunks.length) return `<p class="${cls}">这一段史料暂缺。</p>`;
   return chunks.map((p) => `<p class="${cls}">${esc(p)}</p>`).join('');
 }
 
@@ -105,7 +105,7 @@ function forceHTML(battle) {
 }
 
 function courseHTML(battle) {
-  if (!battle.course.length) return `<p class="d-p">战役过程记述暂缺，M2 将补齐。</p>`;
+  if (!battle.course.length) return `<p class="d-p">战役过程记述暂缺。</p>`;
   return `<ol class="course">
     ${battle.course
       .map(
@@ -128,7 +128,7 @@ function anecdotesHTML(battle, ctx) {
           </article>`
         )
         .join('')
-    : '<p class="d-p">典故暂缺，M2 将补充。</p>';
+    : '<p class="d-p">典故暂缺。</p>';
   const people = battle.people.length
     ? `<div class="people">${battle.people
         .map((p) => {
@@ -147,7 +147,7 @@ function anecdotesHTML(battle, ctx) {
 function sourcesHTML(battle) {
   const sources = battle.sources.length
     ? `<ul class="sources">${battle.sources.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`
-    : '<p class="d-p">出处暂缺，M2 将补齐。</p>';
+    : '<p class="d-p">出处暂缺。</p>';
   const notes = battle.notes.length
     ? `<div class="notes-box">
         <h3>存疑与传说</h3>
@@ -416,7 +416,7 @@ export function renderDetail(root, ctx, route) {
       </header>
       ${emptyStateHTML({
         title: '这一页尚未写入长卷',
-        desc: `未找到战役「${id || ''}」。可能是链接有误，或该战役将在 M2 内容扩充中加入。`,
+        desc: `未找到战役「${id || ''}」。可能是链接有误，或该战役暂未收录。`,
         actions: '<button class="btn btn--gold" type="button" data-action="home">回到时间轴</button>',
       })}
     </div>`;

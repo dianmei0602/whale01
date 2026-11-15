@@ -70,15 +70,43 @@ export function navigateBack() {
       break;
     }
   }
+  const fromStack = Boolean(target);
   if (!target) target = '/';
   backTarget = target;
   const targetHash = hashFor(target);
   if (window.location.hash === targetHash) {
     backTarget = null;
     dispatch();
-  } else {
-    window.location.hash = targetHash;
+    return;
   }
+
+  // 正常前进流程：上一页就是浏览器历史的上一条 → 用 history.back() 回退，
+  // 避免向历史栈再压一条「返回后的页面」（否则系统返回/侧滑会再回到刚退出的页面）。
+  if (fromStack && prevRoute && prevRoute.path === target) {
+    const before = window.location.hash;
+    history.back();
+    window.setTimeout(() => {
+      if (window.location.hash === before) {
+        // 没有可回退的历史条目（如直接深链进入）：用 replace 不留重复记录
+        backTarget = target;
+        window.location.replace(targetHash);
+      }
+    }, 180);
+    return;
+  }
+
+  // 深链首屏：没有可回退的上一页，用 replace 回卷首，不污染历史
+  if (!fromStack) {
+    window.location.replace(targetHash);
+    return;
+  }
+
+  window.location.hash = targetHash;
+}
+
+/** 重新渲染当前路由，不新增历史记录（用于可选数据晚到的补渲染） */
+export function refreshRoute() {
+  dispatch();
 }
 
 export function getPrevRoute() {

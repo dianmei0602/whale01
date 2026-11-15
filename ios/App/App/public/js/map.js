@@ -984,6 +984,13 @@ export function disposeMap() {
     if (state.pending) cancelAnimationFrame(state.pending);
   }
   document.getElementById('mapPopup')?.remove();
+  // 释放高清底图解码引用，离开地图页后让 WKWebView 更早回收内存
+  try {
+    const img = state?.canvas?.querySelector('image');
+    if (img) img.setAttribute('href', '');
+  } catch (err) {
+    /* ignore */
+  }
   state = null;
 }
 

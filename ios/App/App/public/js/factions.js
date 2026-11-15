@@ -192,9 +192,9 @@ function factionMarriages(faction, ctx) {
 function factionFamilyEntry(faction, ctx) {
   const clan = (ctx.data.clans || []).find((c) => c.factionId === faction.id);
   if (!clan) {
-    return `<a class="fac-family-entry is-disabled" aria-disabled="true" href="#" onclick="return false">
+    return `<span class="fac-family-entry is-disabled" aria-disabled="true">
       <span class="ffe-icon" aria-hidden="true">族</span><span class="ffe-main"><b>家族谱</b><i>家族谱数据尚未收录</i></span>
-    </a>`;
+    </span>`;
   }
   return `<a class="fac-family-entry" href="#/clan/${encodeURIComponent(clan.id)}">
     <span class="ffe-icon" aria-hidden="true">族</span><span class="ffe-main"><b>${esc(clan.name)}</b><i>进入家族谱 · 世代与联姻</i></span><span class="ffe-arrow" aria-hidden="true">›</span>

@@ -3,7 +3,7 @@
 	"appName": "山河战纪",
 	"webDir": "www",
 	"ios": {
-		"contentInset": "always",
+		"contentInset": "never",
 		"backgroundColor": "#0E0C0A"
 	},
 	"packageClassList": []

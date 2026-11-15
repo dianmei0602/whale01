@@ -5,11 +5,17 @@
 
 const BASE = 'data/';
 
-async function getJSON(file) {
-  const res = await fetch(BASE + file, { cache: 'no-cache' });
-  if (!res.ok) throw new Error(`${file} HTTP ${res.status}`);
-  const text = (await res.text()).replace(/^\uFEFF/, '');
-  return JSON.parse(text);
+async function getJSON(file, timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(BASE + file, { cache: 'no-cache', signal: ctrl.signal });
+    if (!res.ok) throw new Error(`${file} HTTP ${res.status}`);
+    const text = (await res.text()).replace(/^\uFEFF/, '');
+    return JSON.parse(text);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 const arr = (v) => (Array.isArray(v) ? v : v == null || v === '' ? [] : [v]);
