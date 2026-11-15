@@ -13,7 +13,7 @@ import {
   emptyStateHTML,
 } from './ui.js';
 import { filterBattles } from './data.js';
-import { filters, hasFilters, clearFilters, filterCountText } from './store.js';
+import { filters, hasFilters, clearFilters, filterCountText, loadRecent } from './store.js';
 import { navigate } from './router.js';
 import { openFilterSheet } from './filter.js';
 import { initLargeTitle, playCardFlipBack } from './motion.js';
@@ -50,7 +50,7 @@ function headerHTML(ctx, visibleIds) {
   return `<header class="tl-head">
     <div class="brand">
       <div class="brand-main">
-        <h1 class="brand-title">山河战纪<span class="brand-seal" aria-hidden="true">纪</span></h1>
+        <h1 class="brand-title"><a class="brand-link" href="#/" data-action="cover-top" aria-label="回到卷首">山河战纪<span class="brand-seal" aria-hidden="true">纪</span></a></h1>
         <p class="brand-sub">从涿鹿到加勒万 · 中国战史时间轴</p>
       </div>
       <div class="brand-actions">
@@ -66,6 +66,66 @@ function headerHTML(ctx, visibleIds) {
       <span class="ticker-range" id="tickerRange">—</span>
     </div>
   </header>`;
+}
+
+/* ---------------- 卷首 ---------------- */
+function dayIndex(n) {
+  const now = new Date();
+  const start = Date.UTC(2020, 0, 1);
+  const days = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 86400000);
+  return ((days % n) + n) % n;
+}
+
+function coverSide(name) {
+  return String(name || '')
+    .replace('中国人民解放军', '解放军')
+    .replace('中国人民志愿军', '志愿军')
+    .replace('国民党军', '国军')
+    .replace('日本军队', '日军')
+    .replace('联合国军', '联军');
+}
+
+function coverHTML(ctx) {
+  const { data } = ctx;
+  const battles = data.battles || [];
+  if (!battles.length) return '';
+  const today = battles[dayIndex(battles.length)];
+  const recent = loadRecent()
+    .map((id) => data.byId.get(id))
+    .find(Boolean);
+  const cont = recent || battles[0];
+  const todayEra = data.eraById.get(today.eraId);
+  const contEra = data.eraById.get(cont.eraId);
+  return `<section class="tl-cover" aria-label="卷首">
+    <div class="cover-top">
+      <span class="cover-kicker">卷首 · 开卷</span>
+      <p class="cover-line">四千六百年山河，一条长卷；从今日一役，或上次读到的战役继续。</p>
+    </div>
+    <div class="cover-grid">
+      <a class="cover-card cover-today" href="#/battle/${encodeURIComponent(today.id)}">
+        <span class="cover-tag"><i class="cover-dot" aria-hidden="true"></i>今日一役</span>
+        <span class="cover-year">${esc(today.yearText)}</span>
+        <strong class="cover-name">${esc(today.name)}</strong>
+        <span class="cover-meta">${esc(todayEra?.short || todayEra?.name || '')} · ${esc(
+    today.sides.map((s) => coverSide(s.name)).join(' 对 ')
+  )}</span>
+        <span class="cover-go">开卷 →</span>
+      </a>
+      <a class="cover-card cover-continue" href="#/battle/${encodeURIComponent(cont.id)}">
+        <span class="cover-tag">${recent ? '继续阅读' : '从这里开始'}</span>
+        <span class="cover-year">${esc(cont.yearText)}</span>
+        <strong class="cover-name">${esc(cont.name)}</strong>
+        <span class="cover-meta">${recent ? '上次读到' : '第一篇'} · ${esc(contEra?.short || contEra?.name || '')}</span>
+        <span class="cover-go">${recent ? '续读 →' : '开读 →'}</span>
+      </a>
+    </div>
+    <nav class="cover-entries" aria-label="快捷入口">
+      <a class="cover-entry" href="#/map">${icon('pin')}<span>战役地图</span></a>
+      <a class="cover-entry" href="#/factions">${icon('layers')}<span>势力版图</span></a>
+      <a class="cover-entry" href="#/clan">${icon('user')}<span>家族谱</span></a>
+      <a class="cover-entry" href="#/graph">${icon('compass')}<span>关系图谱</span></a>
+    </nav>
+  </section>`;
 }
 
 function introHTML(data) {
@@ -229,6 +289,11 @@ function bindEvents(root, ctx) {
     window.scrollTo({ top: 0, behavior: prefersReduced() ? 'auto' : 'smooth' });
   });
 
+  root.querySelector('[data-action="cover-top"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: prefersReduced() ? 'auto' : 'smooth' });
+  });
+
   root.querySelector('[data-action="retry"]')?.addEventListener('click', () => window.location.reload());
 
   const emptyClear = root.querySelector('[data-action="clear-filter-empty"]');
@@ -385,6 +450,7 @@ export function renderTimeline(root, ctx) {
 
   root.innerHTML = `<div class="timeline-page">
     ${headerHTML(ctx, visibleIds)}
+    ${coverHTML(ctx)}
     ${introHTML(data)}
     ${timelineLegendHTML()}
     ${filterBarHTML(visible.length)}
