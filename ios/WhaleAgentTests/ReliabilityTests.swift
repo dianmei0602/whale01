@@ -65,6 +65,24 @@ final class ReliabilityTests: XCTestCase {
         )
     }
 
+    func testBottomChromeYieldsToComposerAndKeyboard() {
+        XCTAssertTrue(RootBottomChromePolicy.tabBarVisible(
+            page: .conversation,
+            composerFocused: false,
+            keyboardVisible: false
+        ))
+        XCTAssertFalse(RootBottomChromePolicy.tabBarVisible(
+            page: .conversation,
+            composerFocused: true,
+            keyboardVisible: false
+        ))
+        XCTAssertFalse(RootBottomChromePolicy.tabBarVisible(
+            page: .discover,
+            composerFocused: false,
+            keyboardVisible: true
+        ))
+    }
+
     func testTodoKeepsIncompleteTimesAsDraftsAndDoesNotAddEdits() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!

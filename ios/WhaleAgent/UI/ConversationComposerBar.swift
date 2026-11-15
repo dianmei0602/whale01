@@ -77,12 +77,6 @@ struct ConversationComposerBar: View {
         }
         .task {
             if draftContext == nil { draftContext = model.composerContextID; draft = drafts.load(context: model.composerContextID) }
-#if DEBUG
-            if ProcessInfo.processInfo.environment["WHALE_DEMO_COMPOSER_FOCUS"] == "1" {
-                externalFocused = true
-                focused = true
-            }
-#endif
         }
         .task(id: draft) {
             try? await Task.sleep(nanoseconds: 300_000_000)

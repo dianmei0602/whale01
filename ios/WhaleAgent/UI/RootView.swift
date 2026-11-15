@@ -107,12 +107,20 @@ struct RootView: View {
         if page == .conversation {
             VStack(spacing: 0) {
                 ConversationComposerBar(model: model, externalFocused: $composerFocused, draft: $composerDraft)
-                if !keyboard.isVisible && !composerFocused {
+                if RootBottomChromePolicy.tabBarVisible(
+                    page: page,
+                    composerFocused: composerFocused,
+                    keyboardVisible: keyboard.isVisible
+                ) {
                     WhaleRootTabBar(selection: $page)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-        } else if !keyboard.isVisible {
+        } else if RootBottomChromePolicy.tabBarVisible(
+            page: page,
+            composerFocused: composerFocused,
+            keyboardVisible: keyboard.isVisible
+        ) {
             WhaleRootTabBar(selection: $page)
         }
     }
@@ -173,6 +181,17 @@ struct RootView: View {
         if ProcessInfo.processInfo.environment["WHALE_DEMO_LARGE_TEXT"] == "1" { return .accessibility3 }
 #endif
         return systemTextSize
+    }
+}
+
+enum RootBottomChromePolicy {
+    static func tabBarVisible(
+        page: AppTab,
+        composerFocused: Bool,
+        keyboardVisible: Bool
+    ) -> Bool {
+        guard !keyboardVisible else { return false }
+        return page != .conversation || !composerFocused
     }
 }
 

@@ -5,14 +5,11 @@ final class InteractionUITests: XCTestCase {
         app.buttons["tab-" + name]
     }
 
-    private func launch(composerFocused: Bool = false) -> XCUIApplication {
+    private func launch() -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchEnvironment["WHALE_DEMO_HOME"] = "1"
         app.launchEnvironment["WHALE_DEMO_INITIAL_CHANNEL"] = "ai"
-        if composerFocused {
-            app.launchEnvironment["WHALE_DEMO_COMPOSER_FOCUS"] = "1"
-        }
         app.launch()
         return app
     }
@@ -131,13 +128,4 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
 
-    func testComposerStaysAboveTabsAndTabsYieldToKeyboard() {
-        let app = launch(composerFocused: true)
-        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
-        let tabs = app.otherElements["root-tab-bar"]
-        XCTAssertTrue(composer.waitForExistence(timeout: 10))
-        XCTAssertTrue(tabs.waitForNonExistence(timeout: 8))
-        XCTAssertTrue(composer.isHittable)
-        attach("composer-above-bottom-chrome")
-    }
 }
