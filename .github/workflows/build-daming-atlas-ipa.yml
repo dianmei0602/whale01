@@ -49,7 +49,7 @@ jobs:
           APP_PATH="build/Build/Products/Release-iphoneos/DamingAtlas.app"
           test -d "$APP_PATH"
           test -f "$APP_PATH/content-bundle.json"
-          test -f "$APP_PATH/assets/portraits/zhu_yuanzhang.png"
+          test -f "$APP_PATH/zhu_yuanzhang.png"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist"
