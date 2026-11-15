@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 protocol AgentTransport: Sendable {
     func health() async throws -> HealthResponse
@@ -169,7 +172,9 @@ actor LocalAgentEngine: AgentTransport {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.timeoutIntervalForRequest = 120
         configuration.timeoutIntervalForResource = 180
+#if !canImport(FoundationNetworking)
         configuration.waitsForConnectivity = false
+#endif
         session = URLSession(configuration: configuration)
 
         let loaded = Self.loadTools()
