@@ -169,7 +169,10 @@ function sendJson(response, status, payload) {
   response.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
     'content-length': body.length,
-    'cache-control': 'no-store'
+    'cache-control': 'no-store',
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET,POST,OPTIONS',
+    'access-control-allow-headers': 'content-type'
   });
   response.end(body);
 }
@@ -192,6 +195,15 @@ async function readJson(request, limit = 20000) {
 export function createAppServer({ configProvider = ttsConfig } = {}) {
   return createServer(async (request, response) => {
     const url = new URL(request.url || '/', 'http://localhost');
+    if (request.method === 'OPTIONS') {
+      response.writeHead(204, {
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET,POST,OPTIONS',
+        'access-control-allow-headers': 'content-type'
+      });
+      response.end();
+      return;
+    }
     if (url.pathname === '/api/tts/status' && request.method === 'GET') {
       const config = configProvider();
       const resolvedEndpoint = resolveTtsEndpoint(config);
@@ -214,7 +226,8 @@ export function createAppServer({ configProvider = ttsConfig } = {}) {
           'content-type': 'audio/mpeg',
           'content-length': audio.length,
           'cache-control': 'no-store',
-          'x-tts-provider': 'iFlytek'
+          'x-tts-provider': 'iFlytek',
+          'access-control-allow-origin': '*'
         });
         response.end(audio);
       } catch (error) {
@@ -256,7 +269,7 @@ export function createAppServer({ configProvider = ttsConfig } = {}) {
 const isMain = process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
 if (isMain) {
   const port = Number(process.env.PORT || 4173);
-  const host = process.env.HOST || '127.0.0.1';
+  const host = process.env.HOST || '0.0.0.0';
   createAppServer().listen(port, host, () => {
     console.log(`Daming Atlas: http://${host}:${port}`);
     const endpoint = resolveTtsEndpoint(ttsConfig());

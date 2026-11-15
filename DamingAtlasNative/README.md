@@ -31,6 +31,8 @@ open DamingAtlas.xcodeproj
 
 未签名 IPA 不能直接安装到普通 iPhone。下载后使用 Sideloadly 或 AltStore，以自己的 Apple ID 重新签名；免费开发者签名通常 7 天到期。正式分发需要 Apple Developer 证书与匹配的 provisioning profile。
 
+当前 IPA 内嵌完整 Web 原型，并将讯飞朗读通过局域网连接到开发电脑的 `http://192.168.110.10:4173`。真机测试前先运行 `大明王朝iOS/server.mjs`，让 iPhone 与电脑连接同一 Wi-Fi，并允许 Node.js 通过 Windows 专用网络防火墙。若电脑 IP 改变，需要同步修改 `DamingTTSServer`。
+
 ## 数据同步
 
 内容包由内容构建器生成，不要直接编辑 `Resources/content-bundle.json`：

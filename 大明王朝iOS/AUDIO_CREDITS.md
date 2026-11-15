@@ -20,6 +20,10 @@
 
 所有凭据只保存在本地 `.env`，并已加入 `.gitignore`。不要把 `.env` 放进截图、网页源码或公开仓库。
 
+## 真机局域网朗读
+
+本地服务监听 `0.0.0.0:4173`，iOS 包内配置的语音服务地址为 `http://192.168.110.10:4173`。iPhone 与开发电脑需要处于同一 Wi-Fi，且 Windows 防火墙需要允许 Node.js 访问专用网络。IP 地址变化后，需要同步修改 `Info.plist` 的 `DamingTTSServer` 并重新构建。
+
 讯飞官方接口文档：https://www.xfyun.cn/doc/tts/online_tts/API.html
 
 正式发布前需在讯飞控制台确认账号、发音人授权、并发与调用量限制，并遵守讯飞开放平台服务条款。

@@ -234,12 +234,13 @@
       this.engine = null;
       this.apiStatus = 'unknown';
       this.voice = null;
+      this.apiBase = String(window.DAM_TTS_BASE_URL || '').replace(/\/+$/, '');
       this.checkBackend();
     }
 
     async checkBackend() {
       try {
-        const response = await fetch('./api/tts/status', { cache: 'no-store' });
+        const response = await fetch(`${this.apiBase}/api/tts/status`, { cache: 'no-store' });
         if (!response.ok) throw new Error('status unavailable');
         const status = await response.json();
         this.apiStatus = status.configured ? 'configured' : 'unconfigured';
@@ -322,7 +323,7 @@
     }
 
     async requestIflytek(text) {
-      const response = await fetch('./api/tts', {
+      const response = await fetch(`${this.apiBase}/api/tts`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ text }),
