@@ -17,8 +17,10 @@ targets:
       - path: DamingAtlas
         excludes:
           - Resources
-    resources:
       - path: DamingAtlas/Resources
+        buildPhase: resources
+        excludes:
+          - Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.damingatlas.app
