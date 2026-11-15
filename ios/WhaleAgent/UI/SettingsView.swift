@@ -339,8 +339,8 @@ struct SettingsView: View {
             SettingsChrome.header("外观", trailing: "跟随当日光线")
 
             HStack(spacing: 9) {
-                appearanceOption("深海", "深色", mode: "dark", swatch: .dark)
-                appearanceOption("晨雾", "浅色", mode: "light", swatch: .light)
+                appearanceOption("炭黑", "深色", mode: "dark", swatch: .dark)
+                appearanceOption("海盐", "浅色", mode: "light", swatch: .light)
                 appearanceOption("自动", "跟随系统", mode: "system", swatch: .auto)
             }
         }
@@ -398,21 +398,13 @@ struct SettingsView: View {
         ZStack {
             switch swatch {
             case .dark:
-                LinearGradient(
-                    colors: [Color(red: 0.04, green: 0.12, blue: 0.14), Color(red: 0.07, green: 0.23, blue: 0.24)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                Color(light: 0x182126, dark: 0x182126)
             case .light:
-                LinearGradient(
-                    colors: [Color(red: 0.93, green: 0.98, blue: 0.97), .white],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                Color(light: 0xF3F7F9, dark: 0xF3F7F9)
             case .auto:
                 HStack(spacing: 0) {
-                    Color(red: 0.05, green: 0.15, blue: 0.17)
-                    Color(red: 0.97, green: 0.99, blue: 0.98)
+                    Color(light: 0x182126, dark: 0x182126)
+                    Color(light: 0xF3F7F9, dark: 0xF3F7F9)
                 }
             }
 

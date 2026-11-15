@@ -102,6 +102,7 @@ struct RollingSummaryText: View {
     var interval: Double = 5.2
     var maxLines: Int = 1
     var fontSize: CGFloat = 11.5
+    var foreground: Color = .white
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var tick = 0
@@ -119,7 +120,7 @@ struct RollingSummaryText: View {
         ZStack(alignment: .topLeading) {
             Text(current)
                 .font(.system(size: fontSize, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.82))
+                .foregroundStyle(foreground)
                 .lineLimit(maxLines)
                 .lineSpacing(1)
                 .multilineTextAlignment(.leading)

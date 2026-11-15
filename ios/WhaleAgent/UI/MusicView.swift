@@ -103,7 +103,7 @@ struct MusicView: View {
         }
         .padding(.horizontal, 14)
         .frame(height: 44)
-        .background(.ultraThinMaterial, in: Capsule())
+        .background(WhaleTheme.field, in: Capsule())
         .overlay {
             Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
         }
@@ -432,7 +432,7 @@ struct MusicView: View {
                         .foregroundStyle(WhaleTheme.accent)
                 }
                 .padding(14)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
@@ -494,7 +494,7 @@ struct MusicView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 2)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
@@ -579,7 +579,7 @@ struct MusicView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 18)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
@@ -645,7 +645,7 @@ struct MusicView: View {
             }
         }
         .padding(.horizontal, 14)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)

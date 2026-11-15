@@ -43,8 +43,8 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
-            MARKETING_VERSION=0.7.21 \
-            CURRENT_PROJECT_VERSION="134.${{ github.run_attempt }}" \
+            MARKETING_VERSION=0.8.0 \
+            CURRENT_PROJECT_VERSION="140.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -113,16 +113,18 @@ jobs:
           fi
           if [ "$SNAPSHOT_SCOPE" = "home" ]; then
             SIMCTL_CHILD_WHALE_DEMO_HOME=1 xcrun simctl launch "$DEVICE_ID" com.whale01.agent
-            sleep 12
-            xcrun simctl io "$DEVICE_ID" screenshot snapshots/home-companion.png
-            sleep 6
-            xcrun simctl io "$DEVICE_ID" screenshot snapshots/home-companion-tick2.png
-            sleep 6
-            xcrun simctl io "$DEVICE_ID" screenshot snapshots/home-companion-tick3.png
-            sleep 12
-            xcrun simctl io "$DEVICE_ID" screenshot snapshots/home-companion-tick4.png
-            sleep 12
-            xcrun simctl io "$DEVICE_ID" screenshot snapshots/home-companion-tick5.png
+            sleep 10
+            xcrun simctl io "$DEVICE_ID" screenshot snapshots/sea-salt-home.png
+            xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            xcrun simctl ui "$DEVICE_ID" appearance dark
+            SIMCTL_CHILD_WHALE_DEMO_HOME=1 xcrun simctl launch "$DEVICE_ID" com.whale01.agent
+            sleep 5
+            xcrun simctl io "$DEVICE_ID" screenshot snapshots/sea-salt-home-dark.png
+            xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            xcrun simctl ui "$DEVICE_ID" appearance light
+            SIMCTL_CHILD_WHALE_DEMO_HOME=1 SIMCTL_CHILD_WHALE_DEMO_LARGE_TEXT=1 xcrun simctl launch "$DEVICE_ID" com.whale01.agent
+            sleep 5
+            xcrun simctl io "$DEVICE_ID" screenshot snapshots/sea-salt-home-large-text.png
             xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
             exit 0
           fi

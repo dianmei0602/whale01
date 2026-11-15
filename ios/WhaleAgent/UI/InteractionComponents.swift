@@ -45,16 +45,43 @@ struct InlinePlaybackView: View {
 
 struct AssistantActivityView: View {
     @ObservedObject var model: AppModel
+
     var body: some View {
         if model.isBusy {
-            HStack(spacing: 10) {
-                ProgressView().controlSize(.small)
-                Text(model.activityDescription).font(.subheadline).foregroundStyle(WhaleTheme.muted)
-                Spacer(minLength: 0)
-                if model.canStopReply {
-                    Button("停止") { model.stopReply() }.font(.subheadline).whaleTouchTarget()
+            VStack(alignment: .leading, spacing: 9) {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(WhaleTheme.accent)
+                        .frame(width: 7, height: 7)
+                    Text(model.isExecutingTool ? "正在执行" : "正在研究")
+                        .whaleFont(size: 14, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Spacer(minLength: 0)
+                    if model.canStopReply {
+                        Button("停止") { model.stopReply() }
+                            .whaleFont(size: 13, weight: .medium)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .whaleTouchTarget()
+                    }
                 }
-            }.padding(.vertical, 8)
+
+                Text(model.activityDescription)
+                    .whaleFont(size: 14)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(
+                WhaleTheme.card,
+                in: RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
+                    .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
+            }
+            .accessibilityElement(children: .contain)
         }
     }
 }

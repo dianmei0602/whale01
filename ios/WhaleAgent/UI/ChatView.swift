@@ -26,7 +26,7 @@ struct ChatView: View {
         .navigationTitle("对话")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(.regularMaterial, for: .navigationBar)
+        .toolbarBackground(WhaleTheme.chrome, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 8) {
@@ -157,7 +157,7 @@ struct ChatView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
         }
-        .background(.thinMaterial)
+        .background(WhaleTheme.card)
     }
 
     private func suggestion(_ text: String) -> some View {
@@ -263,7 +263,7 @@ struct ChatView: View {
         }
         .background {
             Rectangle()
-                .fill(.regularMaterial)
+                .fill(WhaleTheme.chrome)
                 .ignoresSafeArea(edges: .bottom)
         }
         .overlay(alignment: .top) {

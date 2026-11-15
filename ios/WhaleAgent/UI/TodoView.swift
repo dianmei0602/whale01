@@ -620,7 +620,7 @@ struct TodoView: View {
         .padding(.horizontal, 16)
         .padding(.top, 9)
         .padding(.bottom, 8)
-        .background(.ultraThinMaterial)
+        .background(WhaleTheme.chrome)
     }
 
     private var voiceStrip: some View {

@@ -19,13 +19,9 @@ struct WhaleTabBar: View {
                 .fill(WhaleTheme.chrome)
                 .overlay {
                     RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(LinearGradient(colors: [Color.white.opacity(0.55), WhaleTheme.chrome.opacity(0.2)], startPoint: .top, endPoint: .bottom))
+                        .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
                 }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
-                }
-                .shadow(color: Color.black.opacity(0.16), radius: 22, y: 10)
+                .shadow(color: Color.black.opacity(0.06), radius: 10, y: 4)
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 6)
@@ -43,7 +39,7 @@ struct WhaleTabBar: View {
                     .whaleFont(size: 17, weight: .semibold)
                     .symbolVariant(selected ? .fill : .none)
                 Text(title)
-                    .font(.system(size: 10, weight: selected ? .semibold : .medium))
+                    .font(.system(size: 11, weight: selected ? .semibold : .medium))
                 Circle()
                     .fill(selected ? WhaleTheme.accent : Color.clear)
                     .frame(width: 4, height: 4)
@@ -59,7 +55,7 @@ struct WhaleTabBar: View {
             }
             .contentShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.whalePress)
         .accessibilityLabel(title)
         .accessibilityAddTraits(selected ? .isSelected : [])
     }

@@ -20,115 +20,99 @@ extension Color {
 }
 
 enum WhaleTheme {
-    // Abyss Aurora: deep-sea surfaces, mint aurora, moonlit blue and only a
-    // little coral for time/weather/attention states.
-    static let accent = Color(light: 0x087C75, dark: 0x62EAD6)
-    static let accentDeep = Color(light: 0x0B756F, dark: 0x3CCFC4)
-    static let accentSoft = Color(light: 0xDFF6F2, dark: 0x123B3D)
-    static let moon = Color(light: 0x2E73C8, dark: 0x78B9FF)
-    static let coral = Color(light: 0xD77B3D, dark: 0xFFB27A)
-    static let ink = Color(light: 0x102522, dark: 0xF2F8F7)
-    static let muted = Color(light: 0x53645F, dark: 0xA6B9B6)
-    static let background = Color(light: 0xF2F8F7, dark: 0x071311)
-    static let card = Color(light: 0xFFFFFF, dark: 0x0D201E)
-    static let cardSolid = Color(light: 0xE7F1EE, dark: 0x142C29)
-    static let soft = Color(light: 0xE7F2EF, dark: 0x132724)
-    static let line = Color(light: 0xD8E6E2, dark: 0x25403C)
-    static let field = Color(light: 0xEAF3F0, dark: 0x0C1D1B)
-    static let chrome = Color(light: 0xF7FBFA, dark: 0x091714)
-    static let onAccent = Color(light: 0x062521, dark: 0x04211E)
-    static let buttonInk = Color(light: 0x062521, dark: 0x04211E)
-    static let glassStroke = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor.white.withAlphaComponent(0.16)
-            : UIColor.white.withAlphaComponent(0.72)
-    })
-    static let warm = Color(light: 0xC68136, dark: 0xF3BC77)
-    static let success = Color(light: 0x168F68, dark: 0x54DFAF)
-    static let danger = Color(light: 0xD34747, dark: 0xF07A7A)
+    // Sea-salt blue: a calm, neutral assistant surface with one blue accent.
+    // Semantic green and red remain reserved for real status.
+    static let accent = Color(light: 0x246F95, dark: 0x72BBDA)
+    static let accentDeep = Color(light: 0x1C5C7B, dark: 0x5EA6C6)
+    static let accentSoft = Color(light: 0xDCEFF6, dark: 0x203A47)
+    static let moon = Color(light: 0x5F83A1, dark: 0x9BB9CA)
+    static let coral = Color(light: 0xA75F36, dark: 0xE0A471)
+    static let ink = Color(light: 0x17262E, dark: 0xF1F6F8)
+    static let muted = Color(light: 0x596C76, dark: 0xB4C1C7)
+    static let background = Color(light: 0xF3F7F9, dark: 0x101619)
+    static let card = Color(light: 0xFFFFFF, dark: 0x182126)
+    static let cardSolid = Color(light: 0xE8F0F5, dark: 0x202D33)
+    static let soft = Color(light: 0xE8F0F5, dark: 0x202D33)
+    static let line = Color(light: 0xD6E2E8, dark: 0x34464D)
+    static let field = Color(light: 0xF8FAFB, dark: 0x182126)
+    static let chrome = Color(light: 0xFBFCFD, dark: 0x141D21)
+    static let onAccent = Color(light: 0xF7FCFD, dark: 0xF7FCFD)
+    static let buttonInk = Color(light: 0xF7FCFD, dark: 0xF7FCFD)
+    static let glassStroke = Color(light: 0xD6E2E8, dark: 0x34464D)
+    static let warm = Color(light: 0x96602C, dark: 0xE0AC6C)
+    static let success = Color(light: 0x247B50, dark: 0x63C99B)
+    static let danger = Color(light: 0xB8444C, dark: 0xEF858C)
 
-    static let cardRadius: CGFloat = 20
-    static let controlRadius: CGFloat = 16
-    static let pagePadding: CGFloat = 20
+    static let categoryBlue = Color(light: 0xE1F0F6, dark: 0x17343F)
+    static let categorySteel = Color(light: 0xE4EBF3, dark: 0x1C2D3B)
+    static let categorySand = Color(light: 0xF4EADB, dark: 0x352A1D)
+    static let categoryRose = Color(light: 0xF4E6EA, dark: 0x35232A)
+    static let categoryMist = Color(light: 0xE7EEF1, dark: 0x223138)
+    static let categoryStraw = Color(light: 0xF1ECE1, dark: 0x302B20)
+    static let categoryBlueInk = Color(light: 0x145B74, dark: 0xA5D9E9)
+    static let categorySteelInk = Color(light: 0x365A76, dark: 0xADD0E4)
+    static let categorySandInk = Color(light: 0x80531F, dark: 0xE5BE83)
+    static let categoryRoseInk = Color(light: 0x814959, dark: 0xE3A9BA)
+    static let categoryMistInk = Color(light: 0x3F5D6A, dark: 0xBAD2DC)
+    static let categoryStrawInk = Color(light: 0x725C2D, dark: 0xD9C88F)
+
+    static let cardRadius: CGFloat = 16
+    static let controlRadius: CGFloat = 12
+    static let pagePadding: CGFloat = 16
 
     static let pageGradient = LinearGradient(
-        colors: [
-            Color(light: 0xE8F5F2, dark: 0x06110F),
-            Color(light: 0xEDF7F7, dark: 0x0A1A19),
-            Color(light: 0xF8FBF7, dark: 0x0B1714)
-        ],
+        colors: [background, background, background],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let heroGradient = LinearGradient(
-        colors: [
-            Color(light: 0x139C91, dark: 0x0B4647),
-            Color(light: 0x1D777C, dark: 0x103338),
-            Color(light: 0x315D74, dark: 0x0B2028)
-        ],
+        colors: [accent, accent],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let auroraGradient = LinearGradient(
-        colors: [accent, moon],
+        colors: [accent, accent],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let gameGradient = LinearGradient(
-        colors: [
-            Color(light: 0xB85C2E, dark: 0x6B2C12),
-            Color(light: 0xD79A3F, dark: 0x4A3510)
-        ],
+        colors: [categorySandInk, categorySandInk],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let musicGradient = LinearGradient(
-        colors: [
-            Color(light: 0x8A4B8F, dark: 0x3A1E45),
-            Color(light: 0xC0566F, dark: 0x5A2436)
-        ],
+        colors: [categoryRoseInk, categoryRoseInk],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let headlineGradient = LinearGradient(
-        colors: [
-            Color(light: 0x1E8A7A, dark: 0x0C4A42),
-            Color(light: 0x2E73C8, dark: 0x143352)
-        ],
+        colors: [categoryMistInk, categoryMistInk],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
     static let weiboGradient = LinearGradient(
-        colors: [
-            Color(light: 0xD34747, dark: 0x5A1A1A),
-            Color(light: 0xD77B3D, dark: 0x5B3216)
-        ],
+        colors: [Color(light: 0x8A5551, dark: 0xA56E69), Color(light: 0x8A5551, dark: 0xA56E69)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
-    /// Composer send button. Matches the v9 reference: mint-to-sky paper plane
-    /// tile that stays legible on both the abyss and the morning-mist surface.
     static let composerSendGradient = LinearGradient(
-        colors: [
-            Color(light: 0x3FCDBE, dark: 0x2FBFB2),
-            Color(light: 0x4E9BE8, dark: 0x4E9BE8)
-        ],
+        colors: [accent, accent],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
 
-    static let rose = Color(light: 0xC0566F, dark: 0xF292A6)
-    static let blueSoft = Color(light: 0xE6EFFC, dark: 0x14283F)
-    static let amberSoft = Color(light: 0xFBF0DC, dark: 0x33260E)
-    static let roseSoft = Color(light: 0xFBE8EC, dark: 0x341A20)
-    static let bubble = Color(light: 0xFFFFFF, dark: 0x102622)
+    static let rose = categoryRoseInk
+    static let blueSoft = accentSoft
+    static let amberSoft = categorySand
+    static let roseSoft = categoryRose
+    static let bubble = card
 }
 
 extension View {
@@ -162,11 +146,29 @@ extension View {
     }
 }
 
+struct WhalePressButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
+            .opacity(configuration.isPressed ? 0.92 : 1)
+            .animation(
+                reduceMotion ? nil : .spring(response: 0.22, dampingFraction: 0.78),
+                value: configuration.isPressed
+            )
+    }
+}
+
+extension ButtonStyle where Self == WhalePressButtonStyle {
+    static var whalePress: WhalePressButtonStyle { WhalePressButtonStyle() }
+}
+
 extension DiscoverChannel {
     var entryGradient: LinearGradient {
         switch self {
         case .ai: return WhaleTheme.heroGradient
-        case .market: return LinearGradient(colors: [Color(light: 0x2E73C8, dark: 0x326DA6), Color(light: 0x0B756F, dark: 0x267E74)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .market: return LinearGradient(colors: [WhaleTheme.categorySteelInk, WhaleTheme.categorySteelInk], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .game: return WhaleTheme.gameGradient
         case .music: return WhaleTheme.musicGradient
         case .headline: return WhaleTheme.headlineGradient
@@ -175,12 +177,22 @@ extension DiscoverChannel {
     }
     var entryInk: Color {
         switch self {
-        case .ai: return Color(light: 0x096D65, dark: 0x82EAD5)
-        case .market: return Color(light: 0x225DA0, dark: 0x99C7FF)
-        case .game: return Color(light: 0x8D421D, dark: 0xF9C183)
-        case .music: return Color(light: 0x82447E, dark: 0xF0B5D8)
-        case .headline: return Color(light: 0x216D91, dark: 0x8DD9F4)
-        case .weibo: return Color(light: 0xAA3737, dark: 0xFFB1A2)
+        case .ai: return WhaleTheme.categoryBlueInk
+        case .market: return WhaleTheme.categorySteelInk
+        case .game: return WhaleTheme.categorySandInk
+        case .music: return WhaleTheme.categoryRoseInk
+        case .headline: return WhaleTheme.categoryMistInk
+        case .weibo: return Color(light: 0x7E4B47, dark: 0xE0B0AA)
+        }
+    }
+    var homeCardBackground: Color {
+        switch self {
+        case .ai: return WhaleTheme.categoryBlue
+        case .market: return WhaleTheme.categorySteel
+        case .game: return WhaleTheme.categorySand
+        case .music: return WhaleTheme.categoryRose
+        case .headline: return WhaleTheme.categoryMist
+        case .weibo: return WhaleTheme.categoryStraw
         }
     }
 }
@@ -193,45 +205,30 @@ private struct ChannelLabelStyle: ViewModifier {
             .padding(.horizontal, 10).frame(minHeight: 44)
             .fixedSize(horizontal: true, vertical: false)
             .background {
-                let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
-                if selected {
-                    shape.fill(channel.entryGradient).overlay(shape.fill(.black.opacity(0.30)))
-                } else {
-                    shape.fill(WhaleTheme.cardSolid).overlay(shape.fill(channel.entryInk.opacity(0.10)))
-                }
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(selected ? WhaleTheme.accent : channel.homeCardBackground)
             }
-            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
-            .whaleSoftElevation(selected: selected)
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(WhaleTheme.line, lineWidth: 0.65))
             .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
 private struct SoftElevation: ViewModifier {
     let selected: Bool
-    @Environment(\.colorScheme) private var scheme
     func body(content: Content) -> some View {
         content
-            .shadow(color: .black.opacity(scheme == .dark ? 0.24 : 0.075), radius: selected ? 10 : 8, x: 0, y: 4)
-            .shadow(color: WhaleTheme.accent.opacity(selected ? 0.14 : 0.045), radius: selected ? 16 : 12, x: 0, y: 7)
     }
 }
 
 private struct RaisedPillStyle: ViewModifier {
     let selected: Bool
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     func body(content: Content) -> some View {
         content.foregroundStyle(selected ? WhaleTheme.onAccent : WhaleTheme.ink)
             .padding(.horizontal, 10).frame(minHeight: 44).fixedSize(horizontal: true, vertical: false)
             .background {
-                if selected { Capsule().fill(WhaleTheme.composerSendGradient) }
-                else if reduceTransparency { Capsule().fill(WhaleTheme.cardSolid) }
-                else {
-                    Capsule().fill(.ultraThinMaterial)
-                        .overlay(Capsule().fill(WhaleTheme.card.opacity(0.6)))
-                }
+                Capsule().fill(selected ? WhaleTheme.accent : WhaleTheme.cardSolid)
             }
             .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
-            .whaleSoftElevation(selected: selected)
             .contentShape(Capsule())
     }
 }
@@ -239,42 +236,23 @@ private struct RaisedPillStyle: ViewModifier {
 struct GlassCardStyle: ViewModifier {
     var padding: CGFloat = 16
     var radius: CGFloat = WhaleTheme.cardRadius
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-
     func body(content: Content) -> some View {
         content
             .padding(padding)
-            .background {
-                if reduceTransparency {
-                    RoundedRectangle(cornerRadius: radius, style: .continuous).fill(WhaleTheme.cardSolid)
-                } else {
-                    RoundedRectangle(cornerRadius: radius, style: .continuous).fill(.ultraThinMaterial)
-                        .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(WhaleTheme.card.opacity(0.62)))
-                }
-            }
+            .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
+                    .strokeBorder(WhaleTheme.line, lineWidth: 0.65)
             }
-            .whaleSoftElevation()
     }
 }
 
-/// Full-page atmosphere. The aurora stays behind content, so every card keeps
-/// a dark-to-mint edge and the header/footer can use opaque chrome.
 struct WhaleBackdrop: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        ZStack {
-            WhaleTheme.pageGradient
-            Circle().fill(WhaleTheme.accent.opacity(colorScheme == .dark ? 0.18 : 0.20))
-                .frame(width: 360, height: 360).blur(radius: 82).offset(x: -150, y: -300)
-            Circle().fill(WhaleTheme.moon.opacity(colorScheme == .dark ? 0.13 : 0.12))
-                .frame(width: 320, height: 320).blur(radius: 92).offset(x: 168, y: -150)
-            Ellipse().fill(WhaleTheme.accentDeep.opacity(colorScheme == .dark ? 0.13 : 0.08))
-                .frame(width: 420, height: 240).blur(radius: 110).offset(x: 80, y: 360)
-        }.ignoresSafeArea().allowsHitTesting(false).accessibilityHidden(true)
+        WhaleTheme.background
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
     }
 }
 
@@ -310,19 +288,13 @@ struct WhaleMarkView: View {
         .overlay {
             Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.8)
         }
-        .shadow(color: WhaleTheme.accent.opacity(0.22), radius: 10, y: 4)
         .accessibilityHidden(true)
     }
 }
 
 struct WhaleChromeBackground: View {
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-
     var body: some View {
-        ZStack {
-            if !reduceTransparency { Rectangle().fill(.ultraThinMaterial) }
-            Rectangle().fill(WhaleTheme.chrome.opacity(reduceTransparency ? 1 : 0.82))
-        }
+        Rectangle().fill(WhaleTheme.chrome)
     }
 }
 
@@ -384,23 +356,14 @@ struct WhaleIconTile: View {
 }
 
 struct GlassChipStyle: ViewModifier {
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
-            .background {
-                if reduceTransparency {
-                    Capsule().fill(WhaleTheme.cardSolid)
-                } else {
-                    Capsule().fill(.ultraThinMaterial)
-                }
-            }
+            .background(WhaleTheme.cardSolid, in: Capsule())
             .overlay {
                 Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
             }
-            .whaleSoftElevation()
     }
 }
 
@@ -412,11 +375,10 @@ extension View {
     func whaleGlassCircle(size: CGFloat = 44) -> some View {
         self
             .frame(width: size, height: size)
-            .background(.ultraThinMaterial, in: Circle())
+            .background(WhaleTheme.cardSolid, in: Circle())
             .overlay {
                 Circle().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
             }
-            .whaleSoftElevation()
     }
 }
 

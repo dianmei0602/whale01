@@ -253,14 +253,14 @@ struct WhaleRootTabBar: View {
                     .font(.system(size: 19, weight: .semibold))
                     .symbolVariant(selected ? .fill : .none)
                 Text(title)
-                    .font(.system(size: 10.5, weight: selected ? .semibold : .medium))
+                    .font(.system(size: 11, weight: selected ? .semibold : .medium))
             }
             .foregroundStyle(selected ? WhaleTheme.accent : WhaleTheme.muted)
             .frame(maxWidth: .infinity)
             .frame(height: 46)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.whalePress)
         .accessibilityLabel(title)
         .accessibilityIdentifier("tab-" + tab.rawValue)
         .accessibilityAddTraits(selected ? .isSelected : [])

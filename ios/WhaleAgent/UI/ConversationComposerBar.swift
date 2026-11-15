@@ -178,10 +178,9 @@ struct ConversationComposerBar: View {
                     .whaleFont(size: 16, weight: .semibold)
                     .foregroundStyle(WhaleTheme.buttonInk)
                     .frame(width: 44, height: 44)
-                    .background(WhaleTheme.composerSendGradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .whaleSoftElevation(selected: true)
+                    .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.whalePress)
             .disabled(model.isBusy || isDraftEmpty || finishingVoice)
             .opacity(model.isBusy || isDraftEmpty ? 0.5 : 1)
             .accessibilityLabel("发送")
@@ -194,8 +193,9 @@ struct ConversationComposerBar: View {
                 .fill(WhaleTheme.field)
                 .overlay {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(WhaleTheme.line, lineWidth: 0.8)
+                        .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
                 }
+                .shadow(color: .black.opacity(0.06), radius: 8, y: 3)
         }
         .animation(.easeInOut(duration: 0.16), value: focused)
     }
@@ -207,10 +207,10 @@ struct ConversationComposerBar: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
+                    .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
             }
     }
 
@@ -236,10 +236,10 @@ struct ConversationComposerBar: View {
         }
         .padding(.horizontal, 13)
         .padding(.vertical, 9)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(WhaleTheme.danger.opacity(0.24), lineWidth: 0.8)
+                .strokeBorder(WhaleTheme.danger.opacity(0.24), lineWidth: 0.7)
         }
     }
 
