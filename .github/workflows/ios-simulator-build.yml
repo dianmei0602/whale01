@@ -51,7 +51,7 @@ jobs:
   build:
     if: ${{ inputs.scope != 'interaction' }}
     name: Compile app and test targets without simulator boot
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 15
     steps:
       - name: Checkout
