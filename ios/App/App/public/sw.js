@@ -3,12 +3,14 @@
    仅缓存同源资源，无外链；数据亦本地缓存，离线可完整阅读。
    ============================================================ */
 
-const CACHE = 'shj-cache-v9';
+const CACHE = 'shj-cache-v11';
 
 const PRECACHE = [
   './',
   './index.html',
   './privacy.html',
+  './clan/',
+  './clan/index.html',
   './manifest.webmanifest',
   './css/base.css',
   './css/layout.css',
@@ -25,6 +27,7 @@ const PRECACHE = [
   './css/replays.css',
   './css/stategraph.css',
   './css/onboarding.css',
+  './css/refine.css',
   './css/replay.css',
   './css/motion.css',
   './css/clan.css',

@@ -17,7 +17,7 @@ export function initPWA() {
     // 首次安装也会触发 controllerchange，只有「已有旧版本被替换」时才提示
     if (hadController) showUpdateBar();
   });
-  window.addEventListener('load', async () => {
+  const register = async () => {
     try {
       const reg = await navigator.serviceWorker.register('sw.js');
       const watch = (worker) => {
@@ -32,7 +32,10 @@ export function initPWA() {
     } catch (err) {
       console.info('[山河战纪] Service Worker 注册失败：', err && err.message ? err.message : err);
     }
-  });
+  };
+  // 数据为异步读取，boot 结束时 window.load 往往已经触发；此时必须立即注册。
+  if (document.readyState === 'complete') register();
+  else window.addEventListener('load', register, { once: true });
 }
 
 export function initUpdateBar() {

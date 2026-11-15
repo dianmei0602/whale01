@@ -603,6 +603,7 @@ export function searchBattles(data, rawQuery) {
     check(b.location.ancient, '古地名', 85);
     check(b.location.modern, '今地名', 85);
     b.tags.forEach((t) => check(t, '标签', 75));
+    b.type.forEach((t) => check(t, '战役类型', 82));
     check(b.summary, '提要', 62);
     check(b.yearText, '年代', 58);
     b.course.forEach((c) => {
@@ -655,13 +656,18 @@ export function searchBattles(data, rawQuery) {
 export function hotTags(data, limit = 8) {
   const map = new Map();
   for (const b of data.battles) {
-    for (const t of [...b.tags, ...b.type]) {
+    for (const t of new Set([...b.tags, ...b.type])) {
       if (!t) continue;
       map.set(t, (map.get(t) || 0) + 1);
     }
   }
   return [...map.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh'))
-    .slice(0, limit)
-    .map(([tag, count]) => ({ tag, count }));
+    .map(([tag]) => ({
+      tag,
+      // 标签数字必须等于点击后“战役”分组中的真实结果数。
+      count: searchBattles(data, tag)?.battles.length || 0,
+    }))
+    .filter((item) => item.count > 0)
+    .slice(0, limit);
 }

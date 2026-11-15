@@ -306,6 +306,22 @@ function detailShareURL(id) {
   return `${base}#/battle/${encodeURIComponent(id)}`;
 }
 
+function isPublicShareURL(url) {
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+    const host = parsed.hostname.toLowerCase();
+    return !(
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === '::1' ||
+      host.endsWith('.local')
+    );
+  } catch (err) {
+    return false;
+  }
+}
+
 async function copyText(text) {
   try {
     if (navigator.clipboard?.writeText) {
@@ -332,11 +348,10 @@ async function copyText(text) {
 
 async function shareBattle(battle) {
   const url = detailShareURL(battle.id);
-  const payload = {
-    title: `${battle.name} · 山河战纪`,
-    text: battle.summary || `${battle.name}，${battle.yearText || ''}`,
-    url,
-  };
+  const title = `${battle.name} · 山河战纪`;
+  const text = battle.summary || `${battle.name}，${battle.yearText || ''}`;
+  const shareableURL = isPublicShareURL(url);
+  const payload = { title, text, ...(shareableURL ? { url } : {}) };
   if (navigator.share) {
     try {
       await navigator.share(payload);
@@ -346,8 +361,9 @@ async function shareBattle(battle) {
       /* 其他失败走复制兜底 */
     }
   }
-  const ok = await copyText(url);
-  toast(ok ? '链接已复制，可粘贴分享' : '复制失败，请长按地址栏复制');
+  const copyPayload = [title, text, ...(shareableURL ? [url] : [])].join('\n');
+  const ok = await copyText(copyPayload);
+  toast(ok ? (shareableURL ? '分享链接已复制' : '分享文案已复制') : '当前环境无法自动复制，请重试');
 }
 
 function setupReading(root, battle) {
@@ -399,7 +415,7 @@ function detailHTML(battle, ctx) {
       </div>
       <div class="detail-actions">
         <button class="icon-btn detail-fav" type="button" data-action="fav" aria-pressed="false" aria-label="收藏">${icon(
-          'book'
+          'bookmark'
         )}</button>
         <button class="icon-btn" type="button" data-action="share" aria-label="分享">${icon('share')}</button>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索">${icon('search')}</button>

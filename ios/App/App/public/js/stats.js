@@ -222,9 +222,10 @@ function outcomeHTML(stats) {
 }
 
 function pageHTML(ctx, stats) {
+  const spanText = (Math.round(stats.yearSpan / 100) * 100).toLocaleString('zh-CN');
   return `<div class="stats-page">
     <header class="page-head">
-      <div class="head-title">统计<span class="head-sub">120 场 · 实时计算</span></div>
+      <div class="head-title">统计<span class="head-sub">${stats.total} 场 · 实时计算</span></div>
       <div class="head-actions">
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索">${icon('search')}</button>
       </div>
@@ -233,7 +234,7 @@ function pageHTML(ctx, stats) {
       <section class="st-overview">
         <div class="st-ov-item"><b>${stats.total}</b><i>场战役</i></div>
         <div class="st-ov-item"><b>${stats.eraCount}</b><i>个时期</i></div>
-        <div class="st-ov-item"><b>${(stats.yearSpan / 1000).toFixed(1)}k</b><i>年跨度</i></div>
+        <div class="st-ov-item"><b>${spanText}</b><i>年跨度</i></div>
         <div class="st-ov-item"><b>${stats.upsetRate}%</b><i>以少胜多率</i></div>
       </section>
 
@@ -248,7 +249,7 @@ function pageHTML(ctx, stats) {
       </section>
 
       <section class="st-panel">
-        <h2 class="st-title">每百年战事密度<span>约 4600 年 · 47 个百年区间</span></h2>
+        <h2 class="st-title">每百年战事密度<span>约 ${spanText} 年 · ${stats.bins.length} 个百年区间</span></h2>
         ${densityHTML(stats)}
       </section>
 

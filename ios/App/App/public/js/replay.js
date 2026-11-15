@@ -10,7 +10,7 @@
    ============================================================ */
 
 import { esc, icon, emptyStateHTML } from './ui.js';
-import { navigate } from './router.js';
+import { navigateBack } from './router.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CSS_HREF = 'css/replay.css';
@@ -667,7 +667,7 @@ function playerHTML(replay, meta, uid) {
     replay.battleId
   )}" data-rp-stage="0" data-rp-playing="0" data-rp-finished="0">
     <header class="rp-bar">
-      <button class="icon-btn" type="button" data-rp="back" aria-label="返回战役详情">${icon('back')}</button>
+      <button class="icon-btn" type="button" data-rp="back" aria-label="返回上一页">${icon('back')}</button>
       <div class="rp-bar-title">
         <span class="rp-bar-name">${esc(titleOf(replay, meta))}</span>
         <span class="rp-bar-sub">${esc(subtitleOf(replay, meta))}</span>
@@ -729,7 +729,7 @@ function playerHTML(replay, meta, uid) {
 function statePageHTML(inner, title) {
   return `<section class="replay-page replay-page--state" role="region" aria-label="战役动画推演">
     <header class="rp-bar">
-      <button class="icon-btn" type="button" data-rp="back" aria-label="返回">${icon('back')}</button>
+      <button class="icon-btn" type="button" data-rp="back" aria-label="返回上一页">${icon('back')}</button>
       <div class="rp-bar-title"><span class="rp-bar-name">${esc(title || '战役推演')}</span></div>
     </header>
     <div class="rp-state">${inner}</div>
@@ -747,7 +747,7 @@ function emptyHTML(ctx, id) {
   const desc = known
     ? `「${meta.name}」的动画推演尚未编成。可先阅读战役详情，或回到时间轴继续展卷。`
     : `未找到「${id || '该战役'}」的推演脚本。可能是链接有误，或这一场尚未编入推演卷。`;
-  const action = `<button class="btn btn--gold" type="button" data-rp="back">${known ? '返回战役详情' : '返回时间轴'}</button>`;
+  const action = `<button class="btn btn--gold" type="button" data-rp="back">${known ? '返回原页面' : '返回时间轴'}</button>`;
   return statePageHTML(emptyStateHTML({ title: '此役推演未成卷', desc, actions: action }), title);
 }
 
@@ -759,11 +759,7 @@ let live = null;
 let renderSeq = 0;
 
 function goBackById(ctx, id) {
-  if (id) {
-    navigate(`/battle/${encodeURIComponent(id)}`);
-    return;
-  }
-  navigate('/');
+  navigateBack(id ? `/battle/${encodeURIComponent(id)}` : '/');
 }
 
 function wireStatePage(root, ctx, id) {

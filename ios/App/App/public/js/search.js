@@ -10,6 +10,36 @@ import { revealStagger } from './motion.js';
 
 let screen = null;
 let cleanupFns = [];
+const SEARCH_STATE_PREFIX = 'shj.search.state.v1:';
+
+function searchStateKey(query) {
+  return SEARCH_STATE_PREFIX + encodeURIComponent(String(query || '').trim());
+}
+
+function readSearchState(query) {
+  try {
+    const raw = sessionStorage.getItem(searchStateKey(query));
+    const value = raw ? JSON.parse(raw) : null;
+    return value && typeof value === 'object' ? value : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function saveSearchState(query, body, battleLimit) {
+  if (!body) return;
+  try {
+    sessionStorage.setItem(
+      searchStateKey(query),
+      JSON.stringify({
+        scrollTop: Math.max(0, Number(body.scrollTop) || 0),
+        battleLimit: Math.max(24, Number(battleLimit) || 24),
+      })
+    );
+  } catch (err) {
+    /* 隐私模式 / file:// 下只保留当前页面状态 */
+  }
+}
 
 function closeSearch() {
   navigateBack();
@@ -44,12 +74,39 @@ function recentHTML(ctx) {
   </section>`;
 }
 
+function suggestedHTML(ctx) {
+  const sections = ctx.data.sections || [];
+  if (!sections.length) return '';
+  const picks = [0, 2, 4, 5, 8, 10, 11]
+    .map((index) => sections[Math.min(index, sections.length - 1)])
+    .filter(Boolean);
+  const seen = new Set();
+  const battles = picks
+    .map(({ battles: list }) => list.find((b) => b.scale === '战略决战') || list[0])
+    .filter((b) => b && !seen.has(b.id) && seen.add(b.id))
+    .slice(0, 6);
+  if (!battles.length) return '';
+  return `<section class="search-group search-suggested">
+    <div class="search-group-title">代表战役<span class="sg-rule"></span><span class="sg-count">${battles.length}</span></div>
+    <div class="suggested-list">${battles
+      .map(
+        (b) => `<a class="suggested-item" href="#/battle/${encodeURIComponent(b.id)}">
+          <span class="si-era">${esc(b.era?.short || b.era?.name || '')}</span>
+          <span class="si-name">${esc(b.name)}</span>
+          <span class="si-year">${esc(fmtYear(b.startYear))}</span>
+        </a>`
+      )
+      .join('')}</div>
+  </section>`;
+}
+
 function initialHTML(ctx) {
   const tags = hotTags(ctx.data, 8);
   return `<div class="search-hint">
       <div class="sh-kicker">热门检索</div>
       ${hotChipsHTML(tags)}
     </div>
+    ${suggestedHTML(ctx)}
     ${recentHTML(ctx)}
     <p class="search-note">可检索：战役名 · 别名 · 人物 · 古地名 · 今地名 · 典故 · 标签 · 提要 · 年份</p>`;
 }
@@ -116,7 +173,7 @@ function personItemHTML(person, q, ctx) {
   </div>`;
 }
 
-function resultsHTML(ctx, q) {
+function resultsHTML(ctx, q, battleLimit = 24) {
   const result = searchBattles(ctx.data, q);
   const hasAny = result && (result.battles.length || result.anecdotes.length || result.people.length);
   if (!hasAny) {
@@ -131,9 +188,18 @@ function resultsHTML(ctx, q) {
   const groups = [];
 
   if (result.battles.length) {
+    const remaining = Math.max(0, result.battles.length - battleLimit);
     groups.push(`<section class="search-group">
       <div class="search-group-title">战役<span class="sg-rule"></span><span class="sg-count">${result.battles.length}</span></div>
-      ${result.battles.slice(0, 24).map((item) => battleItemHTML(item, q)).join('')}
+      ${result.battles.slice(0, battleLimit).map((item) => battleItemHTML(item, q)).join('')}
+      ${
+        remaining
+          ? `<button class="search-more" type="button" data-search-more>再显示 ${Math.min(
+              24,
+              remaining
+            )} 条 · 还剩 ${remaining} 条</button>`
+          : ''
+      }
     </section>`);
   }
   if (result.people.length) {
@@ -155,6 +221,9 @@ export function renderSearch(ctx, route) {
   disposeSearch();
   const initialQuery = String(route?.query?.q || '');
   const personMode = route?.query?.note === 'person';
+  const restoredState = readSearchState(initialQuery);
+  let battleLimit = Math.max(24, Number(restoredState?.battleLimit) || 24);
+  let lastQuery = initialQuery;
 
   screen = document.createElement('div');
   screen.id = 'search-screen';
@@ -180,19 +249,50 @@ export function renderSearch(ctx, route) {
   const clearBtn = screen.querySelector('.search-clear');
   const status = screen.querySelector('#searchStatus');
 
+  // 进入详情前记住搜索位置与“再显示”分页深度；返回时由同一路由恢复。
+  screen.addEventListener(
+    'click',
+    (e) => {
+      if (!e.target.closest('a[href^="#/battle/"]')) return;
+      saveSearchState(input.value.trim(), body, battleLimit);
+    },
+    true
+  );
+
+  const syncQueryHash = (q) => {
+    const next = q ? `#/search?q=${encodeURIComponent(q)}` : '#/search';
+    if (window.location.hash === next) return;
+    try {
+      history.replaceState(history.state, '', next);
+    } catch (err) {
+      /* file:// 等环境只保留当前输入状态 */
+    }
+  };
+
   const render = (q) => {
+    if (q !== lastQuery) {
+      battleLimit = 24;
+      lastQuery = q;
+    }
+    syncQueryHash(q);
     if (!q) {
       body.innerHTML = initialHTML(ctx);
-      revealStagger(body, '.hot-chip, .recent-item, .search-hint', { stagger: 30, wave: 10 });
+      revealStagger(body, '.hot-chip, .recent-item, .suggested-item, .search-hint', {
+        stagger: 30,
+        wave: 10,
+      });
       if (status) status.textContent = '输入关键字，检索战役、人物、地名或典故';
       return;
     }
-    const note = personMode
+    const note = personMode && q === initialQuery
       ? `<p class="search-note search-fallback-note"><b>该人物暂无小传</b>，已为你检索「${esc(q)}」的相关战役与典故。</p>`
       : '';
-    body.innerHTML = note + resultsHTML(ctx, q);
+    body.innerHTML = note + resultsHTML(ctx, q, battleLimit);
     body.scrollTop = 0;
-    revealStagger(body, '.s-item, .s-person, .search-group-title', { stagger: 35, wave: 10 });
+    revealStagger(body, '.s-item, .s-person, .search-group-title, .search-more', {
+      stagger: 35,
+      wave: 10,
+    });
     if (status) {
       const groups = body.querySelectorAll('.search-group').length;
       const hits = body.querySelectorAll('.s-item, .s-person').length;
@@ -230,6 +330,11 @@ export function renderSearch(ctx, route) {
   screen.querySelector('[data-action="close"]').addEventListener('click', closeSearch);
 
   body.addEventListener('click', (e) => {
+    if (e.target.closest('[data-search-more]')) {
+      battleLimit += 24;
+      render(input.value.trim());
+      return;
+    }
     const hot = e.target.closest('[data-hot]');
     if (hot) {
       input.value = hot.dataset.hot;
@@ -239,9 +344,19 @@ export function renderSearch(ctx, route) {
     }
   });
 
+  input.value = initialQuery;
   render(initialQuery);
+  if (Number(restoredState?.scrollTop) > 0) {
+    const top = Number(restoredState.scrollTop);
+    requestAnimationFrame(() => {
+      if (!screen || !document.body.contains(screen)) return;
+      body.scrollTop = top;
+      requestAnimationFrame(() => {
+        if (screen && document.body.contains(screen)) body.scrollTop = top;
+      });
+    });
+  }
   if (initialQuery) {
-    input.value = initialQuery;
     status.textContent = personMode ? `该人物暂无小传，已搜索「${initialQuery}」` : `搜索「${initialQuery}」`;
   }
   updateClear();

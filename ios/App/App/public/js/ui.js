@@ -24,6 +24,7 @@ const ICONS = {
   chevron: '<path d="m6 9 6 6 6-6"/>',
   pin: '<path d="M12 21s6.5-6.1 6.5-11a6.5 6.5 0 1 0-13 0C5.5 14.9 12 21 12 21Z"/><circle cx="12" cy="10" r="2.3"/>',
   book: '<path d="M4 5.5c2.5-1 5.2-1 8 0v14c-2.8-1-5.5-1-8 0z"/><path d="M20 5.5c-2.5-1-5.2-1-8 0v14c2.8-1 5.5-1 8 0z"/>',
+  bookmark: '<path d="M6.5 4.5h11v16L12 16.8l-5.5 3.7z"/>',
   compass: '<circle cx="12" cy="12" r="8"/><path d="m14.8 9.2-1.6 4-4 1.6 1.6-4z"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
   refresh: '<path d="M20 11a8 8 0 1 0-2.3 6.3"/><path d="M20 4.5V11h-6.5"/>',

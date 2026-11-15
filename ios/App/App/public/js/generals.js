@@ -105,11 +105,30 @@ function bioCountsText(stats) {
   return `${stats.featured} 位入谱 · ${stats.total} 位立传`;
 }
 
-function biosHTML(ctx, bios) {
+function filteredBios(bios, featuredOnly = false, eraId = 'all', query = '') {
+  const needle = String(query || '').trim();
+  return (bios || []).filter((g) => {
+    if (featuredOnly && g.featured === false) return false;
+    if (eraId !== 'all' && !(g.eraIds || []).includes(eraId)) return false;
+    if (!needle) return true;
+    return [g.name, ...(g.alias || []), g.title].some((value) => String(value || '').includes(needle));
+  });
+}
+
+function biosHTML(ctx, bios, featuredOnly = false, eraId = 'all', query = '', limit = 8) {
   if (!bios.length) {
-    return `<p class="gen-bio-loading">名将小传暂未载入（data/generals.json 不可用），下方「全部将帅」仍可浏览。</p>`;
+    return `<p class="gen-bio-loading">名将小传暂未载入（data/generals.json 不可用）；仍可切换到「全部将帅」浏览自动聚合名册。</p>`;
   }
-  return `<div class="gen-bio-list">${bios
+  const filtered = filteredBios(bios, featuredOnly, eraId, query);
+  if (!filtered.length) {
+    return `<div class="gen-bio-empty">
+      <p>当前范围没有匹配的人物小传。</p>
+      <button class="btn" type="button" data-action="reset-gen-filter">清除筛选</button>
+    </div>`;
+  }
+  const shown = filtered.slice(0, Math.max(1, Number(limit) || 8));
+  const remaining = filtered.length - shown.length;
+  return `<div class="gen-bio-list">${shown
     .map((g, i) => {
       const battles = (g.battles || [])
         .map((id) => ctx.data.byId.get(id))
@@ -173,22 +192,81 @@ function biosHTML(ctx, bios) {
         }
       </article>`;
     })
-    .join('')}</div>`;
+    .join('')}</div>${
+    remaining > 0
+      ? `<button class="gen-more btn" type="button" data-action="load-more-bio">再显示 ${Math.min(
+          8,
+          remaining
+        )} 位 · 剩余 ${remaining} 位</button>`
+      : ''
+  }`;
 }
 
-/* ---------------- 小传区 / 全量区 ---------------- */
-function featuredSectionHTML(ctx, bios) {
-  const stats = bioStats(bios);
-  return `<section class="gen-featured" aria-labelledby="genFeaturedTitle">
-    <div class="gen-section-head">
-      <h2 class="gen-section-title" id="genFeaturedTitle">名将录<span data-bio-count>${stats.total || ''} 位人物 · 小传</span></h2>
-      <span class="gen-section-note" data-bio-section-note>${
-        stats.total ? `${stats.featured} 位入谱 · ${stats.extra} 位重点人物` : '名将小传'
-      }</span>
+/* ---------------- 入谱 / 立传 / 全部将帅 ---------------- */
+function viewTabsHTML() {
+  const stats = bioStats(state?.bios);
+  return `<div class="gen-view-tabs segmented" role="tablist" aria-label="名将浏览范围">
+    <button class="seg-btn" type="button" role="tab" data-gen-view="featured" aria-selected="${state?.view === 'featured'}" aria-controls="genResults">入谱 <span data-gen-count="featured">${stats.featured || '—'}</span></button>
+    <button class="seg-btn" type="button" role="tab" data-gen-view="bio" aria-selected="${state?.view === 'bio'}" aria-controls="genResults">立传 <span data-gen-count="bio">${stats.total || '—'}</span></button>
+    <button class="seg-btn" type="button" role="tab" data-gen-view="roster" aria-selected="${state?.view === 'roster'}" aria-controls="genResults">全部将帅 <span data-gen-count="roster">${buildGenerals(state.ctx.data).length || '—'}</span></button>
+  </div>`;
+}
+
+function resultTitleText() {
+  if (state?.view === 'roster') return '全部将帅';
+  if (state?.view === 'bio') return '人物立传';
+  return '入谱名将';
+}
+
+function resultSummaryText() {
+  if (state?.view === 'roster') return '按战役主将聚合 · 可搜索与排序';
+  if (state?.view === 'bio') return '全部独立小传 · 可按时期筛选';
+  return '关系图谱核心人物 · 可查看独立小传';
+}
+
+function catalogSectionHTML(ctx, generals) {
+  const stats = bioStats(state.bios);
+  const eras = ctx.data.eras || [];
+  const placeholder = state.view === 'roster' ? '搜索全部将帅' : '搜索立传人物';
+  const initial = state.bios === null && state.view !== 'roster'
+    ? '<p class="gen-bio-loading">正在载入名将小传…</p>'
+    : state.view === 'roster'
+      ? listHTML(generals)
+      : biosHTML(ctx, state.bios || [], state.view === 'featured', state.era, state.query, state.bioLimit);
+  return `<section class="gen-catalog" aria-labelledby="genCatalogTitle">
+    <div class="gen-section-head gen-catalog-head">
+      <h2 class="gen-section-title" id="genCatalogTitle">将星名册<span data-gen-total>${stats.total || '—'} 位立传</span></h2>
+      <span class="gen-section-note" data-gen-summary>${esc(resultSummaryText())}</span>
     </div>
-    <div id="genFeatured">${
-      bios ? biosHTML(ctx, bios) : '<p class="gen-bio-loading">正在载入名将小传…</p>'
-    }</div>
+    ${viewTabsHTML()}
+    <div class="gen-bio-tools">
+      <div class="gen-bio-filter-row">
+        <label class="gen-search gen-bio-search">
+          ${icon('search')}
+          <input id="genSearch" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}" value="${esc(state?.query || '')}">
+        </label>
+        <label class="gen-era-filter">
+          <span class="sr-only">按时期筛选名将</span>
+          <select id="genEra" aria-label="按时期筛选名将">
+            <option value="all">全部时期</option>
+            ${eras.map((era) => `<option value="${esc(era.id)}"${state?.era === era.id ? ' selected' : ''}>${esc(era.short || era.name)}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <div class="segmented gen-sort" role="group" aria-label="全部将帅排序方式"${state.view === 'roster' ? '' : ' hidden'}>
+        ${SORTS.map(
+          ([value, label]) =>
+            `<button class="seg-btn" type="button" data-sort="${value}" aria-pressed="${
+              state.sort === value ? 'true' : 'false'
+            }">${label}</button>`
+        ).join('')}
+      </div>
+    </div>
+    <div class="gen-result-head" aria-live="polite">
+      <h3 class="gen-result-title" data-gen-result-title>${esc(resultTitleText())}</h3>
+      <span class="gen-result-meta" data-gen-result-meta>${state.bios === null ? '正在载入…' : '准备就绪'}</span>
+    </div>
+    <div id="genResults">${initial}</div>
   </section>`;
 }
 
@@ -213,7 +291,7 @@ function introHTML(data, generals, relationCount, bios) {
       <span class="gen-graph-cta-icon" aria-hidden="true">${icon('layers')}</span>
       <span class="gen-graph-cta-main">
         <strong>关系图谱</strong>
-        <span data-bio-graph-cta>${stats.featured || 40} 位名将 · ${relationCount} 条关系 · 点击看小传</span>
+        <span data-bio-graph-cta>${stats.featured || '—'} 位名将 · ${relationCount} 条关系 · 点击看小传</span>
       </span>
       <span class="gen-graph-cta-arrow" aria-hidden="true">›</span>
     </a>
@@ -261,15 +339,19 @@ function cardHTML(g) {
 }
 
 function listHTML(generals) {
-  const filtered = generals.filter((g) => !state.query || g.name.includes(state.query));
+  const filtered = generals.filter((g) => {
+    if (state.query && !g.name.includes(state.query)) return false;
+    if (state.era !== 'all' && !g.eraList.some((era) => era.id === state.era)) return false;
+    return true;
+  });
   const sorted = sortGenerals(filtered, state.sort);
   const shown = sorted.slice(0, state.limit);
   const remain = sorted.length - shown.length;
 
   if (!filtered.length) {
     return `<div class="gen-empty">
-      <p>没有找到「${esc(state.query)}」相关的将领。</p>
-      <button class="btn" type="button" data-action="clear-query">清除搜索</button>
+      <p>没有找到符合当前搜索与时期条件的将领。</p>
+      <button class="btn" type="button" data-action="reset-gen-filter">清除筛选</button>
     </div>`;
   }
 
@@ -280,35 +362,12 @@ function listHTML(generals) {
     <div class="gen-list">${shown.map(cardHTML).join('')}</div>
     ${
       remain > 0
-        ? `<button class="gen-more btn" type="button" data-action="load-more">再显示 ${Math.min(30, remain)} 位 · 剩余 ${remain}</button>`
+        ? `<button class="gen-more btn" type="button" data-action="load-more">再显示 ${Math.min(
+            state.rosterPageSize,
+            remain
+          )} 位 · 剩余 ${remain} 位</button>`
         : ''
     }`;
-}
-
-function allSectionHTML(generals) {
-  return `<section class="gen-all" aria-labelledby="genAllTitle">
-    <div class="gen-section-head gen-all-head">
-      <h2 class="gen-section-title" id="genAllTitle">全部将帅<span>${generals.length} 人 · 自动聚合</span></h2>
-      <button class="gen-all-toggle" type="button" data-all-toggle aria-expanded="false" aria-controls="genAllBody">展开名册</button>
-    </div>
-    <div class="gen-all-body" id="genAllBody" hidden>
-      <div class="gen-toolbar">
-        <label class="gen-search">
-          ${icon('search')}
-          <input id="genSearch" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="搜索将帅姓名" aria-label="搜索将帅姓名">
-        </label>
-        <div class="segmented" role="group" aria-label="排序方式">
-          ${SORTS.map(
-            ([value, label]) =>
-              `<button class="seg-btn" type="button" data-sort="${value}" aria-pressed="${
-                state.sort === value ? 'true' : 'false'
-              }">${label}</button>`
-          ).join('')}
-        </div>
-      </div>
-      <div id="genList"></div>
-    </div>
-  </section>`;
 }
 
 function pageHTML(ctx) {
@@ -327,56 +386,120 @@ function pageHTML(ctx) {
     </header>
     <div class="gen-body">
       ${introHTML(ctx.data, generals, relationCount, state.bios)}
-      ${featuredSectionHTML(ctx, state.bios)}
-      ${allSectionHTML(generals)}
-      <p class="gen-foot">名将小传由数据文件维护；全部名册由 sides[].commanders 自动聚合，同名人物按通行姓名合并，暂未区分字号与重名。</p>
+      ${catalogSectionHTML(ctx, generals)}
+      <p class="gen-foot">入谱人物可进入关系图谱；立传人物拥有独立小传；全部将帅由战役主将字段自动聚合，同名人物按通行姓名合并。</p>
     </div>
   </div>`;
 }
 
 /* ---------------- 交互 ---------------- */
-function rerenderList() {
-  if (!state) return;
-  const generals = buildGenerals(state.ctx.data);
-  const wrap = state.root.querySelector('#genList');
-  if (wrap) wrap.innerHTML = listHTML(generals);
+function rosterFiltered(generals) {
+  return generals.filter((g) => {
+    if (state.query && !g.name.includes(state.query)) return false;
+    if (state.era !== 'all' && !g.eraList.some((era) => era.id === state.era)) return false;
+    return true;
+  });
 }
 
-function openAllIfNeeded() {
-  if (!state || state.allOpen) return;
-  const body = state.root.querySelector('#genAllBody');
-  const toggle = state.root.querySelector('[data-all-toggle]');
-  if (!body) return;
-  state.allOpen = true;
-  body.hidden = false;
-  if (toggle) {
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.textContent = '收起名册';
+function updateCatalogChrome(root) {
+  if (!state || !root) return;
+  const stats = bioStats(state.bios);
+  const generals = buildGenerals(state.ctx.data);
+  const counts = {
+    featured: stats.featured,
+    bio: stats.total,
+    roster: generals.length,
+  };
+  root.querySelectorAll('[data-gen-count]').forEach((el) => {
+    const value = counts[el.dataset.genCount];
+    el.textContent = state.bios === null && el.dataset.genCount !== 'roster' ? '…' : String(value || 0);
+  });
+  const total = root.querySelector('[data-gen-total]');
+  if (total) total.textContent = state.bios === null ? '立传载入中' : `${stats.total} 位立传`;
+  const title = root.querySelector('[data-gen-result-title]');
+  if (title) title.textContent = resultTitleText();
+  const summary = root.querySelector('[data-gen-summary]');
+  if (summary) summary.textContent = resultSummaryText();
+  const resultMeta = root.querySelector('[data-gen-result-meta]');
+  if (resultMeta) {
+    let count = 0;
+    if (state.view === 'roster') count = rosterFiltered(generals).length;
+    else if (state.bios !== null) {
+      count = filteredBios(state.bios, state.view === 'featured', state.era, state.query).length;
+    }
+    resultMeta.textContent =
+      state.bios === null && state.view !== 'roster' ? '正在载入…' : `${count} 位${state.query || state.era !== 'all' ? '匹配' : ''}人物`;
   }
-  rerenderList();
+  root.querySelectorAll('[data-gen-view]').forEach((btn) => {
+    const active = btn.dataset.genView === state.view;
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+}
+
+function refreshResults() {
+  if (!state) return;
+  const { root } = state;
+  const host = root.querySelector('#genResults');
+  if (!host) return;
+  if (state.view === 'roster') {
+    host.innerHTML = listHTML(buildGenerals(state.ctx.data));
+  } else if (state.bios === null) {
+    host.innerHTML = '<p class="gen-bio-loading">正在载入名将小传…</p>';
+  } else {
+    host.innerHTML = biosHTML(
+      state.ctx,
+      state.bios,
+      state.view === 'featured',
+      state.era,
+      state.query,
+      state.bioLimit
+    );
+  }
+  updateCatalogChrome(root);
+  revealStagger(host, '.gen-bio-card, .gen-card', { stagger: 35, threshold: 0.04 });
+}
+
+function switchView(view) {
+  if (!state || !['featured', 'bio', 'roster'].includes(view)) return;
+  state.view = view;
+  state.limit = state.rosterPageSize;
+  state.bioLimit = state.bioPageSize;
+  state.expanded.clear();
+  const input = state.root.querySelector('#genSearch');
+  const placeholder = view === 'roster' ? '搜索全部将帅' : '搜索立传人物';
+  if (input) {
+    input.placeholder = placeholder;
+    input.setAttribute('aria-label', placeholder);
+  }
+  const sort = state.root.querySelector('.gen-sort');
+  if (sort) sort.hidden = view !== 'roster';
+  refreshResults();
+}
+
+function resetGenFilters() {
+  if (!state) return;
+  state.query = '';
+  state.era = 'all';
+  state.limit = state.rosterPageSize;
+  state.bioLimit = state.bioPageSize;
+  const input = state.root.querySelector('#genSearch');
+  if (input) input.value = '';
+  const era = state.root.querySelector('#genEra');
+  if (era) era.value = 'all';
+  refreshResults();
 }
 
 function bindEvents() {
   const { root } = state;
-
   root.querySelector('[data-action="search"]').addEventListener('click', () => navigate('/search'));
 
   root.addEventListener('click', (e) => {
-    // 全部将帅 折叠
-    if (e.target.closest('[data-all-toggle]')) {
-      const body = root.querySelector('#genAllBody');
-      const toggle = root.querySelector('[data-all-toggle]');
-      state.allOpen = !state.allOpen;
-      if (body) body.hidden = !state.allOpen;
-      if (toggle) {
-        toggle.setAttribute('aria-expanded', state.allOpen ? 'true' : 'false');
-        toggle.textContent = state.allOpen ? '收起名册' : '展开名册';
-      }
-      if (state.allOpen) rerenderList();
+    const viewBtn = e.target.closest('[data-gen-view]');
+    if (viewBtn) {
+      switchView(viewBtn.dataset.genView);
       return;
     }
 
-    // 小传展开 / 收起
     const bioToggle = e.target.closest('[data-bio-toggle]');
     if (bioToggle) {
       const card = bioToggle.closest('[data-bio-card]');
@@ -390,52 +513,60 @@ function bindEvents() {
       return;
     }
 
-    // 全量名册：展开某位将领
     const expandBtn = e.target.closest('[data-expand]');
     if (expandBtn) {
       const name = expandBtn.dataset.expand;
       if (state.expanded.has(name)) state.expanded.delete(name);
       else state.expanded.add(name);
-      rerenderList();
+      refreshResults();
       return;
     }
 
-    const more = e.target.closest('[data-action="load-more"]');
-    if (more) {
-      state.limit += 30;
-      rerenderList();
+    if (e.target.closest('[data-action="load-more"]')) {
+      state.limit += state.rosterPageSize;
+      refreshResults();
       return;
     }
-    if (e.target.closest('[data-action="clear-query"]')) {
-      const input = root.querySelector('#genSearch');
-      if (input) input.value = '';
-      state.query = '';
-      rerenderList();
+    if (e.target.closest('[data-action="load-more-bio"]')) {
+      state.bioLimit += state.bioPageSize;
+      refreshResults();
+      return;
+    }
+    if (e.target.closest('[data-action="reset-gen-filter"]')) {
+      resetGenFilters();
+      return;
+    }
+    const sortBtn = e.target.closest('[data-sort]');
+    if (sortBtn) {
+      state.sort = sortBtn.dataset.sort;
+      root.querySelectorAll('.gen-sort [data-sort]').forEach((btn) => {
+        btn.setAttribute('aria-pressed', btn === sortBtn ? 'true' : 'false');
+      });
+      refreshResults();
     }
   });
 
-  // 搜索（事件委托绑定，元素在折叠区里也存在）
   const input = root.querySelector('#genSearch');
   const onInput = debounce(() => {
     state.query = input.value.trim();
-    state.limit = 30;
-    rerenderList();
+    state.limit = state.rosterPageSize;
+    state.bioLimit = state.bioPageSize;
+    refreshResults();
   }, 100);
   input.addEventListener('input', onInput);
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      input.value = '';
-      state.query = '';
-      rerenderList();
-    }
+    if (e.key !== 'Escape') return;
+    input.value = '';
+    state.query = '';
+    refreshResults();
   });
 
-  root.querySelector('.gen-toolbar .segmented').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-sort]');
-    if (!btn) return;
-    state.sort = btn.dataset.sort;
-    root.querySelectorAll('.gen-toolbar .seg-btn').forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-    rerenderList();
+  const era = root.querySelector('#genEra');
+  era?.addEventListener('change', () => {
+    state.era = era.value;
+    state.limit = state.rosterPageSize;
+    state.bioLimit = state.bioPageSize;
+    refreshResults();
   });
 }
 
@@ -448,16 +579,13 @@ function updateBioCounts(root, bios) {
   if (header) header.textContent = `${stats.featured} 位入谱 · ${stats.total} 位立传`;
   const introSub = root.querySelector('[data-bio-intro-sub]');
   if (introSub) introSub.textContent = `${stats.total} 位立传 · ${generals.length} 位将帅在册`;
-  const count = root.querySelector('[data-bio-count]');
-  if (count) count.textContent = `${stats.total} 位人物 · 小传`;
-  const sectionNote = root.querySelector('[data-bio-section-note]');
-  if (sectionNote) sectionNote.textContent = `${stats.featured} 位入谱 · ${stats.extra} 位重点人物`;
   const graphCta = root.querySelector('[data-bio-graph-cta]');
   if (graphCta) graphCta.textContent = `${stats.featured} 位名将 · ${relationCount} 条关系 · 点击看小传`;
   const note = root.querySelector('[data-bio-note]');
   if (note) {
     note.textContent = `小传 ${stats.total} 人（${stats.featured} 位入谱、${stats.extra} 位重点人物），按数据供稿撰写；全部 ${generals.length} 位将帅由 sides[].commanders 自动聚合。同一场战役中作为主将或主要将领出现即计入指挥场次；胜率按其所在一方的胜负计算，平局/未决不计胜。`;
   }
+  updateCatalogChrome(root);
 }
 
 function focusGeneral(root, gid) {
@@ -507,11 +635,15 @@ export function renderGenerals(root, ctx, route) {
   state = {
     root,
     ctx,
+    view: 'featured',
     query: '',
     sort: 'count',
-    limit: 30,
+    era: 'all',
+    bioLimit: 8,
+    bioPageSize: 8,
+    limit: 24,
+    rosterPageSize: 24,
     expanded: new Set(),
-    allOpen: false,
     bios: null,
     targetGeneralId: route?.query?.g || '',
   };
@@ -522,13 +654,19 @@ export function renderGenerals(root, ctx, route) {
   loadBios().then((bios) => {
     if (!state || state.root !== root) return;
     state.bios = bios;
-    const host = root.querySelector('#genFeatured');
-    if (host) {
-      host.innerHTML = biosHTML(ctx, bios);
-      revealStagger(host, '.gen-bio-card', { stagger: 45, threshold: 0.04 });
-      updateBioCounts(root, bios);
-      if (state.targetGeneralId) focusGeneral(host, state.targetGeneralId);
+    if (state.targetGeneralId) {
+      const target = bios.find((g) => g.id === state.targetGeneralId);
+      if (target) {
+        state.view = target.featured === false ? 'bio' : 'featured';
+        const targetIndex = filteredBios(bios, state.view === 'featured').findIndex(
+          (g) => g.id === state.targetGeneralId
+        );
+        state.bioLimit = Math.max(state.bioPageSize, targetIndex + 1);
+      }
     }
+    refreshResults();
+    updateBioCounts(root, bios);
+    if (state.targetGeneralId) focusGeneral(root.querySelector('#genResults'), state.targetGeneralId);
   });
 }
 

@@ -5,7 +5,7 @@
    ============================================================ */
 
 import { esc, icon, fmtYear, emptyStateHTML } from './ui.js';
-import { navigate } from './router.js';
+import { navigate, navigateBack } from './router.js';
 import { initDrawerSpring } from './motion.js';
 
 const W = 780;
@@ -295,10 +295,10 @@ function graphPageHTML(ctx) {
 
   return `<div class="graph-page">
     <header class="page-head">
-      <button class="icon-btn" type="button" data-action="back" aria-label="返回名将页">${icon('back')}</button>
+      <button class="icon-btn" type="button" data-action="back" aria-label="返回上一页">${icon('back')}</button>
       <div class="head-title">关系图谱<span class="head-sub">40 位名将 · ${ctx.data.relations.length} 条关系</span></div>
       <div class="head-actions">
-        <a class="icon-btn" href="#/legend#graph" aria-label="图例与读图" title="图例与读图">?</a>
+        <a class="icon-btn icon-btn--text" href="#/legend#graph" aria-label="打开关系图谱图例">图例</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>
@@ -936,10 +936,10 @@ function statePageHTML(ctx) {
   const extraCount = (ctx.data?.stateExtraNodes || []).length;
   return `<div class="graph-page g-state-page">
     <header class="page-head">
-      <button class="icon-btn" type="button" data-action="back" aria-label="返回名将图谱">${icon('back')}</button>
+      <button class="icon-btn" type="button" data-action="back" aria-label="返回上一页">${icon('back')}</button>
       <div class="head-title">关系图谱<span class="head-sub">国家关系 · 20 势力${extraCount ? ` + ${extraCount} 附加政权` : ' + 附加政权'}</span></div>
       <div class="head-actions">
-        <a class="icon-btn" href="#/legend#graph" aria-label="图例与读图" title="图例与读图">?</a>
+        <a class="icon-btn icon-btn--text" href="#/legend#graph" aria-label="打开国家关系图例">图例</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>
@@ -965,7 +965,7 @@ function renderStateLayer(root, ctx) {
     stage: null,
     panel: null,
   };
-  root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/generals'));
+  root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigateBack('/generals'));
   root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
   const host = root.querySelector('#stateGraphHost');
   loadStateGraph()
@@ -1010,7 +1010,7 @@ export function renderGraph(root, ctx, route) {
     </div>`;
     root.querySelector('[data-action="retry"]')?.addEventListener('click', () => window.location.reload());
     root.querySelector('[data-action="generals"]')?.addEventListener('click', () => navigate('/generals'));
-    root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/generals'));
+    root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigateBack('/generals'));
     return;
   }
 
@@ -1045,7 +1045,7 @@ export function renderGraph(root, ctx, route) {
   panel.hidden = true;
   document.body.appendChild(panel);
   state.panel = panel;
-  state.root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/generals'));
+  state.root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigateBack('/generals'));
   state.root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
   fitView();
 

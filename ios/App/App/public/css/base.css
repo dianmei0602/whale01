@@ -347,6 +347,14 @@ mark {
 }
 .icon-btn:active { background: rgba(233, 223, 200, 0.08); color: var(--gold-bright); }
 .icon-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn--text {
+  width: auto;
+  min-width: 48px;
+  padding: 0 9px;
+  border-radius: 22px;
+  font-size: 11px;
+  letter-spacing: .08em;
+}
 
 .btn {
   min-height: 44px;

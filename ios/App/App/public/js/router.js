@@ -41,8 +41,14 @@ export function parseHash(hash) {
       path: pathname,
     };
   }
-  if (seg[0] === 'clan' && seg[1]) {
-    return { name: 'clan', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
+  if (seg[0] === 'clan') {
+    return {
+      name: 'clan',
+      params: seg[1] ? { id: decodeURIComponent(seg[1]) } : {},
+      query,
+      anchor,
+      path: pathname,
+    };
   }
   if (seg[0] === 'replay' && seg[1]) {
     return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, query, anchor, path: pathname };
@@ -63,8 +69,8 @@ export function navigate(path) {
   else window.location.hash = target;
 }
 
-/** 返回上一页（来自页面栈），无栈时回时间轴 */
-export function navigateBack() {
+/** 返回上一页（来自页面栈）；无历史时回到指定父级 */
+export function navigateBack(fallback = '/') {
   let target = null;
   while (stack.length) {
     const candidate = stack.pop();
@@ -74,7 +80,7 @@ export function navigateBack() {
     }
   }
   const fromStack = Boolean(target);
-  if (!target) target = '/';
+  if (!target) target = fallback || '/';
   backTarget = target;
   const targetHash = hashFor(target);
   if (window.location.hash === targetHash) {

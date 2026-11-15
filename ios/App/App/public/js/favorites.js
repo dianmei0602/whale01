@@ -44,7 +44,7 @@ function favCardHTML(battle, ctx) {
     </a>
     <button class="fav-remove" type="button" data-fav-remove="${esc(battle.id)}" aria-label="取消收藏 ${esc(
     battle.name
-  )}">${icon('book')}<span>取消收藏</span></button>
+  )}">${icon('bookmark')}<span>取消收藏</span></button>
   </article>`;
 }
 
@@ -65,7 +65,7 @@ function pageHTML(ctx, list) {
              <p class="fav-foot">收藏保存在本机（localStorage），不上传、不同步。取消收藏不影响阅读进度记录。</p>`
           : `<div class="fav-empty">${emptyStateHTML({
               title: '还没有收藏的战役',
-              desc: '在战役详情页点右上角书签即可收藏；收藏与阅读进度都只保存在本机，刷新后仍在。',
+              desc: '在战役详情页点右上角的收藏按钮即可加入收藏夹；收藏与阅读进度都只保存在本机，刷新后仍在。',
               actions:
                 '<a class="btn btn--gold" href="#/">去时间轴</a><a class="btn" href="#/map">去地图</a>',
             })}</div>`
@@ -81,7 +81,7 @@ export function renderFavorites(root, ctx) {
       .map((id) => ctx.data.byId.get(id))
       .filter(Boolean);
     root.innerHTML = pageHTML(ctx, list);
-    root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/more'));
+    root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigateBack('/more'));
     root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
     root.querySelectorAll('[data-fav-remove]').forEach((btn) => {
       btn.addEventListener('click', (e) => {

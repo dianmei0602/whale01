@@ -448,7 +448,7 @@ function legendHTML() {
 function footerHTML() {
   return `<footer class="cl-foot">
     <p>世代与联姻据通行史籍整理 · 谱系为示意，非完整族谱</p>
-    <p class="cl-foot-seal">山河战纪 · 3.0 考据版</p>
+    <p class="cl-foot-seal">山河战纪 · 家族谱</p>
   </footer>`;
 }
 

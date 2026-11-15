@@ -197,7 +197,7 @@ function pageHTML(ctx, mode) {
       mode === 'vector' ? '示意轮廓（底图回退）' : '标准地图'
     }</span></div>
       <div class="head-actions">
-        <a class="icon-btn" href="#/legend#map" aria-label="地图图例" title="地图图例">?</a>
+        <a class="icon-btn icon-btn--text" href="#/legend#map" aria-label="打开地图图例">图例</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索战役">${icon('search')}</button>
       </div>
     </header>

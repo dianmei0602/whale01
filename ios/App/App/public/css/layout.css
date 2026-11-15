@@ -21,7 +21,7 @@ body:not([data-chrome="none"]) .view { padding-bottom: calc(76px + var(--safe-b)
   bottom: 0;
   z-index: 60;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   padding: 6px calc(4px + var(--safe-r)) calc(4px + var(--safe-b)) calc(4px + var(--safe-l));
   background:
     linear-gradient(180deg, rgba(21, 18, 14, 0.88) 0%, rgba(14, 12, 10, 0.98) 46%, var(--ink-0) 100%);
@@ -49,7 +49,7 @@ body:not([data-chrome="none"]) .view { padding-bottom: calc(76px + var(--safe-b)
   justify-content: center;
   gap: 2px;
   color: var(--mute);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   transition: color var(--dur) var(--ease);
 }
@@ -84,7 +84,7 @@ body:not([data-chrome="none"]) .view { padding-bottom: calc(76px + var(--safe-b)
   align-items: center;
   gap: 8px;
   min-height: 56px;
-  padding: calc(6px + var(--safe-t)) calc(10px + var(--safe-r)) 6px calc(8px + var(--safe-l));
+  padding: calc(6px + var(--safe-t)) calc(14px + var(--safe-r)) 6px calc(16px + var(--safe-l));
   background: linear-gradient(180deg, rgba(14, 12, 10, 0.97) 0%, rgba(14, 12, 10, 0.84) 74%, rgba(14, 12, 10, 0) 100%);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -92,7 +92,7 @@ body:not([data-chrome="none"]) .view { padding-bottom: calc(76px + var(--safe-b)
 .page-head .head-title {
   flex: 1;
   min-width: 0;
-  font-size: 16px;
+  font-size: 20px;
   letter-spacing: 0.2em;
   font-weight: 600;
   color: var(--paper);
@@ -100,13 +100,20 @@ body:not([data-chrome="none"]) .view { padding-bottom: calc(76px + var(--safe-b)
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.page-head .page-h1 {
+  display: block;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: 1.25;
+  color: inherit;
+}
 .page-head .head-title .head-sub {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   color: var(--mute);
-  margin-top: -2px;
+  margin-top: 1px;
 }
 .page-head .head-actions { display: flex; align-items: center; gap: 2px; }
 
@@ -303,7 +310,7 @@ html[data-motion="reduce"] .view > * { animation: none; }
   to { transform: translateX(100%); }
 }
 .boot-sub {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.24em;
   color: var(--mute);
 }
@@ -326,6 +333,12 @@ html[data-motion="reduce"] .boot-line::after { animation: none; }
     margin-right: auto;
   }
   .toast { max-width: 520px; }
+}
+
+@media (min-width: 900px) {
+  .view > * {
+    max-width: 900px;
+  }
 }
 
 /* 只对键盘用户显示焦点环，避免触摸误触 */

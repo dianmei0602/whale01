@@ -20,11 +20,13 @@ html.onboard-lock body { overflow: hidden; }
 .ob-backdrop {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: radial-gradient(90% 80% at 50% 30%, rgba(20, 17, 13, 0.88), rgba(8, 7, 6, 0.96));
   backdrop-filter: blur(3px);
 }
 .ob-card {
   position: relative;
+  z-index: 2;
   width: min(92vw, 400px);
   max-height: 88vh;
   max-height: 88dvh;
@@ -40,15 +42,24 @@ html.onboard-lock body { overflow: hidden; }
   transition: transform 0.24s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
 .onboard.is-open .ob-card { transform: none; }
+.ob-focus-ring {
+  position: fixed;
+  z-index: 1;
+  pointer-events: none;
+  border: 2px solid var(--gold-bright);
+  border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(14, 12, 10, 0.72);
+  transition: left 180ms var(--ease), top 180ms var(--ease), width 180ms var(--ease), height 180ms var(--ease);
+}
 .ob-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.ob-brand { font-size: 9px; letter-spacing: 0.16em; color: var(--gold); }
+.ob-brand { font-size: 11px; letter-spacing: 0.14em; color: var(--gold); }
 .ob-skip {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 4px;
   border: 0;
   background: transparent;
   color: var(--mute);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
 }
 .ob-skip:active { color: var(--paper); }
@@ -60,9 +71,9 @@ html.onboard-lock body { overflow: hidden; }
   background: rgba(10, 9, 7, 0.55);
 }
 .ob-art svg { display: block; width: 100%; height: auto; }
-.ob-kicker { margin: 10px 0 3px; font-family: var(--num); font-size: 9px; letter-spacing: 0.18em; color: var(--mute); }
+.ob-kicker { margin: 10px 0 3px; font-family: var(--num); font-size: 11px; letter-spacing: 0.14em; color: var(--mute); }
 .ob-title { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: 0.06em; color: #f4ead6; }
-.ob-desc { margin: 7px 0 0; font-size: 11px; line-height: 1.85; color: rgba(233, 223, 200, 0.82); }
+.ob-desc { margin: 7px 0 0; font-size: 12px; line-height: 1.8; color: rgba(233, 223, 200, 0.86); }
 .ob-dots { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 14px 0 12px; }
 .ob-dot {
   width: 7px;
@@ -77,7 +88,8 @@ html.onboard-lock body { overflow: hidden; }
 .ob-card::-webkit-scrollbar { width: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .onboard, .ob-card { transition: none; }
+  .onboard, .ob-card, .ob-focus-ring { transition: none; }
 }
 html[data-motion="reduce"] .onboard,
-html[data-motion="reduce"] .ob-card { transition: none; transform: none; }
+html[data-motion="reduce"] .ob-card,
+html[data-motion="reduce"] .ob-focus-ring { transition: none; transform: none; }

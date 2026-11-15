@@ -11,7 +11,8 @@ const STEPS = [
   {
     kicker: '壹 / 叁',
     title: '顺着时间轴，读一部战史',
-    desc: '卷首以 12 期为目录，120 场战役沿竖向时间轴铺开。点开任意卡片进入详情；右侧时期条会随滚动高亮。',
+    desc: '卷首以 12 期为目录，120 场战役沿竖向时间轴铺开。点开任意卡片进入详情；顶部时期条会随滚动高亮，平板布局中时期条位于左侧导航。',
+    target: '.tab[data-tab="timeline"]',
     art: `<svg viewBox="0 0 320 150" role="img" aria-label="时间轴示意">
       <line x1="64" y1="16" x2="64" y2="136" stroke="rgba(201,162,39,.35)" stroke-width="1.4"/>
       <circle cx="64" cy="34" r="4" fill="#0E0C0A" stroke="#C9A227"/>
@@ -31,6 +32,7 @@ const STEPS = [
     kicker: '贰 / 叁',
     title: '地图与势力范围',
     desc: '地图把 120 场战役放回山河：点战役看摘要，点“势力范围”叠层看政权疆域。用 ? 打开地图图例。',
+    target: '.tab[data-tab="map"]',
     art: `<svg viewBox="0 0 320 150" role="img" aria-label="地图示意">
       <rect x="18" y="12" width="284" height="126" rx="4" fill="rgba(21,18,14,.8)" stroke="rgba(201,162,39,.18)"/>
       <path d="M58 82c18-26 42-34 70-22s46 2 66-12 46-16 66 4 22 48-2 62-52 18-86 8-62-4-84 8-44-18-30-48z" fill="rgba(111,123,102,.16)" stroke="rgba(111,123,102,.3)"/>
@@ -48,6 +50,7 @@ const STEPS = [
     kicker: '叁 / 叁',
     title: '关系图谱与时代总览',
     desc: '名将关系看人物网络，国家关系看战争/和亲/会盟；时代总览一屏看尽 12 期、120 场与 20 个势力。',
+    target: '.tab[data-tab="generals"]',
     art: `<svg viewBox="0 0 320 150" role="img" aria-label="关系与总览示意">
       <circle cx="92" cy="74" r="26" fill="none" stroke="rgba(201,162,39,.25)"/>
       <circle cx="92" cy="74" r="9" fill="rgba(201,162,39,.16)" stroke="#C9A227"/>
@@ -100,7 +103,7 @@ function cardHTML() {
   const isLast = stepIndex === STEPS.length - 1;
   return `<div class="ob-card" role="document">
     <div class="ob-head">
-      <span class="ob-brand">山河战纪 · 3.3</span>
+      <span class="ob-brand">山河战纪 · 3.3.0</span>
       <button class="ob-skip" type="button" data-ob-skip>跳过</button>
     </div>
     <div class="ob-art">${step.art}</div>
@@ -112,11 +115,31 @@ function cardHTML() {
   </div>`;
 }
 
+function syncFocusRing() {
+  if (!active) return;
+  active.querySelector('.ob-focus-ring')?.remove();
+  const selector = STEPS[stepIndex]?.target;
+  const target = selector ? document.querySelector(selector) : null;
+  if (!target) return;
+  const rect = target.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  const ring = document.createElement('span');
+  ring.className = 'ob-focus-ring';
+  ring.setAttribute('aria-hidden', 'true');
+  const inset = 3;
+  ring.style.left = `${Math.max(2, rect.left - inset)}px`;
+  ring.style.top = `${Math.max(2, rect.top - inset)}px`;
+  ring.style.width = `${Math.min(window.innerWidth - 4, rect.width + inset * 2)}px`;
+  ring.style.height = `${Math.min(window.innerHeight - 4, rect.height + inset * 2)}px`;
+  active.appendChild(ring);
+}
+
 function paint() {
   if (!active) return;
   const card = active.querySelector('.ob-card');
   if (card) card.outerHTML = cardHTML();
   bind();
+  requestAnimationFrame(syncFocusRing);
 }
 
 function bind() {
@@ -143,7 +166,31 @@ function onKeydown(e) {
   if (e.key === 'Escape') {
     e.preventDefault();
     close();
+    return;
   }
+  if (e.key !== 'Tab') return;
+  const focusables = [
+    ...active.querySelectorAll(
+      'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ),
+  ].filter((el) => el.offsetParent !== null);
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (!active.contains(document.activeElement)) {
+    e.preventDefault();
+    first.focus();
+  } else if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function onResize() {
+  requestAnimationFrame(syncFocusRing);
 }
 
 export function showOnboarding({ force = false } = {}) {
@@ -161,8 +208,12 @@ export function showOnboarding({ force = false } = {}) {
   document.body.appendChild(active);
   document.documentElement.classList.add('onboard-lock');
   document.addEventListener('keydown', onKeydown);
+  window.addEventListener('resize', onResize, { passive: true });
   bind();
-  requestAnimationFrame(() => active?.classList.add('is-open'));
+  requestAnimationFrame(() => {
+    active?.classList.add('is-open');
+    syncFocusRing();
+  });
   // 避免浮层在 route 转场期间被误点；关闭时统一清理
 }
 
@@ -186,6 +237,7 @@ function close() {
   persist();
   clearTimeout(closeTimer);
   document.removeEventListener('keydown', onKeydown);
+  window.removeEventListener('resize', onResize);
   document.documentElement.classList.remove('onboard-lock');
   const el = active;
   active = null;

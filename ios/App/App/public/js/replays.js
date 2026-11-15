@@ -94,7 +94,7 @@ function pageHTML(ctx) {
       <button class="icon-btn" type="button" data-action="back" aria-label="返回更多">${icon('back')}</button>
       <div class="head-title">推演库<span class="head-sub">${replays.length} 场动画推演 · 重点战役</span></div>
       <div class="head-actions">
-        <a class="icon-btn" href="#/atlas" aria-label="时代总览" title="时代总览">时</a>
+        <a class="icon-btn icon-btn--text" href="#/atlas" aria-label="打开时代总览">时代总览</a>
         <button class="icon-btn" type="button" data-action="search" aria-label="搜索">${icon('search')}</button>
       </div>
     </header>
@@ -113,7 +113,7 @@ export function renderReplays(root, ctx) {
   ensureCss();
   const all = ctx.data.replays || [];
   root.innerHTML = pageHTML(ctx);
-  root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigate('/more'));
+  root.querySelector('[data-action="back"]')?.addEventListener('click', () => navigateBack('/more'));
   root.querySelector('[data-action="search"]')?.addEventListener('click', () => navigate('/search'));
   const listEl = root.querySelector('#repList');
 

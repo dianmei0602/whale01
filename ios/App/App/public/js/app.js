@@ -284,7 +284,7 @@ async function boot() {
       disposeTimeline();
       disposePages();
       setChrome('full');
-      setTab('stats');
+      setTab('more');
       renderStats(view, ctx);
     },
 
@@ -335,7 +335,7 @@ async function boot() {
     atlas: 'more',
     favorites: 'more',
     replays: 'more',
-    stats: 'stats',
+    stats: 'more',
     more: 'more',
     detail: '',
     replay: '',

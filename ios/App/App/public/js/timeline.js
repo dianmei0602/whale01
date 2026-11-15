@@ -111,11 +111,11 @@ function coverHTML(ctx) {
   return `<section class="tl-cover" aria-label="卷首">
     <div class="cover-top">
       <span class="cover-kicker">卷首 · 开卷</span>
-      <p class="cover-line">四千六百年山河，一条长卷；从今日一役，或上次读到的战役继续。</p>
+      <p class="cover-line">从今日一读，或上次读到的战役继续。</p>
     </div>
     <div class="cover-grid">
       <a class="cover-card cover-today" href="#/battle/${encodeURIComponent(today.id)}">
-        <span class="cover-tag"><i class="cover-dot" aria-hidden="true"></i>今日一役</span>
+        <span class="cover-tag"><i class="cover-dot" aria-hidden="true"></i>今日一读</span>
         <span class="cover-year">${esc(today.yearText)}</span>
         <strong class="cover-name">${esc(today.name)}</strong>
         <span class="cover-meta">${esc(todayEra?.short || todayEra?.name || '')} · ${esc(
@@ -142,20 +142,11 @@ function coverHTML(ctx) {
       <a class="cover-entry" href="#/clan">${icon('user')}<span>家族谱</span></a>
       <a class="cover-entry" href="#/graph">${icon('compass')}<span>关系图谱</span></a>
     </nav>
-  </section>`;
-}
-
-function introHTML(data) {
-  const span = data.yearSpan > 0 ? `约 ${(Math.round(data.yearSpan / 100) * 100).toLocaleString('zh-CN')} 年` : '';
-  return `<div class="tl-intro">
-    <span class="intro-rule" aria-hidden="true"></span>
-    <div class="intro-copy">
-      <p class="intro-counts"><b>${data.eras.length}</b> 期 · <b>${data.total}</b> 场 ${span ? `· ${span}` : ''}</p>
-      <p class="intro-hint">下滑阅读 · 轻点卡片看详情
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14m0 0 5-5m-5 5-5-5"/></svg>
-      </p>
+    <div class="cover-foot">
+      <span><b>${data.eras.length}</b> 期 · <b>${data.total}</b> 场 · <b>${(Math.round(data.yearSpan / 100) * 100).toLocaleString('zh-CN')}</b> 年</span>
+      <span>下滑阅读，轻点卡片看详情 ↓</span>
     </div>
-  </div>`;
+  </section>`;
 }
 
 function filterBarHTML(visibleCount) {
@@ -238,12 +229,15 @@ function eraSectionHTML(era, battles, hidden) {
 }
 
 function timelineLegendHTML() {
-  return `<div class="tl-legend" aria-label="时间轴图例">
-    <span class="tll-item"><i class="tll-node"></i>战役节点</span>
-    <span class="tll-item"><i class="tll-node is-deciding"></i>规模决战（戈形）</span>
-    <span class="tll-item"><i class="tll-seal">胜</i>结果印章</span>
-    <span class="tll-item"><i class="tll-tag">类型</i>标签</span>
-  </div>`;
+  return `<details class="tl-legend">
+    <summary>图例</summary>
+    <div class="tl-legend-items" aria-label="时间轴图例">
+      <span class="tll-item"><i class="tll-node"></i>战役节点</span>
+      <span class="tll-item"><i class="tll-node is-deciding"></i>规模决战</span>
+      <span class="tll-item"><i class="tll-seal">胜</i>结果印章</span>
+      <span class="tll-item"><i class="tll-tag">类型</i>标签</span>
+    </div>
+  </details>`;
 }
 
 function timelineHTML(ctx, visibleIds) {
@@ -338,6 +332,12 @@ function setActiveEra(root, ctx, eraId, { scrollNav = true } = {}) {
     return;
   }
   activeEraId = eraId;
+  const page = root.querySelector('.timeline-page');
+  const era = ctx.data.eraById.get(eraId);
+  if (page) {
+    page.dataset.activeEra = eraId;
+    if (era?.themeColor) page.style.setProperty('--era', era.themeColor);
+  }
   root.querySelectorAll('.era-chip').forEach((chip) => {
     chip.classList.toggle('is-active', chip.dataset.era === eraId);
   });
@@ -428,10 +428,12 @@ function setupObservers(root, ctx) {
     cleanups.push(() => eraIO.disconnect());
   }
 
-  // 初始高亮：优先恢复滚动位置附近，其次第一期
-  const firstEra = ctx.data.eras[0];
-  if (firstEra) {
-    setActiveEra(root, ctx, firstEra.id, { scrollNav: false });
+  // 初始高亮：筛选指定的时期优先，否则恢复到滚动位置附近，再次是第一期。
+  const firstVisibleSection = root.querySelector('.era-section:not([hidden])');
+  const requestedEra = filters.eras.find((id) => root.querySelector(`.era-section[data-era="${CSS.escape(id)}"]:not([hidden])`));
+  const firstEraId = requestedEra || firstVisibleSection?.dataset.era || '';
+  if (firstEraId) {
+    setActiveEra(root, ctx, firstEraId, { scrollNav: false });
     requestAnimationFrame(() => {
       const sections = [...root.querySelectorAll('.era-section:not([hidden])')];
       const marker = 170;
@@ -476,7 +478,6 @@ export function renderTimeline(root, ctx, route) {
   root.innerHTML = `<div class="timeline-page">
     ${headerHTML(ctx, visibleIds)}
     ${coverHTML(ctx)}
-    ${introHTML(data)}
     ${timelineLegendHTML()}
     ${filterBarHTML(visible.length)}
     ${body}

@@ -117,12 +117,21 @@ function ganttSVG(ctx) {
 function pageHTML(ctx) {
   const data = ctx.data;
   const eras = data.eras || [];
+  const factionCount = (data.factions || []).length;
+  const clanCount = (data.clans || []).length;
+  const generalRelations = data.relations || [];
+  const generalNodeCount = new Set(
+    generalRelations.flatMap((relation) => [relation.source, relation.target]).filter(Boolean)
+  ).size;
+  const stateRelationCount = (data.stateRelations || []).length;
+  const stateExtraCount = (data.stateExtraNodes || []).length;
+  const yearSpan = data.yearSpan ? Math.round(data.yearSpan / 100) * 100 : 4600;
   const relations = [
-    ['战役地图', '120 场落位与定位', '#/map', 'map'],
-    ['势力谱系', '20 势力 · 版图与国力', '#/factions', 'fac'],
-    ['名将关系', '40 位 · 34 条关系', '#/graph', 'graph'],
-    ['国家关系', '20 势力 + 14 外部势力', '#/graph?layer=state', 'state'],
-    ['家族谱', '14 家族 · 世代与联姻', '#/clan/ying-qin', 'clan'],
+    ['战役地图', `${data.total} 场落位与定位`, '#/map', 'map'],
+    ['势力谱系', `${factionCount} 势力 · 版图与国力`, '#/factions', 'fac'],
+    ['名将关系', `${generalNodeCount} 位 · ${generalRelations.length} 条关系`, '#/graph', 'graph'],
+    ['国家关系', `${factionCount} 势力${stateExtraCount ? ` + ${stateExtraCount} 外部政权` : ''} · ${stateRelationCount} 条关系`, '#/graph?layer=state', 'state'],
+    ['家族谱', `${clanCount} 家族 · 世代与联姻`, '#/clan', 'clan'],
     ['推演库', `${(ctx.data.replays || []).length} 场重点战役动画推演`, '#/replays', 'replay'],
     ['图例与读图', '5 节图例 · 怎么读', '#/legend', 'legend'],
   ];
@@ -137,10 +146,10 @@ function pageHTML(ctx) {
 
     <div class="atlas-body">
       <section class="atlas-hero">
-        <p class="at-kicker">山河战纪 · 3.2</p>
-        <h1>一眼看尽 4,600 年</h1>
-        <p>从涿鹿到加勒万：上方是 12 期色带、120 场战役与 20 个势力的甘特总览；下方可进入时间轴、地图、势力、关系图谱与家族谱。</p>
-        <div class="at-hero-meta"><span>${data.total} 场</span><span>${eras.length} 期</span><span>${(data.factions || []).length} 势力</span><span>${(data.battles || []).length} 节点</span></div>
+        <p class="at-kicker">山河战纪 · 全时段总览</p>
+        <h1>一眼看尽 ${yearSpan.toLocaleString('zh-CN')} 年</h1>
+        <p>从涿鹿到加勒万：上方是 ${eras.length} 期色带、${data.total} 场战役与 ${factionCount} 个势力的甘特总览；下方可进入时间轴、地图、势力、关系图谱与家族谱。</p>
+        <div class="at-hero-meta"><span>${data.total} 场</span><span>${eras.length} 期</span><span>${factionCount} 势力</span><span>${(data.battles || []).length} 节点</span></div>
       </section>
 
       <section class="atlas-panel" aria-labelledby="atGanttTitle">
