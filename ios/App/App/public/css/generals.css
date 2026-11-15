@@ -604,3 +604,8 @@ html[data-motion="reduce"] .gen-bio-loading { animation: none; }
 .gen-all-body { margin-top: 4px; }
 .gen-toolbar { margin-top: 0; }
 .gen-toolbar .seg-btn { min-height: 44px; }
+
+/* 所属家族入口 */
+.bio-family { display: flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 6px; padding: 0 8px; border: 1px solid rgba(201, 162, 39, 0.28); border-radius: 3px; color: var(--paper-dim); font-size: 10px; background: rgba(201, 162, 39, 0.05); }
+.bio-family span { font-size: 8.5px; color: var(--mute); letter-spacing: 0.08em; }
+.bio-family i { margin-left: auto; font-style: normal; color: var(--gold); }

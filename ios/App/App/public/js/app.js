@@ -13,6 +13,7 @@ import { renderGenerals, disposeGenerals } from './generals.js';
 import { renderFactions, disposeFactions } from './factions.js';
 import { renderGraph, disposeGraph } from './graph.js';
 import { renderReplay, disposeReplay } from './replay.js';
+import { renderClan, disposeClan } from './clan.js';
 import { renderStats, disposeStats } from './stats.js';
 import { renderNotFound } from './placeholders.js';
 import { renderMore } from './more.js';
@@ -45,6 +46,7 @@ function disposePages() {
   disposeFactions();
   disposeGraph();
   disposeReplay();
+  disposeClan();
   disposeStats();
   disposeDetail();
 }
@@ -90,9 +92,33 @@ async function boot() {
     };
   }
 
+  const locateOnMap = (battleId) => {
+    if (!battleId) return;
+    const attempt = (depth) => {
+      const point = view.querySelector(`#mapPoints [data-battle="${CSS.escape(battleId)}"]`);
+      if (point) {
+        point.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        const battle = ctx.data.byId.get(battleId);
+        const status = view.querySelector('#mapStatus');
+        if (status && battle) status.textContent = `定位：${battle.name}`;
+        return;
+      }
+      if (depth >= 2) return;
+      const cluster = [...view.querySelectorAll('#mapPoints [data-cluster]')].find((el) =>
+        String(el.dataset.cluster || '').split(',').includes(battleId)
+      );
+      if (cluster) {
+        cluster.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        setTimeout(() => attempt(depth + 1), 480);
+      }
+    };
+    setTimeout(() => attempt(0), 160);
+  };
+
   const routes = {
     timeline() {
-      clearTimeout(skeletonTimer);      disposeSearch();
+      clearTimeout(skeletonTimer);
+      disposeSearch();
       disposeFilterSheet();
       disposePages();
       setChrome('full');
@@ -107,27 +133,36 @@ async function boot() {
       disposePages();
       setChrome('none');
       setTab('');
-      renderDetail(view, ctx, route);
+      const doRender = () => renderDetail(view, ctx, route);
+      if (ctx.data.ready3 && ctx.data.missing3 === undefined) {
+        view.innerHTML = skeletonHTML(3);
+        ctx.data.ready3.then(() => {
+          if (document.body.dataset.route === 'detail') doRender();
+        }).catch(doRender);
+        return;
+      }
+      doRender();
     },
 
-    search() {
+    search(route) {
       disposeFilterSheet();
       disposeTimeline();
       disposePages();
       setChrome('none');
       setTab('timeline');
       // 搜索浮层为不透明全屏页，无需在背后渲染时间轴（120 场时可省一次全量渲染）
-      renderSearch(ctx);
+      renderSearch(ctx, route);
     },
 
-    map() {
+    map(route) {
       disposeSearch();
       disposeFilterSheet();
       disposeTimeline();
       disposePages();
       setChrome('full');
       setTab('map');
-      renderMap(view, ctx);
+      renderMap(view, ctx, route);
+      if (route?.query?.battle) locateOnMap(route.query.battle);
     },
 
     factions(route) {
@@ -150,6 +185,16 @@ async function boot() {
       renderGraph(view, ctx);
     },
 
+    clan(route) {
+      disposeSearch();
+      disposeFilterSheet();
+      disposeTimeline();
+      disposePages();
+      setChrome('full');
+      setTab('factions');
+      renderClan(view, ctx, route?.params?.id);
+    },
+
     replay(route) {
       disposeSearch();
       disposeFilterSheet();
@@ -160,14 +205,14 @@ async function boot() {
       renderReplay(view, ctx, route?.params?.id);
     },
 
-    generals() {
+    generals(route) {
       disposeSearch();
       disposeFilterSheet();
       disposeTimeline();
       disposePages();
       setChrome('full');
       setTab('generals');
-      renderGenerals(view, ctx);
+      renderGenerals(view, ctx, route);
     },
 
     stats() {
@@ -220,6 +265,7 @@ async function boot() {
     search: 'timeline',
     map: 'map',
     factions: 'factions',
+    clan: 'factions',
     generals: 'generals',
     graph: 'generals',
     stats: 'stats',
@@ -228,15 +274,30 @@ async function boot() {
     replay: '',
     notfound: '',
   };
+  const bootEl = document.getElementById('boot');
   let bootHidden = false;
+  const removeBoot = () => {
+    if (bootHidden || !bootEl) return;
+    bootHidden = true;
+    bootEl.classList.add('is-done');
+    setTimeout(() => bootEl.remove(), 450);
+  };
+  // 最长 2s 兜底：即使数据异常也不让「展卷」常驻
+  setTimeout(removeBoot, 2000);
 
   document.addEventListener('route:rendered', (event) => {
     const route = event.detail.route;
     const prev = event.detail.prev;
 
     // ---------- 路由 push / pop 方向转场（incoming） ----------
-    const push = route.name === 'detail' || route.name === 'replay' || (route.name === 'factions' && route.params?.id);
-    const leavingPush = prev && (prev.name === 'detail' || prev.name === 'replay' || (prev.name === 'factions' && prev.params?.id));
+    const push =
+      route.name === 'detail' ||
+      route.name === 'replay' ||
+      route.name === 'clan' ||
+      (route.name === 'factions' && route.params?.id);
+    const leavingPush =
+      prev &&
+      (prev.name === 'detail' || prev.name === 'replay' || prev.name === 'clan' || (prev.name === 'factions' && prev.params?.id));
     view.classList.remove('route-push', 'route-pop', 'route-fade');
     view.classList.add(push ? 'route-push' : leavingPush ? 'route-pop' : 'route-fade');
 
@@ -246,13 +307,12 @@ async function boot() {
       else tab.removeAttribute('aria-current');
     });
 
+    // 数据就绪且首个 view 内容已落地后再移除「展卷」；避免连续 hash 切换时残留在中间态
     if (!bootHidden) {
-      bootHidden = true;
-      const boot = document.getElementById('boot');
-      if (boot) {
-        boot.classList.add('is-done');
-        setTimeout(() => boot.remove(), 500);
-      }
+      requestAnimationFrame(() => {
+        if (view.childElementCount > 0 || view.textContent.trim()) removeBoot();
+        else setTimeout(removeBoot, 80);
+      });
     }
 
     // 路由切换后把焦点交给主内容；搜索页保留输入框焦点
@@ -271,11 +331,20 @@ async function boot() {
   initFlipCards();
   initRouter(routes);
 
-  // 2.0 可选数据晚到：补渲染依赖 factions / relations / replays 的页面
+  // 2.0 可选数据晚到：补渲染图谱页
   if (ctx.data.ready2) {
     ctx.data.ready2.then(() => {
+      if (document.body.dataset.route === 'graph') {
+        const path = window.location.hash.replace(/^#/, '') || '/';
+        navigate(path);
+      }
+    });
+  }
+  // 3.0 考据数据晚到：补渲染详情/势力/家族/名将
+  if (ctx.data.ready3) {
+    ctx.data.ready3.then(() => {
       const route = document.body.dataset.route;
-      if (route === 'factions' || route === 'graph' || route === 'detail') {
+      if (['detail', 'factions', 'clan', 'generals'].includes(route)) {
         const path = window.location.hash.replace(/^#/, '') || '/';
         navigate(path);
       }

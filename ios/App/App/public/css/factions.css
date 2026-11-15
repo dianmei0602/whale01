@@ -399,3 +399,36 @@
 @media (min-width: 700px) {
   .fac-band-svg { min-width: 0; }
 }
+
+/* ---------------- 3.0 国力 / 联姻 / 家族 / 图例 ---------------- */
+.fac-power, .fac-marriage { margin-top: 12px; padding: 10px 10px 9px; border: 1px solid var(--line-soft); border-radius: var(--radius-s); background: linear-gradient(165deg, rgba(31, 26, 20, 0.7), rgba(21, 18, 14, 0.7)); }
+.fac-power-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 12px; letter-spacing: 0.08em; color: var(--paper); }
+.fac-badge { padding: 1px 5px; border: 1px solid rgba(201, 162, 39, 0.3); border-radius: 2px; color: var(--gold); font-size: 8.5px; }
+.fac-power-rows { display: flex; flex-direction: column; gap: 3px; margin: 7px 0 0; }
+.fac-power-rows div { display: flex; gap: 8px; font-size: 10px; line-height: 1.55; }
+.fac-power-rows dt { flex: 0 0 76px; color: var(--mute); font-size: 9.5px; }
+.fac-power-rows dd { margin: 0; color: var(--paper-dim); }
+.fac-power-note { margin-top: 6px; font-size: 8.5px; line-height: 1.65; color: var(--mute); }
+.fac-power-note span { display: block; margin-top: 2px; opacity: 0.8; }
+.fac-power-empty { margin: 5px 0 0; font-size: 10px; line-height: 1.6; color: var(--mute); }
+.fac-marriage-list { list-style: none; margin: 7px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.fac-marriage-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; padding: 5px 7px; border: 1px dashed var(--line-soft); border-radius: 2px; font-size: 10px; color: var(--paper-dim); }
+.fm-from { color: var(--paper); }
+.fm-arrow { color: var(--cinnabar-text); }
+.fm-to { color: var(--paper); }
+.fac-marriage-list em { font-style: normal; color: var(--gold); font-size: 9.5px; }
+.fac-marriage-list i { font-style: normal; color: var(--mute); font-size: 9px; }
+.fac-marriage-list p { flex-basis: 100%; margin: 1px 0 0; font-size: 8.5px; line-height: 1.6; color: var(--mute); }
+.fac-family-entry { display: flex; align-items: center; gap: 9px; min-height: 52px; margin-top: 10px; padding: 7px 10px; border: 1px solid rgba(201, 162, 39, 0.3); border-radius: var(--radius-s); background: rgba(201, 162, 39, 0.05); }
+.fac-family-entry.is-disabled { opacity: 0.55; pointer-events: none; }
+.ffe-icon { flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid rgba(201, 162, 39, 0.4); border-radius: 2px; color: var(--gold-bright); font-size: 15px; }
+.ffe-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ffe-main b { font-size: 12px; font-weight: 600; color: var(--paper); letter-spacing: 0.06em; }
+.ffe-main i { font-style: normal; font-size: 9px; color: var(--mute); }
+.ffe-arrow { color: rgba(201, 162, 39, 0.6); font-size: 18px; }
+.fac-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px dashed rgba(233, 223, 200, 0.08); font-size: 9px; color: var(--mute); }
+.fl-item { display: inline-flex; align-items: center; gap: 5px; }
+.fl-swatch { width: 10px; height: 10px; border-radius: 2px; background: var(--c, var(--gold)); }
+.fl-band { width: 20px; height: 6px; border-radius: 2px; background: linear-gradient(90deg, #6F7B66, #C9A227, #B23A2E); }
+.fl-line { width: 16px; height: 0; border-top: 1px dashed var(--gold); }
+.fl-note { margin-left: auto; }

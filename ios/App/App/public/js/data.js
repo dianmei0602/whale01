@@ -66,6 +66,15 @@ function normalizeBattle(raw, era) {
     notes: arr(b.notes).map(str).filter(Boolean),
     related: arr(b.related).map(str).filter(Boolean),
     tags: arr(b.tags).map(str).filter(Boolean),
+    // 3.0 考据字段（数据未补齐时为空，UI 降级「史无确载」）
+    duration: str(b.duration),
+    objective: str(b.objective),
+    terrainType: str(b.terrainType),
+    arms: arr(b.arms).map(str).filter(Boolean),
+    casualties: arr(b.casualties)
+      .map((c) => ({ side: c?.side === 'B' ? 'B' : 'A', text: str(c?.text), note: str(c?.note) }))
+      .filter((c) => c.text || c.note),
+    troopsSource: arr(b.troopsSource).map(str).filter(Boolean),
   };
 }
 
@@ -127,6 +136,17 @@ function buildIndex(erasRaw, battlesRaw) {
     relations: [],
     replays: [],
     replaysByBattle: new Map(),
+    powers: [],
+    powersByName: new Map(),
+    territories: [],
+    territoriesByFaction: new Map(),
+    clans: [],
+    clansById: new Map(),
+    clansByFaction: new Map(),
+    clansByGeneral: new Map(),
+    generalByName: new Map(),
+    generalById: new Map(),
+    provinces: null,
   };
 }
 
@@ -146,6 +166,17 @@ function emptyData(error = '') {
     relations: [],
     replays: [],
     replaysByBattle: new Map(),
+    powers: [],
+    powersByName: new Map(),
+    territories: [],
+    territoriesByFaction: new Map(),
+    clans: [],
+    clansById: new Map(),
+    clansByFaction: new Map(),
+    clansByGeneral: new Map(),
+    generalByName: new Map(),
+    generalById: new Map(),
+    provinces: null,
     error,
     source: 'none',
   };
@@ -227,13 +258,93 @@ function normalizeReplay(raw) {
   };
 }
 
+function normalizePower(raw) {
+  const p = raw && typeof raw === 'object' ? raw : {};
+  const range = (v) => {
+    const list = arr(v).map((x) => Number(x)).filter((x) => Number.isFinite(x));
+    if (list.length >= 2) return [list[0], list[1]];
+    if (list.length === 1) return [list[0], list[0]];
+    return null;
+  };
+  return {
+    ...p,
+    id: str(p.id),
+    name: str(p.name),
+    aliases: arr(p.aliases).map(str).filter(Boolean),
+    kind: str(p.kind) || '其他',
+    factionId: str(p.factionId),
+    period: str(p.period),
+    territory: str(p.territory),
+    areaWanKm2: range(p.areaWanKm2),
+    populationWan: range(p.populationWan),
+    armyWan: range(p.armyWan),
+    note: str(p.note),
+    sources: arr(p.sources).map(str).filter(Boolean),
+  };
+}
+
+function normalizeClan(raw) {
+  const c = raw && typeof raw === 'object' ? raw : {};
+  const generations = arr(c.generations).map((g, gi) => ({
+    gen: Number.isFinite(Number(g?.gen)) ? Number(g.gen) : gi + 1,
+    members: arr(g?.members).map((m) => ({
+      name: str(m?.name),
+      role: str(m?.role),
+      generalId: str(m?.generalId),
+      parent: str(m?.parent),
+      note: str(m?.note),
+    })),
+  }));
+  return {
+    ...c,
+    id: str(c.id),
+    name: str(c.name),
+    factionId: str(c.factionId),
+    note: str(c.note),
+    generations,
+    marriages: arr(c.marriages).map((m) => ({
+      from: str(m?.from),
+      to: str(m?.to),
+      member: str(m?.member),
+      year: Number.isFinite(Number(m?.year)) ? Number(m.year) : null,
+      note: str(m?.note),
+      factionIds: arr(m?.factionIds).map(str).filter(Boolean),
+    })),
+  };
+}
+
+function normalizeTerritory(raw) {
+  const t = raw && typeof raw === 'object' ? raw : {};
+  return {
+    ...t,
+    factionId: str(t.factionId),
+    provinces: arr(t.provinces).map(str).filter(Boolean),
+    note: str(t.note),
+  };
+}
+
 async function loadOptional2_0() {
-  const [factionsRes, relationsRes, replaysRes] = await Promise.allSettled([
-    getJSON('factions.json'),
-    getJSON('relations.json'),
-    getJSON('replays.json'),
-  ]);
+  const [factionsRes, relationsRes, replaysRes, powersRes, territoriesRes, clansRes, provincesRes, generalsRes] =
+    await Promise.allSettled([
+      getJSON('factions.json'),
+      getJSON('relations.json'),
+      getJSON('replays.json'),
+      getJSON('powers.json'),
+      getJSON('territories.json'),
+      getJSON('clans.json'),
+      getJSON('china-provinces.json'),
+      getJSON('generals.json'),
+    ]);
   const missing = [];
+  const take = (res, file, normalize) => {
+    if (res.status !== 'fulfilled' || res.value == null) {
+      missing.push(file);
+      return [];
+    }
+    const raw = res.value;
+    const list = Array.isArray(raw) ? raw : Array.isArray(raw?.factions) ? raw.factions : Array.isArray(raw?.clans) ? raw.clans : [];
+    return list.map(normalize).filter((x) => x && (x.id || x.factionId || x.name));
+  };
   const factions =
     factionsRes.status === 'fulfilled' && Array.isArray(factionsRes.value)
       ? factionsRes.value.map(normalizeFaction).filter((f) => f.id && f.name)
@@ -246,17 +357,95 @@ async function loadOptional2_0() {
     replaysRes.status === 'fulfilled' && Array.isArray(replaysRes.value)
       ? replaysRes.value.map(normalizeReplay).filter((r) => r.battleId)
       : (missing.push('replays.json'), []);
-  if (missing.length) console.info(`[山河战纪] 2.0 数据暂不可用：${missing.join(', ')}`);
+
+  const powers = take(powersRes, 'powers.json', normalizePower).filter((p) => p.name);
+  const territories = take(territoriesRes, 'territories.json', normalizeTerritory).filter((t) => t.factionId);
+  const clans = take(clansRes, 'clans.json', normalizeClan).filter((c) => c.id || c.name);
+  const generalsRaw =
+    generalsRes.status === 'fulfilled' && Array.isArray(generalsRes.value) ? generalsRes.value : [];
+
+  const powersByName = new Map();
+  for (const p of powers) {
+    powersByName.set(p.name, p);
+    for (const alias of p.aliases) powersByName.set(alias, p);
+  }
+  const territoriesByFaction = new Map(territories.map((t) => [t.factionId, t]));
+  const clansById = new Map(clans.map((c) => [c.id, c]));
+  const clansByFaction = new Map();
+  for (const c of clans) {
+    if (c.factionId && !clansByFaction.has(c.factionId)) clansByFaction.set(c.factionId, c);
+  }
+  const generalByName = new Map();
+  const generalById = new Map();
+  for (const g of generalsRaw) {
+    if (!g?.id) continue;
+    generalById.set(str(g.id), g);
+    generalByName.set(str(g.name), g);
+    for (const alias of arr(g.alias)) generalByName.set(str(alias), g);
+  }
+  const clansByGeneral = new Map();
+  for (const c of clans) {
+    for (const gen of c.generations) {
+      for (const m of gen.members) {
+        const gid = m.generalId || generalByName.get(m.name)?.id || '';
+        if (gid) clansByGeneral.set(gid, c);
+      }
+    }
+  }
+  if (missing.length) console.info(`[山河战纪] 部分数据暂不可用：${missing.join(', ')}`);
   return {
     factions,
     factionsById: new Map(factions.map((f) => [f.id, f])),
     relations,
     replays,
     replaysByBattle: new Map(replays.map((r) => [r.battleId, r])),
+    powers,
+    powersByName,
+    territories,
+    territoriesByFaction,
+    clans,
+    clansById,
+    clansByFaction,
+    clansByGeneral,
+    generalByName,
+    generalById,
+    provinces:
+      provincesRes.status === 'fulfilled' && provincesRes.value && Array.isArray(provincesRes.value.features)
+        ? provincesRes.value
+        : null,
     missing,
   };
 }
 
+
+async function loadOptional3_0() {
+  const [powersRes, territoriesRes, clansRes, provincesRes] = await Promise.allSettled([
+    getJSON('powers.json'),
+    getJSON('territories.json'),
+    getJSON('clans.json'),
+    getJSON('china-provinces.json'),
+  ]);
+  const missing = [];
+  const powersRaw = powersRes.status === 'fulfilled' ? powersRes.value : (missing.push('powers.json'), []);
+  const powers = (Array.isArray(powersRaw) ? powersRaw : arr(powersRaw?.powers))
+    .filter((p) => p && (p.name || p.id))
+    .map((p) => ({ ...p, name: str(p.name), kind: str(p.kind) || '其他' }));
+  const powersByName = new Map();
+  powers.forEach((p) => {
+    if (!p.name) return;
+    powersByName.set(p.name, p);
+    arr(p.aliases).forEach((a) => a && powersByName.set(a, p));
+  });
+  const territoriesRaw = territoriesRes.status === 'fulfilled' ? territoriesRes.value : (missing.push('territories.json'), {});
+  const territories = Array.isArray(territoriesRaw) ? territoriesRaw : arr(territoriesRaw?.factions);
+  const territoriesByFaction = new Map(territories.filter((t) => t.factionId).map((t) => [t.factionId, t]));
+  const clansRaw = clansRes.status === 'fulfilled' ? clansRes.value : (missing.push('clans.json'), []);
+  const clans = (Array.isArray(clansRaw) ? clansRaw : arr(clansRaw?.clans)).filter((c) => c && c.id);
+  const clansById = new Map(clans.map((c) => [c.id, c]));
+  const provinces = provincesRes.status === 'fulfilled' ? provincesRes.value : null;
+  if (missing.length) console.info(`[山河战纪] 3.0 数据暂不可用：${missing.join(', ')}`);
+  return { powers, powersByName, territories, territoriesByFaction, clans, clansById, provinces, missing };
+}
 
 /**
  * 加载全部数据；顺序：真实 fetch → 开发 fixture（仅当显式开启）→ 空态。
@@ -265,6 +454,7 @@ async function loadOptional2_0() {
 export async function loadData() {
   // 2.0 可选数据与主数据并行拉取，避免串行叠加首屏等待
   const extraPromise = loadOptional2_0();
+  const extra3Promise = loadOptional3_0();
   try {
     const erasJson = await getJSON('eras.json');
     const erasRaw = Array.isArray(erasJson) ? erasJson : arr(erasJson?.eras);
@@ -306,7 +496,33 @@ export async function loadData() {
         data.relations = extra.relations;
         data.replays = extra.replays;
         data.replaysByBattle = extra.replaysByBattle;
+        data.powers = extra.powers;
+        data.powersByName = extra.powersByName;
+        data.territories = extra.territories;
+        data.territoriesByFaction = extra.territoriesByFaction;
+        data.clans = extra.clans;
+        data.clansById = extra.clansById;
+        data.clansByFaction = extra.clansByFaction;
+        data.clansByGeneral = extra.clansByGeneral;
+        data.generalByName = extra.generalByName;
+        data.generalById = extra.generalById;
+        data.provinces = extra.provinces;
         data.missing2 = extra.missing;
+        return data;
+      })
+      .catch(() => data);
+
+    // 3.0 考据数据（势力档案/版图/家族谱），在 ready2 之后补渲染
+    data.ready3 = Promise.all([data.ready2, extra3Promise])
+      .then(([, extra]) => {
+        data.powers = extra.powers;
+        data.powersByName = extra.powersByName;
+        data.territories = extra.territories;
+        data.territoriesByFaction = extra.territoriesByFaction;
+        data.clans = extra.clans;
+        data.clansById = extra.clansById;
+        data.provinces = extra.provinces;
+        data.missing3 = extra.missing;
         return data;
       })
       .catch(() => data);

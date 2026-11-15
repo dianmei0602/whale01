@@ -276,6 +276,7 @@ function panelHTML(ctx, node) {
   const meta = [lifeText, node.camp ? `阵营 · ${node.camp}` : '', eraNames ? `时期 · ${eraNames}` : '']
     .filter(Boolean)
     .join('　');
+  const clan = ctx.data?.clansByGeneral?.get(node.id);
   return `<button class="graph-panel-close" type="button" data-panel-close aria-label="关闭小传">${icon('close')}</button>
     <div class="gp-head">
       <span class="gp-seal" aria-hidden="true">${esc((node.name || '').slice(0, 1))}</span>
@@ -286,6 +287,11 @@ function panelHTML(ctx, node) {
       </div>
     </div>
     <p class="gp-bio">${esc(node.bio || '该名将小传暂未收录。')}</p>
+    ${
+      clan
+        ? `<a class="gp-family" href="#/clan/${encodeURIComponent(clan.id)}"><span>所属家族</span>${esc(clan.name)}<i aria-hidden="true">›</i></a>`
+        : ''
+    }
     ${
       battles
         ? `<div class="gp-battles"><span class="gp-battles-label">相关战役</span>${battles}</div>`

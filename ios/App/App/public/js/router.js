@@ -16,26 +16,38 @@ let backTarget = null;
 export function parseHash(hash) {
   const raw = String(hash == null ? window.location.hash : hash).replace(/^#/, '');
   const withSlash = raw.startsWith('/') ? raw : '/' + raw;
-  const [pathname] = withSlash.split('?');
+  const [pathname, search = ''] = withSlash.split('?');
+  const query = {};
+  try {
+    new URLSearchParams(search).forEach((value, key) => {
+      query[key] = value;
+    });
+  } catch (err) {
+    /* 忽略非法 query */
+  }
   const seg = pathname.split('/').filter(Boolean);
-  if (!seg.length) return { name: 'timeline', params: {}, path: '/' };
+  if (!seg.length) return { name: 'timeline', params: {}, query, path: '/' };
   if (seg[0] === 'battle' && seg[1]) {
-    return { name: 'detail', params: { id: decodeURIComponent(seg[1]) }, path: pathname };
+    return { name: 'detail', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
   }
   if (seg[0] === 'factions') {
     return {
       name: 'factions',
       params: seg[1] ? { id: decodeURIComponent(seg[1]) } : {},
+      query,
       path: pathname,
     };
   }
+  if (seg[0] === 'clan' && seg[1]) {
+    return { name: 'clan', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
+  }
   if (seg[0] === 'replay' && seg[1]) {
-    return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, path: pathname };
+    return { name: 'replay', params: { id: decodeURIComponent(seg[1]) }, query, path: pathname };
   }
   if (['map', 'generals', 'stats', 'more', 'search', 'graph'].includes(seg[0])) {
-    return { name: seg[0], params: {}, path: pathname };
+    return { name: seg[0], params: {}, query, path: pathname };
   }
-  return { name: 'notfound', params: { path: pathname }, path: pathname };
+  return { name: 'notfound', params: { path: pathname }, query, path: pathname };
 }
 
 function hashFor(path) {
@@ -145,6 +157,7 @@ function titleFor(route) {
     search: '搜索',
     detail: '战役详情',
     replay: '动画推演',
+    clan: '家族谱',
     notfound: '页面未找到',
   };
   return `山河战纪 · ${map[route.name] || ''}`;

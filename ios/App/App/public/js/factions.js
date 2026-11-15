@@ -6,6 +6,7 @@
 import { esc, icon, fmtYear, emptyStateHTML } from './ui.js';
 import { navigate } from './router.js';
 import { initBandLight, initAccordion, revealStagger } from './motion.js';
+import { factionTerritoryCard, rangeText } from './research.js';
 
 let state = null;
 
@@ -145,6 +146,61 @@ function listHTML(ctx, selectedId) {
 }
 
 /* ---------------- 详情页 ---------------- */
+function factionPowerStats(faction, ctx) {
+  const power = (ctx.data.powers || []).find((p) => p.factionId === faction.id);
+  if (!power) {
+    return `<section class="fac-power is-empty"><div class="fac-power-head"><span>国力</span><span class="fac-badge">估算</span></div><p class="fac-power-empty">该势力国力档案尚在考据整理中（powers.json 未匹配）。</p></section>`;
+  }
+  const rows = [
+    ['性质', power.kind || '—'],
+    ['控制区域', power.territory || '史无确载'],
+    ['面积', rangeText(power.areaWanKm2, ' 万 km²')],
+    ['人口', rangeText(power.populationWan, ' 万人')],
+    ['可动员兵力', rangeText(power.armyWan, ' 万人')],
+  ];
+  return `<section class="fac-power">
+    <div class="fac-power-head"><span>国力 · 估算</span><span class="fac-badge">${esc(power.period || '区间')}</span></div>
+    <dl class="fac-power-rows">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+    ${power.note ? `<p class="fac-power-note">${esc(power.note)}${power.sources?.length ? `<span>来源：${power.sources.map((s) => esc(s)).join('、')}</span>` : ''}</p>` : ''}
+  </section>`;
+}
+
+function factionMarriages(faction, ctx) {
+  const clans = (ctx.data.clans || []).filter((c) => c.factionId === faction.id);
+  const rows = [];
+  for (const clan of clans) {
+    for (const m of clan.marriages || []) rows.push({ clan, m });
+  }
+  if (!rows.length) {
+    return `<section class="fac-marriage is-empty"><div class="fac-power-head"><span>联姻</span><span class="fac-badge">考据</span></div><p class="fac-power-empty">该势力联姻记录尚未收录。</p></section>`;
+  }
+  return `<section class="fac-marriage">
+    <div class="fac-power-head"><span>联姻</span><span class="fac-badge">${rows.length} 条</span></div>
+    <ul class="fac-marriage-list">${rows
+      .map(
+        ({ m }) =>
+          `<li><span class="fm-from">${esc(m.from || '')}</span><span class="fm-arrow" aria-hidden="true">⇄</span><span class="fm-to">${esc(
+            m.to || ''
+          )}</span>${m.member ? `<em>${esc(m.member)}</em>` : ''}${m.year ? `<i>${esc(fmtYear(m.year))}</i>` : ''}${
+            m.note ? `<p>${esc(m.note)}</p>` : ''
+          }</li>`
+      )
+      .join('')}</ul>
+  </section>`;
+}
+
+function factionFamilyEntry(faction, ctx) {
+  const clan = (ctx.data.clans || []).find((c) => c.factionId === faction.id);
+  if (!clan) {
+    return `<a class="fac-family-entry is-disabled" aria-disabled="true" href="#" onclick="return false">
+      <span class="ffe-icon" aria-hidden="true">族</span><span class="ffe-main"><b>家族谱</b><i>家族谱数据尚未收录</i></span>
+    </a>`;
+  }
+  return `<a class="fac-family-entry" href="#/clan/${encodeURIComponent(clan.id)}">
+    <span class="ffe-icon" aria-hidden="true">族</span><span class="ffe-main"><b>${esc(clan.name)}</b><i>进入家族谱 · 世代与联姻</i></span><span class="ffe-arrow" aria-hidden="true">›</span>
+  </a>`;
+}
+
 function detailHTML(ctx, faction) {
   const data = ctx.data;
   const eras = (faction.eraIds || [])
@@ -211,6 +267,9 @@ function detailHTML(ctx, faction) {
     </section>
 
     <div class="detail-body fac-detail-body">
+      ${factionTerritoryCard(ctx, faction)}
+      ${factionPowerStats(faction, ctx)}
+
       ${section('壹', '兴', faction.rise)}
       ${section('贰', '衰', faction.fall)}
       ${section('叁', '制度', faction.system, false)}
@@ -228,7 +287,16 @@ function detailHTML(ctx, faction) {
           : ''
       }
 
-      <p class="fac-detail-foot">势力统计以《山河战纪》2.0 数据为准 · 起止年代取通行纪年</p>
+      ${factionMarriages(faction, ctx)}
+      ${factionFamilyEntry(faction, ctx)}
+
+      <p class="fac-detail-foot">势力统计以《山河战纪》3.0 考据数据为准 · 面积/人口/兵力为估算区间。</p>
+      <div class="fac-legend" aria-label="势力图例">
+        <span class="fl-item"><i class="fl-swatch" style="--c:${esc(faction.color)}"></i>版图色</span>
+        <span class="fl-item"><i class="fl-band"></i>时间带（国祚）</span>
+        <span class="fl-item"><i class="fl-line"></i>联姻线</span>
+        <span class="fl-item fl-note">版图为今省界拼合示意</span>
+      </div>
     </div>
   </div>`;
 }

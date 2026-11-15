@@ -16,25 +16,29 @@ const MAX_SCALE = 5;
 /* ---------------- 标准地图底图（自然资源部标准地图服务） ----------------
    图幅：中国地图 1:740万 对开 · 横版 · 有邻国 · 线划一
    审图号：GS(2022)4307号 · 自然资源部监制
-   资产：assets/standard-map.jpg（3200×2073，由官方 300dpi 原图 10599×6867 等比缩放）
-   标定：以图面 34 个省会/特别行政区符号为控制点，RANSAC 剔除误配后
-        用 22 个内点最小二乘拟合 二次多项式 (lng,lat)->像素，
-        内点残差 3.69km、留一验证 5.68km（详见 www/assets/map-source.md）。
+   资产：assets/standard-map.jpg（6000×3887，由官方 300dpi 原图 10599×6867 等比缩放，1.76MB）
+   标定（3.0 重标定）：图面 ◎ 符号模板匹配 + 严格 RANSAC，得到 10 个互洽控制点，
+        拟合二次多项式 (lng,lat)->像素：样本内残差 0.89km、留一验证 2.78km。
+        说明：本地图幅符号密集（每个县级驻地都是同款 ◎），模板匹配易混入邻镇符号，
+        故只保留经严格一致性检验的 10 个控制点（详见 www/assets/map-source.md §4）。
+   精度口径：**展示级精度，不作量测**。控制点 10 个（长春/杭州/武汉/广州/南宁/昆明/兰州/
+        银川/台北/重庆），样本内 0.89km、留一 2.78km、最大 1.81km；边角（喀什/漠河/
+        三亚/抚远等）为外推，误差估计 ≤5km。人工补点工具见 .tmp/calibrate.html（3.1 可选）。
    说明：2.1 起改用「有邻国」图幅，朝鲜半岛/越南/蒙古/哈萨克斯坦方向的
         境外战场点可落入对应邻国境内；旧的「无邻国」图保留为
         assets/standard-map-nonborder.jpg 备查。
    兜底：底图加载失败时回退 china-geo.js 的示意轮廓。 */
 const STD = {
   src: 'assets/standard-map.jpg',
-  width: 3200,
-  height: 2073,
+  width: 6000,
+  height: 3887,
   lon0: 105.0,
   lat0: 35.0,
   slon: 30.0,
   slat: 20.0,
   // u=(lng-105)/30, v=(lat-35)/20；基函数 [1, u, v, u², uv, v²]
-  cx: [1560.673508, 1278.426529, 66.242249, -4.160836, -352.341108, 18.558034],
-  cy: [1089.072808, 45.986769, -1073.996724, -176.936858, 2.982154, -1.120347],
+  cx: [2924.1691, 2390.4014, 125.4595, -1.6202, -654.1567, 47.6054],
+  cy: [2044.5089, 83.4247, -2016.0923, -324.8105, 14.3514, -10.0471],
 };
 
 function stdProject(lng, lat) {
@@ -157,6 +161,7 @@ function mapSVG(mode) {
       <path d="M28 136c16-22 38-32 72-30" class="map-inset-dash"/>
     </g>` : ''}
 
+    <g class="map-territories" id="mapTerritories"></g>
     <g class="map-points" id="mapPoints"></g>
   </svg>`;
 }
@@ -178,6 +183,10 @@ function filtersHTML(ctx) {
   return `<div class="map-filters">
     <div class="map-filter-row no-scrollbar" id="mapEraRow" aria-label="按时期筛选">${eraChips}</div>
     <div class="map-filter-row no-scrollbar" id="mapTypeRow" aria-label="按类型筛选">${typeChips}</div>
+    <div class="map-filter-row map-layer-row no-scrollbar" id="mapLayerRow" aria-label="图层">
+      <button class="m-chip m-chip--layer" type="button" data-layer="territories">势力范围</button>
+      <span class="map-layer-note" id="mapLayerNote" hidden></span>
+    </div>
   </div>`;
 }
 
@@ -200,10 +209,15 @@ function pageHTML(ctx, mode) {
         <span class="map-count" aria-live="polite"><b id="mapCount">0</b> 场落位</span>
         <span class="map-legend">
           <i class="lg lg-dot" aria-hidden="true"></i>战役
-          <i class="lg lg-ring" aria-hidden="true"></i>战略决战
-          <i class="lg lg-out" aria-hidden="true"></i>境外示意
+          <i class="lg lg-ring" aria-hidden="true"></i>决战
+          <i class="lg lg-out" aria-hidden="true"></i>境外
+          <i class="lg lg-cluster" aria-hidden="true"></i>聚合
+          <span class="lg-terr-wrap" id="lgTerr" hidden><i class="lg lg-terr" aria-hidden="true"></i>势力范围</span>
         </span>
       </div>
+
+      <div class="map-focus" id="mapFocus" hidden></div>
+      <p class="map-scale" id="mapScale">比例尺 1:740万 · 审图号 GS(2022)4307号 · 自然资源部监制<br>点位为展示级精度，不作量测（控制点 10 个，样本内残差 0.89km）</p>
 
       <div class="map-frame" id="mapFrame">
         <div class="map-canvas" id="mapCanvas">${mapSVG(mode)}</div>
@@ -226,6 +240,114 @@ function pageHTML(ctx, mode) {
       </section>
     </div>
   </div>`;
+}
+
+/* ---------------- 势力范围图层（3.0） ---------------- */
+const TERR = {
+  provinces: null, // GeoJSON
+  factions: null, // [{id,name,color,eraIds}]
+  territories: null, // [{factionId, provinces[]}]
+  loading: null,
+};
+
+const PROV_ALIAS = {
+  内蒙古自治区: '内蒙古', 广西壮族自治区: '广西', 西藏自治区: '西藏',
+  宁夏回族自治区: '宁夏', 新疆维吾尔自治区: '新疆', 香港特别行政区: '香港',
+  澳门特别行政区: '澳门', 台湾省: '台湾',
+};
+
+function normProv(name) {
+  const n = String(name || '').trim();
+  if (PROV_ALIAS[n]) return PROV_ALIAS[n];
+  return n.replace(/(省|市|自治区|特别行政区)$/g, '');
+}
+
+async function loadTerritoryData() {
+  if (TERR.provinces && TERR.factions && TERR.territories) return TERR;
+  if (TERR.loading) return TERR.loading;
+  TERR.loading = (async () => {
+    const [pv, fa, te] = await Promise.all([
+      fetch('data/china-provinces.json', { cache: 'no-store' }).then((r) => {
+        if (!r.ok) throw new Error(`provinces HTTP ${r.status}`);
+        return r.json();
+      }),
+      fetch('data/factions.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : [])),
+      fetch('data/territories.json', { cache: 'no-store' }).then((r) => {
+        if (!r.ok) throw new Error(`territories HTTP ${r.status}`);
+        return r.json();
+      }),
+    ]);
+    TERR.provinces = pv;
+    TERR.factions = Array.isArray(fa) ? fa : fa.factions || [];
+    TERR.territories = Array.isArray(te) ? te : te.factions || [];
+    return TERR;
+  })();
+  return TERR.loading;
+}
+
+function provPathD(geom) {
+  const polys = geom.type === 'Polygon' ? [geom.coordinates] : geom.coordinates;
+  const parts = [];
+  for (const poly of polys) {
+    for (const ring of poly) {
+      let started = false;
+      for (const [lng, lat] of ring) {
+        const [x, y] = stdProject(lng, lat);
+        parts.push(`${started ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`);
+        started = true;
+      }
+      parts.push('Z');
+    }
+  }
+  return parts.join('');
+}
+
+function renderTerritories() {
+  if (!state) return;
+  const g = state.root.querySelector('#mapTerritories');
+  if (!g) return;
+  if (!state.terrOn || !TERR.provinces) {
+    g.innerHTML = '';
+    return;
+  }
+  const era = state.era;
+  const factionById = new Map(TERR.factions.map((f) => [f.id, f]));
+  const active = TERR.territories.filter((t) => {
+    if (era === 'all') return true;
+    const f = factionById.get(t.factionId);
+    return f && Array.isArray(f.eraIds) && f.eraIds.includes(era);
+  });
+  if (!active.length) {
+    g.innerHTML = '';
+    return;
+  }
+  const owner = new Map(); // 省 -> faction
+  for (const t of active) {
+    for (const p of t.provinces || []) {
+      const key = normProv(p);
+      if (!owner.has(key)) owner.set(key, factionById.get(t.factionId) || { color: '#C9A227', name: t.factionId });
+    }
+  }
+  const alpha = era === 'all' ? 0.14 : 0.22;
+  const strokes = era === 'all' ? 0.28 : 0.5;
+  const paths = [];
+  for (const feat of TERR.provinces.features || []) {
+    const key = normProv(feat.properties && feat.properties.name);
+    const f = owner.get(key);
+    if (!f) continue;
+    const color = f.color || '#C9A227';
+    paths.push(
+      `<path class="terr-prov" data-prov="${esc(key)}" d="${provPathD(feat.geometry)}" fill="${color}" fill-opacity="${alpha}" stroke="${color}" stroke-opacity="${strokes}" stroke-width="5" stroke-linejoin="round"/>`
+    );
+  }
+  g.innerHTML = paths.join('');
+  const note = state.root.querySelector('#mapLayerNote');
+  if (note) {
+    const used = new Set([...owner.values()].map((f) => f.name || f.id));
+    note.textContent =
+      `势力范围：已绘制 ${paths.length} 省 · ${used.size} 个势力` +
+      (era === 'all' ? '（全部时期叠加，示意）' : '');
+  }
 }
 
 /* ---------------- 点位 / 聚合 ---------------- */
@@ -294,6 +416,7 @@ function renderPoints(animate = false) {
   if (countEl) countEl.textContent = String(list.length);
   if (listCountEl) listCountEl.textContent = String(list.length);
   renderList(list);
+  renderTerritories();
 }
 
 /* ---------------- 列表 ---------------- */
@@ -327,6 +450,74 @@ function renderList(list) {
 }
 
 /* ---------------- 摘要卡 ---------------- */
+const PRECISION_TEXT = { 确: '精确位置（确）', 约: '约略位置（约）', 传说: '传说地点（传说）' };
+const PRECISION_NOTE = '展示级精度，不作量测';
+function precisionText(v) {
+  return PRECISION_TEXT[v] || '位置精度未标注';
+}
+
+/* ---------------- 定位（#/map?battle=<id>） ---------------- */
+function battleQuery() {
+  const raw = String((window.location && window.location.hash) || '');
+  const m = /[?&]battle=([^&#]+)/.exec(raw);
+  if (!m) return '';
+  try {
+    return decodeURIComponent(m[1]);
+  } catch (err) {
+    return m[1];
+  }
+}
+
+function hideFocusChip() {
+  const chip = state && state.root.querySelector('#mapFocus');
+  if (chip) {
+    chip.hidden = true;
+    chip.innerHTML = '';
+  }
+}
+
+function focusOnBattle(id) {
+  if (!state) return false;
+  const b = state.ctx.data.byId.get(id);
+  if (!b) return false;
+  const [x, y] = proj(b.location.lng, b.location.lat);
+  const w = state.frame.clientWidth;
+  const h = state.frame.clientHeight;
+  const bs = w / mapW();
+  state.scale = clampScale(3.2);
+  state.focusTarget = id;
+  state.tx = w / 2 - x * bs * state.scale;
+  state.ty = h / 2 - y * bs * state.scale;
+  clampView();
+  applyView();
+  renderPoints(true);
+  showPopup(id);
+  const chip = state.root.querySelector('#mapFocus');
+  if (chip) {
+    chip.hidden = false;
+    chip.innerHTML = `<span class="mf-k">定位</span><b class="mf-name">${esc(b.name)}</b><span class="mf-era">${esc(
+      b.era ? b.era.name : ''
+    )}</span><button class="mf-clear" type="button" data-focus-clear aria-label="清除定位">${icon('close')}</button>`;
+    chip.querySelector('[data-focus-clear]').addEventListener('click', () => clearFocus(true));
+  }
+  const status = state.root.querySelector('#mapStatus');
+  if (status) status.textContent = `已定位：${b.name}`;
+  return true;
+}
+
+function clearFocus(resetView = false) {
+  hideFocusChip();
+  hidePopup();
+  if (state) state.focusTarget = null;
+  if (state && /[?&]battle=/.test(String(window.location.hash || ''))) {
+    try {
+      window.history.replaceState(null, '', '#/map');
+    } catch (err) {
+      /* 忽略，仅清理视觉状态 */
+    }
+  }
+  if (resetView) resetView();
+}
 function showPopup(battleId) {
   const b = state.ctx.data.byId.get(battleId);
   if (!b) return;
@@ -340,6 +531,7 @@ function showPopup(battleId) {
     </div>
     <p class="mp-sides">${b.sides.map((s) => esc(s.name)).join(' <span class="mp-vs">对</span> ')}</p>
     <p class="mp-result">${esc(b.result.text || '')}</p>
+    <p class="mp-precision"><span class="mp-precision-k">位置</span>${esc(precisionText(b.location.precision))}<span class="mp-precision-note">${PRECISION_NOTE}</span></p>
     <div class="mp-foot">
       <span class="mp-loc">${esc(b.location.ancient || '')} · ${esc(b.location.modern || '')}${
     outside ? '<i class="mp-outside-tag">境外示意</i>' : ''
@@ -453,6 +645,7 @@ function bindMapInteraction() {
   };
 
   frame.addEventListener('pointerdown', (e) => {
+    if (e.isTrusted && state.focusTarget) state.focusTarget = null;
     if (e.target.closest('.map-controls')) return;
     frame.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { sx: e.clientX, sy: e.clientY });
@@ -529,6 +722,8 @@ function bindMapInteraction() {
 
   frame.addEventListener('click', (e) => {
     if (moved > 6) return;
+    // 定位模式：忽略 app.js locateOnMap 触发的合成点击，避免连跳聚合缩放覆盖定位视图
+    if (!e.isTrusted && state.focusTarget) return;
     const cluster = e.target.closest('[data-cluster]');
     if (cluster) {
       const ids = cluster.dataset.cluster.split(',');
@@ -572,6 +767,7 @@ function bindFilters() {
     if (!chip) return;
     state.era = chip.dataset.era;
     root.querySelectorAll('#mapEraRow .m-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
+    hideFocusChip();
     hidePopup();
     clearTimeout(state.animTimer);
     renderPoints(true);
@@ -595,6 +791,7 @@ function bindFilters() {
       if (c.dataset.type === 'all') c.classList.toggle('is-active', state.types.size === 0);
       else c.classList.toggle('is-active', state.types.has(c.dataset.type));
     });
+    hideFocusChip();
     hidePopup();
     clearTimeout(state.animTimer);
     renderPoints(true);
@@ -603,6 +800,38 @@ function bindFilters() {
 
   state.popup.addEventListener('click', (e) => {
     if (e.target.closest('[data-popup-close]')) hidePopup();
+  });
+
+  root.querySelector('#mapLayerRow').addEventListener('click', async (e) => {
+    const chip = e.target.closest('[data-layer]');
+    if (!chip) return;
+    const on = !chip.classList.contains('is-active');
+    chip.classList.toggle('is-active', on);
+    chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+    const note = root.querySelector('#mapLayerNote');
+    const lg = root.querySelector('#lgTerr');
+    if (lg) lg.hidden = !on;
+    if (!on) {
+      state.terrOn = false;
+      renderTerritories();
+      if (note) {
+        note.hidden = true;
+        note.textContent = '';
+      }
+      return;
+    }
+    if (note) {
+      note.hidden = false;
+      note.textContent = '势力范围：读取数据中…';
+    }
+    state.terrOn = true;
+    try {
+      await loadTerritoryData();
+      renderTerritories();
+    } catch (err) {
+      if (note) note.textContent = '势力范围：数据加载失败（territories.json / china-provinces.json）';
+    }
+    return;
   });
 
   root.querySelector('#mapListToggle').addEventListener('click', (e) => {
@@ -695,6 +924,8 @@ export function renderMap(root, ctx) {
     ty: 0,
     selected: null,
     listExpanded: false,
+    terrOn: false,
+    focusTarget: '',
     pending: 0,
     animTimer: 0,
   };
@@ -711,12 +942,24 @@ export function renderMap(root, ctx) {
   bindFilters();
   renderPoints(true);
 
+  // #/map?battle=<id>：定位并弹出摘要卡
+  const target = battleQuery();
+  if (target && ctx.data.byId.get(target)) {
+    // app.js 的 locateOnMap 会合成点击点位/聚合点；置 focusTarget 后由本模块接管，
+    // 并在 click 处理器里忽略这些合成点击（见 bindMapInteraction）。
+    state.focusTarget = target;
+    requestAnimationFrame(() => {
+      if (state && ctx.data.byId.get(target)) focusOnBattle(target);
+    });
+  }
+
   // 标准地图加载失败 -> 回退示意轮廓（并在提示区说明）
   const probe = new Image();
   probe.onerror = () => {
     if (!state || state.mode !== 'std') return;
     state.mode = 'vector';
     state.canvas.innerHTML = mapSVG('vector');
+    state.terrOn = false;
     state.scale = 1;
     state.tx = 0;
     state.ty = 0;

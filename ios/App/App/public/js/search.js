@@ -135,8 +135,10 @@ function resultsHTML(ctx, q) {
   return groups.join('');
 }
 
-export function renderSearch(ctx) {
+export function renderSearch(ctx, route) {
   disposeSearch();
+  const initialQuery = String(route?.query?.q || '');
+  const personMode = route?.query?.note === 'person';
 
   screen = document.createElement('div');
   screen.id = 'search-screen';
@@ -169,7 +171,10 @@ export function renderSearch(ctx) {
       if (status) status.textContent = '搜索首屏已就绪';
       return;
     }
-    body.innerHTML = resultsHTML(ctx, q);
+    const note = personMode
+      ? `<p class="search-note search-fallback-note"><b>该人物未收录小传</b>，已为你检索「${esc(q)}」的相关战役与典故。</p>`
+      : '';
+    body.innerHTML = note + resultsHTML(ctx, q);
     body.scrollTop = 0;
     revealStagger(body, '.s-item, .s-person, .search-group-title', { stagger: 35, wave: 10 });
     if (status) {
@@ -213,7 +218,11 @@ export function renderSearch(ctx) {
     }
   });
 
-  render('');
+  render(initialQuery);
+  if (initialQuery) {
+    input.value = initialQuery;
+    status.textContent = personMode ? `该人物未收录小传，已搜索「${initialQuery}」` : `搜索「${initialQuery}」`;
+  }
   updateClear();
   setTimeout(() => {
     try {

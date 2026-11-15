@@ -621,3 +621,12 @@ html[data-motion="reduce"] .timeline.reveal-armed .tl-card {
 
 /* 筛选空态容器 */
 .tl-empty { padding-top: 6px; }
+
+/* ---------------- 3.0 时间轴图例 ---------------- */
+.tl-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px calc(20px + var(--safe-r)) 2px calc(22px + var(--safe-l)); padding: 7px 0 0; border-top: 1px dashed var(--line-soft); }
+.tll-item { display: inline-flex; align-items: center; gap: 5px; font-size: 9px; color: var(--mute); }
+.tll-node { width: 7px; height: 7px; border: 1px solid var(--gold); border-radius: 50%; background: var(--ink-0); }
+.tll-node.is-deciding { width: 9px; height: 9px; border-radius: 1px; transform: rotate(45deg); border-color: var(--gold-bright); background: rgba(201, 162, 39, 0.25); }
+.tll-line { width: 18px; height: 1px; background: var(--line-strong); }
+.tll-seal { display: grid; place-items: center; width: 14px; height: 14px; border: 1px solid rgba(178, 58, 46, 0.65); border-radius: 2px; color: var(--cinnabar-text); font-size: 8px; background: rgba(178, 58, 46, 0.16); }
+.tll-tag { padding: 0 5px; border: 1px solid var(--line-soft); border-radius: 2px; font-size: 8px; color: var(--paper-dim); }

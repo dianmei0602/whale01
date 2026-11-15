@@ -37,11 +37,11 @@ function renderHTML(ctx, settings) {
       <div class="about-card">
         <h3>山河战纪</h3>
         <p class="about-sub">从涿鹿到加勒万 · 中国战史时间轴</p>
-        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；全量离线，无广告、无账号、无内购。</p>
+        <p>一部装在口袋里、可以顺着时间轴一路读下去的中国战史。以时间为目录，串起 12 期、120 场战役的因果与人物；3.0 增补战役档案、双方势力对照、势力范围示意、家族谱与联姻。全量离线，无广告、无账号、无内购。</p>
         <div class="about-meta">
-          <span>版本 <b>M1 原型</b></span>
-          <span>数据 <b>${ctx.data.total} 场样例</b></span>
-          <span>视觉 <b>水墨古卷 · 墨金</b></span>
+          <span>版本 <b>3.0 考据版</b></span>
+          <span>内容 <b>120 场 · 12 期 · 40 名将</b></span>
+          <span>谱系 <b>20 势力 · 34 关系 · 14 家族</b></span>
           <span>更新 <b>2026-11</b></span>
         </div>
       </div>
@@ -80,10 +80,10 @@ function renderHTML(ctx, settings) {
         </div>
         <div class="setting-row">
           <div class="sr-main">
-            <div class="sr-label">地图审图号</div>
-            <div class="sr-desc">M3 接入标准地图后在此标注审图号</div>
+            <div class="sr-label">底图与审图号</div>
+            <div class="sr-desc">自然资源部标准地图服务 · GS(2022)4307 号 · 全量离线可用</div>
           </div>
-          <span class="ph-soon">M3</span>
+          <span class="ph-soon">标准地图</span>
         </div>
         <div class="setting-row">
           <div class="sr-main">
@@ -97,10 +97,10 @@ function renderHTML(ctx, settings) {
       <section class="settings-group">
         <h2 class="settings-group-title">关于</h2>
         <ul class="source-list">
-          <li>内容口径：通行纪年；兵力标「号称 / 据《XX》载」；传说场次标注文献追述。</li>
-          <li>视觉：水墨古卷 · 墨金；纹理、山脉、印章均为本地程序化生成。</li>
+          <li>3.0 考据：战役档案（时长/目的/地形/兵种/伤亡口径）、双方势力对照（面积/人口/兵力为估算区间）、势力范围示意（今省界拼合）、家族谱与联姻。</li>
+          <li>视觉：水墨古卷 · 墨金；纹理、山脉、印章均为本地程序化生成；标准地图审图号 GS(2022)4307。</li>
           <li>隐私：全部数据与设置保存在本机，无网络请求、无统计埋点。</li>
-          <li>后续：M2 扩充 120 场内容；M3 上线地图 / 名将 / 统计；M5 打包 iOS。</li>
+          <li>后续：持续校核战役档案与家族谱系，扩充考据来源标注。</li>
         </ul>
         <div class="setting-row" style="margin-top:12px">
           <div class="sr-main">
@@ -113,7 +113,7 @@ function renderHTML(ctx, settings) {
 
       <footer class="detail-foot">
         <span class="foot-seal">山河战纪</span>
-        <br>M1 可运行原型 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
+        <br>3.0 考据版 · 仅供内部演示<br>从涿鹿到加勒万，山河未已
       </footer>
     </div>
   </div>`;

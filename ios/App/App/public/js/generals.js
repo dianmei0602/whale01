@@ -113,7 +113,11 @@ function biosHTML(ctx, bios) {
       const titleText = g.title && g.title !== g.name ? String(g.title) : '';
       const lifeText = g.life ? (/^生卒/.test(String(g.life)) ? String(g.life) : `生卒 · ${g.life}`) : '';
       const metaText = [lifeText, g.camp ? `阵营 · ${g.camp}` : ''].filter(Boolean).join('　');
-      return `<article class="gen-bio-card" data-bio-card>
+      const clan = ctx.data.clansByGeneral?.get(g.id);
+      const family = clan
+        ? `<a class="bio-family" href="#/clan/${encodeURIComponent(clan.id)}"><span>所属家族</span>${esc(clan.name)}<i aria-hidden="true">›</i></a>`
+        : '';
+      return `<article class="gen-bio-card" data-bio-card data-general-id="${esc(g.id || '')}">
         <header class="bio-head">
           <span class="gen-seal bio-seal" aria-hidden="true">${esc(String(g.name || '').slice(0, 1))}</span>
           <div class="bio-head-main">
@@ -131,6 +135,7 @@ function biosHTML(ctx, bios) {
           <button class="bio-toggle" type="button" data-bio-toggle aria-expanded="false" aria-controls="${pid}">展开小传</button>
           <span class="bio-tags">${tags}</span>
         </div>
+        ${family}
         ${
           battles.length
             ? `<div class="bio-battles">
@@ -404,7 +409,34 @@ function bindEvents() {
   });
 }
 
-export function renderGenerals(root, ctx) {
+function focusGeneral(root, gid) {
+  if (!gid) return;
+  const reduce = document.documentElement.dataset.motion === 'reduce';
+  let card = null;
+  try {
+    card = root.querySelector(`[data-general-id="${CSS.escape(gid)}"]`);
+  } catch (err) {
+    card = null;
+  }
+  if (!card) return;
+  card.classList.add('is-open');
+  const acc = card.querySelector('.bio-acc');
+  acc?.classList.add('is-open');
+  const btn = card.querySelector('[data-bio-toggle]');
+  if (btn) {
+    btn.setAttribute('aria-expanded', 'true');
+    btn.textContent = '收起小传';
+  }
+  requestAnimationFrame(() => {
+    try {
+      card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    } catch (err) {
+      card.scrollIntoView();
+    }
+  });
+}
+
+export function renderGenerals(root, ctx, route) {
   if (!ctx.data || !ctx.data.ok || !ctx.data.battles.length) {
     root.innerHTML = `<div class="generals-page">
       <header class="page-head">
@@ -430,6 +462,7 @@ export function renderGenerals(root, ctx) {
     expanded: new Set(),
     allOpen: false,
     bios: null,
+    targetGeneralId: route?.query?.g || '',
   };
   root.innerHTML = pageHTML(ctx);
   bindEvents();
@@ -442,6 +475,7 @@ export function renderGenerals(root, ctx) {
     if (host) {
       host.innerHTML = biosHTML(ctx, bios);
       revealStagger(host, '.gen-bio-card', { stagger: 45, threshold: 0.04 });
+      if (state.targetGeneralId) focusGeneral(host, state.targetGeneralId);
     }
   });
 }

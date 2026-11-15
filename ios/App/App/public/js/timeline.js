@@ -152,6 +152,15 @@ function eraSectionHTML(era, battles, hidden) {
   </section>`;
 }
 
+function timelineLegendHTML() {
+  return `<div class="tl-legend" aria-label="时间轴图例">
+    <span class="tll-item"><i class="tll-node"></i>战役节点</span>
+    <span class="tll-item"><i class="tll-node is-deciding"></i>规模决战（戈形）</span>
+    <span class="tll-item"><i class="tll-seal">胜</i>结果印章</span>
+    <span class="tll-item"><i class="tll-tag">类型</i>标签</span>
+  </div>`;
+}
+
 function timelineHTML(ctx, visibleIds) {
   const { data } = ctx;
   const sections = data.sections.map(({ era, battles }) => {
@@ -377,6 +386,7 @@ export function renderTimeline(root, ctx) {
   root.innerHTML = `<div class="timeline-page">
     ${headerHTML(ctx, visibleIds)}
     ${introHTML(data)}
+    ${timelineLegendHTML()}
     ${filterBarHTML(visible.length)}
     ${body}
   </div>`;

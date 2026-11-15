@@ -102,7 +102,7 @@
 .map-frame {
   position: relative;
   margin: 8px calc(-16px - var(--safe-r)) 0 calc(-16px - var(--safe-l));
-  aspect-ratio: 3200 / 2073;
+  aspect-ratio: 6000 / 3887;
   background:
     radial-gradient(80% 80% at 50% 40%, rgba(201, 162, 39, 0.05), transparent 66%),
     #0C0A08;
@@ -588,3 +588,105 @@ html[data-motion="reduce"] .mp.is-selected .mp-halo {
 
 
 
+
+
+/* ---------------- 3.0：定位条 / 精度 / 图例补充 ---------------- */
+.map-focus[hidden] { display: none; }
+.map-focus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 2px 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(201, 162, 39, 0.38);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.14), rgba(201, 162, 39, 0.06));
+  font-size: 12px;
+  color: var(--paper);
+}
+.map-focus .mf-k {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--cinnabar, #B23A2E);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+}
+.map-focus .mf-name { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; }
+.map-focus .mf-era { color: var(--mute); font-size: 11px; }
+.map-focus .mf-clear {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line-soft);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--mute);
+}
+.map-focus .mf-clear svg { width: 13px; height: 13px; }
+
+.map-scale {
+  margin: 6px 2px 0;
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  color: rgba(156, 144, 123, 0.9);
+}
+
+.map-legend .lg-cluster {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(178, 58, 46, 0.95) 0 40%, rgba(178, 58, 46, 0.28) 45% 100%);
+  border: 1px solid rgba(233, 223, 200, 0.5);
+}
+.map-legend .lg-terr {
+  border-radius: 2px;
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.75), rgba(178, 58, 46, 0.45));
+  border: 1px solid rgba(233, 223, 200, 0.5);
+}
+.map-legend .lg-terr-wrap { display: inline-flex; align-items: center; gap: 4px; }
+
+.map-layer-row { gap: 8px; align-items: center; }
+.m-chip--layer::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 1px;
+  background: rgba(201, 162, 39, 0.55);
+  display: inline-block;
+}
+.map-layer-note {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--mute);
+  max-width: 62vw;
+}
+
+.mp-precision {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--mute);
+}
+.mp-precision .mp-precision-k {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 5px;
+  border: 1px solid rgba(156, 144, 123, 0.4);
+  border-radius: 4px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+
+/* ---------------- 3.0：展示级精度备注 / 势力范围图层 ---------------- */
+.mp-precision .mp-precision-note {
+  margin-left: 8px;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: rgba(156, 144, 123, 0.78);
+}
+.map-territories { pointer-events: none; }
+.map-territories .terr-prov { transition: fill-opacity 200ms ease; }

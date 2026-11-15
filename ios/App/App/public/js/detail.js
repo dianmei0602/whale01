@@ -14,6 +14,7 @@ import { inkMountain } from './ink.js';
 import { pushRecent } from './store.js';
 import { navigate, navigateBack } from './router.js';
 import { initParallax, revealStagger, initSwipeDetail, playCardFlipIn, rememberDetailFlip } from './motion.js';
+import { findPower, rangeText, precisionText, battleTerritoryHTML } from './research.js';
 
 const SECTION_NUMS = ['壹', '贰', '叁', '肆', '伍', '陆', '柒'];
 
@@ -117,7 +118,7 @@ function courseHTML(battle) {
   </ol>`;
 }
 
-function anecdotesHTML(battle) {
+function anecdotesHTML(battle, ctx) {
   const list = battle.anecdotes.length
     ? battle.anecdotes
         .map(
@@ -130,7 +131,14 @@ function anecdotesHTML(battle) {
     : '<p class="d-p">典故暂缺，M2 将补充。</p>';
   const people = battle.people.length
     ? `<div class="people">${battle.people
-        .map((p) => `<a class="person" href="#/generals">${esc(p)}</a>`)
+        .map((p) => {
+          const general = ctx?.data?.generalByName?.get(p);
+          const href = general ? `#/generals?g=${encodeURIComponent(general.id)}` : `#/search?q=${encodeURIComponent(p)}&note=person`;
+          const klass = general ? 'person is-general' : 'person';
+          return `<a class="${klass}" href="${href}"${
+            general ? '' : ' data-person-search="1" title="该人物未收录小传，点击搜索"'
+          }>${esc(p)}${general ? '<i class="person-dot" aria-hidden="true"></i>' : ''}</a>`;
+        })
         .join('')}</div>`
     : '';
   return `${list}${people}`;
@@ -151,16 +159,17 @@ function sourcesHTML(battle) {
 
 function minimapHTML(battle) {
   const loc = battle.location;
+  const precision = precisionText(loc.precision);
   const coords =
     loc.lng != null && loc.lat != null
-      ? `东经 ${Number(loc.lng).toFixed(2)}° · 北纬 ${Number(loc.lat).toFixed(2)}°${loc.precision ? ` · ${loc.precision}` : ''}`
+      ? `东经 ${Number(loc.lng).toFixed(2)}° · 北纬 ${Number(loc.lat).toFixed(2)}°`
       : '坐标待考';
-  return `<a class="mini-map" href="#/map" aria-label="前往地图页（M3 上线）">
+  return `<a class="mini-map" href="#/map?battle=${encodeURIComponent(battle.id)}" aria-label="在地图中定位 ${esc(battle.name)}">
     <span class="mm-dot" aria-hidden="true"></span>
-    <span class="mm-badge">地图 · M3</span>
+    <span class="mm-badge">地图 · 战场定位</span>
     <span class="mm-text">
       <span class="mm-title">战场位置 · ${esc(battle.location.ancient || '待考')}</span>
-      <span class="mm-sub">${esc(coords)}</span>
+      <span class="mm-sub">${esc(coords)} · ${esc(precision.label)}</span>
     </span>
   </a>`;
 }
@@ -182,6 +191,103 @@ function pnHTML(battle, ctx) {
     </a>`;
   };
   return `<nav class="pn" aria-label="相邻战役">${item(nav.prev, 'prev')}${item(nav.next, 'next')}</nav>`;
+}
+
+function detailLegendHTML(battle) {
+  const precision = precisionText(battle.location.precision);
+  return `<div class="detail-legend" aria-label="图例">
+    <span class="dl-item"><i class="dl-dot dl-a"></i>${esc(battle.sides[0]?.name || 'A 方')}</span>
+    <span class="dl-item"><i class="dl-dot dl-b"></i>${esc(battle.sides[1]?.name || 'B 方')}</span>
+    <span class="dl-item"><i class="dl-bar"></i>兵力条（相对比例）</span>
+    <span class="dl-item"><i class="dl-seal"></i>结果印章</span>
+    <span class="dl-item dl-precision is-${precision.tone}">位置精度 · ${esc(precision.label)}</span>
+  </div>`;
+}
+
+function archiveHTML(battle) {
+  const precision = precisionText(battle.location.precision);
+  const casualties = battle.casualties || [];
+  const sideName = (key) => battle.sides[key === 'B' ? 1 : 0]?.name || (key === 'B' ? 'B 方' : 'A 方');
+  const hasAny =
+    battle.duration || battle.objective || battle.terrainType || battle.arms.length || casualties.length || battle.troopsSource.length;
+  if (!hasAny) {
+    return `<section class="d-sec research-sec is-empty">
+      <h2 class="d-sec-head"><span class="d-sec-num">档</span><span class="d-sec-title">战役档案</span><span class="d-sec-rule"></span><span class="research-badge">考据</span></h2>
+      <p class="d-p research-empty">该场档案（时长 / 目的 / 地形 / 兵种 / 伤亡）尚在考据整理中。</p>
+    </section>`;
+  }
+  const item = (label, value, cls = '') => `<div class="archive-item ${cls}"><span class="ai-k">${label}</span><span class="ai-v">${value}</span></div>`;
+  const casualtyHTML = casualties.length
+    ? `<div class="archive-item archive-wide"><span class="ai-k">伤亡</span><span class="ai-v">${casualties
+        .map(
+          (c) =>
+            `<span class="casualty casualty-${c.side.toLowerCase()}"><b>${esc(sideName(c.side))}</b>${esc(c.text || '史无确载')}${
+              c.note ? `<i>${esc(c.note)}</i>` : ''
+            }</span>`
+        )
+        .join('')}</span></div>`
+    : item('伤亡', '史无确载', 'archive-wide');
+  return `<section class="d-sec research-sec">
+    <h2 class="d-sec-head"><span class="d-sec-num">档</span><span class="d-sec-title">战役档案</span><span class="d-sec-rule"></span><span class="research-badge">考据</span></h2>
+    <div class="archive-grid">
+      ${item('持续时间', esc(battle.duration || '史无确载'))}
+      ${item('地形', esc(battle.terrainType || '史无确载'))}
+      ${item('位置精度', `<span class="precision-tag is-${precision.tone}">${esc(precision.label)}</span>${precision.desc ? `<i>${esc(precision.desc)}</i>` : ''}`)}
+      ${item('双方兵种', battle.arms.length ? battle.arms.map((a) => `<span class="arm-chip">${esc(a)}</span>`).join('') : '史无确载')}
+      ${battle.objective ? item('战略目的', esc(battle.objective), 'archive-wide') : item('战略目的', '史无确载', 'archive-wide')}
+      ${casualtyHTML}
+      ${battle.troopsSource.length ? item('兵力来源', battle.troopsSource.map((s) => esc(s)).join('、'), 'archive-wide') : ''}
+    </div>
+    <p class="research-foot">档案口径以通行史料与今人研究为据；无可靠数字处标注「史无确载」，不补写精确值。</p>
+  </section>`;
+}
+
+function powerCardHTML(battle, ctx, side) {
+  const power = findPower(ctx, side.name);
+  const unknown = '史无确载';
+  const rows = power
+    ? [
+        ['性质', power.kind],
+        ['控制区域', power.territory || unknown],
+        ['面积（估算）', rangeText(power.areaWanKm2, ' 万 km²')],
+        ['人口（估算）', rangeText(power.populationWan, ' 万人')],
+        ['可动员兵力（估算）', rangeText(power.armyWan, ' 万人')],
+      ]
+    : [
+        ['性质', unknown],
+        ['控制区域', unknown],
+        ['面积（估算）', unknown],
+        ['人口（估算）', unknown],
+        ['可动员兵力（估算）', unknown],
+      ];
+  return `<article class="power-card power-${side.color.toLowerCase()}">
+    <header class="power-head">
+      <span class="power-name">${esc(side.name)}</span>
+      ${power ? `<span class="power-kind">${esc(power.kind)}</span>` : '<span class="power-kind is-unknown">未收录</span>'}
+    </header>
+    <p class="power-troops"><span>本场投入</span>${esc(side.troopsText || unknown)}</p>
+    <dl class="power-rows">${rows
+      .map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`)
+      .join('')}</dl>
+    ${power?.note ? `<p class="power-note">${esc(power.note)}${power.sources?.length ? `<span>来源：${power.sources.map((s) => esc(s)).join('、')}</span>` : ''}</p>` : ''}
+  </article>`;
+}
+
+function powersHTML(battle, ctx) {
+  if (!battle.sides.length) return '';
+  return `<section class="d-sec research-sec powers-sec">
+    <h2 class="d-sec-head"><span class="d-sec-num">势</span><span class="d-sec-title">双方势力对照</span><span class="d-sec-rule"></span><span class="research-badge">估算 · 有据</span></h2>
+    <div class="power-compare">${battle.sides.map((side) => powerCardHTML(battle, ctx, side)).join('')}</div>
+    <p class="research-foot">面积 / 人口 / 可动员兵力为今人研究估算区间，仅作量级参考；非单场投入兵力。无可靠记录处标注「史无确载」。</p>
+  </section>`;
+}
+
+function territorySectionHTML(battle, ctx) {
+  return `<section class="d-sec research-sec territory-sec">
+    <h2 class="d-sec-head"><span class="d-sec-num">域</span><span class="d-sec-title">势力范围</span><span class="d-sec-rule"></span><span class="research-badge">示意</span></h2>
+    <div class="bterr-grid">${battle.sides.map((side) => battleTerritoryHTML(ctx, battle, side)).join('')}</div>
+    <p class="research-foot">按今省界拼合的示意范围，参考《中国历史地图集》与通行叙述，不表示精确历史边界。</p>
+  </section>`;
 }
 
 function detailHTML(battle, ctx) {
@@ -225,6 +331,7 @@ function detailHTML(battle, ctx) {
 
     <div class="detail-body">
       ${infoStrip(battle)}
+      ${detailLegendHTML(battle)}
 
       ${
         ctx.data.replaysByBattle && ctx.data.replaysByBattle.get(battle.id)
@@ -238,6 +345,10 @@ function detailHTML(battle, ctx) {
         <span class="lead-label">一句话提要</span>
         <p>${esc(battle.summary || '提要待补。')}</p>
       </blockquote>
+
+      ${archiveHTML(battle)}
+      ${powersHTML(battle, ctx)}
+      ${territorySectionHTML(battle, ctx)}
 
       <section class="d-sec">
         ${sectionHead(SECTION_NUMS[0], '背景')}
@@ -264,7 +375,7 @@ function detailHTML(battle, ctx) {
 
       <section class="d-sec">
         ${sectionHead(SECTION_NUMS[4], '典故与人物')}
-        ${anecdotesHTML(battle)}
+        ${anecdotesHTML(battle, ctx)}
       </section>
 
       <section class="d-sec">
