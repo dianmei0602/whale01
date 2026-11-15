@@ -450,7 +450,7 @@ final class AppModel: ObservableObject {
         currentGoal = displayText ?? text
         stoppedReply = false
         lastFailedInput = nil
-        activityText = "正在理解你的请求"
+        activityText = "正在拆解目标并寻找可行方法"
         appendMessage(ChatMessage(role: .user, text: displayText ?? text))
         onAccepted?()
 

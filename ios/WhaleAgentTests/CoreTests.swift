@@ -545,4 +545,40 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(HomeDigestModel.hotLines(items), ["测试热搜 · 109.2万"])
         XCTAssertEqual(HomeDigestModel.hotLines([]), [])
     }
+
+    func testRequestAnalysisBuildsMultiStepPlanAndToolSet() {
+        let analysis = RequestAnalysis.heuristic(for: "查一下上海明天天气，然后找个下午的空档，再准备一条给同事的短信")
+        XCTAssertTrue(analysis.tasks.count >= 2)
+        XCTAssertTrue(analysis.normalizedSkills.contains(.travel))
+        XCTAssertTrue(analysis.normalizedSkills.contains(.schedule))
+        XCTAssertTrue(analysis.normalizedSkills.contains(.messaging))
+        XCTAssertTrue(analysis.needsFreshData)
+        XCTAssertTrue(analysis.shouldVerify)
+        let available: Set<String> = ["get_weather", "find_free_slots", "prepare_message", "get_stock_quote", "search_web"]
+        let selected = analysis.selectedToolNames(available: available)
+        XCTAssertTrue(selected.contains("get_weather"))
+        XCTAssertTrue(selected.contains("find_free_slots"))
+        XCTAssertTrue(selected.contains("prepare_message"))
+        XCTAssertFalse(selected.contains("get_stock_quote"))
+    }
+
+    func testEpisodicMemoryRetrievesRelevantPastTurn() throws {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("agent-memory-\(UUID().uuidString).json")
+        let store = AgentMemoryStore(fileURL: url)
+        store.record(
+            userText: "把鲸鱼 App 的游戏资讯改成统一信息流",
+            reply: "已整理规划：合并游戏资讯，移除国内外分组，并删除 Steam 折扣入口。",
+            conversationId: "conv-test"
+        )
+        store.record(
+            userText: "明天提醒我取快递",
+            reply: "准备创建明天下午的提醒。",
+            conversationId: "conv-test-2"
+        )
+        let snapshot = store.snapshotText(matching: "鲸鱼游戏资讯现在怎么安排？")
+        XCTAssertTrue(snapshot.contains("游戏资讯"))
+        XCTAssertTrue(snapshot.contains("Steam 折扣"))
+        try? FileManager.default.removeItem(at: url)
+    }
 }
