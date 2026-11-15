@@ -31,7 +31,9 @@ final class CoreTests: XCTestCase {
         )
         XCTAssertTrue(DiscoverChannel.headline.newsSections.contains { $0.id == "military" })
         XCTAssertTrue(DiscoverChannel.headline.newsSections.contains { $0.id == "auto" })
-        XCTAssertEqual(GameSection.steamDeals.steamKind, .specials)
+        XCTAssertTrue(DiscoverChannel.game.newsSections.isEmpty)
+        XCTAssertFalse(GameSection.allCases.contains { $0.rawValue == "steamDeals" })
+        XCTAssertFalse(SteamKind.allCases.contains { $0.rawValue == "specials" })
         XCTAssertEqual(GameSection.comingSoon.title, "新作预告")
     }
 
