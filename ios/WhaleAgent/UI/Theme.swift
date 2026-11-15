@@ -36,8 +36,8 @@ enum WhaleTheme {
     static let line = Color(light: 0xD6E2E8, dark: 0x34464D)
     static let field = Color(light: 0xF8FAFB, dark: 0x182126)
     static let chrome = Color(light: 0xFBFCFD, dark: 0x141D21)
-    static let onAccent = Color(light: 0xF7FCFD, dark: 0xF7FCFD)
-    static let buttonInk = Color(light: 0xF7FCFD, dark: 0xF7FCFD)
+    static let onAccent = Color(light: 0xF7FCFD, dark: 0x10232C)
+    static let buttonInk = Color(light: 0xF7FCFD, dark: 0x10232C)
     static let glassStroke = Color(light: 0xD6E2E8, dark: 0x34464D)
     static let warm = Color(light: 0x96602C, dark: 0xE0AC6C)
     static let success = Color(light: 0x247B50, dark: 0x63C99B)
@@ -201,7 +201,7 @@ private struct ChannelLabelStyle: ViewModifier {
     let channel: DiscoverChannel
     let selected: Bool
     func body(content: Content) -> some View {
-        content.foregroundStyle(selected ? Color.white : channel.entryInk)
+        content.foregroundStyle(selected ? WhaleTheme.onAccent : channel.entryInk)
             .padding(.horizontal, 10).frame(minHeight: 44)
             .fixedSize(horizontal: true, vertical: false)
             .background {
