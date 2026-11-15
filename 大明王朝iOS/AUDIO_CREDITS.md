@@ -14,7 +14,9 @@
 
 降级路径：未配置讯飞凭据、离线打开或服务不可用时，明确切换到设备自带的中文语音，并在界面提示“系统朗读”。
 
-当前账号验证：标准在线合成 `wss://tts-api.xfyun.cn/v2/tts` 与讯飞小露 `x4_yezi` 发音人已实际返回 MP3 并在浏览器中播放。截图中的私有超拟人地址可以完成鉴权，但服务返回 `11200 LiccCheck failed / licc limit`，说明该线路或发音人的授权尚未开通；获得授权后只需在 `.env` 设置 `XFYUN_TTS_URL` 和 `XFYUN_VOICE` 即可切换。
+当前账号验证：标准在线合成 `wss://tts-api.xfyun.cn/v2/tts` 与讯飞小露 `x4_yezi` 发音人已实际返回 MP3 并在浏览器中播放。
+
+私有超拟人线路 `wss://cbm01.cn-huabei-1.xf-yun.com/v1/private/mcd9m97e6` 可以完成 WebSocket 鉴权，但它的发音人列表不接受 `x4_yezi`，会返回 `10163`。因此 `server.mjs` 在检测到“私有线路 + x4_yezi”时自动使用标准流式接口，`/api/tts/status` 会同时报告请求线路、实际线路和回退原因。若以后改用私有线路支持的 x5/x6/x7 发音人，可删除该自动回退条件。
 
 所有凭据只保存在本地 `.env`，并已加入 `.gitignore`。不要把 `.env` 放进截图、网页源码或公开仓库。
 

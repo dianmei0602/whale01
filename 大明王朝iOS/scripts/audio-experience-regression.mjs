@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createAppServer, buildTtsUrl } from '../server.mjs';
+import { createAppServer, buildTtsUrl, resolveTtsEndpoint } from '../server.mjs';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(scriptDir, '..');
@@ -24,6 +24,18 @@ check('iFlytek signature date is RFC1123 GMT', signedUrl.searchParams.get('date'
 
 const signedAuthText = Buffer.from(signedUrl.searchParams.get('authorization'), 'base64').toString('utf8');
 check('iFlytek authorization carries the HMAC signature', signedAuthText.includes(`signature="${expectedSignature}"`), signedAuthText);
+
+const privateVoiceFallback = resolveTtsEndpoint({
+  endpoint: 'wss://private.example/v1/private/test',
+  voice: 'x4_yezi'
+});
+check(
+  'x4_yezi avoids private voice families and keeps the requested voice',
+  privateVoiceFallback.endpoint === 'wss://tts-api.xfyun.cn/v2/tts'
+    && privateVoiceFallback.requestedEndpointKind === 'private-super-human'
+    && privateVoiceFallback.fallbackReason === 'voice-not-supported-by-private-endpoint',
+  privateVoiceFallback
+);
 
 const fallbackServer = createAppServer({
   configProvider: () => ({ appId: '', apiKey: '', apiSecret: '', endpoint: '', voice: '', speed: 45, volume: 65, pitch: 48 })
@@ -205,6 +217,7 @@ try {
     pass: checks.every((item) => item.pass),
     checks,
     liveTtsBytes,
+    privateVoiceFallback,
     screenshots: [join(outputDir, 'audio-nav-mobile.png'), join(outputDir, 'reading-active-mobile.png')]
   };
   writeFileSync(join(outputDir, 'audio-experience-regression.json'), `${JSON.stringify(report, null, 2)}\n`);

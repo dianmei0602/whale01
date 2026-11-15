@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const ENV_FILE = join(ROOT, '.env');
 if (existsSync(ENV_FILE) && typeof process.loadEnvFile === 'function') process.loadEnvFile(ENV_FILE);
+const STANDARD_TTS_ENDPOINT = 'wss://tts-api.xfyun.cn/v2/tts';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -30,7 +31,7 @@ function ttsConfig() {
     appId: process.env.XFYUN_APP_ID || '',
     apiKey: process.env.XFYUN_API_KEY || '',
     apiSecret: process.env.XFYUN_API_SECRET || '',
-    endpoint: process.env.XFYUN_TTS_URL || 'wss://tts-api.xfyun.cn/v2/tts',
+    endpoint: process.env.XFYUN_TTS_URL || STANDARD_TTS_ENDPOINT,
     voice: process.env.XFYUN_VOICE || '',
     speed: Number(process.env.XFYUN_SPEED || 45),
     volume: Number(process.env.XFYUN_VOLUME || 65),
@@ -38,7 +39,24 @@ function ttsConfig() {
   };
 }
 
-export function buildTtsUrl({ apiKey, apiSecret, endpoint = 'wss://tts-api.xfyun.cn/v2/tts' }, now = new Date()) {
+export function resolveTtsEndpoint(config = ttsConfig()) {
+  const requestedEndpoint = config.endpoint || STANDARD_TTS_ENDPOINT;
+  const privateEndpoint = requestedEndpoint.includes('/v1/private/');
+  const requestedVoice = String(config.voice || '').toLowerCase();
+  // X4 小露 is exposed by the standard streaming endpoint. The private
+  // super-human endpoint rejects it with 10163 because it uses a different
+  // voice family.
+  const useStandard = privateEndpoint && requestedVoice === 'x4_yezi';
+  return {
+    endpoint: useStandard ? STANDARD_TTS_ENDPOINT : requestedEndpoint,
+    requestedEndpoint,
+    endpointKind: useStandard || !privateEndpoint ? 'standard-online' : 'private-super-human',
+    requestedEndpointKind: privateEndpoint ? 'private-super-human' : 'standard-online',
+    fallbackReason: useStandard ? 'voice-not-supported-by-private-endpoint' : null
+  };
+}
+
+export function buildTtsUrl({ apiKey, apiSecret, endpoint = STANDARD_TTS_ENDPOINT }, now = new Date()) {
   const target = new URL(endpoint);
   const host = target.host;
   const path = `${target.pathname}${target.search}`;
@@ -63,8 +81,9 @@ export async function synthesizeIflytek(text, config = ttsConfig(), timeoutMs = 
     throw error;
   }
 
-  const url = buildTtsUrl(config);
-  const privateEndpoint = config.endpoint.includes('/v1/private/');
+  const resolvedEndpoint = resolveTtsEndpoint(config);
+  const url = buildTtsUrl({ ...config, endpoint: resolvedEndpoint.endpoint });
+  const privateEndpoint = resolvedEndpoint.endpointKind === 'private-super-human';
   return new Promise((resolvePromise, rejectPromise) => {
     const chunks = [];
     let settled = false;
@@ -175,12 +194,15 @@ export function createAppServer({ configProvider = ttsConfig } = {}) {
     const url = new URL(request.url || '/', 'http://localhost');
     if (url.pathname === '/api/tts/status' && request.method === 'GET') {
       const config = configProvider();
+      const resolvedEndpoint = resolveTtsEndpoint(config);
       sendJson(response, 200, {
         configured: Boolean(config.appId && config.apiKey && config.apiSecret),
         provider: 'iFlytek WebAPI',
         voice: config.voice || null,
         speed: config.speed,
-        endpointKind: config.endpoint.includes('/v1/private/') ? 'private-super-human' : 'standard-online'
+        endpointKind: resolvedEndpoint.endpointKind,
+        requestedEndpointKind: resolvedEndpoint.requestedEndpointKind,
+        endpointFallbackReason: resolvedEndpoint.fallbackReason
       });
       return;
     }
@@ -237,6 +259,8 @@ if (isMain) {
   const host = process.env.HOST || '127.0.0.1';
   createAppServer().listen(port, host, () => {
     console.log(`Daming Atlas: http://${host}:${port}`);
-    console.log(ttsConfig().appId ? `iFlytek TTS: configured (${ttsConfig().endpoint.includes('/v1/private/') ? 'super-human' : 'standard'})` : 'iFlytek TTS: not configured, using browser speech fallback');
+    const endpoint = resolveTtsEndpoint(ttsConfig());
+    console.log(ttsConfig().appId ? `iFlytek TTS: configured (${endpoint.endpointKind})` : 'iFlytek TTS: not configured, using browser speech fallback');
+    if (endpoint.fallbackReason) console.log(`iFlytek TTS endpoint fallback: ${endpoint.fallbackReason}`);
   });
 }
