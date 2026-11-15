@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>Nomi · 物理盒子</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:30px 26px 34px;background:#07090D;color:#E8EBF0;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;width:1120px}
+  h1{font-size:22px;margin:0 0 6px}
+  .sub{font-size:12.5px;color:#6E7C8C;margin-bottom:20px;line-height:1.75}
+  .warn{padding:11px 15px;border-radius:10px;background:rgba(255,190,80,.09);
+    border:1px solid rgba(255,190,80,.24);font-size:12px;color:#FFC978;
+    line-height:1.8;margin-bottom:24px}
+  .warn b{color:#FFDFA8}
+
+  .row{display:flex;gap:14px}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px}
+
+  .box{width:100%;aspect-ratio:1/1;border-radius:26px;position:relative;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
+    backdrop-filter:blur(18px);overflow:hidden}
+  .box .axis{position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.12),transparent)}
+
+  .nomi{position:absolute;display:flex;flex-direction:column;align-items:center;
+    transform-origin:50% 50%}
+  .head{width:62px;height:49px;border-radius:15px;
+    background:linear-gradient(180deg,#FFFFFF 0%,#B8BAC0 4%,#80838A 15%,#5F6268 42%,#33363B 72%,#121316 91%,#575A5F 100%);
+    display:flex;align-items:center;justify-content:center}
+  .screen{width:53px;height:40px;border-radius:12px;background:#05070A;
+    display:flex;align-items:center;justify-content:center;gap:13px;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.9), 0 0 0 1.2px rgba(0,0,0,.9)}
+  .eye{width:5px;height:14px;border-radius:99px;background:#5CEBFF;
+    box-shadow:0 0 5px rgba(92,235,255,.8)}
+  .neck{width:24px;height:5px;border-radius:3px;margin-top:3px;
+    background:linear-gradient(180deg,#FFFFFF,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+  .feet{display:flex;gap:16px;margin-top:2px}
+  .foot{width:8px;height:13px;border-radius:5px;
+    background:linear-gradient(180deg,#FFFFFF,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+
+  .cap{font-size:11.5px;color:#6E7C8C;text-align:center;line-height:1.6}
+  .cap b{color:#B9C6D4}
+  .tag{font-size:10px;padding:1px 7px;border-radius:4px;
+    background:rgba(255,255,255,.06);color:#8b98a6}
+
+  .note{margin-top:24px;font-size:12px;color:#6E7C8C;line-height:1.95}
+  .note b{color:#A9B9C9}
+  .note code{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:4px;
+    font-size:11px;color:#9FD4E8}
+</style>
+</head>
+<body>
+
+<h1>物理盒子</h1>
+<div class="sub">
+  设置 → 玩一下 → <b>物理盒子</b>。一个和锁屏那个磨砂框一样的盒子，
+  倾斜手机 Nomi 就会往下掉、撞墙反弹、贴地滚、落地压扁。点盒子可以把它抛起来。
+</div>
+
+<div class="warn">
+  ⚠️ <b>锁屏上做不到。</b>Live Activity 是系统渲染的<b>静态快照</b>——不读陀螺仪，也不会跟着倾斜变化。
+  锁屏那个框只能显示 App 推过去的一帧。所以这个盒子放在 App 里。
+</div>
+
+<div class="row">
+
+  <!-- 1 落体中 -->
+  <div class="col">
+    <div class="box">
+      <div class="axis"></div>
+      <div class="nomi" style="left:50%;top:26%;transform:translate(-50%,-50%) rotate(-6deg)">
+        <div class="head"><div class="screen"><div class="eye"></div><div class="eye"></div></div></div>
+        <div class="neck"></div><div class="feet"><div class="foot"></div><div class="foot"></div></div>
+      </div>
+    </div>
+    <span class="tag">竖直</span>
+    <div class="cap"><b>往下掉</b><br>加速度 2.1 × g</div>
+  </div>
+
+  <!-- 2 右倾贴墙 -->
+  <div class="col">
+    <div class="box">
+      <div class="axis"></div>
+      <div class="nomi" style="right:8%;bottom:9%;transform:rotate(42deg)">
+        <div class="head"><div class="screen"><div class="eye"></div><div class="eye"></div></div></div>
+        <div class="neck"></div><div class="feet"><div class="foot"></div><div class="foot"></div></div>
+      </div>
+    </div>
+    <span class="tag">右倾 30°</span>
+    <div class="cap"><b>滚到墙角</b><br>撞墙保留 42% 速度</div>
+  </div>
+
+  <!-- 3 落地压扁 -->
+  <div class="col">
+    <div class="box">
+      <div class="axis"></div>
+      <div class="nomi" style="left:50%;bottom:8%;transform:translateX(-50%) scale(1.28,0.74)">
+        <div class="head"><div class="screen"><div class="eye" style="height:11px"></div><div class="eye" style="height:11px"></div></div></div>
+        <div class="neck"></div><div class="feet"><div class="foot"></div><div class="foot"></div></div>
+      </div>
+    </div>
+    <span class="tag">砸地</span>
+    <div class="cap"><b>压扁再弹回</b><br>弹簧回弹 · 挤压到 0.72</div>
+  </div>
+
+  <!-- 4 倒过来 -->
+  <div class="col">
+    <div class="box">
+      <div class="axis"></div>
+      <div class="nomi" style="left:50%;top:16%;transform:translate(-50%,-50%) rotate(180deg)">
+        <div class="head"><div class="screen"><div class="eye"></div><div class="eye"></div></div></div>
+        <div class="neck"></div><div class="feet"><div class="foot"></div><div class="foot"></div></div>
+      </div>
+    </div>
+    <span class="tag">倒过来</span>
+    <div class="cap"><b>重力反向</b><br>贴到盒子顶部</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>重力来源：</b>CoreMotion 的 <code>gravity.x / gravity.y</code>，60Hz 读取，直接当加速度向量用。<br>
+  <b>碰撞：</b>盒子四壁 + 底摩擦 <code>0.84</code>；滚动按 ω ≈ v/r 换算，滑多远就转多少度。<br>
+  <b>手感数值：</b>重力 2.1、反弹 0.42、阻尼 0.995、限速 3.4 —— 都是可以在代码里一行改掉的常数。<br>
+  <b>彩蛋：</b>砸得重（冲击 &gt; 0.9）它会「惊一下」；点盒子抛起来会随机左右偏一点。
+</div>
+
+</body>
+</html>

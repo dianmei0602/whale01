@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Nomi · 两个入口</title>
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  --bg:#12161c; --surface:rgba(30,37,46,.92); --surface-2:rgba(24,30,38,.9);
+  --text:#e9f1ff; --text-2:#9bb2cd; --text-3:#6f89a8;
+  --sep:rgba(140,190,255,.12);
+  --accent:#5cb9d9; --accent-2:#7b5bff;
+  --bubble-in:rgba(30,37,46,.92); --bubble-out:#366b87;
+  --bubble-mine:#366b87;
+  --border:#5cb9d9;
+  --glass:rgba(6,10,18,.72);
+  --card-r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:var(--font);background:#0e1013;color:var(--text);
+  display:flex;align-items:center;justify-content:center;min-height:100vh;gap:28px;
+  background-image:radial-gradient(1200px 700px at 50% -10%,#24303f 0%,#14171c 45%,#0b0d10 100%)}
+
+/* 机身 */
+.stage{display:flex;align-items:center;justify-content:center;height:100vh;padding:14px}
+.bezel{width:390px;height:844px;border-radius:56px;padding:10px;position:relative;
+  background:linear-gradient(160deg,#3a3d44,#15171b 40%,#0c0d10 70%,#2a2d33);
+  box-shadow:0 40px 90px rgba(0,0,0,.75),inset 0 0 0 1.5px rgba(255,255,255,.10),
+             inset 0 0 0 6px #0a0b0d}
+.screen{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;
+  background:radial-gradient(760px 520px at 50% -14%,#212a36 0%,#181c23 52%,#12161c 100%);
+  display:flex;flex-direction:column}
+.screen::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:3px 3px}
+.screen > *{position:relative;z-index:2}
+
+/* 状态栏 */
+.statusbar{height:54px;padding:16px 28px 0 32px;flex:none;display:flex;align-items:center;
+  justify-content:space-between;font-size:15px;font-weight:600;color:var(--text)}
+.status-icons{display:flex;gap:5px}
+.status-icons i{display:block;background:currentColor;border-radius:2px;width:22px;height:11px}
+
+/* Appbar */
+.appbar{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;
+  background:var(--glass);backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:.5px solid var(--sep)}
+.avatar{width:32px;height:32px;border-radius:9px;background:#fff;flex:none;position:relative;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  box-shadow:0 1px 4px rgba(16,19,24,.18),inset 0 0 0 .5px rgba(0,0,0,.06);cursor:pointer}
+.avatar .eye2{width:3.5px;height:11px;border-radius:99px;background:#1f8fdb}
+.avatar .dot{position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%;
+  background:#3be0b0;box-shadow:0 0 0 2px #12161c}
+.appbar-title{display:flex;flex-direction:column;gap:1px}
+.appbar-title b{font-size:16px;font-weight:600}
+.appbar-title span{font-size:11px;color:var(--text-2);letter-spacing:.2px}
+
+/* 聊天 */
+.msgs{flex:1;overflow:auto;padding:12px 16px 8px;display:flex;flex-direction:column;gap:9px;min-height:0}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg.out{flex-direction:row-reverse}
+.ai-mark{width:28px;height:28px;border-radius:8px;background:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  box-shadow:0 1px 4px rgba(16,19,24,.18);margin-bottom:2px}
+.ai-mark .eye2{width:3px;height:9px;border-radius:99px;background:#1f8fdb}
+.bubble{max-width:262px;padding:9px 13px;border-radius:18px;font-size:14.5px;line-height:1.48;
+  background:var(--bubble-in);color:var(--text);border:.5px solid var(--sep)}
+.msg.out .bubble{background:var(--bubble-mine);color:#fff;border-color:transparent}
+.typing{display:flex;gap:4px;padding:4px 2px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--text-3)}
+
+/* Nomi 本体（原样） */
+.nomistage{position:relative;flex:none;height:150px}
+.nomi{position:absolute;left:50%;transform:translateX(-50%);bottom:8px}
+.head{width:132px;height:103px;border-radius:30px;
+  background:linear-gradient(180deg,#FFFFFF 0%,#B8BAC0 3.5%,#80838A 14%,#5F6268 40%,#33363B 70%,#121316 90%,#0A0B0D 96.5%,#575A5F 100%);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+.screen-in{width:114px;height:86px;border-radius:26px;background:#05070A;position:relative;
+  display:flex;align-items:center;justify-content:center;gap:28px;overflow:hidden;
+  box-shadow:inset 0 3px 9px rgba(0,0,0,.9),0 0 0 2px rgba(0,0,0,.9)}
+.screen-in .edge{position:absolute;left:0;top:19%;width:7%;height:62%;border-radius:99px;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0))}
+.eye{width:9px;height:31px;border-radius:99px;background:#5CEBFF;z-index:1;
+  box-shadow:0 0 7px #5CEBFF}
+.neck{width:53px;height:11px;border-radius:6px;margin:7px auto 0;
+  background:linear-gradient(180deg,#FFFFFF,#B3B5BA 5%,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+.feet{display:flex;gap:35px;justify-content:center;margin-top:4px}
+.foot{width:18px;height:29px;border-radius:9px;
+  background:linear-gradient(180deg,#FFFFFF,#B3B5BA 5%,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+.caption{position:absolute;bottom:64px;left:calc(50% + 74px);width:100px;
+  font-size:12px;line-height:1.45;color:var(--text-2)}
+
+/* 输入栏 */
+/* 输入栏：一条胶囊 */
+.composer{flex:none;display:flex;align-items:center;gap:10px;margin:6px 14px 8px;
+  padding:7px;border-radius:999px;background:var(--surface-2);border:.5px solid var(--sep)}
+.composer .round{width:38px;height:38px;border-radius:50%;background:var(--surface);
+  display:grid;place-items:center;color:var(--text-2);font-size:17px;flex:none}
+.composer .round.send{background:var(--accent);color:#04121b}
+.composer .field{flex:1;font-size:16px;color:var(--text-3);padding:0 4px}
+
+/* 底栏：两个入口，居中 */
+.tabbar{flex:none;height:82px;padding:8px 8px 0;display:flex;justify-content:center;gap:44px;
+  background:var(--glass);backdrop-filter:blur(22px) saturate(180%);
+  border-top:.5px solid var(--sep)}
+.tab{width:96px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:7px 0 0;
+  color:var(--text-3);font-size:15px;font-weight:500}
+.tab .i{font-size:25px;line-height:1}
+.tab.on{color:var(--accent);font-weight:600}
+
+/* 今日页 */
+.scroll{flex:1;overflow:auto;padding:14px 16px 16px;min-height:0}
+.page-title{display:flex;align-items:flex-end;gap:8px;padding:2px 0 12px}
+.page-title h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.6px}
+.page-title span{font-size:11.5px;color:var(--text-3);padding-bottom:4px}
+.card{background:var(--surface);border:.5px solid var(--sep);border-radius:var(--card-r);
+  overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);
+  margin-top:10px}
+.card-head{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}
+.card-head .ic{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  background:rgba(92,185,217,.14);color:var(--accent);font-size:12px}
+.card-title{font-size:12px;font-weight:600;letter-spacing:.3px}
+.card-sub{margin-left:auto;font-size:11px;color:var(--text-3)}
+.card-body{padding:0 14px 12px}
+
+.ev{display:flex;gap:10px;padding:10px 0;border-top:.5px solid var(--sep)}
+.ev:first-child{border-top:0}
+.ev .bar{width:3px;border-radius:2px;flex:none;background:linear-gradient(180deg,var(--accent),var(--accent-2))}
+.ev-main{flex:1;min-width:0}
+.ev-top{display:flex;align-items:baseline;gap:8px}
+.ev time{font-size:11px;color:var(--text-2);min-width:38px}
+.ev h4{margin:0;font-size:13px;font-weight:600}
+.ev .where{font-size:11px;color:var(--text-3);margin-top:2px}
+
+.srow{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:.5px solid var(--sep)}
+.srow:first-child{border-top:0}
+.srow .k{font-size:13px;color:var(--text-2);min-width:64px}
+.srow .v{font-size:13.5px;font-weight:600}
+.srow .tail{margin-left:auto;font-size:11.5px;color:var(--text-3)}
+
+.prog{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:9px}
+.prog i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+
+.todo{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:.5px solid var(--sep)}
+.todo:first-child{border-top:0}
+.todo .ring{width:18px;height:18px;border-radius:50%;border:1.6px solid var(--accent);flex:none;margin-top:2px}
+.todo .t-title{font-size:13px;font-weight:500}
+.todo .t-due{font-size:11px;color:var(--text-3);margin-top:2px}
+.todo .t-due.late{color:#ff5d7a}
+
+.hero{padding:18px 16px 14px}
+.hero .clock{font-size:54px;font-weight:700;letter-spacing:-2px;line-height:1;
+  background:linear-gradient(120deg,#fff,#a8e4ff 60%,#c3a8ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .meta{margin-top:6px;font-size:12px;color:var(--text-2)}
+
+.home-ind{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:134px;height:5px;
+  border-radius:3px;background:#f2f3f5;opacity:.7;z-index:80}
+</style>
+</head>
+<body>
+
+<!-- ① Nomi 页 -->
+<div class="stage">
+  <div class="bezel"><div class="screen">
+    <div class="statusbar"><span>9:41</span><span class="status-icons"><i></i><i style="width:15px;border-radius:50%"></i><i></i></span></div>
+
+    <div class="appbar">
+      <div class="avatar"><span class="eye2"></span><span class="eye2"></span><span class="dot"></span></div>
+      <div class="appbar-title"><b>Nomi</b><span>NOMI · 看见你</span></div>
+    </div>
+
+    <div class="msgs">
+      <div class="msg out"><div class="bubble">明天下午三点开会</div></div>
+      <div class="msg">
+        <div class="ai-mark"><span class="eye2"></span><span class="eye2"></span></div>
+        <div class="bubble">记下了，11月9日 周一 15:00 开会。提前 10 分钟提醒你。</div>
+      </div>
+      <div class="msg out"><div class="bubble">把三点的会改到四点</div></div>
+      <div class="msg">
+        <div class="ai-mark"><span class="eye2"></span><span class="eye2"></span></div>
+        <div class="bubble">要把「开会」挪到 11月9日 周一 16:00 吗？原来是 15:00</div>
+      </div>
+      <div class="msg">
+        <div class="ai-mark"><span class="eye2"></span><span class="eye2"></span></div>
+        <div class="bubble" style="background:transparent;border:0;padding:0">
+          <div style="display:flex;gap:8px;margin-top:2px">
+            <div style="padding:8px 16px;border-radius:999px;background:var(--accent);color:#04121b;font-size:13.5px;font-weight:600">确认</div>
+            <div style="padding:8px 16px;border-radius:999px;background:var(--surface-2);border:.5px solid var(--sep);font-size:13.5px;color:var(--text-2)">算了</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nomistage">
+      <div class="nomi">
+        <div class="head"><div class="screen-in"><div class="edge"></div><div class="eye"></div><div class="eye"></div></div></div>
+        <div class="neck"></div>
+        <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+      </div>
+      <div class="caption">敲我玩 · 按住说话</div>
+    </div>
+
+    <div class="composer">
+      <div class="round">＋</div>
+      <div class="field">尽管问</div>
+      <div class="round">◎</div>
+    </div>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab on"><span class="i">✦</span><span>Nomi</span></div>
+      <div class="tab"><span class="i">☀</span><span>今日</span></div>
+    </div>
+    <div class="home-ind"></div>
+  </div></div>
+</div>
+
+<!-- ② 今日页 -->
+<div class="stage">
+  <div class="bezel"><div class="screen">
+    <div class="statusbar"><span>9:41</span><span class="status-icons"><i></i><i style="width:15px;border-radius:50%"></i><i></i></span></div>
+
+    <div class="appbar">
+      <div class="avatar"><span class="eye2"></span><span class="eye2"></span><span class="dot"></span></div>
+      <div class="appbar-title"><b>今日</b><span>11月8日 周日</span></div>
+    </div>
+
+    <div class="scroll">
+      <div class="page-title"><h2>晚上好</h2><span>今天 1 件事</span></div>
+
+      <!-- 日程（从日程页并进来） -->
+      <div class="card" style="margin-top:0">
+        <div class="card-head"><div class="ic">▤</div><div class="card-title">今天的日程</div><div class="card-sub">3 件</div></div>
+        <div class="card-body">
+          <div class="ev"><div class="bar"></div><div class="ev-main">
+            <div class="ev-top"><time>09:30</time><h4>晨会</h4></div><div class="where">B 座 12F · 小会议室</div></div></div>
+          <div class="ev"><div class="bar"></div><div class="ev-main">
+            <div class="ev-top"><time>11:00</time><h4>与设计师同步改版稿</h4></div><div class="where">线上 · 腾讯会议</div></div></div>
+          <div class="ev"><div class="bar"></div><div class="ev-main">
+            <div class="ev-top"><time>16:00</time><h4>产品评审</h4></div><div class="where">线上 · 飞书</div></div></div>
+        </div>
+      </div>
+
+      <div class="card hero">
+        <div class="clock">15:44</div>
+        <div class="meta">11月8日 周日 · 下午 3 点 44 分</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="ic">☀</div><div class="card-title">现在</div><div class="card-sub">杭州</div></div>
+        <div class="card-body">
+          <div class="srow"><span class="k">天气</span><span class="v">21° 多云转晴</span><span class="tail">15°–24°</span></div>
+          <div class="srow"><span class="k">下一个会</span><span class="v">16:00 产品评审</span><span class="tail">还有 16 分钟</span></div>
+          <div class="srow"><span class="k">步数</span><span class="v">3,064</span><span class="tail">目标 8,000</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="ic">👣</div><div class="card-title">步数</div><div class="card-sub">3,064 / 8,000</div></div>
+        <div class="card-body">
+          <div class="prog"><i style="width:38%"></i></div>
+          <div class="meta" style="font-size:11.5px;color:var(--text-2);margin-top:8px">还差 4,936 步。</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="ic">☑</div><div class="card-title">没做完的事</div><div class="card-sub">3 项</div></div>
+        <div class="card-body">
+          <div class="todo"><div class="ring"></div><div><div class="t-title">把周报发给张总</div><div class="t-due late">已过期</div></div></div>
+          <div class="todo"><div class="ring"></div><div><div class="t-title">退掉上周的快递</div><div class="t-due">今天 18:00</div></div></div>
+          <div class="todo"><div class="ring"></div><div><div class="t-title">约牙医复查</div><div class="t-due">3 天后</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab"><span class="i">✦</span><span>Nomi</span></div>
+      <div class="tab on"><span class="i">☀</span><span>今日</span></div>
+    </div>
+    <div class="home-ind"></div>
+  </div></div>
+</div>
+
+</body>
+</html>

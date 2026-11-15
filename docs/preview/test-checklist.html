@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Nomi 装机验收清单</title>
+<style>
+  :root{
+    --bg:#07090D; --card:#0C1116; --line:rgba(255,255,255,.07);
+    --ink:#E8EBF0; --sub:#7d8794; --ok:#7BE0AE; --warn:#FFC978; --bad:#FF9A90;
+    --acc:#4DE3FF;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    padding:0 0 40px}
+
+  /* 吸顶进度 */
+  .bar{position:sticky;top:0;z-index:10;background:rgba(7,9,13,.92);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+    padding:14px 18px 12px}
+  .bar .top{display:flex;align-items:baseline;gap:10px;margin-bottom:9px}
+  .bar .t{font-size:16px;font-weight:700}
+  .bar .n{font-size:13px;color:var(--sub);margin-left:auto;font-variant-numeric:tabular-nums}
+  .bar .n b{color:var(--ok);font-size:17px}
+  .track{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .track i{display:block;height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,#4DE3FF,#7BE0AE);transition:width .25s}
+
+  .wrap{padding:16px 16px 0;max-width:760px;margin:0 auto}
+
+  .grp{font-size:11.5px;letter-spacing:.14em;color:var(--sub);
+    margin:22px 0 10px;font-weight:600}
+  .grp:first-child{margin-top:4px}
+
+  .item{display:flex;gap:13px;padding:15px 15px;border-radius:14px;
+    background:var(--card);border:1px solid var(--line);margin-bottom:10px;
+    transition:border-color .2s,background .2s}
+  .item.done{border-color:rgba(64,200,140,.32);background:rgba(64,200,140,.06)}
+  .item.fail{border-color:rgba(255,90,80,.35);background:rgba(255,90,80,.06)}
+
+  /* 勾选框 */
+  .box{width:26px;height:26px;border-radius:8px;flex:none;margin-top:1px;
+    border:2px solid rgba(255,255,255,.22);display:flex;align-items:center;
+    justify-content:center;cursor:pointer;transition:.15s}
+  .item.done .box{background:var(--ok);border-color:var(--ok)}
+  .item.done .box::after{content:"";width:7px;height:12px;border-right:2.5px solid #04140C;
+    border-bottom:2.5px solid #04140C;transform:rotate(45deg) translate(-1px,-1px)}
+  .item.fail .box{background:var(--bad);border-color:var(--bad)}
+  .item.fail .box::after{content:"!";color:#2a0806;font-weight:800;font-size:15px}
+
+  .body{flex:1;min-width:0}
+  .head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .idx{font-size:11px;font-variant-numeric:tabular-nums;color:var(--sub);
+    border:1px solid var(--line);border-radius:5px;padding:1px 5px;flex:none}
+  .name{font-size:14.5px;font-weight:600;line-height:1.35}
+  .how{font-size:12.5px;color:var(--sub);line-height:1.75;margin-top:3px}
+  .how b{color:#B9C6D4;font-weight:500}
+  .expect{margin-top:8px;padding:8px 10px;border-radius:8px;
+    background:rgba(77,227,255,.07);border-left:2px solid rgba(77,227,255,.5);
+    font-size:12px;color:#9FD4E8;line-height:1.7}
+  .expect b{color:#CFEFFA;font-weight:600}
+
+  .acts{display:flex;gap:7px;margin-top:11px}
+  .acts button{font-size:11.5px;padding:5px 11px;border-radius:7px;cursor:pointer;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--sub);
+    font-family:inherit}
+  .acts button.on{background:rgba(255,90,80,.15);border-color:rgba(255,90,80,.3);color:var(--bad)}
+
+  .foot{margin:26px auto 0;max-width:760px;padding:0 18px;
+    font-size:12px;color:var(--sub);line-height:1.9}
+  .foot b{color:#B9C6D4}
+  .reset{display:block;width:100%;margin-top:16px;padding:12px;border-radius:10px;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    color:var(--sub);font-size:13px;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="top">
+    <div class="t">Nomi 装机验收</div>
+    <div class="n"><b id="doneN">0</b> / 14</div>
+  </div>
+  <div class="track"><i id="barFill"></i></div>
+</div>
+
+<div class="wrap" id="list"></div>
+
+<div class="foot">
+  <b>点勾选框 = 通过。</b> 点「没过」标红，方便最后汇总。<br>
+  有问题的，把<b>这件原话 + 它的回复</b>发我，我按编号定位。<br>
+  进度存在这台设备的浏览器里，刷新不会丢。
+  <button class="reset" onclick="resetAll()">清空进度，重新验</button>
+</div>
+
+<script>
+const ITEMS = [
+  { g:'日程（这轮唯一新增的“能力”，最关键）', n:'一句话新增日程',
+    how:'对 Nomi 说：<b>明天下午三点开会</b>',
+    exp:'回「记下了：11月9日 周一 15:00，开会。提前 10 分钟提醒你。」<br>然后去「日程」页，能看到这一条。' },
+
+  { g:'日程（这轮唯一新增的“能力”，最关键）', n:'语音改期',
+    how:'接着说：<b>把三点的会改到四点</b>',
+    exp:'回「改好了：开会 从 …15:00 挪到 …16:00。」<br>日程页里时间变成 16:00，时长没变。' },
+
+  { g:'日程（这轮唯一新增的“能力”，最关键）', n:'语音取消',
+    how:'接着说：<b>取消四点那个会</b>',
+    exp:'回「取消了：… 的会议。」<br>日程页里那一条消失。' },
+
+  { g:'天气', n:'穿衣建议',
+    how:'问：<b>天气怎么样</b>',
+    exp:'天气卡里多一行 <b>👕 长袖或薄外套；早晚差 9°，多带一件</b> 之类。<br>聊天气泡里也会单独来一句「穿：…」' },
+
+  { g:'天气', n:'多城市天气',
+    how:'设置 → 关注城市 → 输入「北京」→ 添加<br>然后问：<b>北京天气</b>',
+    exp:'卡片城市变成北京，回复以「北京：」开头。<br>当前位置的设置不受影响。' },
+
+  { g:'记忆', n:'记忆管理（查看 / 删除）',
+    how:'设置 → 数据 → <b>记忆管理</b>',
+    exp:'列出你俩聊过的每一条，右侧有时间。<br><b>左滑任意一条 → 删除</b>，条数减少。' },
+
+  { g:'记忆', n:'聊天记录保存',
+    how:'多任务里<b>上滑杀掉 App</b>，再重开',
+    exp:'之前的对话都还在（卡片会重新查）。' },
+
+  { g:'记忆', n:'多轮记忆',
+    how:'问：<b>刚才那个会几点来着</b>',
+    exp:'它答得出具体时间（比如「下午三点，开会」），而不是说不知道。' },
+
+  { g:'通知', n:'早报',
+    how:'设置 → 通知 → 打开「每天早上报一下」<br>把<b>早报时间改成 1 分钟后</b>',
+    exp:'到点收到通知：「早上好 · 今天 …°，…；第一件是 …」' },
+
+  { g:'通知', n:'会议前 10 分钟',
+    how:'设置 → 通知 → 打开「会议前 10 分钟」<br>确保日程里有个<b>即将开始</b>的会',
+    exp:'会前 10 分钟收到「快要开始了 · 16:00 产品评审…」' },
+
+  { g:'通知', n:'久坐提醒',
+    how:'设置 → 通知 → 打开「久坐提醒（每天 5 次）」',
+    exp:'10:00 / 11:30 / 14:00 / 15:30 / 17:00 各收到一次「起来走两步」。' },
+
+  { g:'表现层', n:'锁屏只剩小人',
+    how:'锁屏看那条 Live Activity（要先在 App 里让它活着）',
+    exp:'<b>没有黑卡片、没有文字</b>，只有 Nomi 在壁纸上走动 / 坐下 / 打盹。' },
+
+  { g:'表现层', n:'灵动岛去状态点',
+    how:'看灵动岛左侧',
+    exp:'只有<b>两只竖条眼睛</b>，右边那个绿点没有了。' },
+
+  { g:'表现层', n:'步数卡 / 待办卡',
+    how:'打开「今日」页',
+    exp:'状态卡下面多了两张卡：<b>👣 步数（带进度条）</b> 和 <b>☑ 没做完的事</b>。' },
+];
+
+const KEY = 'nomi.checklist.v1';
+let state = JSON.parse(localStorage.getItem(KEY) || '{}');
+
+const list = document.getElementById('list');
+let lastGroup = '';
+
+ITEMS.forEach((it, i) => {
+  if (it.g !== lastGroup) {
+    lastGroup = it.g;
+    const g = document.createElement('div');
+    g.className = 'grp';
+    g.textContent = it.g;
+    list.appendChild(g);
+  }
+
+  const el = document.createElement('div');
+  el.className = 'item';
+  el.id = 'item' + i;
+  el.innerHTML = `
+    <div class="box" onclick="toggle(${i})"></div>
+    <div class="body">
+      <div class="head"><span class="idx">${i + 1}</span><span class="name">${it.n}</span></div>
+      <div class="how">${it.how}</div>
+      <div class="expect">${it.exp}</div>
+      <div class="acts">
+        <button onclick="mark(${i},'done')" id="d${i}">✓ 通过</button>
+        <button onclick="mark(${i},'fail')" id="f${i}">✗ 没过</button>
+      </div>
+    </div>`;
+  list.appendChild(el);
+});
+
+function render() {
+  let done = 0, fail = 0;
+  ITEMS.forEach((_, i) => {
+    const el = document.getElementById('item' + i);
+    const st = state[i];
+    el.className = 'item' + (st === 'done' ? ' done' : st === 'fail' ? ' fail' : '');
+    document.getElementById('d' + i).className = st === 'done' ? 'on' : '';
+    document.getElementById('f' + i).className = st === 'fail' ? 'on' : '';
+    if (st === 'done') done++;
+    if (st === 'fail') fail++;
+  });
+  document.getElementById('doneN').textContent = done;
+  document.getElementById('barFill').style.width = (done / ITEMS.length * 100) + '%';
+}
+
+function mark(i, st) {
+  state[i] = (state[i] === st) ? undefined : st;
+  if (!state[i]) delete state[i];
+  localStorage.setItem(KEY, JSON.stringify(state));
+  render();
+}
+
+function toggle(i) {
+  mark(i, state[i] === 'done' ? undefined : 'done');
+}
+
+function resetAll() {
+  if (!confirm('清空所有勾选？')) return;
+  state = {};
+  localStorage.removeItem(KEY);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

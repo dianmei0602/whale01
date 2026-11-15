@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nomi 技能矩阵 v2</title>
+<style>
+:root{
+  --bg:#0a0c0f; --panel:#111419; --panel2:#151a20; --panel3:#1a2027;
+  --line:#232a33; --line2:#2e3742;
+  --txt:#e6eaf0; --dim:#96a1b0; --dim2:#737f8d;
+  --done:#3ddc97; --part:#f5b64b; --todo:#5b9cf8; --lock:#ef5f5f;
+  --key:#c08bff; --paid:#f0a83c; --new:#ff8fb1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 520px at 15% -12%, #16212c 0%, transparent 62%),
+    radial-gradient(900px 460px at 98% 0%, #1c1726 0%, transparent 58%),
+    var(--bg);
+  color:var(--txt);
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1480px;margin:0 auto;padding:0 24px 90px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:60;
+  background:rgba(10,12,15,.82);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+}
+.hbar{max-width:1480px;margin:0 auto;padding:14px 24px 0;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.brand h1{margin:0;font-size:23px;letter-spacing:.5px;font-weight:700}
+.brand h1 span{color:var(--dim2);font-weight:400;font-size:13px;margin-left:8px;letter-spacing:0}
+.brand .sub{margin-top:5px;font-size:12px;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)}
+.lg{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.lg i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.lg i.done{background:var(--done)}
+.lg i.part{background:var(--part)}
+.lg i.todo{background:var(--todo)}
+.lg i.lock{background:var(--lock)}
+
+.acct{display:flex;align-items:center;gap:10px;margin-left:auto;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:8px 12px}
+.acct .lab{font-size:12px;color:var(--dim);line-height:1.35}
+.acct .lab b{display:block;color:var(--txt);font-size:12.5px}
+.switch{width:44px;height:24px;border-radius:14px;background:#2a323d;border:1px solid var(--line2);position:relative;cursor:pointer;transition:.2s;flex:0 0 auto}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#8b96a5;transition:.2s}
+.switch.on{background:rgba(240,168,60,.28);border-color:rgba(240,168,60,.55)}
+.switch.on::after{left:22px;background:var(--paid)}
+
+/* tabs */
+.tabs{max-width:1480px;margin:0 auto;padding:0 24px;display:flex;gap:4px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);font-size:13.5px;padding:11px 14px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.18s}
+.tab:hover{color:var(--txt)}
+.tab.active{color:var(--txt);border-bottom-color:var(--todo);font-weight:600}
+
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin:22px 0 14px}
+.stat{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat .num{font-size:24px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat .cap{font-size:11.5px;color:var(--dim);margin-top:3px}
+.stat .cap2{font-size:10.5px;color:var(--dim2);margin-top:2px}
+.stat.hi{border-color:rgba(240,168,60,.4);background:linear-gradient(180deg,rgba(240,168,60,.09),var(--panel))}
+
+/* ---------- filter ---------- */
+.filters{display:flex;flex-direction:column;gap:8px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+.frow{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.fgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flabel{font-size:11.5px;color:var(--dim2);letter-spacing:.5px;margin-right:2px}
+.fbtn{background:#12161c;border:1px solid var(--line);color:var(--dim);font-size:12px;padding:4px 10px;border-radius:7px;cursor:pointer;font-family:inherit;transition:.15s}
+.fbtn:hover{color:var(--txt);border-color:var(--line2)}
+.fbtn.active{color:var(--txt);background:#1b2635;border-color:#365074;box-shadow:0 0 0 1px rgba(91,156,248,.18) inset}
+.fbtn.new.active{background:rgba(255,143,177,.12);border-color:rgba(255,143,177,.45);color:#ffc2d3}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:#12161c;border:1px solid var(--line);border-radius:8px;padding:5px 10px;min-width:220px}
+.search input{background:none;border:0;outline:0;color:var(--txt);font-size:12.5px;width:100%;font-family:inherit}
+.search input::placeholder{color:var(--dim2)}
+.reset{background:none;border:0;color:var(--dim2);font-size:11.5px;cursor:pointer;text-decoration:underline;font-family:inherit}
+
+/* ---------- matrix ---------- */
+#matrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(392px,1fr));gap:14px;align-items:start}
+.mod{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 14px 15px;transition:border-color .2s}
+.mod:hover{border-color:var(--line2)}
+.modhead{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.modhead .nm{font-size:14px;font-weight:600;flex:0 0 auto}
+.modhead .cnt{font-size:10.5px;color:#93a0b0;background:#161b22;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-variant-numeric:tabular-nums;flex:0 0 auto}
+.modhead .hint{font-size:11px;color:var(--dim2);margin-left:2px;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mixbar{display:flex;height:3px;border-radius:2px;overflow:hidden;background:#1b222b;margin-bottom:12px}
+.mixbar i{display:block;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;max-width:100%;
+  background:#13171d;border:1px solid var(--line);border-radius:9px;
+  padding:6px 9px;font-size:12.5px;color:var(--txt);cursor:pointer;
+  font-family:inherit;text-align:left;transition:.16s;
+}
+.chip:hover{background:#191f27;border-color:#3a4654;transform:translateY(-1px)}
+.chip i.dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.chip.s-done i.dot{background:var(--done)}
+.chip.s-part i.dot{background:var(--part)}
+.chip.s-todo i.dot{background:var(--todo)}
+.chip.s-locked i.dot{background:var(--lock)}
+.chip.s-locked .nm{color:#9aa4b1}
+.chip .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.badge{font-size:10px;padding:1px 5px;border-radius:4px;line-height:1.55;letter-spacing:.2px;white-space:nowrap;flex:0 0 auto}
+.badge.cost-key{color:#e6d5ff;background:rgba(192,139,255,.16);border:1px solid rgba(192,139,255,.3)}
+.badge.cost-paid{color:#ffdca6;background:rgba(240,168,60,.16);border:1px solid rgba(240,168,60,.34)}
+.badge.asset{color:#aab6c4;background:rgba(142,154,169,.1);border:1px solid rgba(142,154,169,.22)}
+.badge.new{color:#ffd0dd;background:rgba(255,143,177,.15);border:1px solid rgba(255,143,177,.34)}
+.depcount{font-size:10px;color:#8aa6c6}
+.chip.sel{border-color:var(--todo);background:#16202c;box-shadow:0 0 0 3px rgba(91,156,248,.14)}
+.chip.chain{border-color:#3d6690;background:#141c26}
+.chip.chain.sel{border-color:var(--todo)}
+.empty{color:var(--dim2);font-size:13px;padding:40px 4px;text-align:center}
+
+/* ---------- timeline ---------- */
+#timeline{display:flex;flex-direction:column;gap:12px}
+.trow{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.thead{display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap;row-gap:6px}
+.thead .t{font-size:14px;font-weight:600}
+.thead .tm{font-size:11.5px;color:var(--dim2)}
+.thead .cov{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim)}
+.covbar{width:130px;height:5px;border-radius:3px;background:#1b222b;overflow:hidden}
+.covbar i{display:block;height:100%;background:linear-gradient(90deg,#2f9e75,#3ddc97)}
+.thead .gap{font-size:11px;padding:2px 7px;border-radius:5px;background:rgba(239,95,95,.12);color:#ff9b9b;border:1px solid rgba(239,95,95,.25)}
+.thead .good{font-size:11px;padding:2px 7px;border-radius:5px;background:rgba(61,220,151,.1);color:#7ce9bc;border:1px solid rgba(61,220,151,.24)}
+
+/* ---------- roadmap ---------- */
+#roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.tier h3{margin:0;font-size:14.5px;display:flex;align-items:center;gap:8px}
+.tier .tagx{font-size:10.5px;padding:2px 7px;border-radius:5px;border:1px solid var(--line2);color:var(--dim)}
+.tier p{margin:7px 0 13px;font-size:12px;color:var(--dim);line-height:1.6}
+.rlist{display:flex;flex-direction:column;gap:7px}
+.ritem{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;background:#13171d;border:1px solid var(--line);border-radius:9px;font-size:12.5px}
+.ritem i.dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:0 0 auto}
+.ritem .mid{flex:1;min-width:0}
+.ritem .mid b{font-weight:500}
+.ritem .why{font-size:11px;color:var(--dim2);margin-top:2px}
+.ritem .lockmsg{font-size:10.5px;color:#f0a83c;margin-top:2px}
+
+/* ---------- blocked ---------- */
+#blocked{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start}
+.bcol{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.bcol h3{margin:0 0 4px;font-size:14.5px}
+.bcol .sub{font-size:11.5px;color:var(--dim2);margin-bottom:13px;line-height:1.6}
+.bitem{padding:9px 11px;background:#13171d;border:1px solid var(--line);border-radius:9px;margin-bottom:7px}
+.bitem .n{font-size:12.5px}
+.bitem .r{font-size:11px;color:var(--dim2);margin-top:3px}
+.bitem.pay.ok{border-color:rgba(61,220,151,.3);background:rgba(61,220,151,.05)}
+.bitem.pay.ok .n::after{content:"  已解锁";font-size:10px;color:#7ce9bc;margin-left:6px}
+.bnote{font-size:11px;color:var(--dim2);border-top:1px dashed var(--line);margin-top:12px;padding-top:10px;line-height:1.6}
+
+/* ---------- detail panel ---------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:.22s;z-index:79}
+.scrim.on{opacity:1;pointer-events:auto}
+.detail{
+  position:fixed;top:0;right:0;bottom:0;width:378px;max-width:92vw;z-index:80;
+  background:#0d1015;border-left:1px solid var(--line2);
+  transform:translateX(103%);transition:transform .26s cubic-bezier(.3,.8,.3,1);
+  padding:22px;overflow-y:auto;
+}
+.detail.open{transform:none}
+.dhead{display:flex;align-items:flex-start;gap:10px}
+.dhead h2{margin:0;font-size:18px;line-height:1.35;font-weight:600;flex:1}
+.x{background:none;border:1px solid var(--line);color:var(--dim);border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:14px;line-height:1;flex:0 0 auto}
+.x:hover{color:var(--txt);border-color:var(--line2)}
+.dcrumb{font-size:11.5px;color:var(--dim2);margin:8px 0 14px}
+.dpill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);margin:0 6px 6px 0}
+.dpill i{width:7px;height:7px;border-radius:50%}
+.dsec{margin-top:18px}
+.dsec h4{margin:0 0 8px;font-size:11px;letter-spacing:1px;color:var(--dim2);font-weight:500}
+.dkv{display:flex;flex-direction:column;gap:7px;font-size:12.5px}
+.dkv .row{display:flex;gap:10px}
+.dkv .k{width:62px;color:var(--dim2);flex:0 0 auto;font-size:12px}
+.dkv .v{flex:1}
+.dlink{background:#13171d;border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:12px;color:var(--txt);cursor:pointer;font-family:inherit;margin:0 6px 6px 0;display:inline-flex;gap:6px;align-items:center}
+.dlink:hover{border-color:#3d6690}
+.dlink i{width:6px;height:6px;border-radius:50%}
+.dnote{font-size:12.5px;color:#b9c3d0;line-height:1.72;background:#12171d;border:1px solid var(--line);border-radius:10px;padding:12px}
+.warn{font-size:12px;color:#f0a83c;line-height:1.6;background:rgba(240,168,60,.07);border:1px solid rgba(240,168,60,.25);border-radius:9px;padding:10px 12px}
+.muted{color:var(--dim2);font-size:12px}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.on{display:flex}
+.mbox{background:#0e1217;border:1px solid var(--line2);border-radius:16px;max-width:640px;width:100%;padding:24px;max-height:82vh;overflow-y:auto;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.mbox h2{margin:0 0 4px;font-size:18px}
+.mbox .sm{font-size:11.5px;color:var(--dim2);margin-bottom:16px}
+.mlist{display:flex;flex-direction:column;gap:11px}
+.mitem{display:flex;gap:11px;align-items:flex-start}
+.mnum{flex:0 0 22px;height:22px;border-radius:6px;background:#1a2431;color:#8fb6ea;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.mitem .t{font-size:12.5px;line-height:1.65}
+.mitem .t b{color:var(--txt)}
+
+/* ---------- footer / misc ---------- */
+.foot{margin-top:26px;font-size:11.5px;color:var(--dim2);line-height:1.9;border-top:1px solid var(--line);padding-top:16px}
+.view{display:none}
+.view.on{display:block}
+@media (max-width:760px){
+  .wrap{padding:0 14px 70px}
+  .hbar{padding:12px 14px 0}
+  .acct{margin-left:0}
+  #matrix,#roadmap,#blocked{grid-template-columns:1fr}
+  .search{min-width:100%;margin-left:0}
+  .detail{width:100%;max-width:100%}
+  .stat .num{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbar">
+    <div class="brand">
+      <h1>Nomi 技能矩阵 <span>v2 · 2026.11.08</span></h1>
+      <div class="sub">
+        <div class="legend">
+          <span class="lg"><i class="done"></i>已具备</span>
+          <span class="lg"><i class="part"></i>部分具备</span>
+          <span class="lg"><i class="todo"></i>可以加</span>
+          <span class="lg"><i class="lock"></i>账号未解锁</span>
+          <span class="lg"><span class="badge cost-key">需 Key</span></span>
+          <span class="lg"><span class="badge cost-paid">需付费账号</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="acct">
+      <div class="lab"><b>免费 Apple ID</b>当前账号能力</div>
+      <div class="switch" id="acctSwitch" role="switch" aria-checked="false" title="切换为 $99 付费开发者账号"></div>
+    </div>
+  </div>
+  <div style="margin:10px 0 0;padding:10px 14px;border-radius:10px;background:rgba(64,200,140,.10);border:1px solid rgba(64,200,140,.25);font-size:12px;color:#7BE0AE;line-height:1.7">已按真实代码核对（2026-11-08）：修正 12 处状态 —— 9 条标 todo 但实际已落地、3 条标 done 但代码里没有；另补 1 条矩阵漏项（就寝提醒）。</div>
+<div class="tabs" id="tabs">
+    <button class="tab active" data-view="matrix">技能矩阵</button>
+    <button class="tab" data-view="timeline">一天时间线</button>
+    <button class="tab" data-view="roadmap">三层路线</button>
+    <button class="tab" data-view="blocked">受限清单</button>
+    <button class="tab" data-view="changelog">本版改了什么</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="stats" id="stats"></div>
+
+  <div class="filters" id="filters">
+    <div class="frow">
+      <div class="fgroup">
+        <span class="flabel">状态</span>
+        <button class="fbtn active" data-f="st" data-v="all">全部</button>
+        <button class="fbtn" data-f="st" data-v="done">已具备</button>
+        <button class="fbtn" data-f="st" data-v="part">部分具备</button>
+        <button class="fbtn" data-f="st" data-v="todo">可以加</button>
+        <button class="fbtn" data-f="st" data-v="locked">未解锁</button>
+      </div>
+      <div class="fgroup">
+        <span class="flabel">成本</span>
+        <button class="fbtn active" data-f="cost" data-v="all">全部</button>
+        <button class="fbtn" data-f="cost" data-v="free">免费</button>
+        <button class="fbtn" data-f="cost" data-v="key">需 Key</button>
+        <button class="fbtn" data-f="cost" data-v="paid">需付费账号</button>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgroup">
+        <span class="flabel">触发</span>
+        <button class="fbtn active" data-f="trig" data-v="all">全部</button>
+        <button class="fbtn" data-f="trig" data-v="user">用户开口</button>
+        <button class="fbtn" data-f="trig" data-v="auto">自动</button>
+        <button class="fbtn" data-f="trig" data-v="time">定时</button>
+      </div>
+      <div class="fgroup">
+        <button class="fbtn new" id="newOnly">只看建议新增</button>
+        <button class="fbtn" id="hideMeta">隐藏素材 / 设置</button>
+        <button class="reset" id="resetAll">重置</button>
+      </div>
+      <div class="search">
+        <input id="q" placeholder="搜索技能、模块或说明…" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <section class="view on" id="v-matrix"><div id="matrix"></div></section>
+  <section class="view" id="v-timeline"><div id="timeline"></div></section>
+  <section class="view" id="v-roadmap"><div id="roadmap"></div></section>
+  <section class="view" id="v-blocked"><div id="blocked"></div></section>
+  <section class="view" id="v-changelog">
+    <div class="mbox" style="max-width:100%;box-shadow:none">
+      <h2>这一版改了什么</h2>
+      <div class="sm">对照原图逐条修正，共 8 处结构性改动</div>
+      <div class="mlist" id="changelogList"></div>
+    </div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="detail" id="detail"></aside>
+
+<script>
+const MODULES = [
+  {id:'persona',   name:'人格与形象',   hint:'外形、动作、成长、皮肤'},
+  {id:'life',      name:'生活状态',     hint:'心情、精力、自主活动'},
+  {id:'voice',     name:'对话与语音',   hint:'听说、上下文、唤醒方式'},
+  {id:'memory',    name:'记忆与关系',   hint:'保存、画像、关系里程碑'},
+  {id:'query',     name:'查询与信息',   hint:'天气、位置、日程卡与外部信息'},
+  {id:'action',    name:'执行与设备',   hint:'日程闭环、设备控制、系统接入'},
+  {id:'proactive', name:'主动关怀',     hint:'该开口的时候开口'},
+  {id:'form',      name:'呈现形态',     hint:'浮层、灵动岛、锁屏、小组件'},
+  {id:'config',    name:'设置与配置',   hint:'外观、权限、模型'}
+];
+
+const SCENES = [
+  {id:'morning',  label:'早晨', time:'06:00 – 09:00'},
+  {id:'commute',  label:'通勤', time:'09:00 – 10:00'},
+  {id:'work',     label:'工作', time:'10:00 – 18:00'},
+  {id:'evening',  label:'晚间', time:'18:00 – 23:00'},
+  {id:'all',      label:'全天', time:'随时待命'}
+];
+
+const TRIG = {user:'用户开口', auto:'自动', time:'定时', idle:'待机'};
+const COST = {free:'免费', key:'需 Key', paid:'需付费账号'};
+const TIER = {t1:'速赢', t2:'跃迁', t3:'一次投入'};
+
+const SKILLS = [
+  /* 人格与形象 */
+  {id:'p_face',  n:'14 种表情',              mod:'persona', st:'done', cost:'free', trig:'idle', scene:'all', kind:'asset', note:'内容资产。原图把它计入技能分母，导致总数虚高；这里单独标记，不进统计。'},
+  {id:'p_move',  n:'7 种动作',               mod:'persona', st:'done', cost:'free', trig:'idle', scene:'all', kind:'asset'},
+  {id:'p_blink', n:'眨眼（真人节奏）',        mod:'persona', st:'done', cost:'free', trig:'auto', scene:'all', note:'非等间隔的拟真细节，属于「感知质量」而非功能。'},
+  {id:'p_breath',n:'呼吸 / 缩放动画',        mod:'persona', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'p_eye',   n:'眼睛跟随屏幕',           mod:'persona', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'p_mat',   n:'钛合金材质',              mod:'persona', st:'done', cost:'free', trig:'idle', scene:'all', kind:'asset'},
+  {id:'p_grow',  n:'养成：长大 / 换壳',       mod:'persona', st:'todo', cost:'free', trig:'auto', scene:'all', tier:'t2', note:'依赖长期记忆与活跃度数据；单做会变成空壳数值。'},
+  {id:'p_skin',  n:'节日皮肤',                mod:'persona', st:'todo', cost:'free', trig:'time', scene:'all', tier:'t3'},
+  {id:'p_evoice',n:'语音情绪识别',            mod:'persona', st:'todo', cost:'key',  trig:'auto', scene:'all', tier:'t2', isNew:true, note:'需 ASR 带情绪标注能力（第三方 API 或本地模型）。原图完全没覆盖这一层。'},
+
+  /* 生活状态 */
+  {id:'l_mood',  n:'心情 / 精力 / 无聊值',    mod:'life', st:'done', cost:'free', trig:'auto', scene:'all', note:'这些数值目前只是「有」，还没有驱动具体行为，属于部分具备的隐性问题。'},
+  {id:'l_self',  n:'自主小活动',              mod:'life', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'l_cold',  n:'被冷落会生气 / 哭',        mod:'life', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'l_eff',   n:'心情影响对话反应',        mod:'life', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'l_poke',  n:'拖动 + 戳头反馈',          mod:'life', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'l_explain',n:'状态可解释面板',         mod:'life', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t1', isNew:true, note:'让用户看懂「它为什么没精神」。陪伴类产品最贵的是信任，不是功能。'},
+
+  /* 对话与语音 */
+  {id:'v_talk',  n:'点一下说话',              mod:'voice', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'v_asr',   n:'语音转文字',              mod:'voice', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'v_llm',   n:'大模型问答（可切模型）',   mod:'voice', st:'done', cost:'key',  trig:'user', scene:'all', note:'原图写作「DeepSeek 回答」，把供应商写进了能力名。抽象后换模型不用重画这张图。'},
+  {id:'v_tone',  n:'情绪化进气（语气）',       mod:'voice', st:'part', cost:'free', trig:'auto', scene:'all', note:'图例里有「部分具备」，但原图没有任何 chip 能看出谁是部分具备 —— 这里显式标出。'},
+  {id:'v_multi', n:'连续对话（保留上下文）',   mod:'voice', st:'done', cost:'free', trig:'user', scene:'all', tier:'t1', deps:['mem_round']},
+  {id:'v_stream',n:'打断与低延迟流式',        mod:'voice', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t1', isNew:true, note:'没有打断就不叫对话，叫语音输入。'},
+  {id:'v_wake',  n:'唤醒词「Nomi」',           mod:'voice', st:'todo', cost:'paid', trig:'user', scene:'all', tier:'t3'},
+
+  /* 记忆与关系 */
+  {id:'mem_save',n:'聊天记录持久保存',         mod:'memory', st:'done', cost:'free', trig:'auto', scene:'all', tier:'t1'},
+  {id:'mem_round',n:'多轮记忆',               mod:'memory', st:'done', cost:'free', trig:'user', scene:'all', tier:'t1'},
+  {id:'mem_pref',n:'记住你的偏好',             mod:'memory', st:'todo', cost:'free', trig:'auto', scene:'all', tier:'t1', deps:['mem_round']},
+  {id:'mem_prof',n:'长期用户画像',             mod:'memory', st:'todo', cost:'free', trig:'auto', scene:'all', tier:'t2', isNew:true, deps:['mem_round'], note:'原图只有「记住偏好」，没有画像层。画像才是主动关怀的燃料。'},
+  {id:'mem_mile',n:'纪念日 / 关系里程碑',      mod:'memory', st:'todo', cost:'free', trig:'time', scene:'all', tier:'t2', isNew:true},
+  {id:'mem_panel',n:'记忆管理（查看 / 删除）', mod:'memory', st:'part', cost:'free', trig:'user', scene:'all', tier:'t1', isNew:true, note:'记忆是双刃剑。不给删除入口，隐私风险会盖过体验收益。'},
+
+  /* 查询与信息 */
+  {id:'q_weather',n:'天气卡（未来三天）',      mod:'query', st:'done', cost:'free', trig:'user', scene:'morning'},
+  {id:'q_loc',   n:'位置卡',                   mod:'query', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'q_cal',   n:'日程卡',                   mod:'query', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'q_today', n:'今日状态卡',               mod:'query', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'q_step',  n:'步数 / 移动卡',            mod:'query', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'q_multi', n:'多城市天气',               mod:'query', st:'todo', cost:'free', trig:'user', scene:'morning', tier:'t1', deps:['q_weather']},
+  {id:'q_cloth', n:'穿衣建议',                 mod:'query', st:'todo', cost:'free', trig:'auto', scene:'morning', tier:'t1', deps:['q_weather']},
+  {id:'q_uv',    n:'紫外线 / 花粉',            mod:'query', st:'todo', cost:'free', trig:'auto', scene:'morning', tier:'t2', deps:['q_weather']},
+  {id:'q_air',   n:'空气质量建议',             mod:'query', st:'todo', cost:'free', trig:'auto', scene:'morning', tier:'t2', deps:['q_weather']},
+  {id:'q_news',  n:'新闻摘要',                 mod:'query', st:'todo', cost:'key',  trig:'user', scene:'morning', tier:'t2'},
+  {id:'q_fin',   n:'股票 / 汇率',              mod:'query', st:'todo', cost:'key',  trig:'user', scene:'morning', tier:'t2'},
+  {id:'q_exp',   n:'快递查询',                 mod:'query', st:'todo', cost:'key',  trig:'user', scene:'all', tier:'t2'},
+  {id:'q_trans', n:'翻译',                     mod:'query', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t1'},
+  {id:'q_photo', n:'拍照问「这是什么」',        mod:'query', st:'todo', cost:'key',  trig:'user', scene:'all', tier:'t2'},
+  {id:'q_card',  n:'识别名片 / 收据',          mod:'query', st:'todo', cost:'key',  trig:'user', scene:'work', tier:'t2'},
+
+  /* 执行与设备 */
+  {id:'a_newev', n:'一句话新增日程',           mod:'action', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'a_cal',   n:'写进系统日历',             mod:'action', st:'done', cost:'free', trig:'user', scene:'all', deps:['a_newev']},
+  {id:'a_rem',   n:'到点提醒（提前 10 分钟）', mod:'action', st:'done', cost:'free', trig:'time', scene:'all', deps:['a_cal']},
+  {id:'a_radio', n:'打开广播',                 mod:'action', st:'todo', cost:'free', trig:'user', scene:'commute'},
+  {id:'a_share', n:'分享位置',                 mod:'action', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'a_edit',  n:'语音改期 / 取消',          mod:'action', st:'todo', cost:'free', trig:'user', scene:'work', tier:'t1', deps:['a_newev']},
+  {id:'a_conf',  n:'日程冲突检测',             mod:'action', st:'todo', cost:'free', trig:'auto', scene:'work', tier:'t2', deps:['a_cal']},
+  {id:'a_rep',   n:'周期习惯（重复日程）',     mod:'action', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t1', deps:['a_newev']},
+  {id:'a_eta',   n:'通勤时间预估',             mod:'action', st:'todo', cost:'key',  trig:'user', scene:'commute', tier:'t2', deps:['q_loc']},
+  {id:'a_nav',   n:'导航到某地',               mod:'action', st:'todo', cost:'key',  trig:'user', scene:'commute', tier:'t2'},
+  {id:'a_rest',  n:'查附近餐厅',               mod:'action', st:'todo', cost:'key',  trig:'user', scene:'evening', tier:'t2', deps:['q_loc']},
+  {id:'a_music', n:'音乐播放控制',             mod:'action', st:'todo', cost:'free', trig:'user', scene:'evening', tier:'t2'},
+  {id:'a_home',  n:'HomeKit 灯 / 空调',        mod:'action', st:'todo', cost:'free', trig:'user', scene:'evening', tier:'t2'},
+  {id:'a_flash', n:'手电筒 / 亮度',            mod:'action', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t2'},
+  {id:'a_batt',  n:'电池 / 存储提醒',          mod:'action', st:'todo', cost:'free', trig:'auto', scene:'all', tier:'t2'},
+  {id:'a_pomo',  n:'番茄钟 / 专注',             mod:'action', st:'todo', cost:'free', trig:'user', scene:'work', tier:'t1'},
+  {id:'a_bill',  n:'语音记账',                 mod:'action', st:'todo', cost:'free', trig:'user', scene:'evening', tier:'t2'},
+  {id:'a_count', n:'倒计时 / 纪念日',          mod:'action', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t1'},
+  {id:'a_food',  n:'随机决定吃什么',           mod:'action', st:'todo', cost:'free', trig:'user', scene:'evening', tier:'t1'},
+  {id:'a_siri',  n:'Siri / 快捷指令',          mod:'action', st:'todo', cost:'free', trig:'user', scene:'all', tier:'t2'},
+  {id:'a_widget',n:'小组件可交互',             mod:'action', st:'todo', cost:'paid', trig:'user', scene:'all', tier:'t3'},
+  {id:'a_sleep', n:'睡眠数据（HealthKit）',    mod:'action', st:'todo', cost:'paid', trig:'auto', scene:'morning', tier:'t3'},
+  {id:'a_hr',    n:'心率异常提醒',             mod:'action', st:'todo', cost:'paid', trig:'auto', scene:'all', tier:'t3'},
+  {id:'a_close', n:'闭环校验（做了没）',        mod:'action', st:'todo', cost:'free', trig:'auto', scene:'all', tier:'t2', isNew:true, deps:['a_rem'], note:'原图只到「写进日历」，缺「到点叫 → 用户确认 → 记住结果」。闭环是陪伴感与可信度的分水岭。'},
+
+  /* 主动关怀 */
+  {id:'pr_off',  n:'下班提醒',                 mod:'proactive', st:'todo', cost:'free', trig:'time', scene:'evening'},
+  {id:'pr_tidy', n:'整理提醒',                 mod:'proactive', st:'todo', cost:'free', trig:'time', scene:'evening'},
+  {id:'pr_brief',n:'早间播报（早报）',         mod:'proactive', st:'done', cost:'free', trig:'time', scene:'morning', tier:'t2', deps:['q_weather','q_cal','q_news'], note:'原图「早报（没做）」和「每天早上 7:00 早报」是同一个东西。合并为一条，并把依赖画出来：天气 + 日程 + 新闻。'},
+  {id:'pr_umb',  n:'出门带伞提醒',             mod:'proactive', st:'done', cost:'free', trig:'auto', scene:'commute', tier:'t2', deps:['q_cloth']},
+  {id:'pr_meet', n:'会前 10 分钟提醒',         mod:'proactive', st:'done', cost:'free', trig:'time', scene:'work', tier:'t1', deps:['a_cal']},
+  {id:'pr_sit',  n:'久坐提醒',                 mod:'proactive', st:'done', cost:'free', trig:'time', scene:'work', tier:'t1'},
+    {id:'pr_sleep',n:'就寝提醒',mod:'proactive',st:'done',cost:'free',trig:'time',scene:'evening',note:'矩阵漏项：代码里 scheduleBedtime 已经可用，随设置里的就寝时间走。'},
+  {id:'pr_water',n:'喝水提醒',                 mod:'proactive', st:'todo', cost:'free', trig:'time', scene:'work', tier:'t1', isNew:true},
+  {id:'pr_go',   n:'通勤出发提醒',             mod:'proactive', st:'todo', cost:'free', trig:'auto', scene:'commute', tier:'t2', isNew:true, deps:['q_loc','a_eta']},
+  {id:'pr_miss', n:'久未使用主动关心',         mod:'proactive', st:'todo', cost:'free', trig:'auto', scene:'evening', tier:'t2', isNew:true, deps:['mem_prof'], note:'已有心情值，却没有「主动开口」的动作。低成本、高感知的一条。'},
+  {id:'pr_review',n:'晚间复盘 / 今日小结',     mod:'proactive', st:'todo', cost:'free', trig:'time', scene:'evening', tier:'t2', isNew:true, deps:['a_close']},
+
+  /* 呈现形态 */
+  {id:'f_overlay',n:'App 内浮层',             mod:'form', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'f_island',n:'灵动岛',                  mod:'form', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'f_lock',  n:'锁屏活动（仅锁屏可动）',   mod:'form', st:'part', cost:'free', trig:'auto', scene:'all'},
+  {id:'f_widget',n:'桌面小组件',              mod:'form', st:'done', cost:'free', trig:'auto', scene:'all'},
+  {id:'f_open',  n:'点击唤起 App',            mod:'form', st:'done', cost:'free', trig:'user', scene:'all'},
+  {id:'f_live',  n:'实时活动 / Live Activity', mod:'form', st:'done', cost:'free', trig:'auto', scene:'all', tier:'t2', isNew:true, note:'iOS 上「一直在场」的最强形态，原图完全没覆盖。它也是「图标不能动」的官方替代路径。'},
+
+  /* 设置 */
+  {id:'s_skin',  n:'三档外观',                 mod:'config', st:'done', cost:'free', trig:'idle', scene:'all', kind:'setting'},
+  {id:'s_perm',  n:'系统权限面板',             mod:'config', st:'done', cost:'free', trig:'idle', scene:'all', kind:'setting'},
+  {id:'s_key',   n:'模型 Key 调试',            mod:'config', st:'done', cost:'free', trig:'idle', scene:'all', kind:'setting'},
+  {id:'s_persona',n:'跟随人设',                mod:'config', st:'done', cost:'free', trig:'idle', scene:'all', kind:'setting'},
+  {id:'s_city',  n:'城市 / 定位选择',          mod:'config', st:'done', cost:'free', trig:'idle', scene:'all', kind:'setting'}
+];
+
+const BLOCKED = [
+  {cat:'hard', n:'读微信 / 支付宝 / 高德里的数据', r:'系统沙盒，App 之间数据不通'},
+  {cat:'hard', n:'替你操作其他 App（自动发消息）', r:'沙盒禁止跨 App 自动化'},
+  {cat:'hard', n:'图标会动',                       r:'iOS 不允许第三方图标动画'},
+  {cat:'hard', n:'小组件持续动画',                 r:'WidgetKit 只渲染静态时间线'},
+  {cat:'hard', n:'锁屏挂起后继续跑',               r:'App 进入挂起即停止执行'},
+  {cat:'pay',  n:'推送通知',                       r:'免费账号不支持签名下的推送能力'},
+  {cat:'pay',  n:'App 与小组件共享数据',           r:'需 App Group（付费账号）'},
+  {cat:'pay',  n:'永久安装（不过期）',             r:'免费账号签名 7 天到期'},
+  {cat:'mit',  n:'图标动效',                       r:'改用 Live Activity / 灵动岛呈现状态', to:'f_live'},
+  {cat:'mit',  n:'小组件动画',                     r:'定时快照多帧 + 点击进 App 播放'},
+  {cat:'mit',  n:'后台持续感知',                   r:'本地通知 + 后台刷新配额，做「到点提醒」而非「持续监控」', to:'a_rem'},
+  {cat:'mit',  n:'跨 App 数据',                    r:'用户主动截图 + OCR 解析，不做静默抓取'}
+];
+
+const CHANGELOG = [
+  {t:'<b>单一分类轴。</b> 原图第一节按能力域、第二节按领域 + 技术模块，同一件事在两张表里叫不同名字。现在统一为 9 个模块，一条技能只出现一次。'},
+  {t:'<b>去重合并。</b>「早报（没做）」与「每天早上 7:00 早报」是同一条；天气 / 日程 / 记忆 / 小组件在两张表里重叠。已合并，并在详情里注明原图口径。'},
+  {t:'<b>计数口径。</b> 表情、动作、材质、三档外观属于素材与设置，不是「可被触发、有输入输出的技能」。现已标记为 素材/设置，计入分母被剔除。'},
+  {t:'<b>受限拆三类。</b> 原图把「做不到」压成 7 条红线。现在拆为：系统硬限制（无解）/ 花钱即解（$99）/ 有降级方案，后者不是做不到，是换一种做法。'},
+  {t:'<b>依赖关系可追溯。</b> 每条技能都能看到前置。早报实际依赖「天气 + 日程 + 新闻」，原图把它排在速赢里，是排序失真的直接原因。'},
+  {t:'<b>$99 开关。</b> 右上角可模拟付费开发者账号，实时显示解锁项与收益。原图把「永久安装 7 天到期」「推送」列为做不到，其实是可花钱解决的 —— 这会误导成本判断。'},
+  {t:'<b>视觉编码符号化。</b> 颜色 + 文案双编码（● ◐ ○ ⊘），解决红绿对色盲不友好；免费项不再打标签，只标「需 Key / 需付费」，信息噪音大幅下降。'},
+  {t:'<b>补 12 条高价值缺口。</b> 实时活动、长期画像、记忆管理、闭环校验、语音情绪识别、打断流式、通勤出发、晚间复盘等 —— 原图全都缺失。建议新增项统一标「新」。'}
+];
+
+/* ---------------- state ---------------- */
+const state = {st:'all', cost:'all', trig:'all', q:'', newOnly:false, hideMeta:false, paid:false, sel:null, view:'matrix'};
+const byId = Object.fromEntries(SKILLS.map(s=>[s.id,s]));
+const isMeta = s => s.kind==='asset' || s.kind==='setting';
+const eff = s => (s.cost==='paid' && !state.paid && s.st!=='done') ? 'locked' : s.st;
+const COSTLABEL = {free:null, key:'需 Key', paid:'需付费账号'};
+
+/* ---------------- helpers ---------------- */
+function dotHTML(status){
+  const c = {done:'var(--done)',part:'var(--part)',todo:'var(--todo)',locked:'var(--lock)'}[status];
+  return '<i class="dot" style="background:'+c+'"></i>';
+}
+function chipHTML(s){
+  const e = eff(s);
+  let html = '<button class="chip s-'+e+'" data-id="'+s.id+'">';
+  html += dotHTML(e);
+  html += '<span class="nm">'+s.n+'</span>';
+  if(s.isNew) html += '<span class="badge new">新</span>';
+  if(s.kind==='asset') html += '<span class="badge asset">素材</span>';
+  if(s.kind==='setting') html += '<span class="badge asset">设置</span>';
+  if(COSTLABEL[s.cost]) html += '<span class="badge cost-'+s.cost+'">'+COSTLABEL[s.cost]+'</span>';
+  if(s.deps && s.deps.length) html += '<span class="depcount">↳'+s.deps.length+'</span>';
+  return html+'</button>';
+}
+
+function matches(s){
+  if(state.hideMeta && isMeta(s)) return false;
+  if(state.newOnly && !s.isNew) return false;
+  if(state.st!=='all' && eff(s)!==state.st) return false;
+  if(state.cost!=='all' && s.cost!==state.cost) return false;
+  if(state.trig!=='all' && s.trig!==state.trig) return false;
+  if(state.q){
+    const q = state.q.toLowerCase();
+    const hay = s.n + ' ' + (MODULES.find(m=>m.id===s.mod)||{}).name + ' ' + (s.note||'');
+    if(!hay.toLowerCase().includes(q)) return false;
+  }
+  return true;
+}
+
+/* ---------------- stats ---------------- */
+function renderStats(){
+  const real = SKILLS.filter(s=>!isMeta(s));
+  const done = real.filter(s=>eff(s)==='done').length;
+  const part = real.filter(s=>eff(s)==='part').length;
+  const add  = real.filter(s=>eff(s)==='todo').length;
+  const lock = SKILLS.filter(s=>eff(s)==='locked').length;
+  const key  = real.filter(s=>s.cost==='key' && eff(s)!=='done').length;
+  const neu  = real.filter(s=>s.isNew).length;
+  const meta = SKILLS.filter(isMeta).length;
+  const blockedTotal = BLOCKED.length;
+  const stat = (n,cap,cap2,hi)=> '<div class="stat'+(hi?' hi':'')+'"><div class="num">'+n+'</div><div class="cap">'+cap+'</div>'+(cap2?'<div class="cap2">'+cap2+'</div>':'')+'</div>';
+  let html = '';
+  html += stat(real.length,'技能总数（已去重）','素材/设置 '+meta+' 条单独归类');
+  html += stat(done,'已具备');
+  html += stat(part,'部分具备','原图未标注，本版补标');
+  html += stat(add,'可以加','免费即可实现');
+  html += stat(key,'其中需第三方 Key');
+  html += stat(lock,'账号未解锁', state.paid?'$99 账号已开启':'点右上角开关可解锁', true);
+  html += stat(neu,'建议新增','原图缺失的高价值项');
+  html += stat(blockedTotal,'受限 / 降级方案','拆为 硬限制·花钱即解·有替代');
+  document.getElementById('stats').innerHTML = html;
+}
+
+/* ---------------- matrix ---------------- */
+function renderMatrix(){
+  const list = SKILLS.filter(matches);
+  if(!list.length){
+    document.getElementById('matrix').innerHTML = '<div class="empty">没有符合条件的技能，试试重置筛选。</div>';
+    return;
+  }
+  let html = '';
+  MODULES.forEach(m=>{
+    const items = list.filter(s=>s.mod===m.id);
+    if(!items.length) return;
+    const all = SKILLS.filter(s=>s.mod===m.id);
+    const seg = {done:0,part:0,todo:0,locked:0};
+    all.forEach(s=>{ const e=eff(s); if(seg[e]!==undefined) seg[e]++; });
+    const total = all.length || 1;
+    const bar = ['done','part','todo','locked'].map(k=>{
+      if(!seg[k]) return '';
+      return '<i style="width:'+(seg[k]/total*100)+'%;background:'+({done:'var(--done)',part:'var(--part)',todo:'var(--todo)',locked:'var(--lock)'}[k])+'"></i>';
+    }).join('');
+    html += '<div class="mod"><div class="modhead">'
+      + '<span class="nm">'+m.name+'</span>'
+      + '<span class="cnt">'+items.length+'/'+all.length+'</span>'
+      + '<span class="hint">'+m.hint+'</span></div>'
+      + '<div class="mixbar">'+bar+'</div>'
+      + '<div class="chips">'+items.map(chipHTML).join('')+'</div></div>';
+  });
+  document.getElementById('matrix').innerHTML = html;
+  bindChips();
+  applyChain();
+}
+
+/* ---------------- dependency chain ---------------- */
+function upstream(id, acc){
+  acc = acc || new Set();
+  const s = byId[id]; if(!s || !s.deps) return acc;
+  s.deps.forEach(d=>{ if(!acc.has(d)){ acc.add(d); upstream(d, acc); } });
+  return acc;
+}
+function downstream(id, acc){
+  acc = acc || new Set();
+  SKILLS.forEach(s=>{
+    if(s.deps && s.deps.includes(id) && !acc.has(s.id)){
+      acc.add(s.id); downstream(s.id, acc);
+    }
+  });
+  return acc;
+}
+function applyChain(){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel','chain'));
+  if(!state.sel) return;
+  const up = upstream(state.sel);
+  const down = downstream(state.sel);
+  document.querySelectorAll('.chip').forEach(c=>{
+    const id = c.dataset.id;
+    if(id===state.sel) c.classList.add('sel');
+    else if(up.has(id) || down.has(id)) c.classList.add('chain');
+  });
+}
+function bindChips(){
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.onclick = ()=>{ openDetail(c.dataset.id); };
+  });
+}
+
+/* ---------------- detail ---------------- */
+function openDetail(id){
+  const s = byId[id]; if(!s) return;
+  state.sel = id;
+  const e = eff(s);
+  const mod = MODULES.find(m=>m.id===s.mod) || {name:''};
+  const stLabel = {done:'已具备',part:'部分具备',todo:'可以加',locked:'账号未解锁'}[e];
+  const deps = (s.deps||[]).map(d=>{
+    const x = byId[d]; if(!x) return '';
+    return '<button class="dlink" data-jump="'+d+'">'+dotHTML(eff(x))+x.n+'</button>';
+  }).join('') || '<span class="muted">无前置依赖</span>';
+  const rev = SKILLS.filter(x=>x.deps && x.deps.includes(id));
+  const revHTML = rev.map(x=>'<button class="dlink" data-jump="'+x.id+'">'+dotHTML(eff(x))+x.n+'</button>').join('') || '<span class="muted">暂无下游</span>';
+  const sceneLabel = (SCENES.find(x=>x.id===s.scene)||{}).label || '全天';
+  let warn = '';
+  if(e==='locked') warn = '<div class="warn">当前为免费 Apple ID。此项需 99 美元开发者账号，开启右上角开关即可解锁 —— 它不是「做不到」，是「还没买」。</div>';
+  if(s.kind==='asset') warn = '<div class="warn">这是内容素材，不是技能。原图把它计入 47 项已具备里，会让完成度看起来比实际更高。</div>';
+  if(s.kind==='setting') warn = '<div class="warn">这是设置项，不是技能。用户感知不到它作为一个「能力」的存在。</div>';
+
+  let html =
+      '<div class="dhead"><h2>'+s.n+'</h2><button class="x" id="closeDetail">×</button></div>'
+    + '<div class="dcrumb">'+mod.name+' · '+(s.isNew?'建议新增':'原图已有')+'</div>'
+    + '<span class="dpill">'+dotHTML(e)+stLabel+'</span>'
+    + '<span class="dpill">成本 · '+COST[s.cost]+'</span>'
+    + '<span class="dpill">触发 · '+TRIG[s.trig]+'</span>'
+    + (s.tier?'<span class="dpill">路线 · '+TIER[s.tier]+'</span>':'');
+  html += '<div class="dsec"><h4>场景</h4><div class="dkv"><div class="row"><span class="k">时段</span><span class="v">'+sceneLabel+'</span></div>'
+        + '<div class="row"><span class="k">触发</span><span class="v">'+TRIG[s.trig]+'</span></div>'
+        + '<div class="row"><span class="k">状态</span><span class="v">'+stLabel+'</span></div></div></div>';
+  html += '<div class="dsec"><h4>依赖（前置）</h4>'+deps+'</div>';
+  html += '<div class="dsec"><h4>被依赖（下游）</h4>'+revHTML+'</div>';
+  if(warn) html += '<div class="dsec">'+warn+'</div>';
+  if(s.note) html += '<div class="dsec"><h4>说明</h4><div class="dnote">'+s.note+'</div></div>';
+  document.getElementById('detail').innerHTML = html;
+  document.getElementById('detail').classList.add('open');
+  document.getElementById('scrim').classList.add('on');
+  document.getElementById('closeDetail').onclick = closeDetail;
+  document.querySelectorAll('[data-jump]').forEach(b=>b.onclick = ()=>openDetail(b.dataset.jump));
+  applyChain();
+}
+function closeDetail(){
+  state.sel = null;
+  document.getElementById('detail').classList.remove('open');
+  document.getElementById('scrim').classList.remove('on');
+  applyChain();
+}
+
+/* ---------------- timeline ---------------- */
+function renderTimeline(){
+  const list = SKILLS.filter(matches).filter(s=>!isMeta(s));
+  let html = '<div class="foot" style="margin:0 0 4px;border:0;padding:0;color:var(--dim2)">按一天里的时间段铺开，看哪一段是空的。条形 = 该时段已具备占比。</div>';
+  SCENES.forEach(sc=>{
+    const items = list.filter(s=>s.scene===sc.id);
+    const all = SKILLS.filter(s=>!isMeta(s) && s.scene===sc.id);
+    const done = all.filter(s=>eff(s)==='done').length;
+    const pct = all.length ? Math.round(done/all.length*100) : 0;
+    const verdict = (all.length===0) ? '<span class="gap">空白时段</span>'
+      : (pct>=60 ? '<span class="good">覆盖良好</span>' : '<span class="gap">覆盖偏薄</span>');
+    html += '<div class="trow"><div class="thead"><span class="t">'+sc.label+'</span><span class="tm">'+sc.time+'</span>'
+      + '<span class="cov">已具备 '+done+' / '+all.length+'<span class="covbar"><i style="width:'+pct+'%"></i></span></span>'
+      + verdict + '</div>';
+    html += '<div class="chips">'+(items.map(chipHTML).join('') || '<span class="muted">这个时段还没有任何能力。</span>')+'</div></div>';
+  });
+  html += '<div class="foot">读法：<b>通勤</b>与<b>晚间</b>是最容易做出差异化的两个时段 —— 用户在路上、在沙发上，最需要一个「主动开口」的陪伴者。原图把重心都放在全天，等于没有时段策略。</div>';
+  document.getElementById('timeline').innerHTML = html;
+  bindChips(); applyChain();
+}
+
+/* ---------------- roadmap ---------------- */
+function renderRoadmap(){
+  const tiers = [
+    {id:'t1', title:'0 – 2 周 · 速赢', tag:'免费 · 无外部依赖', desc:'立刻能上手、单项见效、把「它记得我」这件事先立住。'},
+    {id:'t2', title:'1 – 2 月 · 能力跃迁', tag:'数据层 + 流程闭环', desc:'需要前置能力就位，是体验质变点：从「能回答」到「会操心」。'},
+    {id:'t3', title:'一次投入 · $99', tag:'付费开发者账号', desc:'一次买断：推送、唤醒、App Group、HealthKit。图上看是 5 项，实际是一把总钥匙。'}
+  ];
+  let html = '';
+  tiers.forEach(t=>{
+    const items = SKILLS.filter(s=>s.tier===t.id && !isMeta(s));
+    html += '<div class="tier"><h3>'+t.title+'<span class="tagx">'+t.tag+'</span></h3><p>'+t.desc+'</p><div class="rlist">';
+    items.forEach(s=>{
+      const e = eff(s);
+      const pending = (s.deps||[]).filter(d=>{ const x=byId[d]; return x && eff(x)!=='done'; });
+      html += '<div class="ritem">'+dotHTML(e)+'<div class="mid"><b>'+s.n+'</b>'
+        + (COSTLABEL[s.cost] ? ' <span class="badge cost-'+s.cost+'">'+COSTLABEL[s.cost]+'</span>' : '')
+        + (pending.length ? '<div class="why">待前置：'+pending.map(d=>byId[d].n).join(' · ')+'</div>' : '')
+        + (e==='locked' ? '<div class="lockmsg">需 $99 账号</div>' : '')
+        + '</div></div>';
+    });
+    html += '</div></div>';
+  });
+  html += '<div class="foot">原图的建议顺序「聊天记录 → 多轮记忆 → 早报 → 多城市天气 → Siri」把<b>早报</b>排进速赢，但早报依赖天气 + 日程 + 新闻三项，实际属于第二层。依赖没画出来，排序就会失真 —— 这是本版加「待前置」的原因。</div>';
+  document.getElementById('roadmap').innerHTML = html;
+}
+
+/* ---------------- blocked ---------------- */
+function renderBlocked(){
+  const cols = [
+    {cat:'hard', title:'系统硬限制 · 无解', sub:'写进产品承诺里，不要写进路线图。'},
+    {cat:'pay',  title:'花钱即解 · $99', sub:'不是做不到，是还没买。这类应该合并成一个「一次投入」决策。'},
+    {cat:'mit',  title:'有降级方案 · 换个做法', sub:'原图把它们混进「做不到」，浪费了 4 条可执行路径。'}
+  ];
+  let html = '';
+  cols.forEach(c=>{
+    const items = BLOCKED.filter(b=>b.cat===c.cat);
+    html += '<div class="bcol"><h3>'+c.title+'</h3><div class="sub">'+c.sub+'</div>';
+    items.forEach(b=>{
+      const ok = (c.cat==='pay' && state.paid);
+      html += '<div class="bitem '+(c.cat==='pay'?'pay ':'')+(ok?'ok':'')+'"><div class="n">'+b.n+'</div><div class="r">'+b.r+'</div></div>';
+    });
+    if(c.cat==='pay') html += '<div class="bnote">另有 4 项技能同样依赖付费账号：唤醒词「Nomi」、小组件可交互、睡眠数据、心率预警。合计一次投入解锁 <b>7</b> 项。</div>';
+    if(c.cat==='mit') html += '<div class="bnote">例如「图标会动」的官方替代就是 Live Activity —— 已作为可加技能放回矩阵。</div>';
+    html += '</div>';
+  });
+  document.getElementById('blocked').innerHTML = html;
+}
+
+/* ---------------- changelog ---------------- */
+function renderChangelog(){
+  document.getElementById('changelogList').innerHTML = CHANGELOG.map((c,i)=>
+    '<div class="mitem"><div class="mnum">'+(i+1)+'</div><div class="t">'+c.t+'</div></div>'
+  ).join('');
+}
+
+/* ---------------- interactions ---------------- */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  b.classList.add('active');
+  state.view = b.dataset.view;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  const target = document.getElementById('v-'+state.view);
+  if(target) target.classList.add('on');
+  const showFilter = (state.view==='matrix' || state.view==='timeline');
+  document.getElementById('filters').style.display = showFilter ? 'flex' : 'none';
+});
+
+document.getElementById('filters').addEventListener('click', e=>{
+  const b = e.target.closest('.fbtn'); if(!b) return;
+  if(b.id==='newOnly'){
+    state.newOnly = !state.newOnly; b.classList.toggle('active', state.newOnly);
+  } else if(b.id==='hideMeta'){
+    state.hideMeta = !state.hideMeta; b.classList.toggle('active', state.hideMeta);
+  } else {
+    const f = b.dataset.f, v = b.dataset.v;
+    state[f] = v;
+    const sib = b.parentElement.querySelectorAll('.fbtn');
+    sib.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  }
+  refresh();
+});
+
+document.getElementById('resetAll').onclick = ()=>{
+  state.st='all'; state.cost='all'; state.trig='all'; state.q=''; state.newOnly=false; state.hideMeta=false;
+  document.getElementById('q').value='';
+  document.querySelectorAll('.fbtn').forEach(b=>{
+    if(b.dataset.f) b.classList.toggle('active', b.dataset.v==='all');
+    else b.classList.remove('active');
+  });
+  refresh();
+};
+
+document.getElementById('q').addEventListener('input', e=>{
+  state.q = e.target.value.trim();
+  refresh();
+});
+
+document.getElementById('acctSwitch').onclick = ()=>{
+  state.paid = !state.paid;
+  document.getElementById('acctSwitch').classList.toggle('on', state.paid);
+  document.getElementById('acctSwitch').setAttribute('aria-checked', state.paid);
+  document.querySelector('#acctSwitch').parentElement.querySelector('.lab').innerHTML =
+    state.paid ? '<b style="color:#f7cd8e">付费开发者账号</b>$99 已开启' : '<b>免费 Apple ID</b>当前账号能力';
+  refresh();
+};
+
+document.getElementById('scrim').onclick = closeDetail;
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeDetail(); }
+});
+
+function refresh(){
+  renderStats(); renderMatrix(); renderTimeline(); renderRoadmap(); renderBlocked();
+}
+
+/* ---------------- foot ---------------- */
+document.getElementById('foot').innerHTML =
+  '口径说明：<b>技能</b> = 可被触发、有输入输出、能改变用户状态的能力；表情 / 动作 / 材质 / 外观属于素材与设置，单独标记、不计入总数。<br>'
+  + '原图口径 47 已具备 + 54 可学 + 7 做不到 = 108 条，本版去重合并后为 <b>'+SKILLS.filter(s=>!isMeta(s)).length+'</b> 条技能 + <b>'+SKILLS.filter(isMeta).length+'</b> 条素材/设置 + <b>'+BLOCKED.length+'</b> 条受限项。<br>'
+  + '点击任意技能可查看前置依赖与下游影响；右上角开关可模拟 $99 付费账号，观察解锁变化。';
+
+renderStats(); renderMatrix(); renderTimeline(); renderRoadmap(); renderBlocked(); renderChangelog();
+</script>
+</body>
+</html>

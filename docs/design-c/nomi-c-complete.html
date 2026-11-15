@@ -1,0 +1,2029 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Nomi · 完整产品设计</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #dfeefa;
+      --ground: #f1f8ff;
+      --surface: #ffffff;
+      --surface-soft: #dfeeff;
+      --ink: #142338;
+      --muted: #5e7184;
+      --faint: #8294a5;
+      --line: rgba(20, 35, 56, 0.10);
+      --line-strong: rgba(20, 35, 56, 0.18);
+      --blue: #147fe8;
+      --blue-soft: #dcedff;
+      --navy: #17314d;
+      --navy-ink: #f8fbff;
+      --amber: #9a6319;
+      --amber-soft: #fff2d8;
+      --green: #348f67;
+      --danger: #b94b43;
+      --radius-card: 26px;
+      --radius-control: 14px;
+      --device-shadow: 0 26px 65px rgba(28, 71, 105, 0.20);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --canvas: #101820;
+      --ground: #121b24;
+      --surface: #1a2530;
+      --surface-soft: #21303d;
+      --ink: #f4f8fb;
+      --muted: #b3c1cd;
+      --faint: #8798a6;
+      --line: rgba(230, 244, 255, 0.10);
+      --line-strong: rgba(230, 244, 255, 0.17);
+      --blue: #78c7ff;
+      --blue-soft: #1a3449;
+      --navy: #dcefff;
+      --navy-ink: #102238;
+      --amber: #f1c169;
+      --amber-soft: #392e1d;
+      --green: #7ed5aa;
+      --danger: #ff9b91;
+      --device-shadow: 0 26px 65px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-feature-settings: "kern", "tnum";
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+      cursor: pointer;
+    }
+
+    svg {
+      display: block;
+    }
+
+    .page {
+      width: min(1220px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 46px 0 80px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 36px;
+      margin-bottom: 42px;
+    }
+
+    .brandline {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 24px;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .nomi-mark {
+      width: 46px;
+      height: 58px;
+      flex: none;
+      background: url("./nomi-full-transparent.png") center / contain no-repeat;
+    }
+
+    .page-header h1 {
+      max-width: 800px;
+      margin: 0;
+      font-size: clamp(40px, 7vw, 78px);
+      line-height: 0.99;
+      letter-spacing: -0.055em;
+      font-weight: 580;
+    }
+
+    .page-header p {
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex: none;
+    }
+
+    .header-actions button,
+    .nav-links button {
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .nav-links button[aria-pressed="true"] {
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+
+    .section {
+      margin-top: 66px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(26px, 3.3vw, 40px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 580;
+    }
+
+    .section-head p {
+      max-width: 480px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    .experience-grid {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      align-items: center;
+      gap: 38px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 50px;
+      background: var(--ground);
+      box-shadow: var(--device-shadow);
+    }
+
+    .statusbar {
+      flex: 0 0 43px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 25px 5px 29px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .sys-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sys-icons i {
+      height: 9px;
+      display: block;
+      border-radius: 2px;
+      background: currentColor;
+    }
+
+    .sys-icons i:nth-child(1) { width: 16px; }
+    .sys-icons i:nth-child(2) { width: 14px; border-radius: 8px 8px 2px 2px; }
+    .sys-icons i:nth-child(3) { width: 22px; }
+
+    .appbar {
+      flex: 0 0 62px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 48px;
+      flex: none;
+      background: url("./nomi-full-transparent.png") center / contain no-repeat;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand strong {
+      font-size: 17px;
+      font-weight: 650;
+    }
+
+    .brand span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    .online {
+      width: 6px;
+      height: 6px;
+      margin-right: 4px;
+      display: inline-block;
+      border-radius: 50%;
+      background: var(--blue);
+      vertical-align: 1px;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      flex: none;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .appbar .icon-button {
+      margin-left: auto;
+    }
+
+    .app-screen {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .app-screen.active {
+      display: flex;
+    }
+
+    .app-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px 20px 102px;
+      scrollbar-width: none;
+    }
+
+    .app-scroll::-webkit-scrollbar,
+    .chat-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .date-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .page-title {
+      margin: 16px 0 0;
+      max-width: 10ch;
+      font-size: 34px;
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 590;
+    }
+
+    .home-intro {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .home-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .home-intro .page-title {
+      margin-top: 0;
+      max-width: none;
+      font-size: 28px;
+    }
+
+    .home-intro .page-summary {
+      margin-bottom: 0;
+    }
+
+    .nomi-hero {
+      width: 92px;
+      height: 115px;
+      flex: none;
+      object-fit: contain;
+      margin: 0 -9px -4px 0;
+    }
+
+    .home-intro + .focus-card {
+      margin-top: 18px;
+    }
+
+    .page-summary {
+      max-width: 29ch;
+      margin: 10px 0 20px;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.55;
+    }
+
+    .focus-card {
+      overflow: hidden;
+      border-radius: 28px;
+      background: var(--navy);
+      color: var(--navy-ink);
+      box-shadow: 0 16px 34px rgba(23, 49, 77, 0.18);
+    }
+
+    .focus-main {
+      padding: 20px;
+    }
+
+    .focus-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(240, 248, 255, 0.70);
+      font-size: 12.5px;
+    }
+
+    .focus-meta strong {
+      color: #91d5ff;
+      font-weight: 600;
+    }
+
+    .focus-card h2 {
+      margin: 10px 0 7px;
+      color: #fff;
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      font-weight: 600;
+    }
+
+    .focus-card p {
+      margin: 0;
+      color: rgba(240, 248, 255, 0.72);
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+
+    .focus-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .focus-actions button {
+      min-height: 50px;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .focus-actions .primary {
+      background: #fff;
+      color: #17314d;
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 26px 2px 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .section-label span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+    }
+
+    .task {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .task + .task {
+      border-top: 1px solid var(--line);
+    }
+
+    .check {
+      width: 21px;
+      height: 21px;
+      flex: none;
+      border: 1.5px solid var(--line-strong);
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .task-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-copy strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 580;
+    }
+
+    .task-copy span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .task-copy span.warn {
+      color: var(--amber);
+    }
+
+    .pill-action {
+      min-height: 36px;
+      flex: none;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .timeline {
+      position: relative;
+      padding: 3px 16px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 72px;
+      top: 20px;
+      bottom: 20px;
+      width: 1px;
+      background: var(--line);
+    }
+
+    .event {
+      position: relative;
+      display: grid;
+      grid-template-columns: 42px 12px 1fr;
+      gap: 12px;
+      min-height: 58px;
+      padding: 12px 0;
+    }
+
+    .event time {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .event-dot {
+      width: 7px;
+      height: 7px;
+      margin-top: 6px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--surface-soft);
+      position: relative;
+      z-index: 2;
+    }
+
+    .event.now .event-dot {
+      border-color: var(--blue);
+      background: var(--blue);
+    }
+
+    .event strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 580;
+    }
+
+    .event span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .composer {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 82px;
+      z-index: 40;
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 9px 8px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: 0 12px 32px rgba(26, 68, 100, 0.16);
+    }
+
+    .composer .avatar {
+      width: 30px;
+      height: 38px;
+    }
+
+    .composer button.prompt {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .mic {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      flex: none;
+      border: 0;
+      border-radius: 50%;
+      background: var(--blue);
+      color: white;
+    }
+
+    .tabbar {
+      flex: 0 0 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      margin: 0 14px 10px;
+      padding: 7px 48px 0;
+      position: relative;
+      z-index: 50;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 9px 24px rgba(25, 66, 98, 0.10);
+    }
+
+    .tab {
+      min-height: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      border: 0;
+      background: transparent;
+      color: var(--faint);
+      font-size: 11.5px;
+    }
+
+    .tab svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .tab.active {
+      color: var(--ink);
+    }
+
+    .tab.active::after {
+      content: "";
+      width: 18px;
+      height: 2px;
+      margin-top: 1px;
+      border-radius: 99px;
+      background: var(--blue);
+    }
+
+    .today-heading {
+      margin: 18px 0 4px;
+      font-size: 37px;
+      letter-spacing: -0.045em;
+      font-weight: 580;
+    }
+
+    .today-summary {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 14.5px;
+    }
+
+    .agenda-row {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: start;
+      gap: 13px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .agenda-row:first-child {
+      border-top: 0;
+    }
+
+    .agenda-row time {
+      color: var(--muted);
+      font-size: 12.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .agenda-row strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 580;
+    }
+
+    .agenda-row span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .agenda-row.now strong {
+      color: var(--blue);
+    }
+
+    .agenda-row button {
+      min-height: 34px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chat-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 10px 20px 92px;
+      scrollbar-width: none;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .message:not(.mine) {
+      position: relative;
+      padding-left: 36px;
+    }
+
+    .message:not(.mine)::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 15px;
+      width: 28px;
+      height: 35px;
+      background: url("./nomi-full-transparent.png") center / contain no-repeat;
+    }
+
+    .message.mine {
+      align-items: flex-end;
+    }
+
+    .message small {
+      color: var(--faint);
+      font-size: 11.5px;
+    }
+
+    .bubble {
+      max-width: 292px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px 20px 20px 7px;
+      background: var(--surface);
+      font-size: 14.5px;
+      line-height: 1.55;
+    }
+
+    .message.mine .bubble {
+      border-color: transparent;
+      border-radius: 20px 20px 7px 20px;
+      background: var(--blue-soft);
+    }
+
+    .confirm-card {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      background: var(--surface);
+    }
+
+    .confirm-main {
+      padding: 16px;
+    }
+
+    .confirm-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14.5px;
+      font-weight: 620;
+    }
+
+    .confirm-head span {
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+
+    .confirm-time {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .conflict {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 13px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .confirm-actions button {
+      min-height: 48px;
+      border: 0;
+      background: transparent;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .confirm-actions button + button {
+      background: var(--navy);
+      color: var(--navy-ink);
+    }
+
+    .chat-input {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 56px;
+      padding: 8px 9px 8px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: 0 12px 32px rgba(26, 68, 100, 0.16);
+    }
+
+    .chat-input input {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-size: 14px;
+    }
+
+    .settings-list {
+      padding: 6px 20px 24px;
+    }
+
+    .settings-title {
+      margin: 11px 0 18px;
+      font-size: 34px;
+      letter-spacing: -0.04em;
+      font-weight: 590;
+    }
+
+    .profile-card {
+      padding: 18px;
+      border-radius: 23px;
+      background: var(--surface);
+    }
+
+    .profile-card strong {
+      display: block;
+      font-size: 17px;
+      font-weight: 620;
+    }
+
+    .profile-card span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .settings-group {
+      overflow: hidden;
+      margin-top: 18px;
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 6px 18px rgba(37, 76, 106, 0.05);
+    }
+
+    .setting-row {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .setting-row + .setting-row {
+      border-top: 1px solid var(--line);
+    }
+
+    .setting-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      flex: none;
+      border-radius: 11px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .setting-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .setting-copy strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 570;
+    }
+
+    .setting-copy span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 27px;
+      flex: none;
+      position: relative;
+      border: 0;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .back {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .toast {
+      position: absolute;
+      z-index: 120;
+      left: 50%;
+      bottom: 146px;
+      padding: 10px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--navy);
+      color: var(--navy-ink);
+      font-size: 12.5px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 8px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .home-indicator {
+      position: absolute;
+      z-index: 90;
+      left: 50%;
+      bottom: 7px;
+      width: 132px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--ink);
+      opacity: 0.7;
+      transform: translateX(-50%);
+    }
+
+    .design-notes {
+      display: grid;
+      gap: 14px;
+    }
+
+    .note-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+    }
+
+    .note-card h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 620;
+    }
+
+    .note-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .note-card dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 14px;
+      margin: 15px 0 0;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .note-card dt {
+      color: var(--muted);
+    }
+
+    .note-card dd {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .system-grid {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 38px;
+      align-items: start;
+    }
+
+    .lock-phone {
+      background: #203127;
+      color: #f6faf7;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .lock-phone .statusbar {
+      color: #fff;
+    }
+
+    .lock-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px 18px;
+      position: relative;
+    }
+
+    .dynamic-pill {
+      width: 118px;
+      height: 34px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 13px;
+      border-radius: 999px;
+      background: #000;
+    }
+
+    .dynamic-pill .eyes {
+      width: 35px;
+      height: 19px;
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .eye {
+      width: 4px;
+      height: 13px;
+      border-radius: 99px;
+      background: #75ecff;
+      box-shadow: 0 0 6px #29cfe7;
+    }
+
+    .dynamic-pill b {
+      color: #9defff;
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .lock-clock {
+      margin-top: 38px;
+      text-align: center;
+    }
+
+    .lock-clock time {
+      display: block;
+      font-size: 74px;
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      font-weight: 430;
+    }
+
+    .lock-clock span {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 14px;
+    }
+
+    .lock-widgets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .lock-widget {
+      min-height: 78px;
+      padding: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.10);
+    }
+
+    .lock-widget small {
+      display: block;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 10.5px;
+    }
+
+    .lock-widget strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 620;
+    }
+
+    .live-lock {
+      margin-top: auto;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 25px;
+      background: #112838;
+    }
+
+    .live-lock-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-lock .avatar {
+      width: 42px;
+      height: 53px;
+    }
+
+    .live-lock strong {
+      display: block;
+      font-size: 17px;
+      font-weight: 620;
+    }
+
+    .live-lock small {
+      display: block;
+      margin-top: 3px;
+      color: #a9c3d3;
+      font-size: 11.5px;
+    }
+
+    .live-lock .countdown {
+      margin-left: auto;
+      color: #96deff;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .live-lock p {
+      margin: 13px 0 0;
+      color: #c5d7e2;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .live-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .live-actions button {
+      min-height: 37px;
+      flex: 1;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      background: transparent;
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .live-actions .primary {
+      background: #fff;
+      color: #183247;
+    }
+
+    .home-board {
+      padding: 44px 36px;
+      border-radius: 32px;
+      background: #d8eafa;
+    }
+
+    .widget-row {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .widget {
+      overflow: hidden;
+      border-radius: 26px;
+      background: #fff;
+      box-shadow: 0 18px 38px rgba(26, 64, 94, 0.12);
+    }
+
+    .widget.small {
+      width: 176px;
+      height: 176px;
+      padding: 17px;
+      background: #0d1e2c;
+      color: white;
+    }
+
+    .widget.small .avatar {
+      width: 42px;
+      height: 53px;
+    }
+
+    .widget.small .big-number {
+      margin-top: 20px;
+      color: #82d9ff;
+      font-size: 44px;
+      line-height: 1;
+      letter-spacing: -0.055em;
+      font-weight: 580;
+    }
+
+    .widget.small p {
+      margin: 5px 0 0;
+      color: #c3d4df;
+      font-size: 12px;
+    }
+
+    .widget.medium {
+      min-height: 176px;
+      padding: 18px;
+    }
+
+    .widget.medium .top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .widget.medium .avatar {
+      width: 38px;
+      height: 48px;
+    }
+
+    .widget.medium strong {
+      font-size: 16px;
+      font-weight: 620;
+    }
+
+    .widget.medium .event-line {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(20, 35, 56, 0.10);
+    }
+
+    .widget.medium .event-line b {
+      display: block;
+      font-size: 19px;
+      font-weight: 620;
+    }
+
+    .widget.medium .event-line span {
+      display: block;
+      margin-top: 5px;
+      color: #66798a;
+      font-size: 12.5px;
+    }
+
+    .widget-caption {
+      margin: 18px 0 0;
+      color: #62798b;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .island-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .island-spec {
+      min-height: 260px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+    }
+
+    .island-spec h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 620;
+    }
+
+    .island-spec p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .island-demo {
+      min-height: 122px;
+      display: grid;
+      place-items: center;
+    }
+
+    .island-compact {
+      width: 126px;
+      height: 37px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 13px;
+      border-radius: 999px;
+      background: #000;
+      color: #fff;
+    }
+
+    .island-compact .eyes,
+    .island-minimal .eyes {
+      display: flex;
+      gap: 8px;
+    }
+
+    .island-compact b {
+      color: #a6e8ff;
+      font-size: 11px;
+    }
+
+    .island-minimal {
+      width: 48px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #000;
+    }
+
+    .island-minimal .eye {
+      width: 4px;
+      height: 12px;
+    }
+
+    .island-expanded {
+      width: min(100%, 330px);
+      min-height: 148px;
+      padding: 16px;
+      border-radius: 28px;
+      background: #000;
+      color: #fff;
+    }
+
+    .expanded-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .expanded-top .eyes {
+      width: 38px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-radius: 11px;
+      background: #0b1116;
+    }
+
+    .expanded-top strong {
+      font-size: 14.5px;
+    }
+
+    .expanded-top span {
+      display: block;
+      margin-top: 3px;
+      color: #8193a0;
+      font-size: 10.5px;
+    }
+
+    .expanded-top .right {
+      margin-left: auto;
+      color: #8edfff;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .island-expanded p {
+      margin: 13px 0 0;
+      color: #a5b5c0;
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .mini-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .mini-actions span {
+      min-height: 30px;
+      flex: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      color: #fff;
+      font-size: 10.5px;
+    }
+
+    .mini-actions .light {
+      background: #fff;
+      color: #111;
+    }
+
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .state-card {
+      min-height: 176px;
+      padding: 20px;
+      border-radius: 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .state-card .avatar {
+      width: 42px;
+      height: 53px;
+    }
+
+    .state-card h3 {
+      margin: 18px 0 0;
+      font-size: 15px;
+      font-weight: 620;
+    }
+
+    .state-card p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+
+    .state-card button {
+      margin-top: 14px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .implementation {
+      padding: 28px;
+      border-radius: 28px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .implementation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .implementation h3 {
+      margin: 0 0 9px;
+      font-size: 15px;
+      font-weight: 620;
+    }
+
+    .implementation p,
+    .implementation li {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .implementation ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .swatch-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: min(100% - 28px, 620px);
+        padding-top: 28px;
+      }
+
+      .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .experience-grid,
+      .system-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .phone {
+        width: min(100%, 390px);
+        margin: 0 auto;
+      }
+
+      .island-grid,
+      .states-grid,
+      .implementation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .section-head p {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .page {
+        width: 100%;
+        padding-top: 20px;
+      }
+
+      .page-header,
+      .nav-links,
+      .section-head,
+      .design-notes,
+      .section:not(:first-of-type) .section-head {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .phone {
+        width: 100%;
+        height: min(844px, 100dvh);
+        border-radius: 34px;
+      }
+
+      .experience-grid,
+      .system-grid {
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <div>
+        <div class="brandline"><span class="nomi-mark"></span>Nomi</div>
+        <h1>一个安静待在你身边的 AI 助理。</h1>
+        <p>方案 C 的完整体验：从打开 App，到锁屏、桌面组件和灵动岛，只保留真正需要被看见的信息。</p>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="themeButton">切换深色</button>
+      </div>
+    </header>
+
+    <nav class="nav-links" aria-label="设计章节">
+      <button type="button" data-jump="app" aria-pressed="true">主应用</button>
+      <button type="button" data-jump="system" aria-pressed="false">锁屏与组件</button>
+      <button type="button" data-jump="island" aria-pressed="false">灵动岛</button>
+      <button type="button" data-jump="states" aria-pressed="false">状态设计</button>
+      <button type="button" data-jump="implementation" aria-pressed="false">实现规范</button>
+    </nav>
+
+    <section class="section" id="app">
+      <div class="section-head">
+        <h2>先告诉你今天怎么走，再听你开口。</h2>
+        <p>主应用只有 Nomi 和今日两个入口。Nomi 处理“现在要做什么”，今日负责完整时间线。设置从右上角进入。</p>
+      </div>
+
+      <div class="experience-grid">
+        <div class="phone">
+          <div class="statusbar"><span>9:41</span><span class="sys-icons" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <header class="appbar">
+            <button class="back" type="button" id="backButton" aria-label="返回 Nomi" hidden>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <span class="avatar" aria-hidden="true"></span>
+            <span class="brand"><strong>Nomi</strong><span><i class="online"></i>在呢 · 一起慢慢来</span></span>
+            <button class="icon-button" type="button" id="settingsButton" aria-label="打开设置">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.7-3.2 3-5 6.5-5s5.8 1.8 6.5 5"/></svg>
+            </button>
+          </header>
+
+          <section class="app-screen active" id="screen-app-home">
+            <div class="app-scroll">
+              <div class="date-row"><span>11月9日 · 星期一</span><span>刚刚更新</span></div>
+              <div class="home-intro">
+                <div class="home-copy">
+                  <h1 class="page-title">下午好，今天慢慢来</h1>
+                  <p class="page-summary">离产品评审还有 22 分钟。先收好材料，再出门就好。</p>
+                </div>
+                <img class="nomi-hero" src="./nomi-full-transparent.png" alt="钛合金机器人 Nomi，正安静地看着你">
+              </div>
+              <article class="focus-card">
+                <div class="focus-main">
+                  <div class="focus-meta"><span>16:00–17:00 · B 座 12F</span><strong>22 分钟后</strong></div>
+                  <h2>产品评审</h2>
+                  <p>材料和会议邀请已经放在一起。路上不用再翻。</p>
+                </div>
+                <div class="focus-actions">
+                  <button type="button">先看材料</button>
+                  <button class="primary" type="button">现在出发</button>
+                </div>
+              </article>
+              <div class="section-label"><span>今天只需要照看这几件</span><span>2 件</span></div>
+              <div class="panel">
+                <div class="task">
+                  <span class="check"></span>
+                  <div class="task-copy"><strong>周报还没发</strong><span class="warn">拖了 2 天，趁现在做掉吧</span></div>
+                  <button class="pill-action" type="button">完成</button>
+                </div>
+                <div class="task">
+                  <span class="check"></span>
+                  <div class="task-copy"><strong>把快递退了</strong><span>今天 18:00 前都来得及</span></div>
+                </div>
+              </div>
+              <div class="section-label"><span>今天的节奏</span><span>3 项安排</span></div>
+              <div class="panel">
+                <div class="timeline">
+                  <div class="event"><time>11:00</time><span class="event-dot"></span><div><strong>与设计师同步改版稿</strong><span>线上 · 已完成</span></div></div>
+                  <div class="event now"><time>16:00</time><span class="event-dot"></span><div><strong>产品评审</strong><span>B 座 12F · 接下来</span></div></div>
+                  <div class="event"><time>18:30</time><span class="event-dot"></span><div><strong>健身房</strong><span>力量训练 · 45 分钟</span></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="composer">
+              <span class="avatar" aria-hidden="true"></span>
+              <button class="prompt" type="button" data-app-screen="chat">跟我说说，现在要做什么？</button>
+              <button class="mic" type="button" data-app-screen="chat" aria-label="语音输入">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+              </button>
+            </div>
+            <nav class="tabbar">
+              <button class="tab active" type="button" data-app-screen="home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3 14.2 9.8 21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3Z"/></svg>Nomi
+              </button>
+              <button class="tab" type="button" data-app-screen="today">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>今日
+              </button>
+            </nav>
+          </section>
+
+          <section class="app-screen" id="screen-app-today">
+            <div class="app-scroll">
+              <div class="date-row"><span>11月9日 · 星期一</span><span>3 项安排</span></div>
+              <h1 class="today-heading">今天</h1>
+              <p class="today-summary">下午有一场重要的会，上午已经把材料收好了。</p>
+              <div class="agenda-row"><time>11:00</time><div><strong>与设计师同步改版稿</strong><span>线上 · 已完成</span></div></div>
+              <div class="agenda-row now"><time>16:00</time><div><strong>产品评审</strong><span>B 座 12F · 22 分钟后</span></div><button type="button">出发</button></div>
+              <div class="agenda-row"><time>18:00</time><div><strong>退快递</strong><span>截止前完成就好</span></div></div>
+              <div class="agenda-row"><time>18:30</time><div><strong>健身房</strong><span>力量训练 · 45 分钟</span></div></div>
+            </div>
+            <nav class="tabbar">
+              <button class="tab" type="button" data-app-screen="home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3 14.2 9.8 21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3Z"/></svg>Nomi
+              </button>
+              <button class="tab active" type="button" data-app-screen="today">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>今日
+              </button>
+            </nav>
+          </section>
+
+          <section class="app-screen" id="screen-app-chat">
+            <div class="chat-scroll">
+              <div class="message mine"><small>你</small><div class="bubble">把下午三点的评审改到四点</div></div>
+              <div class="message">
+                <small>Nomi · 看过日历了</small>
+                <div class="bubble">找到了，不过改到 16:00 会和设计同步撞上，你来决定。</div>
+                <div class="confirm-card">
+                  <div class="confirm-main">
+                    <div class="confirm-head"><strong>产品评审</strong><span>等你决定</span></div>
+                    <div class="confirm-time">11月10日 · 15:00 → 16:00</div>
+                    <div class="conflict">16:00–16:30 已有「设计同步」</div>
+                  </div>
+                  <div class="confirm-actions">
+                    <button type="button" data-app-screen="home">先不改</button>
+                    <button type="button" data-toast="日历已更新">还是改到 16:00</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input">
+              <span class="avatar" aria-hidden="true"></span>
+              <input aria-label="给 Nomi 发消息" placeholder="继续说，或者按住说话">
+              <button class="mic" type="button" aria-label="开始语音输入" data-toast="正在听">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+              </button>
+            </div>
+          </section>
+
+          <section class="app-screen" id="screen-app-settings">
+            <div class="settings-list">
+              <h1 class="settings-title">设置</h1>
+              <div class="profile-card"><strong>我的 Nomi</strong><span>这里管理记忆、声音和隐私，不展示个人昵称。</span></div>
+              <div class="settings-group">
+                <div class="setting-row">
+                  <span class="setting-icon">◐</span>
+                  <div class="setting-copy"><strong>声音</strong><span>回答时朗读，使用叶子音色</span></div>
+                  <button class="toggle" type="button" aria-label="声音开关" aria-pressed="false" style="background:var(--surface-soft)"></button>
+                </div>
+                <div class="setting-row">
+                  <span class="setting-icon">⌁</span>
+                  <div class="setting-copy"><strong>主动提醒</strong><span>每天最多 3 条，会议中保持安静</span></div>
+                  <button class="toggle" type="button" aria-label="主动提醒开关" aria-pressed="true"></button>
+                </div>
+              </div>
+              <div class="settings-group">
+                <div class="setting-row"><span class="setting-icon">◌</span><div class="setting-copy"><strong>隐私与数据</strong><span>查看哪些内容会发给模型</span></div><span>›</span></div>
+                <div class="setting-row"><span class="setting-icon">◇</span><div class="setting-copy"><strong>记忆</strong><span>12 条偏好，可逐条查看和删除</span></div><span>›</span></div>
+                <div class="setting-row"><span class="setting-icon">⌘</span><div class="setting-copy"><strong>系统权限</strong><span>相机、日历、位置和通知</span></div><span>›</span></div>
+              </div>
+              <div class="settings-group"><div class="setting-row"><div class="setting-copy"><strong>高级</strong><span>模型、API Key 和诊断</span></div><span>›</span></div></div>
+            </div>
+          </section>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+          <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        </div>
+
+        <aside class="design-notes">
+          <div class="note-card">
+            <h3>主界面只回答两件事</h3>
+            <p>“现在最该做什么”和“Nomi 可以怎么帮我”。其余日程、待办都降到次级层级，减少同时争夺注意力。</p>
+          </div>
+          <div class="note-card">
+            <h3>固定结构</h3>
+            <dl>
+              <dt>主入口</dt><dd>Nomi / 今日</dd>
+              <dt>长期入口</dt><dd>设置、记忆、权限</dd>
+              <dt>内容层级</dt><dd>当前事项 → 高优待办 → 全天时间线</dd>
+              <dt>安全动作</dt><dd>预览、确认、执行回执</dd>
+            </dl>
+          </div>
+          <div class="note-card">
+            <h3>点击预览</h3>
+            <p>底部切换“Nomi / 今日”，点头像进入设置，点输入栏进入对话和确认流程。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="system">
+      <div class="section-head">
+        <h2>锁屏与桌面，是 Nomi 的另一个家。</h2>
+        <p>锁屏只显示此刻最重要的一件事。它不复制 App，也不必一直动。真正的陪伴来自持续、准确、不过度打扰。</p>
+      </div>
+      <div class="system-grid">
+        <div class="phone lock-phone">
+          <div class="statusbar"><span>9:41</span><span class="sys-icons" aria-hidden="true"><i></i><i></i><i></i></span></div>
+          <div class="lock-content">
+            <div class="dynamic-pill"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><b>22m</b></div>
+            <div class="lock-clock"><time>15:38</time><span>11月9日 · 星期一</span></div>
+            <div class="lock-widgets">
+              <div class="lock-widget"><small>Nomi</small><strong>在呢</strong></div>
+              <div class="lock-widget"><small>天气</small><strong>21° 多云</strong></div>
+            </div>
+            <div class="live-lock">
+              <div class="live-lock-top">
+                <span class="avatar" aria-hidden="true"></span>
+                <div><strong>产品评审</strong><small>B 座 12F · 16:00</small></div>
+                <span class="countdown">22 分钟</span>
+              </div>
+              <p>现在出发，时间刚刚好。材料昨天晚上已经收好了。</p>
+              <div class="live-actions"><button type="button">稍后提醒</button><button type="button" class="primary">出发</button></div>
+            </div>
+            <div class="home-indicator" style="background:#fff"></div>
+          </div>
+        </div>
+
+        <div class="home-board">
+          <div class="widget-row">
+            <div class="widget small">
+              <span class="avatar" aria-hidden="true"></span>
+              <div class="big-number">22m</div>
+              <p>产品评审</p>
+            </div>
+            <div class="widget medium">
+              <div class="top"><span class="avatar" aria-hidden="true"></span><strong>Nomi · 今天</strong></div>
+              <div class="event-line"><b>16:00 产品评审</b><span>B 座 12F · 材料已准备好</span></div>
+            </div>
+          </div>
+          <p class="widget-caption">小号组件用于快速看倒计时，中号组件补上下一个事件和准备状态。组件只刷新关键时刻，不做持续动画。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="island">
+      <div class="section-head">
+        <h2>灵动岛只保留最关键的一眼。</h2>
+        <p>紧凑态显示眼睛和倒计时；展开态提供事件、地点和两个动作；最小态只保留 Nomi 的眼睛。</p>
+      </div>
+      <div class="island-grid">
+        <article class="island-spec">
+          <div><h3>紧凑态</h3><p>左右两块信息。这里不显示长标题，避免信息被系统截断。</p></div>
+          <div class="island-demo"><div class="island-compact"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><b>22m</b></div></div>
+        </article>
+        <article class="island-spec">
+          <div><h3>最小态</h3><p>同时存在多个实时活动时，只保留一个可辨认的眼睛符号。</p></div>
+          <div class="island-demo"><div class="island-minimal"><span class="eyes"><i class="eye"></i><i class="eye"></i></span></div></div>
+        </article>
+        <article class="island-spec">
+          <div><h3>展开态</h3><p>最多两行正文和两个操作。所有文案都能回退为纯文本和深链。</p></div>
+          <div class="island-demo">
+            <div class="island-expanded">
+              <div class="expanded-top"><span class="eyes"><i class="eye"></i><i class="eye"></i></span><div><strong>产品评审</strong><span>B 座 12F</span></div><span class="right">22m</span></div>
+              <p>现在出发刚好。材料已整理好。</p>
+              <div class="mini-actions"><span>材料</span><span class="light">出发</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="states">
+      <div class="section-head">
+        <h2>没有数据时，也要像 Nomi。</h2>
+        <p>权限缺失、离线、空白都不是错误页。它只是轻轻说明缺少什么，并给出一个下一步。</p>
+      </div>
+      <div class="states-grid">
+        <article class="state-card"><span class="avatar"></span><h3>今天没有安排</h3><p>今天没什么事。我会安静待着，有变化再告诉你。</p><button type="button">看看今天的天气</button></article>
+        <article class="state-card"><span class="avatar"></span><h3>还没拿到日历</h3><p>打开日历权限后，我才能提醒你什么时候出发。</p><button type="button">去开启</button></article>
+        <article class="state-card"><span class="avatar"></span><h3>天气没有连上</h3><p>刚才没拿到天气。日程还在，其他信息也不会被假装补上。</p><button type="button">重新获取</button></article>
+      </div>
+    </section>
+
+    <section class="section" id="implementation">
+      <div class="section-head">
+        <h2>实现边界与映射。</h2>
+        <p>这套方案只使用 iOS 公开能力，并避免把 App 的逻辑复制到组件里。</p>
+      </div>
+      <div class="implementation">
+        <div class="implementation-grid">
+          <div>
+            <h3>主应用</h3>
+            <ul>
+              <li>SwiftUI + iOS 17</li>
+              <li>Nomi / 今日双入口</li>
+              <li>设置作为 sheet</li>
+              <li>对话使用 fullScreenCover 或推入导航</li>
+            </ul>
+          </div>
+          <div>
+            <h3>锁屏与灵动岛</h3>
+            <ul>
+              <li>ActivityKit + WidgetKit</li>
+              <li>compact：眼睛 + 倒计时</li>
+              <li>expanded：事件 + 两个 AppIntent</li>
+              <li>只使用 SwiftUI，不嵌 WebView</li>
+            </ul>
+          </div>
+          <div>
+            <h3>状态规则</h3>
+            <ul>
+              <li>开始：事件前 30 分钟或用户主动开始</li>
+              <li>更新：10 分钟、5 分钟、开始、完成</li>
+              <li>结束：事件完成或开始后 15 分钟</li>
+              <li>不依赖持续后台音频和逐秒推帧</li>
+            </ul>
+          </div>
+        </div>
+        <div class="swatch-row" aria-label="核心颜色">
+          <span class="swatch" style="background:#edf6ff"></span>
+          <span class="swatch" style="background:#147fe8"></span>
+          <span class="swatch" style="background:#17314d"></span>
+          <span class="swatch" style="background:#ffffff"></span>
+          <span class="swatch" style="background:#fff2d8"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const appScreens = [...document.querySelectorAll(".app-screen")];
+    const appButtons = [...document.querySelectorAll("[data-app-screen]")];
+    const settingsButton = document.getElementById("settingsButton");
+    const backButton = document.getElementById("backButton");
+    const themeButton = document.getElementById("themeButton");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    function showAppScreen(name) {
+      appScreens.forEach((screen) => {
+        screen.classList.toggle("active", screen.id === `screen-app-${name}`);
+      });
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.appScreen === name);
+      });
+      backButton.hidden = name === "home" || name === "today";
+    }
+
+    appButtons.forEach((button) => {
+      button.addEventListener("click", () => showAppScreen(button.dataset.appScreen));
+    });
+    settingsButton.addEventListener("click", () => showAppScreen("settings"));
+    backButton.addEventListener("click", () => showAppScreen("home"));
+
+    document.querySelectorAll(".toggle").forEach((button) => {
+      button.addEventListener("click", () => {
+        const on = button.getAttribute("aria-pressed") === "true";
+        button.setAttribute("aria-pressed", String(!on));
+        button.style.background = on ? "var(--surface-soft)" : "var(--green)";
+      });
+    });
+
+    document.querySelectorAll("[data-toast]").forEach((button) => {
+      button.addEventListener("click", () => {
+        toast.textContent = button.dataset.toast;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
+      });
+    });
+
+    document.querySelectorAll("[data-jump]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.getElementById(button.dataset.jump)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document.querySelectorAll("[data-jump]").forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+      });
+    });
+
+    if (new URLSearchParams(location.search).get("theme") === "dark") {
+      document.documentElement.dataset.theme = "dark";
+    }
+    themeButton.textContent = document.documentElement.dataset.theme === "dark" ? "切换浅色" : "切换深色";
+    themeButton.addEventListener("click", () => {
+      document.documentElement.dataset.theme =
+        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      themeButton.textContent = document.documentElement.dataset.theme === "dark" ? "切换浅色" : "切换深色";
+    });
+  </script>
+</body>
+</html>

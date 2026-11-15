@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>Nomi · 说话时的表情</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:30px 26px 34px;background:#07090D;color:#E8EBF0;
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    width:1180px}
+  h1{font-size:22px;margin:0 0 6px}
+  .sub{font-size:12.5px;color:#6E7C8C;margin-bottom:22px;line-height:1.7}
+  .sub b{color:#9FB0C2}
+
+  .answer{background:#0C1116;border:1px solid rgba(255,255,255,.07);border-radius:12px;
+    padding:14px 16px;font-size:13.5px;line-height:1.9;color:#C6D2DE;margin-bottom:24px}
+  .answer .seg{border-bottom:2px solid rgba(255,255,255,.18);padding-bottom:1px}
+  .t{font-size:11px;color:#5D6B7A;margin-left:4px}
+
+  .row{display:flex;gap:14px;align-items:flex-start}
+  .card{flex:1;background:#0C1116;border:1px solid rgba(255,255,255,.07);
+    border-radius:14px;padding:16px 12px 13px;display:flex;flex-direction:column;
+    align-items:center;gap:10px;position:relative}
+  .card .when{position:absolute;top:9px;left:11px;font-size:10px;color:#4d5a68;
+    font-variant-numeric:tabular-nums}
+
+  .nomi{display:flex;flex-direction:column;align-items:center;transform-origin:50% 100%}
+  .head{width:84px;height:66px;border-radius:19px;
+    background:linear-gradient(180deg,#FFFFFF 0%,#B8BAC0 3.5%,#80838A 14%,#5F6268 40%,#33363B 70%,#121316 90%,#575A5F 100%);
+    display:flex;align-items:center;justify-content:center;position:relative}
+  .screen{width:73px;height:55px;border-radius:16px;background:#05070A;
+    display:flex;align-items:center;justify-content:center;gap:18px;overflow:hidden;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.9), 0 0 0 1.4px rgba(0,0,0,.9)}
+  .eye{width:6.5px;border-radius:99px;background:#5CEBFF;
+    box-shadow:0 0 6px rgba(92,235,255,.8)}
+  .neck{width:32px;height:6px;border-radius:3px;margin-top:4px;
+    background:linear-gradient(180deg,#FFFFFF,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+  .feet{display:flex;gap:22px;margin-top:2px}
+  .foot{width:11px;height:17px;border-radius:6px;
+    background:linear-gradient(180deg,#FFFFFF,#75787F 18%,#4D5056 45%,#1F2126 75%,#6B6E73 100%)}
+
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:5px;font-weight:500}
+  .desc{font-size:11.5px;color:#6E7C8C;text-align:center;line-height:1.6;min-height:34px}
+
+  .note{margin-top:24px;font-size:12px;color:#6E7C8C;line-height:1.9}
+  .note b{color:#A9B9C9}
+</style>
+</head>
+<body>
+
+<h1>说话时的表情节拍</h1>
+<div class="sub">
+  不再"念完整句一个表情"。把回答切成短句，<b>按字数估出时间轴</b>，
+  念到哪句、脸就换成那种神态；念字时头还会轻微起伏（代替"嘴在动"）。
+</div>
+
+<div class="answer">
+  「<span class="seg">没找到要改的那件。</span><span class="t">0–2.0s</span>
+   <span class="seg">要不要我帮你新建一个？</span><span class="t">2.2–5.4s</span>
+   <span class="seg">好，那就三点，我给你建上。</span><span class="t">5.6–9.2s</span>」
+</div>
+
+<div class="row">
+
+  <!-- worried -->
+  <div class="card">
+    <div class="when">0.0s – 2.0s</div>
+    <div class="nomi" style="transform:rotate(0deg) translateY(3px)">
+      <div class="head" style="transform:rotate(7deg)">
+        <div class="screen">
+          <div class="eye" style="height:11px;background:#3D6FF0;box-shadow:0 0 6px rgba(61,111,240,.8)"></div>
+          <div class="eye" style="height:11px;background:#3D6FF0;box-shadow:0 0 6px rgba(61,111,240,.8)"></div>
+        </div>
+      </div>
+      <div class="neck"></div>
+      <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+    </div>
+    <span class="tag" style="background:rgba(255,90,80,.13);color:#FF9A90">没拿到</span>
+    <div class="desc">眼睛缩小、发蓝<br>头低 7°</div>
+  </div>
+
+  <!-- thinking -->
+  <div class="card">
+    <div class="when">2.2s – 5.4s</div>
+    <div class="nomi">
+      <div class="head" style="transform:rotate(-4deg) translateY(-1px)">
+        <div class="screen">
+          <div class="eye" style="height:19px;background:#A6FFC9;box-shadow:0 0 6px rgba(166,255,201,.8)"></div>
+          <div class="eye" style="height:19px;background:#A6FFC9;box-shadow:0 0 6px rgba(166,255,201,.8)"></div>
+        </div>
+      </div>
+      <div class="neck"></div>
+      <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+    </div>
+    <span class="tag" style="background:rgba(90,170,255,.12);color:#8CC4FF">商量</span>
+    <div class="desc">眼睛睁大、微亮<br>头抬 4°</div>
+  </div>
+
+  <!-- cheerful -->
+  <div class="card">
+    <div class="when">5.6s – 9.2s</div>
+    <div class="nomi">
+      <div class="head" style="transform:rotate(-2deg)">
+        <div class="screen" style="gap:18px">
+          <div class="eye" style="height:22px;background:#7CFFE8;box-shadow:0 0 7px rgba(124,255,232,.9)"></div>
+          <div class="eye" style="height:22px;background:#7CFFE8;box-shadow:0 0 7px rgba(124,255,232,.9)"></div>
+        </div>
+      </div>
+      <div class="neck"></div>
+      <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+    </div>
+    <span class="tag" style="background:rgba(64,200,140,.14);color:#7BE0AE">答应了</span>
+    <div class="desc">眼睛最亮、略窄<br>头微抬 2°</div>
+  </div>
+
+  <!-- serious -->
+  <div class="card">
+    <div class="when">收尾 · 提醒句</div>
+    <div class="nomi" style="transform:translateY(1px)">
+      <div class="head" style="transform:rotate(2deg)">
+        <div class="screen">
+          <div class="eye" style="height:16px;background:#5CEBFF;opacity:.92"></div>
+          <div class="eye" style="height:16px;background:#5CEBFF;opacity:.92"></div>
+        </div>
+      </div>
+      <div class="neck"></div>
+      <div class="feet"><div class="foot"></div><div class="foot"></div></div>
+    </div>
+    <span class="tag" style="background:rgba(255,190,80,.13);color:#FFC978">提醒</span>
+    <div class="desc">专注、眼睛略收<br>头低 2°</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <b>表情来源：</b>按句子里的信号判断——抱歉/没拿到 → 垂头；反问/商量 → 抬头看你；好事/答应 → 眼睛亮；注意/记得 → 专注。<br>
+  <b>不会跳动作：</b>念答案时身子站着不动，只有脸和头在变，避免念一半突然蹦一下。<br>
+  <b>念字起伏：</b>头部按 sin(7.2t) 轻微摆动 ±1.6°，读起来像在说话而不是在看照片。
+</div>
+
+</body>
+</html>
