@@ -33,6 +33,11 @@ await page.send('Page.addScriptToEvaluateOnNewDocument', {
     window.DAM_NATIVE_TTS_DIRECT = true;
     window.DAM_TTS_VOICE = 'x4_yezi';
     window.DAM_TTS_ENDPOINT = 'wss://tts-api.xfyun.cn/v2/tts';
+    Object.defineProperty(window, 'DAM_TTS_DEFAULT_CONFIG', {
+      value: ${config},
+      writable: false,
+      configurable: false
+    });
   `
 });
 
@@ -43,11 +48,6 @@ try {
     path: join(scriptDir, '..', 'output', 'playwright', 'audio', 'iflytek-direct-setup.png'),
     format: 'png'
   });
-  await page.eval((storedConfig) => {
-    localStorage.setItem('dam_xfyun_tts_v1', storedConfig);
-  }, config);
-  await page.goto(`${base}/index.html?view=event&id=e1449_tumu`, { settleMs: 1900 });
-  await page.eval(() => document.querySelector('#detailView [data-read-toggle]').click());
   const result = await page.eval(async () => {
     for (let index = 0; index < 80; index += 1) {
       await new Promise((done) => setTimeout(done, 250));

@@ -292,19 +292,22 @@
     }
 
     readDirectConfig() {
+      let parsed = null;
       try {
-        const parsed = JSON.parse(localStorage.getItem('dam_xfyun_tts_v1') || 'null');
-        if (!parsed?.appId || !parsed?.apiKey || !parsed?.apiSecret) return null;
-        return {
-          appId: parsed.appId,
-          apiKey: parsed.apiKey,
-          apiSecret: parsed.apiSecret,
-          endpoint: parsed.endpoint || window.DAM_TTS_ENDPOINT || 'wss://tts-api.xfyun.cn/v2/tts',
-          voice: parsed.voice || 'x4_yezi'
-        };
+        parsed = JSON.parse(localStorage.getItem('dam_xfyun_tts_v1') || 'null');
       } catch {
-        return null;
+        parsed = null;
       }
+      const config = [parsed, window.DAM_TTS_DEFAULT_CONFIG]
+        .find((candidate) => candidate?.appId && candidate?.apiKey && candidate?.apiSecret);
+      if (!config) return null;
+      return {
+        appId: config.appId,
+        apiKey: config.apiKey,
+        apiSecret: config.apiSecret,
+        endpoint: config.endpoint || window.DAM_TTS_ENDPOINT || 'wss://tts-api.xfyun.cn/v2/tts',
+        voice: config.voice || 'x4_yezi'
+      };
     }
 
     showDirectSetup() {
@@ -322,7 +325,7 @@
           <label>APIKey<input name="apiKey" autocomplete="off" value="${escUIAttr(this.directConfig?.apiKey || '')}"></label>
           <label>APISecret<input name="apiSecret" type="password" autocomplete="off" value="${escUIAttr(this.directConfig?.apiSecret || '')}"></label>
           <div class="voice-setup-mode">发音人：讯飞小露 · x4_yezi</div>
-          <p class="voice-setup-note">凭据只保存在本机 App 沙盒，不写入网页源码、安装包或仓库。</p>
+          <p class="voice-setup-note">手动填写的凭据只保存在本机 App 沙盒，不会同步到服务器。</p>
           <div class="voice-setup-actions">
             <button type="button" data-tts-close>取消</button>
             <button type="submit">保存并朗读</button>
