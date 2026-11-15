@@ -11,6 +11,7 @@ struct RootView: View {
     @State private var showSettings = false
     @State private var settingsDetailOpen = false
     @State private var composerDraft = ""
+    @State private var composerFocused = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
@@ -56,6 +57,7 @@ struct RootView: View {
         }
         .onChange(of: page) { _, tab in
             UserDefaults.standard.set(tab.rawValue, forKey: "whale.root.tab")
+            composerFocused = false
             UISelectionFeedbackGenerator().selectionChanged()
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -104,8 +106,8 @@ struct RootView: View {
     private var bottomChrome: some View {
         if page == .conversation {
             VStack(spacing: 0) {
-                ConversationComposerBar(model: model, draft: $composerDraft)
-                if !keyboard.isVisible {
+                ConversationComposerBar(model: model, draft: $composerDraft, externalFocused: $composerFocused)
+                if !keyboard.isVisible && !composerFocused {
                     WhaleRootTabBar(selection: $page)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
