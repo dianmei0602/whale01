@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华章 · iPhone UI 方向比较</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="board-header">
+    <div class="board-topline">
+      <div class="board-mark" aria-hidden="true">华</div>
+      <p>华章 · iPhone UI 方向比较</p>
+      <p>2026.11.15</p>
+    </div>
+
+    <div class="board-title">
+      <h1>同一个中国，<br>四种读法。</h1>
+      <div class="board-intro">
+        <p>四套方案共用同一份编年史资料，但让用户首先看见的东西不同：时间、卷册、政权关系或一段叙事。</p>
+        <p>这不是四组换色。每个方案改变首屏问题、信息层级、导航命名与视觉材质。</p>
+      </div>
+    </div>
+
+    <div class="board-criteria" aria-label="比较标准">
+      <p>看历史的速度</p>
+      <p>比较政权的能力</p>
+      <p>长时阅读的舒适度</p>
+      <p>在 iPhone 上的实现成本</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="directions" aria-label="四套 UI 方案">
+      <article class="direction" id="river">
+        <header class="direction-copy">
+          <h2>长河</h2>
+          <p class="scheme-type">时间轴优先</p>
+          <p>把多条政权轨道放在同一画面里，朝代更替与并存关系一眼可见。事件附着在年份上，适合第一次进入或横向比较。</p>
+          <p class="direction-note"><strong>推荐主方案。</strong>最贴近“编年史”的核心价值，现有 23 个政权和 34 个事件可以直接支撑。</p>
+        </header>
+
+        <div class="phone phone-river" data-ui aria-label="长河方案界面预览">
+          <div class="phone-screen">
+            <div class="status-bar"><span>9:41</span><span class="status-marks">5G&nbsp;&nbsp;▮▮▮</span></div>
+            <div class="river-appbar">
+              <div>
+                <span class="seal-small">华</span>
+                <span class="river-brand">华章</span>
+              </div>
+              <button type="button" aria-label="打开检索">检索</button>
+            </div>
+
+            <div class="river-main">
+              <p class="river-overline">公元 960 — 1279</p><!-- taste-skill-ignore eyebrow -->
+              <h3>多条时间线<br>正在同时流动</h3>
+              <p class="river-summary">并立不是并列。拖动年代，比较每个政权真正存在的时刻。</p>
+
+              <div class="river-chart" aria-label="公元九百至一千三百年政权时间轴">
+                <div class="river-axis"><span>900</span><span>1000</span><span>1100</span><span>1200</span><span>1300</span></div>
+                <div class="river-lane"><span>辽</span><i class="bar" style="--left:4%;--width:52%"></i></div>
+                <div class="river-lane"><span>北宋</span><i class="bar bar-strong" style="--left:15%;--width:42%"></i></div>
+                <div class="river-lane"><span>西夏</span><i class="bar" style="--left:34%;--width:48%"></i></div>
+                <div class="river-lane"><span>金</span><i class="bar" style="--left:54%;--width:30%"></i></div>
+                <div class="river-lane"><span>南宋</span><i class="bar bar-active" style="--left:57%;--width:38%"></i></div>
+                <div class="river-now" aria-hidden="true"><span>1127</span></div>
+              </div>
+
+              <div class="river-event">
+                <p>1127</p>
+                <div>
+                  <h4>靖康之变</h4>
+                  <span>北宋终 · 南宋始</span>
+                </div>
+              </div>
+            </div>
+
+            <nav class="phone-nav phone-nav-river" aria-label="主导航">
+              <span class="is-current">长河</span>
+              <span>卷目</span>
+              <span>索引</span>
+            </nav>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <dl class="direction-facts">
+          <div><dt>最强</dt><dd>时间关系与并存政权</dd></div>
+          <div><dt>代价</dt><dd>首屏信息密度较高</dd></div>
+        </dl>
+      </article>
+
+      <article class="direction" id="folio">
+        <header class="direction-copy">
+          <h2>册页</h2>
+          <p class="scheme-type">档案阅读优先</p>
+          <p>像翻开一部经过编辑的图录。每页只有一个时代焦点，字号拉开，目录保持克制，适合慢读与建立整体印象。</p>
+          <p class="direction-note"><strong>最适合详情页。</strong>它能把史实、出处和阅读提示组织得更像出版物。</p>
+        </header>
+
+        <div class="phone phone-folio" data-ui aria-label="册页方案界面预览">
+          <div class="phone-screen">
+            <div class="status-bar"><span>9:41</span><span class="status-marks">5G&nbsp;&nbsp;▮▮▮</span></div>
+            <div class="folio-appbar">
+              <span>华章</span>
+              <button type="button" aria-label="打开目录">目录</button>
+            </div>
+
+            <div class="folio-main">
+              <p class="folio-index">卷目 · 秦汉</p>
+              <h3>秦</h3>
+              <p class="folio-subtitle">首次建立中央集权的统一帝国</p>
+              <p class="folio-period">前 221 — 前 207</p>
+
+              <div class="folio-rule"></div>
+
+              <p class="folio-serif">秦统一六国后推行郡县制，并统一文字、度量衡等制度。</p>
+
+              <div class="folio-stats">
+                <div><strong>23</strong><span>政权条目</span></div>
+                <div><strong>34</strong><span>关键事件</span></div>
+                <div><strong>19</strong><span>文献出处</span></div>
+              </div>
+
+              <div class="folio-reading">
+                <span>接下来读</span>
+                <p>秦统一六国</p>
+                <span>前 221 年 · 史记</span>
+              </div>
+            </div>
+
+            <nav class="phone-nav phone-nav-folio" aria-label="主导航">
+              <span class="is-current">卷目</span>
+              <span>年表</span>
+              <span>索引</span>
+            </nav>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <dl class="direction-facts">
+          <div><dt>最强</dt><dd>阅读节奏与内容可信感</dd></div>
+          <div><dt>代价</dt><dd>快速比较能力较弱</dd></div>
+        </dl>
+      </article>
+
+      <article class="direction" id="atlas">
+        <header class="direction-copy">
+          <h2>天下</h2>
+          <p class="scheme-type">关系比较优先</p>
+          <p>把编年史转成一张可扫描的政权关系图。用户在年代尺上移动，看到谁同时存在、谁接替谁、事件发生在哪条轨道。</p>
+          <p class="direction-note"><strong>最有产品辨识度。</strong>适合把“并存政权”从脚注提升为核心交互。</p>
+        </header>
+
+        <div class="phone phone-atlas" data-ui aria-label="天下方案界面预览">
+          <div class="phone-screen">
+            <div class="status-bar"><span>9:41</span><span class="status-marks">5G&nbsp;&nbsp;▮▮▮</span></div>
+            <div class="atlas-appbar">
+              <div><span class="atlas-mark">华</span><strong>天下</strong></div>
+              <button type="button">公元 1127</button>
+            </div>
+
+            <div class="atlas-main">
+              <p class="atlas-kicker">同年，政权正在交替</p><!-- taste-skill-ignore eyebrow -->
+              <h3>一条年代线<br>穿过五种秩序</h3>
+
+              <div class="atlas-chart">
+                <div class="atlas-years"><span>900</span><span>1000</span><span>1100</span><span>1200</span><span>1300</span></div>
+                <div class="atlas-row"><b>辽</b><i style="--left:8%;--width:50%"></i></div>
+                <div class="atlas-row"><b>北宋</b><i class="strong" style="--left:18%;--width:42%"></i></div>
+                <div class="atlas-row"><b>西夏</b><i style="--left:36%;--width:48%"></i></div>
+                <div class="atlas-row"><b>金</b><i style="--left:55%;--width:30%"></i></div>
+                <div class="atlas-row"><b>南宋</b><i class="strong" style="--left:58%;--width:38%"></i></div>
+                <div class="atlas-marker"><span>1127</span></div>
+              </div>
+
+              <div class="atlas-event">
+                <div class="atlas-event-date">1127</div>
+                <div>
+                  <h4>靖康之变</h4>
+                  <p>北宋灭亡，赵构随后在南方建立南宋。</p>
+                </div>
+              </div>
+
+              <p class="atlas-source">依据 · 宋史 / 金史</p>
+            </div>
+
+            <nav class="phone-nav phone-nav-atlas" aria-label="主导航">
+              <span class="is-current">天下</span>
+              <span>长河</span>
+              <span>索引</span>
+            </nav>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <dl class="direction-facts">
+          <div><dt>最强</dt><dd>并存、接替与同年事件</dd></div>
+          <div><dt>代价</dt><dd>需要更细的交互与标注规则</dd></div>
+        </dl>
+      </article>
+
+      <article class="direction" id="night">
+        <header class="direction-copy">
+          <h2>夜读</h2>
+          <p class="scheme-type">沉浸阅读优先</p>
+          <p>默认进入一段历史，而不是一张目录。极大的年份、安静的正文和少量朱色信息，让阅读和夜间使用成为产品主轴。</p>
+          <p class="direction-note"><strong>最适合主题和事件详情。</strong>可作为长河的时间轴之外的独立阅读模式。</p>
+        </header>
+
+        <div class="phone phone-night" data-ui aria-label="夜读方案界面预览">
+          <div class="phone-screen">
+            <div class="status-bar"><span>9:41</span><span class="status-marks">5G&nbsp;&nbsp;▮▮▮</span></div>
+            <div class="night-appbar">
+              <span>华章</span>
+              <button type="button">亮度</button>
+            </div>
+
+            <div class="night-main">
+              <p class="night-place">北宋 · 东京</p>
+              <div class="night-year">1127</div>
+              <h3>靖康之变<br>与南宋开端</h3>
+              <p class="night-copy">金军攻破东京，北宋灭亡；赵构随后在南方建立南宋。南北关系由此进入长期对峙。</p>
+
+              <div class="night-facts">
+                <div><span>年代表述</span><strong>通行纪年</strong></div>
+                <div><span>依据</span><strong>宋史 · 金史</strong></div>
+              </div>
+
+              <div class="night-next">
+                <span>查看这段政权</span>
+                <strong>南宋</strong>
+              </div>
+            </div>
+
+            <nav class="phone-nav phone-nav-night" aria-label="主导航">
+              <span class="is-current">夜读</span>
+              <span>卷目</span>
+              <span>索引</span>
+            </nav>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+
+        <dl class="direction-facts">
+          <div><dt>最强</dt><dd>叙事、专注与夜间体验</dd></div>
+          <div><dt>代价</dt><dd>全局发现和比较能力最弱</dd></div>
+        </dl>
+      </article>
+    </section>
+
+    <section class="decision" aria-labelledby="decision-title">
+      <div>
+        <h2 id="decision-title">推荐组合：长河为骨，三式并用。</h2>
+        <p class="decision-category">建议组合</p>
+      </div>
+      <div class="decision-copy">
+        <p>首屏使用“长河”，让时间关系成为产品身份；朝代与事件详情采用“册页”的出版式排版；增加“天下”作为并立政权比较视图；“夜读”作为可切换的深色阅读主题。</p>
+        <div class="decision-table" role="table" aria-label="方案组合优先级">
+          <div role="row"><span role="cell">主界面</span><strong role="cell">长河</strong><span role="cell">立即实施</span></div>
+          <div role="row"><span role="cell">详情页</span><strong role="cell">册页</strong><span role="cell">第一批迭代</span></div>
+          <div role="row"><span role="cell">比较视图</span><strong role="cell">天下</strong><span role="cell">第二批迭代</span></div>
+          <div role="row"><span role="cell">外观主题</span><strong role="cell">夜读</strong><span role="cell">跟随深色模式</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="board-footer">
+    <p>华章 · 中国朝代编年史</p>
+    <p>资料版本 2026.11.15-seed1 · 23 个政权条目 · 34 个关键事件 · 19 个出处</p>
+  </footer>
+</body>
+</html>
