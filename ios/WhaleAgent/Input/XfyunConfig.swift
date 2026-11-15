@@ -5,7 +5,14 @@ struct XfyunConfig {
     let apiKey: String
     let apiSecret: String
 
+    static let ttsVoice = "x4_yezi"
+    static let ttsVoiceName = "小露"
+    static let ttsEndpoint = "wss://tts-api.xfyun.cn/v2/tts"
+
     static var current: XfyunConfig? {
+        if let stored = XfyunCredentialStore.load() {
+            return stored
+        }
         let info = Bundle.main.infoDictionary ?? [:]
         func value(_ key: String) -> String {
             if let raw = info[key] as? String { return raw }
@@ -21,6 +28,6 @@ struct XfyunConfig {
     static var isConfigured: Bool { current != nil }
 
     static var statusText: String {
-        isConfigured ? "讯飞语音已配置" : "讯飞语音未配置（使用系统听写）"
+        isConfigured ? "讯飞小露 x4_yezi 已配置" : "讯飞小露未配置（听写与朗读使用系统能力）"
     }
 }

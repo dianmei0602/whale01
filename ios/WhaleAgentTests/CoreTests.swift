@@ -198,6 +198,24 @@ final class CoreTests: XCTestCase {
         XCTAssertTrue(XfyunConfig.statusText.contains("未配置"))
     }
 
+    func testXfyunTTSAuthorizationUsesXiaoluStandardEndpoint() {
+        let config = XfyunConfig(appId: "app-id", apiKey: "api-key", apiSecret: "api-secret")
+        let date = Date(timeIntervalSince1970: 1_764_000_000)
+        let url = XfyunTTSClient.authorizationURL(config: config, now: date)
+        XCTAssertEqual(url?.host, "tts-api.xfyun.cn")
+        XCTAssertEqual(url?.path, "/v2/tts")
+        XCTAssertEqual(XfyunConfig.ttsVoice, "x4_yezi")
+
+        let components = URLComponents(url: try! XCTUnwrap(url), resolvingAgainstBaseURL: false)
+        let authorization = components?.queryItems?
+            .first(where: { $0.name == "authorization" })?.value
+        let decoded = authorization.flatMap { Data(base64Encoded: $0) }
+            .flatMap { String(data: $0, encoding: .utf8) }
+        XCTAssertTrue(decoded?.contains("api_key=\"api-key\"") == true)
+        XCTAssertTrue(decoded?.contains("algorithm=\"hmac-sha256\"") == true)
+        XCTAssertTrue(decoded?.contains("signature=\"") == true)
+    }
+
     func testResultDetailSeparatesReadsFromWrites() {
         let emptyRange = JSONValue.object([
             "count": .number(0),

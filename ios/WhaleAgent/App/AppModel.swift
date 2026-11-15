@@ -444,7 +444,10 @@ final class AppModel: ObservableObject {
             }
         }
         speech.stop()
-        speakReplyForActiveTurn = speakReply && voiceReplyEnabled
+        // The user-facing “语音回应” preference controls assistant playback.
+        // Callers may force it for a specific turn, but an enabled preference
+        // must not silently stay text-only.
+        speakReplyForActiveTurn = voiceReplyEnabled || speakReply
         errorText = nil
         presentedConfirmation = nil
         currentGoal = displayText ?? text

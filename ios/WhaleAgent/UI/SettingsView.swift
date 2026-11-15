@@ -573,7 +573,9 @@ private struct PreferencesSettingsView: View {
                     )) {
                         SettingsChrome.label(
                             title: "语音回应",
-                            subtitle: "回答时同时播放语音",
+                            subtitle: XfyunConfig.isConfigured
+                                ? "回答时使用讯飞小露 x4_yezi"
+                                : "回答时播放语音 · 当前使用系统声音",
                             icon: "mic.fill",
                             tone: .blue
                         )
@@ -706,6 +708,10 @@ private struct ServiceSettingsView: View {
     @ObservedObject var model: AppModel
     @State private var personalKey = ""
     @State private var keyMessage: String?
+    @State private var xfyunAppID = ""
+    @State private var xfyunAPIKey = ""
+    @State private var xfyunAPISecret = ""
+    @State private var xfyunMessage: String?
 
     var body: some View {
         ScrollView {
@@ -729,12 +735,12 @@ private struct ServiceSettingsView: View {
 
                     serviceRow(
                         title: "讯飞语音",
-                        subtitle: XfyunConfig.statusText,
+                        subtitle: XfyunConfig.isConfigured ? "小露 x4_yezi · 听写与朗读" : XfyunConfig.statusText,
                         badge: "讯",
                         badgeIcon: nil,
                         badgeTone: .mint,
                         connected: XfyunConfig.isConfigured,
-                        statusText: XfyunConfig.isConfigured ? "已配置" : "系统听写"
+                        statusText: XfyunConfig.isConfigured ? "已配置" : "系统能力"
                     )
 
                     SettingsChrome.divider
@@ -776,6 +782,78 @@ private struct ServiceSettingsView: View {
                         if let keyMessage { Text(keyMessage).font(.footnote) }
                     }.padding(.vertical, 12)
                 }
+                SettingsChrome.card {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("讯飞语音 · 小露 x4_yezi").font(.headline)
+                        Text("用于语音听写和助手回复朗读。密钥保存在本机钥匙串，不进入构建包或对话上下文。")
+                            .font(.footnote)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        TextField("APPID", text: $xfyunAppID)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                        SecureField("APIKey", text: $xfyunAPIKey)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                        SecureField("APISecret", text: $xfyunAPISecret)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+
+                        HStack {
+                            Button("保存讯飞密钥") {
+                                let config = XfyunConfig(
+                                    appId: xfyunAppID.trimmingCharacters(in: .whitespacesAndNewlines),
+                                    apiKey: xfyunAPIKey.trimmingCharacters(in: .whitespacesAndNewlines),
+                                    apiSecret: xfyunAPISecret.trimmingCharacters(in: .whitespacesAndNewlines)
+                                )
+                                do {
+                                    try XfyunCredentialStore.save(config)
+                                    xfyunMessage = "已保存，朗读将使用小露 x4_yezi"
+                                } catch {
+                                    xfyunMessage = error.localizedDescription
+                                }
+                            }
+                            .disabled(
+                                xfyunAppID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    || xfyunAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    || xfyunAPISecret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            )
+
+                            Spacer()
+
+                            Button("删除讯飞密钥", role: .destructive) {
+                                XfyunCredentialStore.clear()
+                                xfyunAppID = ""
+                                xfyunAPIKey = ""
+                                xfyunAPISecret = ""
+                                xfyunMessage = "已删除，语音听写和朗读将使用系统能力"
+                            }
+                        }
+
+                        Button {
+                            model.speech.speak("大明王朝，山河入卷。")
+                        } label: {
+                            Label("试听小露 x4_yezi", systemImage: "speaker.wave.2.fill")
+                                .whaleFont(size: 14, weight: .semibold)
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(WhaleTheme.accent)
+                        .background(
+                            WhaleTheme.accentSoft,
+                            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        )
+                        .disabled(!XfyunConfig.isConfigured)
+
+                        if let xfyunMessage {
+                            Text(xfyunMessage)
+                                .font(.footnote)
+                                .foregroundStyle(WhaleTheme.muted)
+                        }
+                    }
+                    .padding(.vertical, 12)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 14)
@@ -785,6 +863,12 @@ private struct ServiceSettingsView: View {
         .scrollIndicators(.hidden)
         .navigationTitle("服务连接")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            guard let config = XfyunConfig.current else { return }
+            xfyunAppID = config.appId
+            xfyunAPIKey = config.apiKey
+            xfyunAPISecret = config.apiSecret
+        }
     }
 
     private var deepSeekConnected: Bool {
