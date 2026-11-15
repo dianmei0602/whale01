@@ -881,3 +881,17 @@ body.map-paper .tab.is-active::before {
   box-shadow: none;
 }
 body.map-paper .tab:active { color: #2B241C; }
+
+
+/* iOS 状态栏：地图纸色页面顶部保留一条墨色安全区，浅色状态栏文字可读 */
+.map-page--paper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: #221C15;
+  z-index: 90;
+  pointer-events: none;
+}
