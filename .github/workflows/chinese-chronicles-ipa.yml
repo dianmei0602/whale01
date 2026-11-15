@@ -39,9 +39,7 @@ jobs:
         run: node tools/validate_chronicles.mjs --check
 
       - name: Generate source identity
-        env:
-          GITHUB_SHA: ${{ steps.source.outputs.sha }}
-        run: python3 tools/build_identity.py
+        run: env -u GITHUB_SHA python3 tools/build_identity.py
 
       - name: Generate Xcode project
         working-directory: ios
