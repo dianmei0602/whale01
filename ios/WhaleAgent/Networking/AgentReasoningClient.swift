@@ -152,7 +152,7 @@ actor AgentReasoningClient {
 
     static func requiresStructuredAnalysis(_ text: String) -> Bool {
         let compact = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard compact.count >= 10 else { return false }
+        guard !compact.isEmpty else { return false }
         if compact.count >= 45 { return true }
         let signals = [
             "帮我", "怎么", "如何", "为什么", "计划", "安排", "比较", "分析", "总结",
@@ -160,7 +160,7 @@ actor AgentReasoningClient {
             "如果", "哪个", "是否", "能不能", "http://", "https://", "提醒", "日程",
             "天气", "股票", "新闻", "价格", "回家", "路线"
         ]
-        return signals.contains { compact.localizedCaseInsensitiveContains($0) }
+        return compact.count >= 24 || signals.contains { compact.localizedCaseInsensitiveContains($0) }
     }
 
     private func complete(

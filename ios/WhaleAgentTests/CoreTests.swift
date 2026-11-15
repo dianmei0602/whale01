@@ -560,6 +560,9 @@ final class CoreTests: XCTestCase {
         XCTAssertTrue(selected.contains("find_free_slots"))
         XCTAssertTrue(selected.contains("prepare_message"))
         XCTAssertFalse(selected.contains("get_stock_quote"))
+        XCTAssertFalse(AgentReasoningClient.requiresStructuredAnalysis("你好"))
+        XCTAssertTrue(AgentReasoningClient.requiresStructuredAnalysis("帮我看看这个"))
+        XCTAssertTrue(AgentReasoningClient.requiresStructuredAnalysis("这个东西为什么总是失败"))
     }
 
     func testEpisodicMemoryRetrievesRelevantPastTurn() throws {
