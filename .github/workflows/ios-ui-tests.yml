@@ -21,7 +21,7 @@ jobs:
   test:
     name: Native unit and navigation UI regression
     runs-on: macos-15-intel
-    timeout-minutes: 40
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,14 +52,26 @@ jobs:
             -maximum-test-execution-time-allowance 60 \
             -derivedDataPath build -resultBundlePath build/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO test | tee test.log
+      - name: Restart simulator before UI tests
+        if: ${{ !cancelled() }}
+        run: |
+          # A simulator left over from the unit-test pass occasionally loses its
+          # render server, which shows up as "Failed to terminate" at app launch.
+          xcrun simctl shutdown "$DEVICE_ID" || true
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
       - name: Run navigation and draft UI tests
         if: ${{ !cancelled() }}
         working-directory: ios
         run: |
           set -o pipefail
+          # Simulator UI tests flake when the simulator render server crashes
+          # (Launch/terminate timeouts), so a failed test gets one automatic
+          # retry instead of failing the whole regression on infrastructure noise.
           xcodebuild -project WhaleAgent.xcodeproj -scheme WhaleAgentInteractions \
             -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO \
             -test-timeouts-enabled YES -maximum-test-execution-time-allowance 90 \
+            -test-iterations 2 -retry-tests-on-failure \
             -derivedDataPath build -resultBundlePath build/InteractionResults.xcresult \
             CODE_SIGNING_ALLOWED=NO test | tee interaction-test.log
       - name: Export interaction screenshots

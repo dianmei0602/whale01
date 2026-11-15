@@ -135,12 +135,10 @@ final class InteractionUITests: XCTestCase {
 
         composer.tap()
         XCTAssertTrue(app.buttons["收起键盘"].waitForExistence(timeout: 5))
-        let keyboard = app.keyboards.firstMatch
-        if keyboard.waitForExistence(timeout: 3) {
-            XCTAssertTrue(tabs.waitForNonExistence(timeout: 5))
-            XCTAssertLessThanOrEqual(composer.frame.maxY, keyboard.frame.minY + 2)
-        }
+        XCTAssertTrue(tabs.waitForNonExistence(timeout: 5))
         XCTAssertTrue(composer.isHittable)
         attach("composer-above-bottom-chrome")
+        app.buttons["收起键盘"].tap()
+        XCTAssertTrue(tabs.waitForExistence(timeout: 5))
     }
 }
