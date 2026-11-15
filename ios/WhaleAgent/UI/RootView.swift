@@ -5,6 +5,7 @@ import UIKit
 @MainActor
 struct RootView: View {
     @StateObject private var model = AppModel()
+    @StateObject private var keyboard = KeyboardObserver()
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var showRecords = false
     @State private var showSettings = false
@@ -18,7 +19,7 @@ struct RootView: View {
 
     var body: some View {
         pager
-        .safeAreaInset(edge: .bottom, spacing: 0) { WhaleRootTabBar(selection: $page) }
+        .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
         .tint(WhaleTheme.accent)
         .preferredColorScheme(colorScheme)
         .dynamicTypeSize(preferredTextSize)
@@ -94,7 +95,24 @@ struct RootView: View {
         ConversationTabView(model: model, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
-            .safeAreaInset(edge: .bottom, spacing: 0) { ConversationComposerBar(model: model, draft: $composerDraft) }
+    }
+
+    /// Composer and tabs share one bottom inset. This avoids nested safe-area
+    /// insets placing the composer underneath the tab bar. While the keyboard
+    /// is present the tab bar yields its space to the composer.
+    @ViewBuilder
+    private var bottomChrome: some View {
+        if page == .conversation {
+            VStack(spacing: 0) {
+                ConversationComposerBar(model: model, draft: $composerDraft)
+                if !keyboard.isVisible {
+                    WhaleRootTabBar(selection: $page)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+        } else if !keyboard.isVisible {
+            WhaleRootTabBar(selection: $page)
+        }
     }
 
     private var discoverPage: some View {

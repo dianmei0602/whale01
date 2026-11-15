@@ -124,4 +124,23 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(restored.waitForExistence(timeout: 10))
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
+
+    func testComposerStaysAboveTabsAndTabsYieldToKeyboard() {
+        let app = launch()
+        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
+        let tabs = app.otherElements["root-tab-bar"]
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        XCTAssertTrue(tabs.waitForExistence(timeout: 10))
+        XCTAssertLessThanOrEqual(composer.frame.maxY, tabs.frame.minY + 2)
+
+        composer.tap()
+        XCTAssertTrue(app.buttons["收起键盘"].waitForExistence(timeout: 5))
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.waitForExistence(timeout: 3) {
+            XCTAssertTrue(tabs.waitForNonExistence(timeout: 5))
+            XCTAssertLessThanOrEqual(composer.frame.maxY, keyboard.frame.minY + 2)
+        }
+        XCTAssertTrue(composer.isHittable)
+        attach("composer-above-bottom-chrome")
+    }
 }
