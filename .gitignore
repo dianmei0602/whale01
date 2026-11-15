@@ -1,0 +1,25 @@
+# Local secrets
+.env
+**/.env
+!.env.example
+**/.env.example
+
+# Generated visual and audio test artifacts
+**/output/
+.taste-skill/
+
+# Tool and OS files
+**/node_modules/
+**/.DS_Store
+**/Thumbs.db
+*.log
+
+# Xcode user state
+**/xcuserdata/
+*.xcuserstate
+
+# Runtime portraits: only the approved Zhu Yuanzhang image is published.
+/大明王朝iOS/assets/portraits/*
+!/大明王朝iOS/assets/portraits/zhu_yuanzhang.png
+/DamingAtlasNative/DamingAtlas/Resources/assets/portraits/*
+!/DamingAtlasNative/DamingAtlas/Resources/assets/portraits/zhu_yuanzhang.png

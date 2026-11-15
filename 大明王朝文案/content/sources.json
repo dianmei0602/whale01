@@ -1,0 +1,67 @@
+{
+  "sources": [
+    {
+      "id": "mingshi",
+      "title": "明史",
+      "author": "张廷玉等",
+      "type": "primary-compilation",
+      "citationStatus": "work-level",
+      "locator": null,
+      "note": "人物、事件与制度的基础校核来源；具体卷次仍需逐条补齐。"
+    },
+    {
+      "id": "mingshilu",
+      "title": "明实录",
+      "author": "明代历朝官修",
+      "type": "primary",
+      "citationStatus": "work-level",
+      "locator": null,
+      "note": "诏令、奏疏、任免与军报的编年校核来源；尚待补具体卷册。"
+    },
+    {
+      "id": "mingshijishibenmo",
+      "title": "明史纪事本末",
+      "author": "谷应泰",
+      "type": "secondary-compilation",
+      "citationStatus": "work-level",
+      "locator": null,
+      "note": "事件脉络与战役过程的交叉阅读来源。"
+    },
+    {
+      "id": "guoque",
+      "title": "国榷",
+      "author": "谈迁",
+      "type": "secondary-chronicle",
+      "citationStatus": "work-level",
+      "locator": null,
+      "note": "明代编年史交叉核验来源。"
+    },
+    {
+      "id": "mingtongjian",
+      "title": "明通鉴",
+      "author": "夏燮",
+      "type": "secondary-chronicle",
+      "citationStatus": "work-level",
+      "locator": null,
+      "note": "事件年代和制度沿革的交叉核验来源。"
+    },
+    {
+      "id": "natural-earth",
+      "title": "Natural Earth 1:110m Admin 0 Countries",
+      "author": "Natural Earth",
+      "type": "modern-map",
+      "citationStatus": "public-domain",
+      "locator": null,
+      "note": "现代世界国家边界只用于定位，不代表明代疆域。"
+    },
+    {
+      "id": "datav-china",
+      "title": "DataV 行政区划 GeoJSON",
+      "author": "DataV",
+      "type": "modern-map",
+      "citationStatus": "license-review-required",
+      "locator": null,
+      "note": "现代中国省级边界仅用于原型定位，正式发布前需完成数据授权与地图合规复核。"
+    }
+  ]
+}

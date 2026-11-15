@@ -1,0 +1,1139 @@
+{
+ "ok": [
+  {
+   "id": "extra_geyilong",
+   "name": "葛一龙",
+   "file": "images/extra_geyilong.jpg",
+   "bytes": 146133,
+   "title": "葛一龙",
+   "pageUrl": "http://baike.baidu.com/view/4594928.htm",
+   "via": "葛一龙"
+  },
+  {
+   "id": "extra_huercao",
+   "name": "胡尔慥",
+   "file": "images/extra_huercao.jpg",
+   "bytes": 213692,
+   "title": "胡尔慥",
+   "pageUrl": "http://baike.baidu.com/view/3423307.htm",
+   "via": "胡尔慥"
+  },
+  {
+   "id": "extra_hebin",
+   "name": "何斌",
+   "file": "images/extra_hebin.jpg",
+   "bytes": 255800,
+   "title": "何斌",
+   "pageUrl": "http://baike.baidu.com/subview/269489/6581829.htm",
+   "via": "何斌"
+  },
+  {
+   "id": "extra_huangdaozhou",
+   "name": "黄道周",
+   "file": "images/extra_huangdaozhou.jpg",
+   "bytes": 157324,
+   "title": "黄道周",
+   "pageUrl": "http://baike.baidu.com/subview/59189/16382387.htm",
+   "via": "黄道周"
+  },
+  {
+   "id": "extra_lirihua",
+   "name": "李日华",
+   "file": "images/extra_lirihua.jpg",
+   "bytes": 59084,
+   "title": "李日华",
+   "pageUrl": "http://baike.baidu.com/subview/80493/6430287.htm",
+   "via": "李日华"
+  },
+  {
+   "id": "extra_huangzunsu",
+   "name": "黄尊素",
+   "file": "images/extra_huangzunsu.jpg",
+   "bytes": 177264,
+   "title": "黄尊素",
+   "pageUrl": "http://baike.baidu.com/view/815397.htm",
+   "via": "黄尊素"
+  },
+  {
+   "id": "extra_geyinliang",
+   "name": "葛寅亮",
+   "file": "images/extra_geyinliang.jpg",
+   "bytes": 195101,
+   "title": "葛寅亮",
+   "pageUrl": "http://baike.baidu.com/view/806357.htm",
+   "via": "葛寅亮"
+  },
+  {
+   "id": "extra_dongqichang",
+   "name": "董其昌",
+   "file": "images/extra_dongqichang.jpg",
+   "bytes": 173696,
+   "title": "董其昌",
+   "pageUrl": "http://baike.baidu.com/subview/65610/65610.htm",
+   "via": "董其昌"
+  },
+  {
+   "id": "extra_liujingting",
+   "name": "柳敬亭",
+   "file": "images/extra_liujingting.jpg",
+   "bytes": 203382,
+   "title": "柳敬亭",
+   "pageUrl": "http://baike.baidu.com/subview/65621/65621.htm",
+   "via": "柳敬亭"
+  },
+  {
+   "id": "extra_liuzhi",
+   "name": "刘伯渊",
+   "file": "images/extra_liuzhi.jpg",
+   "bytes": 195033,
+   "title": "刘伯渊",
+   "pageUrl": "http://baike.baidu.com/subview/4848716/4848928.htm",
+   "via": "刘伯渊"
+  },
+  {
+   "id": "extra_peiran",
+   "name": "沛然",
+   "file": "images/extra_peiran.jpg",
+   "bytes": 240650,
+   "title": "沛然",
+   "pageUrl": "http://baike.baidu.com/view/1085708.htm",
+   "via": "沛然"
+  },
+  {
+   "id": "li_taihou",
+   "name": "李太后",
+   "file": "images/li_taihou.jpg",
+   "bytes": 371934,
+   "title": "李太后",
+   "pageUrl": "http://baike.baidu.com/subview/216999/216999.htm",
+   "via": "李太后"
+  },
+  {
+   "id": "ma_huanghou",
+   "name": "马皇后",
+   "file": "images/ma_huanghou.jpg",
+   "bytes": 536662,
+   "title": "孝慈高皇后",
+   "pageUrl": "http://baike.baidu.com/subview/172862/5168378.htm",
+   "via": "马皇后"
+  },
+  {
+   "id": "extra_luoyingdou",
+   "name": "罗应斗",
+   "file": "images/extra_luoyingdou.jpg",
+   "bytes": 240824,
+   "title": "罗应斗",
+   "pageUrl": "http://baike.baidu.com/view/7816491.htm",
+   "via": "罗应斗"
+  },
+  {
+   "id": "extra_matic",
+   "name": "利玛窦",
+   "file": "images/extra_matic.jpg",
+   "bytes": 303154,
+   "title": "利玛窦",
+   "pageUrl": "http://baike.baidu.com/subview/83745/83745.htm",
+   "via": "利玛窦"
+  },
+  {
+   "id": "extra_wangshimin",
+   "name": "王时敏",
+   "file": "images/extra_wangshimin.jpg",
+   "bytes": 114455,
+   "title": "王时敏",
+   "pageUrl": "http://baike.baidu.com/subview/202680/202680.htm",
+   "via": "王时敏"
+  },
+  {
+   "id": "extra_taochongdao",
+   "name": "陶崇道",
+   "file": "images/extra_taochongdao.jpg",
+   "bytes": 205640,
+   "title": "陶崇道",
+   "pageUrl": "http://baike.baidu.com/view/7993175.htm",
+   "via": "陶崇道"
+  },
+  {
+   "id": "extra_wangqingbai",
+   "name": "汪庆百",
+   "file": "images/extra_wangqingbai.jpg",
+   "bytes": 197745,
+   "title": "汪庆百",
+   "pageUrl": "http://baike.baidu.com/view/2943607.htm",
+   "via": "汪庆百"
+  },
+  {
+   "id": "qian_huanghou",
+   "name": "钱皇后",
+   "file": "images/qian_huanghou.jpg",
+   "bytes": 131412,
+   "title": "孝庄钱皇后",
+   "pageUrl": "http://baike.baidu.com/subview/6826174/6958685.htm",
+   "via": "钱皇后"
+  },
+  {
+   "id": "extra_wubeihai",
+   "name": "吴北海",
+   "file": "images/extra_wubeihai.jpg",
+   "bytes": 39844,
+   "title": "吴北海",
+   "pageUrl": "http://baike.baidu.com/item/%E5%90%B4%E5%8C%97%E6%B5%B7",
+   "via": "吴北海"
+  },
+  {
+   "id": "wang_gongfei",
+   "name": "王恭妃",
+   "file": "images/wang_gongfei.jpg",
+   "bytes": 135337,
+   "title": "王恭妃",
+   "pageUrl": "http://baike.baidu.com/view/3880274.htm",
+   "via": "王恭妃"
+  },
+  {
+   "id": "extra_xuguangqi",
+   "name": "徐光启",
+   "file": "images/extra_xuguangqi.jpg",
+   "bytes": 216776,
+   "title": "徐光启",
+   "pageUrl": "http://baike.baidu.com/subview/3713/3713.htm",
+   "via": "徐光启"
+  },
+  {
+   "id": "wangyangming",
+   "name": "王守仁",
+   "file": "images/wangyangming.jpg",
+   "bytes": 184366,
+   "title": "王守仁",
+   "pageUrl": "http://baike.baidu.com/subview/26649/19131821.htm",
+   "via": "王守仁"
+  },
+  {
+   "id": "extra_wangyining",
+   "name": "王以宁",
+   "file": "images/extra_wangyining.jpg",
+   "bytes": 222015,
+   "title": "王以宁",
+   "pageUrl": "http://baike.baidu.com/subview/421416/12093711.htm",
+   "via": "王以宁"
+  },
+  {
+   "id": "extra_yuanqiqi",
+   "name": "俞安期",
+   "file": "images/extra_yuanqiqi.jpg",
+   "bytes": 76532,
+   "title": "俞安期",
+   "pageUrl": "http://baike.baidu.com/view/228355.htm",
+   "via": "俞安期"
+  },
+  {
+   "id": "xu_wei",
+   "name": "徐渭",
+   "file": "images/xu_wei.jpg",
+   "bytes": 1126020,
+   "title": "徐渭",
+   "pageUrl": "http://baike.baidu.com/subview/22510/6430193.htm",
+   "via": "徐渭"
+  },
+  {
+   "id": "extra_zhangqingzi",
+   "name": "张卿子",
+   "file": "images/extra_zhangqingzi.jpg",
+   "bytes": 110462,
+   "title": "张遂辰",
+   "pageUrl": "http://baike.baidu.com/view/4659793.htm",
+   "via": "张卿子"
+  },
+  {
+   "id": "xu_huanghou",
+   "name": "徐皇后",
+   "file": "images/xu_huanghou.jpg",
+   "bytes": 146475,
+   "title": "明成祖仁孝皇后",
+   "pageUrl": "http://baike.baidu.com/subview/324092/324092.htm",
+   "via": "徐皇后"
+  },
+  {
+   "id": "extra_xuyingdeng",
+   "name": "徐应登",
+   "file": "images/extra_xuyingdeng.jpg",
+   "bytes": 193224,
+   "title": "徐应登",
+   "pageUrl": "http://baike.baidu.com/view/7916258.htm",
+   "via": "徐应登"
+  },
+  {
+   "id": "zhengchenggong",
+   "name": "郑成功",
+   "file": "images/zhengchenggong.jpg",
+   "bytes": 214759,
+   "title": "郑成功",
+   "pageUrl": "http://baike.baidu.com/subview/15271/4912996.htm",
+   "via": "郑成功"
+  },
+  {
+   "id": "zhu_di",
+   "name": "朱棣",
+   "file": "images/zhu_di.jpg",
+   "bytes": 122076,
+   "title": "朱棣",
+   "pageUrl": "http://baike.baidu.com/subview/5916/19262867.htm",
+   "via": "朱棣"
+  },
+  {
+   "id": "zhu_houzhao",
+   "name": "朱厚照",
+   "file": "images/zhu_houzhao.jpg",
+   "bytes": 78679,
+   "title": "朱厚照",
+   "pageUrl": "http://baike.baidu.com/subview/48211/19541551.htm",
+   "via": "朱厚照"
+  },
+  {
+   "id": "zhu_houcong",
+   "name": "朱厚熜",
+   "file": "images/zhu_houcong.jpg",
+   "bytes": 189936,
+   "title": "朱厚熜",
+   "pageUrl": "http://baike.baidu.com/subview/133712/19539749.htm",
+   "via": "朱厚熜"
+  },
+  {
+   "id": "zhu_changluo",
+   "name": "朱常洛",
+   "file": "images/zhu_changluo.jpg",
+   "bytes": 159369,
+   "title": "朱常洛",
+   "pageUrl": "http://baike.baidu.com/subview/3321948/3321948.htm",
+   "via": "朱常洛"
+  },
+  {
+   "id": "zhu_gaochi",
+   "name": "朱高炽",
+   "file": "images/zhu_gaochi.jpg",
+   "bytes": 67016,
+   "title": "朱高炽",
+   "pageUrl": "http://baike.baidu.com/subview/3269231/3269231.htm",
+   "via": "朱高炽"
+  },
+  {
+   "id": "zhu_qizhen",
+   "name": "朱祁镇",
+   "file": "images/zhu_qizhen.jpg",
+   "bytes": 170963,
+   "title": "朱祁镇",
+   "pageUrl": "http://baike.baidu.com/subview/3276981/19532349.htm",
+   "via": "朱祁镇"
+  },
+  {
+   "id": "zhu_youxiao",
+   "name": "朱由校",
+   "file": "images/zhu_youxiao.jpg",
+   "bytes": 242782,
+   "title": "朱由校",
+   "pageUrl": "http://baike.baidu.com/subview/3273261/19533746.htm",
+   "via": "朱由校"
+  },
+  {
+   "id": "zhu_jianshen",
+   "name": "朱见深",
+   "file": "images/zhu_jianshen.jpg",
+   "bytes": 82437,
+   "title": "朱见深",
+   "pageUrl": "http://baike.baidu.com/subview/3206989/3206989.htm",
+   "via": "朱见深"
+  },
+  {
+   "id": "xingxianwang",
+   "name": "朱祐杬",
+   "file": "images/xingxianwang.jpg",
+   "bytes": 359804,
+   "title": "朱祐杬",
+   "pageUrl": "http://baike.baidu.com/view/130327.htm",
+   "via": "朱祐杬"
+  },
+  {
+   "id": "zhu_youtang",
+   "name": "朱祐樘",
+   "file": "images/zhu_youtang.jpg",
+   "bytes": 618136,
+   "title": "朱祐樘",
+   "pageUrl": "http://baike.baidu.com/subview/177011/177011.htm",
+   "via": "朱祐樘"
+  },
+  {
+   "id": "zhu_yuanzhang",
+   "name": "朱元璋",
+   "file": "images/zhu_yuanzhang.jpg",
+   "bytes": 408071,
+   "title": "朱元璋",
+   "pageUrl": "http://baike.baidu.com/subview/1690/7140248.htm",
+   "via": "朱元璋"
+  },
+  {
+   "id": "zhu_yijun",
+   "name": "朱翊钧",
+   "file": "images/zhu_yijun.jpg",
+   "bytes": 133266,
+   "title": "朱翊钧",
+   "pageUrl": "http://baike.baidu.com/subview/3410236/19529739.htm",
+   "via": "朱翊钧"
+  },
+  {
+   "id": "zhu_zaihou",
+   "name": "朱载坖",
+   "file": "images/zhu_zaihou.jpg",
+   "bytes": 816635,
+   "title": "朱载坖",
+   "pageUrl": "http://baike.baidu.com/item/%E6%9C%B1%E8%BD%BD%E5%9D%96/23415895",
+   "via": "朱载坖"
+  },
+  {
+   "id": "zhu_zhanji",
+   "name": "朱瞻基",
+   "file": "images/zhu_zhanji.jpg",
+   "bytes": 73649,
+   "title": "朱瞻基",
+   "pageUrl": "http://baike.baidu.com/subview/3334151/3334151.htm",
+   "via": "朱瞻基"
+  },
+  {
+   "id": "shunzhi",
+   "name": "福临",
+   "file": "images/shunzhi.jpg",
+   "bytes": 195292,
+   "title": "爱新觉罗·福临",
+   "pageUrl": "http://baike.baidu.com/subview/119918/119918.htm",
+   "via": "福临"
+  },
+  {
+   "id": "hairui",
+   "name": "海瑞",
+   "file": "images/hairui.jpg",
+   "bytes": 784326,
+   "title": "海瑞",
+   "pageUrl": "http://baike.baidu.com/subview/7575/7575.htm",
+   "via": "海瑞"
+  },
+  {
+   "id": "fang_xiaoru",
+   "name": "方孝孺",
+   "file": "images/fang_xiaoru.jpg",
+   "bytes": 352081,
+   "title": "方孝孺",
+   "pageUrl": "http://baike.baidu.com/view/80471.htm",
+   "via": "方孝孺"
+  },
+  {
+   "id": "yang_jisheng",
+   "name": "杨继盛",
+   "file": "images/yang_jisheng.jpg",
+   "bytes": 294146,
+   "title": "杨继盛",
+   "pageUrl": "http://baike.baidu.com/subview/185927/185927.htm",
+   "via": "杨继盛"
+  },
+  {
+   "id": "changyuchun",
+   "name": "常遇春",
+   "file": "images/changyuchun.jpg",
+   "bytes": 320116,
+   "title": "常遇春",
+   "pageUrl": "http://baike.baidu.com/subview/16615/16615.htm",
+   "via": "常遇春"
+  },
+  {
+   "id": "xuda",
+   "name": "徐达",
+   "file": "images/xuda.jpg",
+   "bytes": 418529,
+   "title": "徐达",
+   "pageUrl": "http://baike.baidu.com/subview/3069/13225897.htm",
+   "via": "徐达"
+  },
+  {
+   "id": "yang_rong",
+   "name": "杨荣",
+   "file": "images/yang_rong.jpg",
+   "bytes": 123412,
+   "title": "杨荣",
+   "pageUrl": "http://baike.baidu.com/subview/95302/6022174.htm",
+   "via": "杨荣"
+  },
+  {
+   "id": "yangshiqi",
+   "name": "杨士奇",
+   "file": "images/yangshiqi.jpg",
+   "bytes": 1036073,
+   "title": "杨士奇",
+   "pageUrl": "http://baike.baidu.com/view/72680.htm",
+   "via": "杨士奇"
+  },
+  {
+   "id": "zhangjuzheng",
+   "name": "张居正",
+   "file": "images/zhangjuzheng.jpg",
+   "bytes": 215743,
+   "title": "张居正",
+   "pageUrl": "http://baike.baidu.com/subview/27396/4965889.htm",
+   "via": "张居正"
+  },
+  {
+   "id": "toyotomi",
+   "name": "丰臣秀吉",
+   "file": "images/toyotomi.jpg",
+   "bytes": 1167204,
+   "title": "丰臣秀吉",
+   "pageUrl": "http://baike.baidu.com/subview/8486/18835368.htm",
+   "via": "丰臣秀吉"
+  },
+  {
+   "id": "yuanchonghuan",
+   "name": "袁崇焕",
+   "file": "images/yuanchonghuan.jpg",
+   "bytes": 222265,
+   "title": "袁崇焕",
+   "pageUrl": "http://baike.baidu.com/subview/2853/18833880.htm",
+   "via": "袁崇焕"
+  },
+  {
+   "id": "yuqian",
+   "name": "于谦",
+   "file": "images/yuqian.jpg",
+   "bytes": 427940,
+   "title": "于谦",
+   "pageUrl": "http://baike.baidu.com/subview/22602/4997349.htm",
+   "via": "于谦"
+  },
+  {
+   "id": "zu_dashou",
+   "name": "祖大寿",
+   "file": "images/zu_dashou.jpg",
+   "bytes": 257077,
+   "title": "祖大寿",
+   "pageUrl": "http://baike.baidu.com/subview/412191/412191.htm",
+   "via": "祖大寿"
+  },
+  {
+   "id": "alatan",
+   "name": "俺答汗",
+   "file": "images/alatan.jpg",
+   "bytes": 880425,
+   "title": "孛儿只斤·俺答",
+   "pageUrl": "http://baike.baidu.com/item/%E5%AD%9B%E5%84%BF%E5%8F%AA%E6%96%A4%C2%B7%E4%BF%BA%E7%AD%94",
+   "via": "俺答汗"
+  },
+  {
+   "id": "dorgon",
+   "name": "多尔衮",
+   "file": "images/dorgon.jpg",
+   "bytes": 244434,
+   "title": "爱新觉罗·多尔衮",
+   "pageUrl": "http://baike.baidu.com/subview/298026/298026.htm",
+   "via": "多尔衮"
+  },
+  {
+   "id": "yao_guangxiao",
+   "name": "姚广孝",
+   "file": "images/yao_guangxiao.jpg",
+   "bytes": 1322280,
+   "title": "姚广孝",
+   "pageUrl": "http://baike.baidu.com/subview/100542/100542.htm",
+   "via": "姚广孝"
+  },
+  {
+   "id": "fan_jingwen",
+   "name": "范景文",
+   "file": "images/fan_jingwen.jpg",
+   "bytes": 216218,
+   "title": "范景文",
+   "pageUrl": "http://baike.baidu.com/subview/222215/222215.htm",
+   "via": "范景文"
+  },
+  {
+   "id": "fang_guozhen",
+   "name": "方国珍",
+   "file": "images/fang_guozhen.jpg",
+   "bytes": 948435,
+   "title": "方国珍",
+   "pageUrl": "http://baike.baidu.com/subview/109919/109919.htm",
+   "via": "方国珍"
+  },
+  {
+   "id": "ashikaga",
+   "name": "足利义满",
+   "file": "images/ashikaga.jpg",
+   "bytes": 166733,
+   "title": "足利义满",
+   "pageUrl": "http://baike.baidu.com/view/189507.htm",
+   "via": "足利义满"
+  },
+  {
+   "id": "chen_youliang",
+   "name": "陈友谅",
+   "file": "images/chen_youliang.jpg",
+   "bytes": 168970,
+   "title": "陈友谅",
+   "pageUrl": "http://baike.baidu.com/subview/24701/5074719.htm",
+   "via": "陈友谅"
+  },
+  {
+   "id": "gu_xiancheng",
+   "name": "顾宪成",
+   "file": "images/gu_xiancheng.jpg",
+   "bytes": 170592,
+   "title": "顾宪成",
+   "pageUrl": "http://baike.baidu.com/view/68756.htm",
+   "via": "顾宪成"
+  },
+  {
+   "id": "guo_zixing",
+   "name": "郭子兴",
+   "file": "images/guo_zixing.jpg",
+   "bytes": 444253,
+   "title": "郭子兴",
+   "pageUrl": "http://baike.baidu.com/subview/324534/20385603.htm",
+   "via": "郭子兴"
+  },
+  {
+   "id": "han_lin_er",
+   "name": "韩林儿",
+   "file": "images/han_lin_er.jpg",
+   "bytes": 409610,
+   "title": "韩林儿",
+   "pageUrl": "http://baike.baidu.com/subview/124920/124920.htm",
+   "via": "韩林儿"
+  },
+  {
+   "id": "zhu_yunwen",
+   "name": "建文帝",
+   "file": "images/zhu_yunwen.jpg",
+   "bytes": 205546,
+   "title": "朱允炆",
+   "pageUrl": "http://baike.baidu.com/subview/72718/72718.htm",
+   "via": "建文帝"
+  },
+  {
+   "id": "huang_zicheng",
+   "name": "黄子澄",
+   "file": "images/huang_zicheng.jpg",
+   "bytes": 212334,
+   "title": "黄子澄",
+   "pageUrl": "http://baike.baidu.com/subview/295634/295634.htm",
+   "via": "黄子澄"
+  },
+  {
+   "id": "gao_panlong",
+   "name": "高攀龙",
+   "file": "images/gao_panlong.jpg",
+   "bytes": 64468,
+   "title": "高攀龙",
+   "pageUrl": "http://baike.baidu.com/subview/41793/41793.htm",
+   "via": "高攀龙"
+  },
+  {
+   "id": "extra_lixianchong",
+   "name": "刘宪宠",
+   "file": "images/extra_lixianchong.jpg",
+   "bytes": 866128,
+   "title": "刘宪宠",
+   "pageUrl": "http://baike.baidu.com/view/4848830.htm",
+   "via": "刘宪宠"
+  },
+  {
+   "id": "ke_shi",
+   "name": "客氏",
+   "file": "images/ke_shi.jpg",
+   "bytes": 208292,
+   "title": "客氏",
+   "pageUrl": "http://baike.baidu.com/view/44964.htm",
+   "via": "客氏"
+  },
+  {
+   "id": "hu_zongxian",
+   "name": "胡宗宪",
+   "file": "images/hu_zongxian.jpg",
+   "bytes": 454420,
+   "title": "胡宗宪",
+   "pageUrl": "http://baike.baidu.com/subview/141022/141022.htm",
+   "via": "胡宗宪"
+  },
+  {
+   "id": "lanyu",
+   "name": "蓝玉",
+   "file": "images/lanyu.jpg",
+   "bytes": 100077,
+   "title": "蓝玉",
+   "pageUrl": "http://baike.baidu.com/subview/84565/7548585.htm",
+   "via": "蓝玉"
+  },
+  {
+   "id": "lichengliang",
+   "name": "李成梁",
+   "file": "images/lichengliang.jpg",
+   "bytes": 903635,
+   "title": "李成梁",
+   "pageUrl": "http://baike.baidu.com/subview/50460/50460.htm",
+   "via": "李成梁"
+  },
+  {
+   "id": "zhu_qiyu",
+   "name": "景泰帝",
+   "file": "images/zhu_qiyu.jpg",
+   "bytes": 1588629,
+   "title": "朱祁钰",
+   "pageUrl": "http://baike.baidu.com/view/3272897.htm",
+   "via": "景泰帝"
+  },
+  {
+   "id": "luxiangsheng",
+   "name": "卢象升",
+   "file": "images/luxiangsheng.jpg",
+   "bytes": 186818,
+   "title": "卢象升",
+   "pageUrl": "http://baike.baidu.com/view/168777.htm",
+   "via": "卢象升"
+  },
+  {
+   "id": "xie_jin",
+   "name": "解缙",
+   "file": "images/xie_jin.jpg",
+   "bytes": 103027,
+   "title": "解缙",
+   "pageUrl": "http://baike.baidu.com/view/130090.htm",
+   "via": "解缙"
+  },
+  {
+   "id": "song_lian",
+   "name": "宋濂",
+   "file": "images/song_lian.jpg",
+   "bytes": 234650,
+   "title": "宋濂",
+   "pageUrl": "http://baike.baidu.com/view/36673.htm",
+   "via": "宋濂"
+  },
+  {
+   "id": "lishanchang",
+   "name": "李善长",
+   "file": "images/lishanchang.jpg",
+   "bytes": 104870,
+   "title": "李善长",
+   "pageUrl": "http://baike.baidu.com/subview/109699/109699.htm",
+   "via": "李善长"
+  },
+  {
+   "id": "li_zicheng",
+   "name": "李自成",
+   "file": "images/li_zicheng.jpg",
+   "bytes": 967914,
+   "title": "李自成",
+   "pageUrl": "http://baike.baidu.com/subview/9761/6071479.htm",
+   "via": "李自成"
+  },
+  {
+   "id": "ma_shiying",
+   "name": "马士英",
+   "file": "images/ma_shiying.jpg",
+   "bytes": 205545,
+   "title": "马士英",
+   "pageUrl": "http://baike.baidu.com/subview/167399/167399.htm",
+   "via": "马士英"
+  },
+  {
+   "id": "ming_yuzhen",
+   "name": "明玉珍",
+   "file": "images/ming_yuzhen.jpg",
+   "bytes": 392623,
+   "title": "明玉珍",
+   "pageUrl": "http://baike.baidu.com/subview/107194/107194.htm",
+   "via": "明玉珍"
+  },
+  {
+   "id": "mao_wenlong",
+   "name": "毛文龙",
+   "file": "images/mao_wenlong.jpg",
+   "bytes": 468381,
+   "title": "毛文龙",
+   "pageUrl": "http://baike.baidu.com/subview/34789/34789.htm",
+   "via": "毛文龙"
+  },
+  {
+   "id": "sunchengzong",
+   "name": "孙承宗",
+   "file": "images/sunchengzong.jpg",
+   "bytes": 83908,
+   "title": "孙承宗",
+   "pageUrl": "http://baike.baidu.com/view/140751.htm",
+   "via": "孙承宗"
+  },
+  {
+   "id": "tie_xuan",
+   "name": "铁铉",
+   "file": "images/tie_xuan.jpg",
+   "bytes": 83374,
+   "title": "铁铉",
+   "pageUrl": "http://baike.baidu.com/subview/168762/6817736.htm",
+   "via": "铁铉"
+  },
+  {
+   "id": "weizhongxian",
+   "name": "魏忠贤",
+   "file": "images/weizhongxian.jpg",
+   "bytes": 64129,
+   "title": "魏忠贤",
+   "pageUrl": "http://baike.baidu.com/subview/19376/19376.htm",
+   "via": "魏忠贤"
+  },
+  {
+   "id": "xiong_tingbi",
+   "name": "熊廷弼",
+   "file": "images/xiong_tingbi.jpg",
+   "bytes": 163559,
+   "title": "熊廷弼",
+   "pageUrl": "http://baike.baidu.com/view/100464.htm",
+   "via": "熊廷弼"
+  },
+  {
+   "id": "wan_guifei",
+   "name": "万贵妃",
+   "file": "images/wan_guifei.jpg",
+   "bytes": 551934,
+   "title": "万贞儿",
+   "pageUrl": "http://baike.baidu.com/subview/29946/29946.htm",
+   "via": "万贵妃"
+  },
+  {
+   "id": "wu_sangui",
+   "name": "吴三桂",
+   "file": "images/wu_sangui.jpg",
+   "bytes": 147702,
+   "title": "吴三桂",
+   "pageUrl": "http://baike.baidu.com/subview/10050/17322447.htm",
+   "via": "吴三桂"
+  },
+  {
+   "id": "xujie",
+   "name": "徐阶",
+   "file": "images/xujie.jpg",
+   "bytes": 68320,
+   "title": "徐阶",
+   "pageUrl": "http://baike.baidu.com/subview/28613/28613.htm",
+   "via": "徐阶"
+  },
+  {
+   "id": "wang_guangyang",
+   "name": "汪广洋",
+   "file": "images/wang_guangyang.jpg",
+   "bytes": 286479,
+   "title": "汪广洋",
+   "pageUrl": "http://baike.baidu.com/view/219811.htm",
+   "via": "汪广洋"
+  },
+  {
+   "id": "yang_sichang",
+   "name": "杨嗣昌",
+   "file": "images/yang_sichang.jpg",
+   "bytes": 166143,
+   "title": "杨嗣昌",
+   "pageUrl": "http://baike.baidu.com/view/456185.htm",
+   "via": "杨嗣昌"
+  },
+  {
+   "id": "yang_lian",
+   "name": "杨涟",
+   "file": "images/yang_lian.jpg",
+   "bytes": 160466,
+   "title": "杨涟",
+   "pageUrl": "http://baike.baidu.com/subview/81008/81008.htm",
+   "via": "杨涟"
+  },
+  {
+   "id": "yansong",
+   "name": "严嵩",
+   "file": "images/yansong.jpg",
+   "bytes": 238941,
+   "title": "严嵩",
+   "pageUrl": "http://baike.baidu.com/subview/28663/28663.htm",
+   "via": "严嵩"
+  },
+  {
+   "id": "zhang_shicheng",
+   "name": "张士诚",
+   "file": "images/zhang_shicheng.jpg",
+   "bytes": 188831,
+   "title": "张士诚",
+   "pageUrl": "http://baike.baidu.com/subview/109922/6173282.htm",
+   "via": "张士诚"
+  },
+  {
+   "id": "zhao_nanxing",
+   "name": "赵南星",
+   "file": "images/zhao_nanxing.jpg",
+   "bytes": 126588,
+   "title": "赵南星",
+   "pageUrl": "http://baike.baidu.com/subview/80555/80555.htm",
+   "via": "赵南星"
+  },
+  {
+   "id": "zheng_guifei",
+   "name": "郑贵妃",
+   "file": "images/zheng_guifei.jpg",
+   "bytes": 587527,
+   "title": "郑贵妃",
+   "pageUrl": "http://baike.baidu.com/subview/472491/472491.htm",
+   "via": "郑贵妃"
+  },
+  {
+   "id": "zhang_xianzhong",
+   "name": "张献忠",
+   "file": "images/zhang_xianzhong.jpg",
+   "bytes": 83762,
+   "title": "张献忠",
+   "pageUrl": "http://baike.baidu.com/subview/46514/19795491.htm",
+   "via": "张献忠"
+  },
+  {
+   "id": "zhou_huanghou_cz",
+   "name": "周皇后",
+   "file": "images/zhou_huanghou_cz.jpg",
+   "bytes": 372611,
+   "title": "小周后",
+   "pageUrl": "http://baike.baidu.com/subview/942796/17602648.htm",
+   "via": "周皇后"
+  },
+  {
+   "id": "zheng_he",
+   "name": "郑和",
+   "file": "images/zheng_he.jpg",
+   "bytes": 343640,
+   "title": "郑和",
+   "pageUrl": "http://baike.baidu.com/subview/1988/16935833.htm",
+   "via": "郑和"
+  },
+  {
+   "id": "zhou_chen",
+   "name": "周忱",
+   "file": "images/zhou_chen.jpg",
+   "bytes": 192928,
+   "title": "周忱",
+   "pageUrl": "http://baike.baidu.com/subview/113114/19677937.htm",
+   "via": "周忱"
+  },
+  {
+   "id": "zhu_sheng",
+   "name": "朱升",
+   "file": "images/zhu_sheng.jpg",
+   "bytes": 1172555,
+   "title": "朱升",
+   "pageUrl": "http://baike.baidu.com/subview/232678/6472916.htm",
+   "via": "朱升"
+  },
+  {
+   "id": "zhou_shunchang",
+   "name": "周顺昌",
+   "file": "images/zhou_shunchang.jpg",
+   "bytes": 180777,
+   "title": "周顺昌",
+   "pageUrl": "http://baike.baidu.com/subview/223943/223943.htm",
+   "via": "周顺昌"
+  },
+  {
+   "id": "hong_chengchou",
+   "name": "洪承畴",
+   "file": "images/hong_chengchou.jpg",
+   "bytes": 84946,
+   "title": "洪承畴",
+   "pageUrl": "http://baike.baidu.com/subview/81030/81030.htm",
+   "via": "洪承畴"
+  },
+  {
+   "id": "zhang_taihou",
+   "name": "诚孝张太后",
+   "file": "images/zhang_taihou.jpg",
+   "bytes": 153221,
+   "title": "诚孝张皇后",
+   "pageUrl": "http://baike.baidu.com/view/6826124.htm",
+   "via": "诚孝昭皇后"
+  },
+  {
+   "id": "zhu_yousong",
+   "name": "朱由崧",
+   "file": "images/zhu_yousong.jpg",
+   "bytes": 676064,
+   "title": "朱由崧",
+   "pageUrl": "http://baike.baidu.com/view/120882.htm",
+   "via": "朱由崧"
+  },
+  {
+   "id": "zhu_youlang",
+   "name": "朱由榔",
+   "file": "images/zhu_youlang.jpg",
+   "bytes": 269971,
+   "title": "朱由榔",
+   "pageUrl": "http://baike.baidu.com/subview/54993/54993.htm",
+   "via": "朱由榔"
+  },
+  {
+   "id": "huangtaiji",
+   "name": "皇太极",
+   "file": "images/huangtaiji.jpg",
+   "bytes": 43399,
+   "title": "皇太极",
+   "pageUrl": "http://baike.baidu.com/item/%E7%9A%87%E5%A4%AA%E6%9E%81/54557605",
+   "via": "皇太极"
+  },
+  {
+   "id": "zuo_guangdou",
+   "name": "左光斗",
+   "file": "images/zuo_guangdou.jpg",
+   "bytes": 376988,
+   "title": "左光斗",
+   "pageUrl": "http://baike.baidu.com/subview/56146/56146.htm",
+   "via": "左光斗"
+  },
+  {
+   "id": "yisunsin",
+   "name": "李舜臣",
+   "file": "images/yisunsin.jpg",
+   "bytes": 720189,
+   "title": "李舜臣",
+   "pageUrl": "http://baike.baidu.com/subview/60237/5277567.htm",
+   "via": "李舜臣"
+  },
+  {
+   "id": "kuang_zhong",
+   "name": "况钟",
+   "file": "images/kuang_zhong.jpg",
+   "bytes": 359042,
+   "title": "况钟",
+   "pageUrl": "http://baike.baidu.com/view/83979.htm",
+   "via": "况钟"
+  },
+  {
+   "id": "ni_yuanlu",
+   "name": "倪元璐",
+   "file": "images/ni_yuanlu.jpg",
+   "bytes": 489856,
+   "title": "倪元璐",
+   "pageUrl": "http://baike.baidu.com/view/236035.htm",
+   "via": "倪元璐"
+  },
+  {
+   "id": "zhu_yujian",
+   "name": "朱聿键",
+   "file": "images/zhu_yujian.jpg",
+   "bytes": 133709,
+   "title": "朱聿键",
+   "pageUrl": "http://baike.baidu.com/view/120926.htm",
+   "via": "朱聿键"
+  },
+  {
+   "id": "qijiguang",
+   "name": "戚继光",
+   "file": "images/qijiguang.jpg",
+   "bytes": 331676,
+   "title": "戚继光",
+   "pageUrl": "http://baike.baidu.com/subview/10438/6777005.htm",
+   "via": "戚继光"
+  },
+  {
+   "id": "nurhaci",
+   "name": "努尔哈赤",
+   "file": "images/nurhaci.jpg",
+   "bytes": 636199,
+   "title": "爱新觉罗·努尔哈赤",
+   "pageUrl": "http://baike.baidu.com/subview/119936/119936.htm",
+   "via": "努尔哈赤"
+  },
+  {
+   "id": "shi_kefa",
+   "name": "史可法",
+   "file": "images/shi_kefa.jpg",
+   "bytes": 316363,
+   "title": "史可法",
+   "pageUrl": "http://baike.baidu.com/subview/25107/5067085.htm",
+   "via": "史可法"
+  },
+  {
+   "id": "wang_xijue",
+   "name": "王锡爵",
+   "file": "images/wang_xijue.jpg",
+   "bytes": 32857,
+   "title": "王锡爵",
+   "pageUrl": "http://baike.baidu.com/subview/123821/5891328.htm",
+   "via": "王锡爵"
+  },
+  {
+   "id": "qi_tai",
+   "name": "齐泰",
+   "file": "images/qi_tai.jpg",
+   "bytes": 56687,
+   "title": "齐泰",
+   "pageUrl": "http://baike.baidu.com/subview/1297152/1297152.htm",
+   "via": "齐泰"
+  },
+  {
+   "id": "tan_lun",
+   "name": "谭纶",
+   "file": "images/tan_lun.jpg",
+   "bytes": 89035,
+   "title": "谭纶",
+   "pageUrl": "http://baike.baidu.com/subview/76871/76871.htm",
+   "via": "谭纶"
+  },
+  {
+   "id": "liu_ji",
+   "name": "刘基",
+   "file": "images/liu_ji.jpg",
+   "bytes": 1268818,
+   "title": "刘基",
+   "pageUrl": "http://baike.baidu.com/subview/4833/5066295.htm",
+   "via": "刘基"
+  },
+  {
+   "id": "muying",
+   "name": "沐英",
+   "file": "images/muying.jpg",
+   "bytes": 397745,
+   "title": "沐英",
+   "pageUrl": "http://baike.baidu.com/subview/84540/84540.htm",
+   "via": "沐英"
+  },
+  {
+   "id": "ruan_dacheng",
+   "name": "阮大铖",
+   "file": "images/ruan_dacheng.jpg",
+   "bytes": 320607,
+   "title": "阮大铖",
+   "pageUrl": "http://baike.baidu.com/view/30456.htm",
+   "via": "阮大铖"
+  },
+  {
+   "id": "qian_qianyi",
+   "name": "钱谦益",
+   "file": "images/qian_qianyi.jpg",
+   "bytes": 286454,
+   "title": "钱谦益",
+   "pageUrl": "http://baike.baidu.com/subview/63415/63415.htm",
+   "via": "钱谦益"
+  },
+  {
+   "id": "shenshixing",
+   "name": "申时行",
+   "file": "images/shenshixing.jpg",
+   "bytes": 307351,
+   "title": "申时行",
+   "pageUrl": "http://baike.baidu.com/view/209246.htm",
+   "via": "申时行"
+  },
+  {
+   "id": "zhu_youjian",
+   "name": "崇祯帝",
+   "file": "images/zhu_youjian.jpg",
+   "bytes": 647593,
+   "title": "崇祯",
+   "pageUrl": "http://baike.baidu.com/subview/115567/115567.htm",
+   "via": "崇祯"
+  }
+ ],
+ "bad": []
+}

@@ -1,0 +1,87 @@
+{
+ "extra_hebin": {
+  "action": "drop",
+  "reason": "公开图源仅检索到现代人像照片，非历史画像，图像已撤除。"
+ },
+ "extra_wubeihai": {
+  "action": "drop",
+  "reason": "公开图源仅检索到现代人像照片，非历史画像，图像已撤除。"
+ },
+ "guo_zixing": {
+  "action": "drop",
+  "reason": "公开图源仅检索到相关历史地图，非人物画像，图像已撤除。"
+ },
+ "qi_tai": {
+  "action": "drop",
+  "reason": "公开图源仅检索到相关遗迹照片，非人物画像，图像已撤除。"
+ },
+ "wan_guifei": {
+  "action": "drop",
+  "reason": "公开图源所配为仕女画，非本人肖像，图像已撤除。"
+ },
+ "chen_youliang": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "现代塑像，非写生画像。"
+ },
+ "lanyu": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "现代石塑，非写生画像。"
+ },
+ "li_zicheng": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "现代雕像，非写生画像。"
+ },
+ "tan_lun": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "现代雕像，非写生画像。"
+ },
+ "tie_xuan": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "庙宇塑像，非写生画像。"
+ },
+ "zhang_xianzhong": {
+  "action": "kind",
+  "kind": "塑像",
+  "note": "庙宇塑像，非写生画像。"
+ },
+ "wang_guangyang": {
+  "action": "kind",
+  "kind": "年画",
+  "note": "民间年画人物，属后世想象形象。"
+ },
+ "fang_guozhen": {
+  "action": "kind",
+  "kind": "年画",
+  "note": "民间年画人物，属后世想象形象。"
+ },
+ "zhou_huanghou_cz": {
+  "action": "kind",
+  "kind": "戏曲",
+  "note": "戏曲扮相，属舞台造型而非画像。"
+ },
+ "xujie": {
+  "action": "kind",
+  "kind": "戏曲",
+  "note": "戏曲扮相，非写生画像。"
+ },
+ "xu_wei": {
+  "action": "kind",
+  "kind": "画像",
+  "note": "古画写照，可作参考。"
+ },
+ "hu_zongxian": {
+  "action": "kind",
+  "kind": "画像",
+  "note": "古画写照，可作参考。"
+ },
+ "extra_taizu_yixiang": {
+  "action": "kind",
+  "kind": "御容",
+  "note": "所配为明太祖正形像（非麻脸异相本），属同时代御容。"
+ }
+}

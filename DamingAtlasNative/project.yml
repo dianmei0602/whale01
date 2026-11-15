@@ -1,0 +1,32 @@
+name: DamingAtlas
+options:
+  bundleIdPrefix: com.damingatlas
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    DEVELOPMENT_TEAM: ""
+targets:
+  DamingAtlas:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: DamingAtlas
+        excludes:
+          - Resources
+    resources:
+      - path: DamingAtlas/Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.damingatlas.app
+        PRODUCT_NAME: 大明王朝
+        INFOPLIST_FILE: DamingAtlas/Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    scheme:
+      testTargets: []

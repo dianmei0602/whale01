@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大明王朝 · 互动长卷（演示原型）</title>
+<meta name="description" content="《大明王朝》App 演示原型：一轴三线时间轴、五幕故事线、名将录、奸臣录与甲申抉择。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EEE1; --paper-deep:#E9DCC4; --card:#FBF7EE;
+  --ink:#221E19; --ink-soft:#4B4439; --muted:#756A5A;
+  --cinnabar:#9B2C24; --cinnabar-light:#C05A49;
+  --bian:#0F6E56; --cai:#A9761B; --dang:#9B2C24;
+  --hair:rgba(34,30,25,.16); --hair-strong:rgba(34,30,25,.34);
+  --font-display:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",serif;
+  --font-num:"Cormorant Garamond",Georgia,serif;
+  --fs-hero:clamp(58px,9vw,132px); --fs-h1:clamp(30px,4vw,54px);
+  --fs-h2:clamp(26px,3vw,40px); --fs-body:15px; --fs-small:13px;
+  --sp-1:4px; --sp-2:8px; --sp-3:16px; --sp-4:24px; --sp-5:40px; --sp-6:64px; --sp-7:96px;
+  --shadow-1:0 2px 8px rgba(56,42,26,.10); --shadow-2:0 8px 28px rgba(56,42,26,.14);
+  --shadow-3:0 24px 64px rgba(56,42,26,.22);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --dur-fast:160ms; --dur-base:320ms; --dur-slow:640ms;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-display);font-size:var(--fs-body);line-height:1.85;letter-spacing:.02em;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.055;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(70rem 45rem at 8% -12%,rgba(155,44,36,.07),transparent 62%),radial-gradient(55rem 40rem at 100% 8%,rgba(169,118,27,.09),transparent 58%)}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cinnabar);outline-offset:3px}
+::selection{background:var(--cinnabar);color:var(--card)}
+.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 clamp(20px,5vw,72px)}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:0}
+.eyebrow{font-size:11px;letter-spacing:.34em;color:var(--cinnabar);text-transform:uppercase;margin:0 0 var(--sp-3)}
+
+/* 顶栏 */
+.topbar{position:sticky;top:0;z-index:40;background:rgba(244,238,225,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair)}
+.topbar .wrap{display:flex;align-items:center;gap:var(--sp-4);min-height:58px}
+.brand{font-size:17px;font-weight:700;letter-spacing:.2em;white-space:nowrap}
+.brand i{display:inline-block;width:8px;height:8px;background:var(--cinnabar);margin-right:10px;transform:rotate(45deg)}
+.nav{display:flex;gap:clamp(10px,1.8vw,26px);margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{font-size:12px;letter-spacing:.12em;text-decoration:none;color:var(--ink-soft);white-space:nowrap;padding:12px 2px;border-bottom:1px solid transparent;transition:color var(--dur-fast),border-color var(--dur-fast)}
+.nav a:hover,.nav a:focus-visible{color:var(--cinnabar);border-bottom-color:var(--cinnabar)}
+
+/* 首屏：竖排书名 + 朱印，非对称 */
+.hero{position:relative;padding:clamp(56px,9vw,120px) 0 clamp(48px,7vw,90px);overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:minmax(220px,.82fr) 1.18fr;gap:clamp(28px,6vw,90px);align-items:center}
+.hero-left{position:relative;min-height:clamp(340px,42vw,520px);display:flex;align-items:flex-start;justify-content:center}
+.vertical-title{writing-mode:vertical-rl;font-size:var(--fs-hero);font-weight:700;line-height:1;letter-spacing:.16em;margin-right:auto;padding-left:clamp(10px,4vw,54px)}
+.vertical-title small{font-size:13px;font-weight:400;letter-spacing:.5em;color:var(--muted);margin-top:24px;font-family:var(--font-num)}
+.seal{position:absolute;right:4%;bottom:8%;width:76px;height:76px;background:var(--cinnabar);color:var(--card);display:grid;place-items:center;font-size:19px;font-weight:700;line-height:1.2;letter-spacing:.1em;transform:rotate(-5deg);box-shadow:var(--shadow-2);text-align:center}
+.seal span{display:block;border:1px solid rgba(251,247,238,.7);padding:6px 8px;width:100%;height:100%;display:grid;place-items:center}
+.hero-rule{position:absolute;top:clamp(80px,12vw,150px);right:-8vw;width:52vw;height:2px;background:var(--cinnabar);opacity:.75;transform:rotate(-9deg);transform-origin:right center}
+.hero-right{position:relative;padding-top:clamp(10px,3vw,40px)}
+.hero h1{font-size:var(--fs-h1);line-height:1.25;letter-spacing:.01em;margin:0 0 var(--sp-4);font-weight:700}
+.hero h1 em{font-style:normal;color:var(--cinnabar)}
+.lede{max-width:34em;color:var(--ink-soft);font-size:16px;margin:0 0 var(--sp-5)}
+.hero-stats{display:flex;gap:clamp(20px,4vw,56px);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:var(--sp-4) 0;margin-bottom:var(--sp-5)}
+.stat b{display:block;font-family:var(--font-num);font-size:42px;font-weight:600;line-height:1;color:var(--ink)}
+.stat span{font-size:11px;letter-spacing:.18em;color:var(--muted)}
+.btn-primary{display:inline-flex;align-items:center;gap:14px;background:var(--cinnabar);color:var(--card);text-decoration:none;padding:14px 26px;font-size:13px;letter-spacing:.16em;min-height:48px;transition:transform var(--dur-fast),background var(--dur-fast)}
+.btn-primary:hover{transform:translateY(-3px);background:#84231D}
+.btn-primary i{font-style:normal;font-family:var(--font-num);font-size:18px}
+.hero-foot{margin-top:clamp(40px,6vw,80px);display:flex;align-items:center;gap:18px;font-size:12px;letter-spacing:.3em;color:var(--muted)}
+.hero-foot::before{content:"";width:64px;height:1px;background:var(--cinnabar)}
+
+/* 章节通用 */
+section{padding:clamp(56px,8vw,104px) 0;border-top:1px solid var(--hair)}
+.sec-head{display:grid;grid-template-columns:110px 1fr;gap:var(--sp-4);align-items:start;margin-bottom:clamp(32px,5vw,64px)}
+.sec-num{font-family:var(--font-num);font-size:13px;letter-spacing:.24em;color:var(--cinnabar);padding-top:12px;border-top:2px solid var(--cinnabar);width:80px}
+.sec-head h2{font-size:var(--fs-h2);margin:0 0 var(--sp-2);font-weight:700;letter-spacing:.04em}
+.sec-head p{margin:0;max-width:52em;color:var(--ink-soft);font-size:14px}
+.hair-note{font-size:12px;color:var(--muted);letter-spacing:.08em}
+
+/* 时间轴 */
+.axis-shell{border:1px solid var(--hair-strong);background:var(--card);padding:clamp(16px,3vw,32px);position:relative;box-shadow:var(--shadow-1)}
+.axis-shell::before,.axis-shell::after{content:"";position:absolute;width:18px;height:18px;border:1px solid var(--cinnabar)}
+.axis-shell::before{top:8px;left:8px;border-right:0;border-bottom:0}
+.axis-shell::after{bottom:8px;right:8px;border-left:0;border-top:0}
+.legend{display:flex;flex-wrap:wrap;gap:var(--sp-4);align-items:center;margin-bottom:var(--sp-4);font-size:12px}
+.legend span{display:inline-flex;align-items:center;gap:8px;color:var(--ink-soft)}
+.legend i{width:22px;height:3px;display:block}
+.axis-scroll{overflow-x:auto;scrollbar-width:thin}
+#axisSvg{display:block;width:100%;min-width:680px;height:auto}
+.axis-row{display:grid;grid-template-columns:1fr;gap:var(--sp-4);margin-top:var(--sp-4)}
+.range-line{display:flex;align-items:center;gap:var(--sp-4)}
+.range-line label{font-size:11px;letter-spacing:.18em;color:var(--muted);white-space:nowrap}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;background:transparent;height:44px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--hair-strong)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--cinnabar);border:3px solid var(--card);box-shadow:0 0 0 1px var(--cinnabar);margin-top:-8px;transform:rotate(45deg)}
+input[type=range]::-moz-range-track{height:2px;background:var(--hair-strong)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--cinnabar);border:3px solid var(--card);border-radius:0;transform:rotate(45deg)}
+.readout{display:grid;grid-template-columns:150px 1fr;gap:var(--sp-4);border-top:1px solid var(--hair);padding-top:var(--sp-4)}
+.year-big{font-family:var(--font-num);font-size:64px;font-weight:600;line-height:1;color:var(--cinnabar)}
+.year-era{font-size:12px;letter-spacing:.2em;color:var(--muted);margin-top:6px}
+.line-states{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)}
+.line-state{border-left:2px solid var(--hair);padding-left:12px}
+.line-state h4{margin:0 0 4px;font-size:12px;letter-spacing:.12em;font-weight:500}
+.line-state p{margin:0;font-size:12px;line-height:1.65;color:var(--ink-soft)}
+.line-state.b{border-color:var(--bian)} .line-state.b h4{color:var(--bian)}
+.line-state.c{border-color:var(--cai)} .line-state.c h4{color:var(--cai)}
+.line-state.d{border-color:var(--dang)} .line-state.d h4{color:var(--dang)}
+.node-strip{display:flex;gap:8px;overflow-x:auto;padding:var(--sp-3) 0 var(--sp-2);scrollbar-width:thin}
+.node-btn{white-space:nowrap;background:transparent;border:1px solid var(--hair-strong);padding:10px 14px;font-size:12px;min-height:44px;letter-spacing:.06em;transition:background var(--dur-fast),color var(--dur-fast),transform var(--dur-fast);flex:0 0 auto}
+.node-btn:hover{transform:translateY(-2px);border-color:var(--cinnabar)}
+.node-btn.active{background:var(--cinnabar);border-color:var(--cinnabar);color:var(--card)}
+.node-btn .ny{font-family:var(--font-num);font-size:15px;margin-right:8px}
+.tri-panel{margin-top:var(--sp-4);border-top:2px solid var(--cinnabar);background:var(--paper-deep);padding:clamp(18px,3vw,32px);display:none}
+.tri-panel.show{display:block;animation:fadeUp var(--dur-base) var(--ease-out)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tri-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sp-3);margin-bottom:var(--sp-3)}
+.tri-head h3{margin:0;font-size:22px;letter-spacing:.06em}
+.tri-head .ty{font-family:var(--font-num);font-size:28px;color:var(--cinnabar);font-weight:600}
+.tri-lead{margin:0 0 var(--sp-4);font-size:14px;color:var(--ink-soft);max-width:60em}
+.tri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)}
+.tri-card{background:var(--card);border-top:3px solid var(--hair);padding:var(--sp-3);font-size:13px;line-height:1.75}
+.tri-card:nth-child(1){border-color:var(--bian)} .tri-card:nth-child(2){border-color:var(--dang)} .tri-card:nth-child(3){border-color:var(--cai)}
+.tri-card h5{margin:0 0 8px;font-size:13px;letter-spacing:.14em;font-weight:700}
+.tri-card:nth-child(1) h5{color:var(--bian)} .tri-card:nth-child(2) h5{color:var(--dang)} .tri-card:nth-child(3) h5{color:var(--cai)}
+.tri-card p{margin:0;color:var(--ink-soft)}
+.tri-cost{margin:var(--sp-4) 0 0;padding-top:var(--sp-3);border-top:1px solid var(--hair);font-size:13px}
+.tri-cost b{color:var(--cinnabar);font-weight:700}
+.tri-close{float:right;background:transparent;border:0;font-size:12px;letter-spacing:.1em;color:var(--muted);min-height:44px;padding:0 0 0 16px}
+.tri-close:hover{color:var(--cinnabar)}
+
+/* 五幕 */
+.acts{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(16px,3vw,32px)}
+.act{background:var(--card);border:1px solid var(--hair);padding:clamp(20px,3vw,32px);position:relative;transition:transform var(--dur-base) var(--ease-out),box-shadow var(--dur-base)}
+.act:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.act:nth-child(even){margin-top:clamp(20px,4vw,52px)}
+.act:last-child{grid-column:1/-1;margin-top:0}
+.act-no{font-family:var(--font-num);font-size:15px;letter-spacing:.2em;color:var(--cinnabar)}
+.act h3{margin:6px 0 4px;font-size:24px;letter-spacing:.08em}
+.act .ay{font-family:var(--font-num);font-size:19px;color:var(--muted)}
+.act-triad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:var(--sp-4) 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:var(--sp-3) 0}
+.act-triad div span{display:block;font-size:11px;letter-spacing:.14em;color:var(--muted);margin-bottom:4px}
+.act-triad div p{margin:0;font-size:12.5px;line-height:1.6}
+.act-events{list-style:none;padding:0;margin:0;font-size:13px;color:var(--ink-soft)}
+.act-events li{padding:5px 0 5px 18px;position:relative}
+.act-events li::before{content:"";position:absolute;left:2px;top:14px;width:5px;height:5px;background:var(--cinnabar);transform:rotate(45deg)}
+.read-btn{margin-top:var(--sp-4);background:transparent;border:1px solid var(--ink);padding:10px 18px;font-size:12px;letter-spacing:.12em;min-height:44px;transition:background var(--dur-fast),color var(--dur-fast)}
+.read-btn:hover{background:var(--ink);color:var(--card)}
+.act-full{display:none;margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px dashed var(--hair-strong);font-size:14px;color:var(--ink-soft)}
+.act-full.show{display:block}
+.act-full p{margin:0 0 14px;text-indent:2em}
+.act-full p:first-child::first-letter{font-size:34px;font-weight:700;color:var(--cinnabar);float:left;line-height:1;margin:6px 8px 0 0}
+
+/* 名录 */
+.tabs{display:flex;gap:0;margin-bottom:var(--sp-4);border-bottom:1px solid var(--hair-strong)}
+.tab{background:transparent;border:0;border-bottom:2px solid transparent;padding:12px 22px;font-size:13px;letter-spacing:.14em;min-height:44px;color:var(--muted)}
+.tab.active{color:var(--cinnabar);border-bottom-color:var(--cinnabar)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:1px;background:var(--hair);border:1px solid var(--hair)}
+.pcard{background:var(--card);padding:var(--sp-4) var(--sp-3);text-align:left;border:0;position:relative;min-height:150px;display:flex;flex-direction:column;transition:background var(--dur-fast)}
+.pcard:hover{background:var(--paper-deep)}
+.pcard::after{content:"↗";position:absolute;right:12px;top:10px;font-size:13px;color:var(--cinnabar);opacity:0;transform:translate(-4px,4px);transition:opacity var(--dur-fast),transform var(--dur-fast)}
+.pcard:hover::after,.pcard:focus-visible::after{opacity:1;transform:none}
+.pcard .ptag{font-size:10px;letter-spacing:.16em;color:var(--muted)}
+.pcard .pname{font-size:23px;font-weight:700;letter-spacing:.1em;margin:6px 0 8px}
+.pcard .phl{font-size:12px;color:var(--ink-soft);line-height:1.65;flex:1}
+.pcard .pend{font-size:11px;letter-spacing:.08em;border-top:1px solid var(--hair);padding-top:8px;margin-top:10px}
+.pcard .pend b{font-weight:500}
+.pcard[data-end="tragic"] .pend{color:var(--cinnabar)}
+.pcard[data-end="ok"] .pend{color:var(--bian)}
+.fate-bar{height:4px;margin-top:10px;background:linear-gradient(90deg,var(--bian),var(--cai),var(--cinnabar));opacity:.7}
+.roster-note{margin:var(--sp-4) 0 0;padding:var(--sp-3) var(--sp-4);border-left:3px solid var(--cinnabar);background:var(--paper-deep);font-size:13.5px}
+
+/* 甲申抉择 */
+.choice-shell{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,5vw,64px);border:1px solid var(--hair-strong);background:var(--card);padding:clamp(22px,4vw,48px)}
+.choice-aside p{font-size:13px;color:var(--ink-soft)}
+.choice-aside .big{font-family:var(--font-num);font-size:80px;line-height:.9;color:var(--cinnabar);font-weight:600}
+.choice-aside .seal-sm{display:inline-block;border:1px solid var(--cinnabar);color:var(--cinnabar);padding:4px 10px;font-size:11px;letter-spacing:.2em;margin-top:var(--sp-4)}
+.q-step{font-size:11px;letter-spacing:.24em;color:var(--muted)}
+.q-title{font-size:21px;margin:8px 0 var(--sp-4);line-height:1.5;font-weight:700}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:transparent;border:1px solid var(--hair-strong);padding:14px 18px;font-size:13.5px;min-height:52px;line-height:1.6;transition:border-color var(--dur-fast),background var(--dur-fast),transform var(--dur-fast)}
+.opt:hover{transform:translateX(5px);border-color:var(--cinnabar);background:var(--paper-deep)}
+.opt:disabled{cursor:default;opacity:.62;transform:none}
+.opt.picked{border-color:var(--cinnabar);background:var(--paper-deep);opacity:1}
+.feedback{margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);border-left:3px solid var(--cai);background:var(--paper-deep);font-size:13px;line-height:1.8;display:none}
+.feedback.show{display:block;animation:fadeUp var(--dur-base) var(--ease-out)}
+.next-btn{margin-top:var(--sp-4);background:var(--ink);color:var(--card);border:0;padding:12px 24px;font-size:12px;letter-spacing:.16em;min-height:44px;display:none}
+.next-btn.show{display:inline-block}
+.next-btn:hover{background:var(--cinnabar)}
+.finale{display:none}
+.finale.show{display:block;animation:fadeUp var(--dur-slow) var(--ease-out)}
+.finale h3{font-size:26px;margin:0 0 var(--sp-3);color:var(--cinnabar)}
+.finale p{font-size:14px;color:var(--ink-soft);line-height:1.9}
+
+footer{border-top:1px solid var(--hair);padding:var(--sp-5) 0 var(--sp-6);font-size:12px;color:var(--muted);position:relative;z-index:1}
+footer .wrap{display:flex;flex-wrap:wrap;gap:var(--sp-4);justify-content:space-between}
+
+/* 弹层 */
+.modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(34,30,25,.5);backdrop-filter:blur(3px)}
+.modal.show{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--hair-strong);box-shadow:var(--shadow-3);max-width:560px;width:100%;max-height:86vh;overflow:auto;padding:clamp(22px,4vw,40px);position:relative}
+.modal-box::before{content:"";position:absolute;top:0;left:0;width:64px;height:3px;background:var(--cinnabar)}
+.modal-close{position:absolute;top:12px;right:14px;background:transparent;border:0;font-size:22px;line-height:1;width:44px;height:44px;color:var(--muted)}
+.modal-close:hover{color:var(--cinnabar)}
+.modal .mk{font-size:11px;letter-spacing:.24em;color:var(--cinnabar);margin:0 0 8px}
+.modal h3{font-size:30px;margin:0 0 4px;letter-spacing:.1em}
+.modal .msub{font-size:12px;color:var(--muted);margin:0 0 var(--sp-4)}
+.modal-rows{border-top:1px solid var(--hair);margin:0}
+.modal-rows div{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--hair);font-size:13.5px;line-height:1.75}
+.modal-rows dt{color:var(--muted);font-size:12px;letter-spacing:.1em}
+.modal-rows dd{margin:0}
+.modal-body{margin:var(--sp-4) 0 0;font-size:13.5px;line-height:1.85;color:var(--ink-soft)}
+.modal-foot{margin-top:var(--sp-4);font-size:11.5px;color:var(--muted);letter-spacing:.08em}
+
+/* 入场编排 */
+.reveal{opacity:0;transform:translateY(22px)}
+.reveal.in{opacity:1;transform:none;transition:opacity var(--dur-base) var(--ease-out),transform var(--dur-base) var(--ease-out)}
+.hero .eyebrow{animation:heroIn var(--dur-slow) var(--ease-out) both}
+.hero h1{animation:heroIn var(--dur-slow) var(--ease-out) 90ms both}
+.hero .lede{animation:heroIn var(--dur-slow) var(--ease-out) 180ms both}
+.hero .hero-stats{animation:heroIn var(--dur-slow) var(--ease-out) 270ms both}
+.hero .btn-primary{animation:heroIn var(--dur-slow) var(--ease-out) 360ms both}
+.hero .vertical-title{animation:heroIn var(--dur-slow) var(--ease-out) 60ms both}
+.hero .seal{animation:heroIn var(--dur-slow) var(--ease-out) 450ms both}
+@keyframes heroIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.reveal:nth-child(2){transition-delay:70ms}
+.reveal:nth-child(3){transition-delay:140ms}
+.reveal:nth-child(4){transition-delay:210ms}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:var(--sp-4)}
+  .hero-left{min-height:220px;justify-content:flex-start}
+  .vertical-title{font-size:clamp(48px,12vw,80px);padding-left:0}
+  .hero-rule{top:200px;width:90vw}
+  .seal{right:8%;bottom:0;width:60px;height:60px;font-size:15px}
+  .acts{grid-template-columns:1fr}
+  .act:nth-child(even){margin-top:0}
+  .choice-shell{grid-template-columns:1fr}
+  .sec-head{grid-template-columns:1fr;gap:8px}
+  .sec-num{padding-top:6px;width:100%;border-top-width:1px}
+  .readout{grid-template-columns:1fr}
+  .line-states{grid-template-columns:1fr}
+  .tri-grid{grid-template-columns:1fr}
+  .act-triad{grid-template-columns:1fr;gap:6px}
+  .act-triad div{display:flex;gap:10px;align-items:baseline}
+  .act-triad div span{min-width:48px}
+}
+@media(max-width:520px){
+  .hero-stats{gap:var(--sp-4)} .stat b{font-size:32px}
+  .topbar .wrap{gap:10px} .brand{font-size:14px}
+  .year-big{font-size:48px}
+  .modal-rows div{grid-template-columns:1fr;gap:2px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand"><i></i>大明王朝</div>
+    <nav class="nav" aria-label="主导航">
+      <a href="#juan-shou">卷首</a>
+      <a href="#zhou">一轴三线</a>
+      <a href="#mu">五幕长卷</a>
+      <a href="#minglu">名将录</a>
+      <a href="#jianlu">奸臣录</a>
+      <a href="#nenglu">能臣录</a>
+      <a href="#jueze">甲申抉择</a>
+      <a href="../大明王朝全景/index.html" style="color:#9B2C24">全景时序 ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero" id="juan-shou">
+  <div class="hero-rule" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="vertical-title">大明王朝<small>1368 — 1644</small></div>
+        <div class="seal" aria-hidden="true"><span>大明<br>之印</span></div>
+      </div>
+      <div class="hero-right">
+        <p class="eyebrow">沉浸叙事 · 互动长卷 · 演示原型</p>
+        <h1>不是百科全书，<br>是一部<em>可以走进去的王朝</em>。</h1>
+        <p class="lede">二百七十六年，十六位帝王。你沿着时间轴往前走，每一步都同时踩在三股绳上——边患、财政、党争。每幕以危机开场，以代价收尾；读完最后一页才明白，王朝之亡，亡于每一次「应对」的账单。</p>
+        <div class="hero-stats">
+          <div class="stat"><b class="num">276</b><span>年 · 国祚</span></div>
+          <div class="stat"><b class="num">16</b><span>帝 · 世系</span></div>
+          <div class="stat"><b class="num">3</b><span>股绳 · 主线</span></div>
+          <div class="stat"><b class="num">5</b><span>幕 · 长卷</span></div>
+        </div>
+        <a class="btn-primary" href="#zhou">展卷 · 走入时间轴 <i>→</i></a>
+      </div>
+    </div>
+    <div class="hero-foot">危机 · 应对 · 代价　｜　据《大明王朝App企划案 v1.0》制作</div>
+  </div>
+</section>
+
+<section id="zhou">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">卷 一</div>
+      <div>
+        <h2>一轴三线：时间轴是会呼吸的</h2>
+        <p>时间轴是骨，三条丝带叠在轴上——带子越高，代表这条线此刻的压力越重。拖动游标改变年份，三线状态实时变化；点选下方交错节点，展开「同一时刻，三个战场」的三视角章节。</p>
+      </div>
+    </div>
+
+    <div class="axis-shell reveal">
+      <div class="legend">
+        <span><i style="background:var(--bian)"></i>边患线 · 北元→北虏南倭→后金</span>
+        <span><i style="background:var(--cai)"></i>财政线 · 宝钞→白银→崩溃</span>
+        <span><i style="background:var(--dang)"></i>党争线 · 内阁→宦官→东林</span>
+        <span class="hair-note" style="margin-left:auto">交错节点以朱点标记</span>
+      </div>
+
+      <div class="axis-scroll">
+        <svg id="axisSvg" viewBox="0 0 1000 300" role="img" aria-label="1368至1644年边患、财政、党争三条线的强度曲线">
+          <g id="gridLines"></g>
+          <g id="areaPaths"></g>
+          <g id="linePaths"></g>
+          <g id="nodeDots"></g>
+          <line id="cursorLine" x1="0" y1="18" x2="0" y2="262" stroke="#221E19" stroke-width="1" stroke-dasharray="3 4" opacity=".55"></line>
+          <g id="cursorDots"></g>
+          <g id="yearLabels"></g>
+        </svg>
+      </div>
+
+      <div class="axis-row">
+        <div class="range-line">
+          <label for="yearRange">纪年游标</label>
+          <input type="range" id="yearRange" min="1368" max="1644" step="1" value="1368" aria-label="选择年份">
+        </div>
+        <div class="readout" aria-live="polite">
+          <div><div class="year-big num" id="yearBig">1368</div><div class="year-era" id="yearEra">洪武元年 · 第一幕</div></div>
+          <div class="line-states">
+            <div class="line-state b"><h4>边患线</h4><p id="stateB"></p></div>
+            <div class="line-state d"><h4>党争线</h4><p id="stateD"></p></div>
+            <div class="line-state c"><h4>财政线</h4><p id="stateC"></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="node-strip" id="nodeStrip" aria-label="交错节点"></div>
+
+      <div class="tri-panel" id="triPanel" role="region" aria-label="三视角章节"></div>
+    </div>
+  </div>
+</section>
+
+<section id="mu">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">卷 二</div>
+      <div>
+        <h2>五幕长卷：每幕以危机开场，以代价收尾</h2>
+        <p>第一幕提供完整试读；其余四幕列出关键节点与「危机—应对—代价」三栏。点击「展开试读」可看到这一幕的叙事文本样例。</p>
+      </div>
+    </div>
+    <div class="acts" id="acts"></div>
+  </div>
+</section>
+
+<section id="minglu">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">卷 三</div>
+      <div>
+        <h2>名将录：战功 × 结局</h2>
+        <p>十二张双维卡片。每张不只写他打赢了什么，还写他怎么死的。翻完自然得出一个结论：大明的名将，一半死于敌人，一半死于自己人。</p>
+      </div>
+    </div>
+    <div class="cards" id="generalCards"></div>
+    <p class="roster-note reveal">卡片下方那条色带是「功—终」刻度：从左端的功业，到右端的结局。点击任一卡片查看完整档案与关联幕次。</p>
+  </div>
+</section>
+
+<section id="jianlu">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">卷 四</div>
+      <div>
+        <h2>奸臣 · 权阉录：他身后总站着一位皇帝</h2>
+        <p>分权臣、权阉两条脉络。每条档案必附「皇帝视角」一栏——因为在大明，奸臣是皇权的影子，不是孤立的道德问题。</p>
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="奸臣录分类">
+      <button class="tab active" role="tab" aria-selected="true" data-cat="chen">权臣线 · 五人</button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="huan">权阉线 · 四人</button>
+    </div>
+    <div class="cards" id="traitorCards"></div>
+  </div>
+</section>
+
+<section id="nenglu">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">卷 五</div>
+      <div>
+        <h2>能臣录：与奸臣录对照着读</h2>
+        <p>改革能臣死后被清算，改革成果随之瓦解，王朝就开始倒计时——这份名录是第四、五幕的注脚。</p>
+      </div>
+    </div>
+    <div class="cards" id="ministerCards"></div>
+  </div>
+</section>
+
+<section id="jueze">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-num">终 卷</div>
+      <div>
+        <h2>甲申之变：如果你是崇祯</h2>
+        <p>崇祯十七年三月，四个选择。每个选择先给出史实推演，最后揭示真实结局——这是整个 App 的情感落点。</p>
+      </div>
+    </div>
+    <div class="choice-shell reveal">
+      <div class="choice-aside">
+        <div class="big num">1644</div>
+        <p>三月十八日，李自成兵临城下。太监打开彰义门。这一夜之前，其实还有四次机会——只是每一次都撞在已经断掉的线上。</p>
+        <p>边患线：关外清军压境。财政线：国库空、军无饷。党争线：南迁之议争到最后一刻也没有结论。</p>
+        <span class="seal-sm">三 线 同 断</span>
+      </div>
+      <div id="choiceMain">
+        <div id="quiz">
+          <div class="q-step" id="qStep"></div>
+          <h3 class="q-title" id="qTitle"></h3>
+          <div class="opts" id="qOpts"></div>
+          <div class="feedback" id="qFeedback"></div>
+          <button class="next-btn" id="qNext">继续 →</button>
+        </div>
+        <div class="finale" id="finale">
+          <h3>煤山之上，无人来救</h3>
+          <p>史实里，崇祯犹豫过南迁、错过调兵的时机、拒绝了谈判、也杀过不该杀的大臣。但真正的答案不在这四个选择里：三线早在几十年前就一根根断掉了——1618 年的辽饷、1584 年的清算、1449 年的土木堡，账单早已开出，只是寄到煤山时才被拆开。</p>
+          <p>「任何体制的每一次应对都有账单。大明的账单，最终寄到了煤山上。」</p>
+          <button class="read-btn" id="restartBtn">重新展卷</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>《大明王朝》App · 演示原型 v1.0　｜　依据《大明王朝App企划案》制作</span>
+    <span>史料以《明史》《明实录》及主流研究为准 · 人物评语为叙事设计，非史论定谳</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="关闭档案">×</button>
+    <p class="mk" id="modalKicker"></p>
+    <h3 id="modalTitle"></h3>
+    <p class="msub" id="modalSub"></p>
+    <dl class="modal-rows" id="modalRows"></dl>
+    <p class="modal-body" id="modalBody"></p>
+    <p class="modal-foot" id="modalFoot"></p>
+  </div>
+</div>
+
+<script>
+const YEAR0 = 1368, YEAR1 = 1644, X0 = 46, X1 = 966, Y_TOP = 22, Y_BOT = 258;
+const sx = y => X0 + (y - YEAR0) / (YEAR1 - YEAR0) * (X1 - X0);
+const sy = v => Y_BOT - v * (Y_BOT - Y_TOP);
+
+const curves = [
+  {y:1368,b:.80,c:.18,d:.12},{y:1380,b:.62,c:.24,d:.30},{y:1393,b:.52,c:.28,d:.38},
+  {y:1402,b:.72,c:.34,d:.26},{y:1424,b:.55,c:.44,d:.30},{y:1435,b:.35,c:.54,d:.46},
+  {y:1449,b:.96,c:.72,d:.84},{y:1457,b:.52,c:.58,d:.70},{y:1487,b:.40,c:.54,d:.52},
+  {y:1505,b:.34,c:.58,d:.56},{y:1521,b:.56,c:.70,d:.86},{y:1550,b:.96,c:.84,d:.92},
+  {y:1567,b:.60,c:.52,d:.70},{y:1572,b:.48,c:.38,d:.74},{y:1582,b:.44,c:.30,d:.62},
+  {y:1584,b:.50,c:.56,d:.92},{y:1601,b:.56,c:.72,d:.96},{y:1616,b:.76,c:.86,d:.94},
+  {y:1619,b:.96,c:.96,d:.92},{y:1628,b:.90,c:.98,d:.90},{y:1644,b:1,c:1,d:1}
+];
+
+const eras = [
+  [1368,1398,'洪武','第一幕'],[1399,1402,'建文','第一幕'],[1403,1424,'永乐','第一幕'],
+  [1425,1425,'洪熙','第二幕'],[1426,1435,'宣德','第二幕'],[1436,1449,'正统','第三幕'],
+  [1450,1456,'景泰','第三幕'],[1457,1464,'天顺','第三幕'],[1465,1487,'成化','第四幕'],
+  [1488,1505,'弘治','第四幕'],[1506,1521,'正德','第四幕'],[1522,1566,'嘉靖','第四幕'],
+  [1567,1572,'隆庆','第四幕'],[1573,1620,'万历','第五幕'],[1620,1620,'泰昌','第五幕'],
+  [1621,1627,'天启','第五幕'],[1628,1644,'崇祯','第五幕']
+];
+
+const phases = [
+  {until:1424,b:'北元残部仍强，徐达、蓝玉连年北伐，卫所军屯支撑前线。',d:'废丞相、设锦衣卫，皇权独大，尚无制衡力量。',c:'宝钞初行，军屯自给，财政尚能支撑大规模远征。'},
+  {until:1448,b:'北边暂安，武备却随屯田崩坏而松弛，王振掌司礼监。',d:'三杨内阁确立票拟，文官集团第一次成为制度性力量。',c:'宝钞贬值、下西洋停罢，军屯收入逐年流失。'},
+  {until:1457,b:'瓦剌也先入寇，土木堡一役京营尽丧，北京保卫战勉强守住。',d:'王振怂恿亲征；夺门之变后，救国的于谦反被构陷。',c:'京营糜烂、粮秣不济，复辟后一切从头筹饷。'},
+  {until:1520,b:'北虏渐起，南倭未成气候；边防靠旧卫所勉强维持。',d:'汪直、刘瑾相继专权，宦官成为皇帝绕开文官的耳目。',c:'流民、矿盗频发，赋役积弊已难以掩盖。'},
+  {until:1566,b:'庚戌之变俺答兵临北京，戚继光、俞大猷平倭，双线同时告急。',d:'大礼议后强人皇权确立，严嵩当政二十年，边饷亏空总爆发。',c:'南倭阻断漕运与海贸，加派频仍，国库被边费吞空。'},
+  {until:1582,b:'俺答封贡、隆庆开关，北虏南倭双峰同时降级；戚继光守蓟州。',d:'张居正以考成法压平党争，一人独裁换来十年喘息。',c:'白银大量流入、一条鞭法推行，太仓积银——全书唯一的正反馈节点。'},
+  {until:1618,b:'辽东李成梁旧局养出努尔哈赤，后金于1616年建国。',d:'张居正身后清算，国本之争耗尽朝堂，东林与阉党生死斗。',c:'清丈成果被废，矿税涸泽而渔，财政重回枯竭。'},
+  {until:1643,b:'萨尔浒惨败后辽东转入守势，清军屡次入塞；内地流寇成势。',d:'崇祯十七年换阁臣五十人，多疑与党争让任何决策都无法落地。',c:'辽饷、剿饷、练饷层层加派，加派又催生更多民变，恶性闭环。'},
+  {until:1644,b:'清军压境关外，李自成破居庸关，两线同时压向北京。',d:'南迁之议从正月争到三月，无人敢担责，遂无决议。',c:'国库空、军无饷，守城兵士已数月未领银。'}
+];
+
+const triNodes = [
+  {y:1449,t:'土木堡之变',lead:'三线同时恶化的一次总爆发。先看边患，再看是谁把皇帝推上了亲征的路，最后看那支军队为什么一触即溃。',
+   b:'也先分四路入寇，大同告急；边报一日数至，朝中却无统一判断。',d:'王振怂恿二十二岁的英宗仓促亲征，文官劝阻无效——宦官权力第一次直接改写国运。',c:'京营久疏战阵，粮秣不济，号称五十万大军实际调度混乱。',cost:'代价：皇帝被俘，京营精锐尽丧；八年后，救国者于谦死于夺门之后的国法。'},
+  {y:1457,t:'于谦之死',lead:'危机解除了，应对者却没有。这一章是全书叙事模板的定调。',
+   b:'边患暂缓，北京防线重建，瓦剌内部生变。',d:'夺门功臣需要一桩「拥立旧臣」的罪名，于谦成为复辟合法性的祭品。',c:'复辟后军费重建，一切回到土木堡之前的老问题。',cost:'代价：从此「力挽狂澜者不得善终」成为大明官场的隐性常识。'},
+  {y:1521,t:'大礼议',lead:'一场关于称谓的争论，把党争线烧成了此后百年的主燃料。',
+   b:'北虏初起，边防尚未成为朝堂焦点。',d:'嘉靖以议礼清洗旧臣、扶植新贵，皇权学会用「立场」而非「政绩」选人。',c:'追尊兴献王的礼制工程、大建宫观，开支一路走高。',cost:'代价：党争从政见之争变为身份之争，再无和解可能。'},
+  {y:1550,t:'庚戌之变',lead:'俺答的骑兵到北京城下，照出的是三条线同时的溃烂。',
+   b:'俺答突破古北口，兵临京师郊外，勤王军观望不战。',d:'严嵩主和，以「饱掠自去」为由压下令出战者，事后又杀替罪者。',c:'边饷亏空总爆发，账上无银，账外无粮。',cost:'代价：朝廷威信扫地，南倭与北虏双线夹击的十年由此开始。'},
+  {y:1567,t:'隆庆开关 · 俺答封贡',lead:'全书唯一的转机节点：三线第一次同时松了一口气。',
+   b:'俺答受封顺义王，北边互市；戚继光调守蓟州，防线成型。',d:'高拱、徐阶、张居正先后入阁，务实派短暂压过清议。',c:'海禁松动，美洲与日本白银大量流入，财政换轨到银本位。',cost:'转机：没有这条缝，就没有十年后一条鞭法可推行的条件。'},
+  {y:1572,t:'张居正改革',lead:'一个人，同时改三条线——也同时得罪了三条线上的所有人。',
+   b:'用戚继光守蓟州、李成梁镇辽东，北边十六年无大战。',d:'考成法压平党争，内阁首次实现对六部的实质控制。',c:'清丈田亩、一条鞭法，太仓积银至数百万两。',cost:'代价：改革依赖一人权威，1582 年人一死，1584 年全盘清算。'},
+  {y:1582,t:'张居正身后清算',lead:'人亡政息：第四幕最亮的一页，翻过去就是第五幕最暗的一页。',
+   b:'边防人才政策逆转，戚继光被调离蓟州。',d:'被压抑十年的言官全面反弹，清算成为政治正确。',c:'清丈数据被废，考成法停行，国库积银迅速散尽。',cost:'代价：此后无人再敢推行任何触及既得利益的改革。'},
+  {y:1619,t:'辽饷加派 · 萨尔浒',lead:'边患线换了主角，财政线被这一战直接压断。',
+   b:'努尔哈赤以集中兵力各个击破，明军四路丧师，辽东转入守势。',d:'朝堂为「剿」与「守」争论不休，主帅临阵受制于朝议。',c:'为筹辽饷加派田赋，加派又逼出更多流民——民变的伏笔就此埋下。',cost:'代价：外战与内乱从此合流，财政再无回旋余地。'},
+  {y:1644,t:'甲申之变',lead:'三线同断。所有曾经被推迟的账单，在同一天到期。',
+   b:'关外清军压境，关内李自成破京，两线夹击。',d:'南迁之议争到城破也没有结论，无人愿担「弃京师」之名。',c:'国库空、军无饷，守城者已数月未领银，开城者只求活命。',cost:'终局：崇祯自缢煤山。王朝之亡，亡于每一次应对的代价。'}
+];
+
+/* ---- 时间轴绘制 ---- */
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
+const gridLines = document.getElementById('gridLines');
+const areaPaths = document.getElementById('areaPaths');
+const linePaths = document.getElementById('linePaths');
+const nodeDots = document.getElementById('nodeDots');
+const yearLabels = document.getElementById('yearLabels');
+
+[0,.25,.5,.75,1].forEach(v => {
+  const y = sy(v);
+  gridLines.appendChild(el('line',{x1:X0,y1:y,x2:X1,y2:y,stroke:'#221E19','stroke-width':v===0?1:.5,opacity:v===0?.35:.10}));
+});
+[[1368,'1368'],[1424,'1424'],[1449,'1449'],[1500,'1500'],[1550,'1550'],[1582,'1582'],[1619,'1619'],[1644,'1644']].forEach(([y,lab]) => {
+  const t = el('text',{x:sx(y),y:282,'text-anchor':'middle','font-family':'Cormorant Garamond, Georgia, serif','font-size':15,fill:'#756A5A'});
+  t.textContent = lab; yearLabels.appendChild(t);
+});
+const series = [
+  {key:'b',color:'#0F6E56',fill:'rgba(15,110,86,.10)'},
+  {key:'d',color:'#9B2C24',fill:'rgba(155,44,36,.09)'},
+  {key:'c',color:'#A9761B',fill:'rgba(169,118,27,.10)'}
+];
+series.forEach(s => {
+  const pts = curves.map(p => sx(p.y)+','+sy(p[s.key])).join(' ');
+  areaPaths.appendChild(el('polygon',{points:`${sx(YEAR0)},${Y_BOT} ${pts} ${sx(YEAR1)},${Y_BOT}`,fill:s.fill,stroke:'none'}));
+  linePaths.appendChild(el('polyline',{points:pts,fill:'none',stroke:s.color,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
+});
+triNodes.forEach(n => {
+  const c = el('circle',{cx:sx(n.y),cy:14,r:3.4,fill:'#9B2C24'});
+  nodeDots.appendChild(c);
+});
+
+const interp = (y,key) => {
+  for(let i=0;i<curves.length-1;i++){
+    const a=curves[i],b=curves[i+1];
+    if(y>=a.y&&y<=b.y) return a[key]+(b[key]-a[key])*(y-a.y)/(b.y-a.y);
+  }
+  return curves[curves.length-1][key];
+};
+const getEra = y => { const e=eras.find(r=>y>=r[0]&&y<=r[1])||eras[eras.length-1]; return {name:e[2],act:e[3],n:y-e[0]+1}; };
+const getPhase = y => phases.find(p=>y<=p.until) || phases[phases.length-1];
+
+const cursorLine=document.getElementById('cursorLine'), cursorDots=document.getElementById('cursorDots');
+const yearRange=document.getElementById('yearRange'), yearBig=document.getElementById('yearBig'), yearEra=document.getElementById('yearEra');
+const stateB=document.getElementById('stateB'), stateD=document.getElementById('stateD'), stateC=document.getElementById('stateC');
+
+function renderYear(y){
+  const x=sx(y);
+  cursorLine.setAttribute('x1',x); cursorLine.setAttribute('x2',x);
+  cursorDots.innerHTML='';
+  series.forEach(s=>{
+    cursorDots.appendChild(el('circle',{cx:x,cy:sy(interp(y,s.key)),r:5,fill:s.color,stroke:'#FBF7EE','stroke-width':2}));
+  });
+  const e=getEra(y), p=getPhase(y);
+  yearBig.textContent=y;
+  yearEra.textContent=`${e.name}${e.n===1?'元年':e.n+'年'} · ${e.act}`;
+  stateB.textContent=p.b; stateD.textContent=p.d; stateC.textContent=p.c;
+}
+yearRange.addEventListener('input',e=>renderYear(+e.target.value));
+renderYear(1368);
+
+/* 交错节点 */
+const nodeStrip=document.getElementById('nodeStrip'), triPanel=document.getElementById('triPanel');
+triNodes.forEach((n,i)=>{
+  const b=document.createElement('button');
+  b.className='node-btn'; b.type='button'; b.dataset.idx=i;
+  b.innerHTML=`<span class="ny">${n.y}</span>${n.t}`;
+  b.addEventListener('click',()=>openTri(i,b));
+  nodeStrip.appendChild(b);
+});
+function openTri(i,btn){
+  const n=triNodes[i];
+  document.querySelectorAll('.node-btn').forEach(x=>x.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  triPanel.innerHTML=`
+    <button class="tri-close" type="button" id="triClose">收起 ×</button>
+    <div class="tri-head"><span class="ty num">${n.y}</span><h3>${n.t}</h3></div>
+    <p class="tri-lead">${n.lead}</p>
+    <div class="tri-grid">
+      <div class="tri-card"><h5>其一 · 边患视角</h5><p>${n.b}</p></div>
+      <div class="tri-card"><h5>其二 · 党争视角</h5><p>${n.d}</p></div>
+      <div class="tri-card"><h5>其三 · 财政视角</h5><p>${n.c}</p></div>
+    </div>
+    <p class="tri-cost"><b>${n.cost.split('：')[0]}：</b>${n.cost.split('：').slice(1).join('：')}</p>`;
+  triPanel.classList.add('show');
+  document.getElementById('triClose').addEventListener('click',()=>{
+    triPanel.classList.remove('show');
+    document.querySelectorAll('.node-btn').forEach(x=>x.classList.remove('active'));
+  });
+  yearRange.value=n.y; renderYear(n.y);
+  if(window.innerWidth<900) triPanel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ---- 五幕 ---- */
+const acts=[
+  {no:'ACT I',t:'开国 · 靖难',y:'1368—1424',crisis:'元朝留下的烂摊子与功臣集团',response:'废丞相、设卫所与锦衣卫、靖难迁都',cost:'皇权独大无人制衡，埋下宦官干政的种子',
+   events:['1368 应天称帝、北伐中原','1380 胡惟庸案，废丞相','1393 蓝玉案，功臣清洗','1399—1402 靖难之役','1405 郑和首下西洋','1421 迁都北京'],
+   full:['洪武元年正月初四，朱元璋在应天南郊即皇帝位。那时他手上是一副烂摊子：田地荒芜、户籍散乱、北元骑兵仍在漠南游弋。此后三十年，他用卫所把兵与田绑在一起，用宝钞把财政撑起来，又用胡惟庸案与蓝玉案把可能分享权力的人一一清掉。','这套体制效率极高，代价也极高。丞相被废，六部直接对皇帝负责；功臣被诛，藩王顶上来守边。于是建文元年，燕王朱棣以「清君侧」起兵时，朝廷竟找不出一个能独当一面的宿将。','第一幕的结尾不是盛世，是一个孤独的皇座：所有能替皇帝分担的人都不在了。四十年后，这份孤独会反噬英宗；二百年后，它会反噬煤山上的崇祯。']},
+  {no:'ACT II',t:'仁宣之治',y:'1425—1449',crisis:'战争消耗过大，帝国需要转向文治',response:'三杨内阁、票拟制度化、停止下西洋',cost:'文官抬头、武备松弛，盛世即隐患',
+   events:['1425 洪熙即位，宽政恤民','1426—1435 宣德朝，票拟制度成型','1435 王振掌司礼监','1436—1448 卫所屯田崩坏','1445 叶宗留、邓茂七民变'],
+   full:['仁宣之治常被称作大明的黄金十年：轻徭薄赋、慎用刑罚、君臣相得。但在这层温和底下，两条线悄悄换了轨——内阁拿到票拟权，文官集团第一次成为制度性力量；司礼监拿到批红权，宦官第一次有了合法的权力入口。','与此同时，卫所屯田被侵占、军户逃亡，宝钞继续贬值。盛世不是没有代价，只是代价被推迟到了下一幕。']},
+  {no:'ACT III',t:'土木之变',y:'1449—1457',crisis:'瓦剌入寇，王振怂恿皇帝亲征',response:'于谦拥立景泰、组织北京保卫战',cost:'于谦冤死，救国者死于国法',
+   events:['1449.7 也先分四路入寇','1449.8 土木堡之变，英宗被俘','1449.10 北京保卫战','1457 夺门之变，英宗复辟','1457 于谦冤死'],
+   full:['正统十四年八月，二十万大军在土木堡崩溃，皇帝被俘，随行文臣武将死伤殆尽。消息传回北京，朝堂主张南迁。于谦一句「建议南迁者，该杀」，把帝国钉在了原地。','北京守住了。八年后，夺门之变复辟的英宗需要一桩罪名来证明自己复辟的正当性，于谦死在曾由他守住的城下。','这一幕是全书叙事模板的定调：危机由三线共同酿成，应对靠一人之力，代价由那个人独自承担。']},
+  {no:'ACT IV',t:'变法图强',y:'1450—1582',crisis:'北虏南倭双线夹击，财政糜烂',response:'俺答封贡、隆庆开关、张居正一条鞭法',cost:'张居正死后抄家，改革人亡政息',
+   events:['1521 大礼议','1550 庚戌之变','1555—1564 戚继光、俞大猷平倭','1567 隆庆开关','1571 俺答封贡','1572—1582 张居正改革'],
+   full:['嘉靖朝是大明最拧巴的年代：皇帝二十年不上朝，倭寇却能烧到南京城外；严嵩父子把持朝政，边饷一层层被剥。庚戌之变，俺答的骑兵在北京郊外从容掳掠而去。','转机出现在隆庆朝短短六年：开关让白银涌入，封贡让北边休兵。张居正接手时，终于有了可以改革的账本。考成法管官、清丈管田、一条鞭法管税，戚继光守蓟州、李成梁镇辽东。','万历十年张居正病逝。两年后抄家、夺谥、长子自尽，清丈数据作废。这一幕与下一幕是最亮与最暗的镜像。']},
+  {no:'ACT V',t:'党争 · 亡国',y:'1583—1644',crisis:'国本之争、后金崛起、财政崩盘',response:'万历怠政、东林与阉党互斗、崇祯勤政乱作为',cost:'甲申之变，三线同时崩断',
+   events:['1583—1601 国本之争','1604 东林书院重开','1616 努尔哈赤建后金','1618 辽饷加派','1619 萨尔浒之战','1625—1627 阉党屠戮东林','1630 袁崇焕被杀','1644.3 甲申之变'],
+   full:['国本之争耗掉万历与文官集团十五年的信任，此后皇帝以「不朝、不批、不补官」消极对抗。党争线从此接管叙事：东林与阉党互斗，任何政策先问立场再问利害。','边患线换了主角。1616 年努尔哈赤建国，1619 年萨尔浒四路丧师。为筹辽饷加派田赋，加派又逼出更多流民——财政线、边患线、民变拧成一个死结。','崇祯不是昏君，他勤政、节俭、不近声色。但他十七年换了五十位阁臣，杀袁崇焕、逼孙传庭、疑天下人。三线早已断尽，勤政只是把账单翻得更快些。']}
+];
+const actsBox=document.getElementById('acts');
+acts.forEach((a,i)=>{
+  const d=document.createElement('article');
+  d.className='act reveal';
+  d.innerHTML=`
+    <div class="act-no num">${a.no}</div>
+    <h3>${a.t}</h3>
+    <div class="ay num">${a.y}</div>
+    <div class="act-triad">
+      <div><span>危机</span><p>${a.crisis}</p></div>
+      <div><span>应对</span><p>${a.response}</p></div>
+      <div><span>代价</span><p>${a.cost}</p></div>
+    </div>
+    <ul class="act-events">${a.events.map(e=>`<li>${e}</li>`).join('')}</ul>
+    <button class="read-btn" type="button" aria-expanded="false">展开试读 ↓</button>
+    <div class="act-full">${a.full.map(p=>`<p>${p}</p>`).join('')}</div>`;
+  const btn=d.querySelector('.read-btn'), full=d.querySelector('.act-full');
+  btn.addEventListener('click',()=>{
+    const open=full.classList.toggle('show');
+    btn.setAttribute('aria-expanded',String(open));
+    btn.textContent=open?'收起试读 ↑':'展开试读 ↓';
+  });
+  actsBox.appendChild(d);
+});
+
+/* ---- 名录 ---- */
+const generals=[
+  {n:'徐达',t:'魏国公 · 开国第一将',hl:'北伐灭元、取大都，捕鱼儿海前最稳的一柄刀。',end:'善终（背疽疑云）',k:'ok',rows:[['战功','北伐中原、克大都，为明朝奠定北界'],['结局','洪武十八年病逝，身后配享太庙'],['结构','开国功臣中极少数得善终者，其子的命运却仍卷入靖难']],note:'大明第一名将，也是功臣集团阴影的开端。',act:'第一幕'},
+  {n:'常遇春',t:'鄂国公 · 常十万',hl:'鄱阳湖血战、攻克开平，自称能将十万众横行天下。',end:'暴卒于军中',k:'ok',rows:[['战功','采石矶先登、鄱阳湖破陈友谅、北伐取开平'],['结局','洪武二年班师途中暴卒，年四十'],['结构','死在功业顶点，反而避开了十年后的清洗']],note:'未尝败绩，也就没有机会见识自己人的刀。',act:'第一幕'},
+  {n:'蓝玉',t:'凉国公 · 捕鱼儿海',hl:'一战擒北元主、俘获无数，北元至此一蹶不振。',end:'剥皮实草',k:'tragic',rows:[['战功','洪武二十一年捕鱼儿海大捷，封凉国公'],['结局','洪武二十六年以谋逆罪族诛，牵连一万五千余人'],['结构','战功封顶之日即死期：太子朱标一死，宿将便成了皇太孙的隐患']],note:'名将录里最刺眼的一页：功业与死期只隔五年。',act:'第一幕'},
+  {n:'沐英',t:'黔国公 · 世镇云南',hl:'平定云南，沐氏世代镇守西南二百余年。',end:'善终，世镇云南',k:'ok',rows:[['战功','洪武十四年平云南，留镇其地'],['结局','病逝于任上，子孙世袭黔国公'],['结构','远离中枢、且只守边不争朝局，是善终的关键变量']],note:'唯一把军功做成家族制度的异姓藩镇。',act:'第一幕'},
+  {n:'戚继光',t:'蓟州总兵 · 戚家军',hl:'台州九战九捷，鸳鸯阵破倭；后练兵蓟州十六年。',end:'罢官，贫病而终',k:'tragic',rows:[['战功','台州大捷、平定闽广倭患，修长城空心敌台'],['结局','张居正死后被弹劾调离，罢官归乡，贫病而终'],['结构','能战之将依附于阁臣的政治庇护，庇护一倒即被清算']],note:'他打败了倭寇，没败给文官内斗之外的任何东西。',act:'第四幕'},
+  {n:'俞大猷',t:'福建总兵 · 俞龙',hl:'平倭主力，一生功多被冒，与戚继光并称「俞龙戚虎」。',end:'老死任上，功多被冒',k:'tragic',rows:[['战功','浙东、福建平倭，练兵与战法著述甚丰'],['结局','屡遭弹劾与夺功，晚年仍带兵，死于任上'],['结构','与戚继光同为「武将受制于文官考核」的样本']],note:'一生被抢功，却始终没有被抢走兵。',act:'第四幕'},
+  {n:'李成梁',t:'辽东总兵 · 镇辽三十年',hl:'辽东大捷十余次，拓地、筑堡、压制女真诸部。',end:'晚年罢官，养寇之疑',k:'tragic',rows:[['战功','镇辽三十年，屡破插汉、泰宁与建州诸部'],['结局','万历十九年被劾罢官，十年后复起又去'],['结构','他的辽东旧局，恰恰养出了努尔哈赤']],note:'第四幕最成功的边将，替第五幕养出了主角。',act:'第四、五幕'},
+  {n:'袁崇焕',t:'蓟辽督师 · 关宁锦防线',hl:'宁远一炮击退努尔哈赤，己巳之变星夜勤王。',end:'凌迟，传首九边',k:'tragic',rows:[['战功','宁远大捷、宁锦大捷，构筑关宁锦防线'],['结局','崇祯三年以「通敌」罪凌迟于市，百姓争食其肉'],['结构','边帅一旦卷入朝堂党争，军功无法自证清白']],note:'最惨烈的名将结局，也是三线交错在一个人身上的爆点。',act:'第五幕'},
+  {n:'孙承宗',t:'内阁大学士 · 督师蓟辽',hl:'关宁锦防线的总设计师，以文臣之身守辽东。',end:'高阳城破自缢',k:'tragic',rows:[['战功','天启年间督师蓟辽，修宁远、练辽军'],['结局','崇祯十一年清军入塞，率全家守高阳，城破自缢，满门殉国'],['结构','能臣与名将的双重身份，仍挡不住朝议反复撤换']],note:'防线是他画的，殉国的也是他一家。',act:'第五幕'},
+  {n:'卢象升',t:'宣大总督 · 天雄军',hl:'巨鹿血战，以数千人抗清军主力，力战而死。',end:'战死，死后被构陷',k:'tragic',rows:[['战功','剿流寇、抗清军，治军严整'],['结局','崇祯十二年巨鹿战死，因主战与主和之争，死后一度不予抚恤'],['结构','人死了，党争还在继续吞他的身后名']],note:'死后连抚恤都被党争吞掉。',act:'第五幕'},
+  {n:'孙传庭',t:'陕西总督 · 秦兵',hl:'黑水峪擒高迎祥，潼关练兵，明末最后一支可用的野战军。',end:'潼关战死',k:'tragic',rows:[['战功','擒闯王高迎祥，郏县之战一度压制李自成'],['结局','崇祯十六年被迫仓促出战，潼关败死'],['结构','朝廷催战、粮饷不继，将帅没有选择战机的权力']],note:'史称「传庭死，明亡矣」——一个人替王朝签了收条。',act:'第五幕'},
+  {n:'郑成功',t:'延平郡王 · 海上余音',hl:'坚持抗清，收复中国台湾，为王朝落幕后的续章。',end:'病逝，年三十九',k:'tragic',rows:[['战功','东南抗清、驱逐荷兰殖民者，收复中国台湾'],['结局','永历十六年病逝'],['结构','大明已亡，海上仍用大明旗号十余年']],note:'王朝落幕之后，还有人替它把故事写完。',act:'余音'}
+];
+const traitors=[
+  {cat:'chen',n:'胡惟庸',t:'丞相 · 权臣线起点',hl:'结党、专擅，洪武十三年以谋逆罪诛。',end:'族诛，牵连三万余人',k:'tragic',rows:[['证据链','擅权结党、隐匿奏章，谋逆案情多出自后续供词'],['皇帝视角','朱元璋需要的是废掉丞相这个位置，不是杀一个人'],['结构','他死后，六部直属皇帝，权臣与皇权的制度缓冲消失']],note:'他是不是奸臣不重要，废相才是目的。',act:'第一幕'},
+  {cat:'chen',n:'严嵩',t:'内阁首辅 · 专权二十年',hl:'擅权纳贿、边饷被层层剥，庚戌之变主和。',end:'革职抄家，寄食墓舍而死',k:'tragic',rows:[['证据链','卖官鬻爵、侵吞边饷、构陷杨继盛等言官'],['皇帝视角','嘉靖需要一个替他敛财、挡骂名、写青词的白手套'],['结构','倒严之后玄修照旧，换的只是手套']],note:'嘉靖的影子，倒了严嵩不倒玄修。',act:'第四幕'},
+  {cat:'chen',n:'严世蕃',t:'工部侍郎 · 严嵩之子',hl:'父子一体，卖官定价、构陷忠良，号称「鬼才」。',end:'以通倭谋逆罪弃市',k:'tragic',rows:[['证据链','聚敛、交通边将、罗织罪名，弹章累牍'],['皇帝视角','替严嵩处理皇帝不便亲自出面的脏事'],['结构','罪名未必坐实，但必须死——他是清算严嵩的入口']],note:'恶在替皇权背锅，也恶在真的做了那些事。',act:'第四幕'},
+  {cat:'chen',n:'温体仁',t:'内阁首辅 · 崇祯朝',hl:'排挤异己、无一政绩，却居相位最久。',end:'罢归，次年病死',k:'tragic',rows:[['证据链','构陷钱谦益、压制言路，八年无所建白'],['皇帝视角','崇祯多疑，最讨厌结党；温体仁最会表现「孤立无党」'],['结构','他不是乱政的能臣，而是皇帝性格的一面镜子']],note:'十七年换五十阁臣，唯独容他最久。',act:'第五幕'},
+  {cat:'chen',n:'周延儒',t:'内阁首辅 · 末世',hl:'两度入阁，谎报军功，清军入塞竟称大捷。',end:'赐自尽',k:'tragic',rows:[['证据链','受将帅贿、虚报战功、贻误军机'],['皇帝视角','崇祯末年无人可用，只能反复起用旧人'],['结构','亡国前夜，君臣互相欺骗已成常态']],note:'末世最不缺的，是替皇帝报喜的人。',act:'第五幕'},
+  {cat:'huan',n:'王振',t:'司礼监太监 · 宦官线点火',hl:'怂恿英宗亲征，土木堡之变的第一引信。',end:'乱军中被锤杀，后遭抄家',k:'tragic',rows:[['证据链','擅权、黩货、排斥异己，主导亲征决策'],['皇帝视角','英宗自幼由他抚育，称「王先生」，是唯一的依赖'],['结构','宦官干政不是制度漏洞，而是皇帝绕开文官的主动选择']],note:'宦官权力第一次直接改写国运。',act:'第三幕'},
+  {cat:'huan',n:'汪直',t:'西厂提督',hl:'设西厂、罗织大狱，屡出监军。',end:'失宠，调南京闲住',k:'tragic',rows:[['证据链','西厂酷刑、擅捕三品以上官员'],['皇帝视角','宪宗需要一双不经过内阁的耳目'],['结构','厂卫体系从此成为皇权的常设外设']],note:'皇帝的猎犬，主人一放手就被收走。',act:'第四幕'},
+  {cat:'huan',n:'刘瑾',t:'八虎之首 · 立皇帝',hl:'掌司礼监，批红决事，时称「立皇帝」。',end:'凌迟',k:'tragic',rows:[['证据链','纳贿、变乱成法、迫害朝臣，抄出金银无算'],['皇帝视角','武宗的玩伴与提款机，奏章都在他玩乐时送来'],['结构','他倒台不是因为太坏，而是因为太监内部也容不下他']],note:'凌迟三千刀，死因还是皇权不再需要他。',act:'第四幕'},
+  {cat:'huan',n:'魏忠贤',t:'司礼监秉笔 · 九千岁',hl:'阉党屠戮东林，生祠遍天下，宦官权力顶点。',end:'贬凤阳，途中自缢',k:'tragic',rows:[['证据链','杨涟《二十四大罪疏》、汪文言诏狱、六君子之死'],['皇帝视角','天启专心做木工，把批红与朝局全交给他'],['结构','宦官权力的顶点，恰是皇权依赖的顶点']],note:'九千岁再大，也只是木匠皇帝的一件工具。',act:'第五幕'}
+];
+const ministers=[
+  {n:'于谦',t:'兵部尚书',hl:'北京保卫战，一句「南迁者该杀」钉住帝国。',end:'夺门之变后冤死',k:'tragic',rows:[['高光','正统十四年拥立景泰、整军守城，击退也先'],['结局','天顺元年以「意欲迎立外藩」罪弃市'],['对照','全书第一悲怆人物：救国者死于国法']],note:'第三幕的应对者，也是第三幕的代价。',act:'第三幕'},
+  {n:'张居正',t:'内阁首辅',hl:'考成法、清丈田亩、一条鞭法，续命数十年。',end:'死后抄家，长子自尽',k:'tragic',rows:[['高光','万历初年十年执政，太仓积银，边防稳固'],['结局','万历十二年夺谥抄家，家属流离'],['对照','改革随人亡政息，第四、五幕的分水岭']],note:'全书核心悲剧：改得动制度，改不动制度里的人。',act:'第四幕'},
+  {n:'海瑞',t:'右佥都御史',hl:'《治安疏》直骂嘉靖，备棺上疏。',end:'罢官复起，清贫至死',k:'ok',rows:[['高光','抬棺上疏、巡抚应天摧抑豪强'],['结局','几度罢官，死后仅余俸金八两'],['对照','奏疏馆镇馆之宝：《治安疏》全文精读']],note:'一个把道德当作武器的人，也把制度的边界照得雪亮。',act:'第四幕'},
+  {n:'王阳明',t:'南京兵部尚书',hl:'龙场悟道，三十五天平宁王之乱。',end:'病逝归途，身后一度夺爵',k:'tragic',rows:[['高光','正德十四年平宸濠之乱，心学开宗'],['结局','嘉靖初年病逝，学曾被斥为伪学'],['对照','大礼议时代的精神坐标']],note:'能臣录里唯一把事功与思想同时留下的人。',act:'第四幕'},
+  {n:'杨士奇',t:'内阁大学士 · 三杨之首',hl:'五朝元老，仁宣之治的主要推手。',end:'善终',k:'ok',rows:[['高光','辅佐仁宣，票拟制度成型'],['结局','致仕后病逝，谥文贞'],['对照','党争线的制度起点，出自最温和的一代名臣']],note:'文官集团的第一块基石，铺得平稳而深远。',act:'第二幕'},
+  {n:'杨廷和',t:'内阁首辅',hl:'拥立嘉靖、革除正德弊政，总揽朝政三十七日。',end:'大礼议中被迫致仕',k:'tragic',rows:[['高光','迎立世宗、裁汰冗员、罢革皇庄'],['结局','议礼之争失败，削职为民'],['对照','对照议礼新贵：立场压过政绩的第一次完胜']],note:'他赢下了拥立，输给了称谓。',act:'第四幕'},
+  {n:'徐阶',t:'内阁首辅',hl:'隐忍二十年，最终斗倒严嵩。',end:'险被高拱清算',k:'tragic',rows:[['高光','嘉靖末年至隆庆初年主政，拨乱反正'],['结局','致仕后遭高拱追究，赖张居正调护得免'],['对照','与严嵩的二十年对手戏，是党争线最完整的一条弧']],note:'扳倒权臣的人，也差点被下一轮党争吞掉。',act:'第四幕'},
+  {n:'高拱',t:'内阁首辅',hl:'隆庆新政、俺答封贡的实际操盘手。',end:'罢官，郁郁而终',k:'tragic',rows:[['高光','主持封贡、开市，促成北边休兵'],['结局','隆庆驾崩后被张居正与冯保联手逐出'],['对照','与张居正从盟友到对手，改革派内部也难同心']],note:'第四条线换来喘息，功成却身退得狼狈。',act:'第四幕'},
+  {n:'申时行',t:'内阁首辅',hl:'在万历与文官之间做和事佬，维持十年体面。',end:'因国本之争去职',k:'ok',rows:[['高光','调和章奏、缓冲君臣冲突'],['结局','万历十九年因册立太子之争被迫致仕'],['对照','党争失控前最后一位调停人']],note:'和事佬走了，此后朝堂再无人肯居中。',act:'第五幕'},
+  {n:'李善长',t:'韩国公 · 开国文臣之首',hl:'制度奠基、统筹粮饷，比肩萧何。',end:'七十七岁被族诛',k:'tragic',rows:[['高光','定律令、定赋役，开国制度多出其手'],['结局','洪武二十三年牵连胡惟庸案，全家七十余口被诛'],['对照','对照胡惟庸案：同案两种死法，文臣亦无免死金牌']],note:'开国第一文臣，也没能走出第一幕。',act:'第一幕'}
+];
+
+/* 弹层 */
+const modal=document.getElementById('modal');
+let lastFocus=null;
+function showPerson(p,kicker){
+  lastFocus=document.activeElement;
+  document.getElementById('modalKicker').textContent=kicker;
+  document.getElementById('modalTitle').textContent=p.n;
+  document.getElementById('modalSub').textContent=p.t;
+  document.getElementById('modalRows').innerHTML=p.rows.map(r=>`<div><dt>${r[0]}</dt><dd>${r[1]}</dd></div>`).join('');
+  document.getElementById('modalBody').textContent=p.note;
+  document.getElementById('modalFoot').textContent=`关联幕次：${p.act}　｜　点击卡片可继续浏览，按 Esc 关闭`;
+  modal.classList.add('show');
+  document.getElementById('modalClose').focus();
+}
+function closeModal(){ modal.classList.remove('show'); if(lastFocus) lastFocus.focus(); }
+document.getElementById('modalClose').addEventListener('click',closeModal);
+modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('show')) closeModal(); });
+
+function buildCards(boxId,list,kicker,withBar){
+  const box=document.getElementById(boxId);
+  box.innerHTML='';
+  list.forEach(p=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='pcard'; b.dataset.end=p.k;
+    b.innerHTML=`<span class="ptag">${p.t}</span><div class="pname">${p.n}</div><div class="phl">${p.hl}</div><div class="pend"><b>结局 ·</b> ${p.end}</div>${withBar?'<div class="fate-bar" aria-hidden="true"></div>':''}`;
+    b.addEventListener('click',()=>showPerson(p,kicker));
+    box.appendChild(b);
+  });
+}
+buildCards('generalCards',generals,'名将录 · 战功 × 结局',true);
+buildCards('ministerCards',ministers,'能臣录 · 与奸臣录对照',false);
+function renderTraitors(cat){
+  buildCards('traitorCards',traitors.filter(p=>p.cat===cat),cat==='chen'?'奸臣录 · 权臣线':'奸臣录 · 权阉线',false);
+}
+renderTraitors('chen');
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false')});
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    renderTraitors(tab.dataset.cat);
+  });
+});
+
+/* ---- 甲申抉择 ---- */
+const questions=[
+  {t:'正月，李自成在西安建国，山西告急。朝中有人密请「南迁」——迁都南京，先保半壁。你如何决断？',
+   opts:[
+    {txt:'即刻南迁，命太子先行南京',fb:'史实推演：崇祯确有此念，但需「大臣先开口担责」。一旦南迁，留守北京者必被问责，而主张南迁者日后也可能被清算——三线里断掉的，其实是党争线：没有人敢为这个决定签字。'},
+    {txt:'留守北京，号召天下勤王',fb:'史实推演：勤王诏发了，可调得动的兵在辽东，调兵要钱，国库已空；调吴三桂入关又等于放弃关外。边患线与财政线互相锁死，这个选项从一开始就没有执行条件。'},
+    {txt:'交廷议公决，让群臣拿主意',fb:'史实推演：这是最接近史实的一条路。南迁之议从正月争到三月，谁都怕担「弃京师」之名，遂无决议。党争线把最后一次决策机会耗成了空转。'}
+   ]},
+  {t:'二月，有人建议调辽东吴三桂率关宁铁骑入卫京师。你核准吗？',
+   opts:[
+    {txt:'准。弃宁远，全军入卫',fb:'史实推演：崇祯犹豫至三月初才下诏，吴三桂部行动迟缓，未至而京已破。更要命的是弃守宁远等于把关外让给清军——边患线的账，终究要在另一头还。'},
+    {txt:'不准。辽东不可空',fb:'史实推演：保住关外，却保不住京师。这不是判断错误，而是两线同时告急时，任何选择都必须放弃一头。'},
+    {txt:'先要户部算清粮饷再定',fb:'史实推演：户部拿不出银子。财政线早已断在万历、天启两朝的加派与矿税里，此刻只是把「没钱」三个字正式写下来。'}
+   ]},
+  {t:'三月十七日，李自成遣使入城议和，请割西北、犒银百万。你答应吗？',
+   opts:[
+    {txt:'允其议，先缓兵',fb:'史实推演：崇祯与首辅魏藻德相对无言，无人肯在和议上署名。与「流寇」议和的罪名，比城破更让文官恐惧——党争线又一次吃掉了决策。'},
+    {txt:'拒绝，死守以待勤王',fb:'史实推演：守城兵已数月未领饷，十八日太监开彰义门。财政线断掉之后，忠诚是有价格的。'},
+    {txt:'拖到明日再议',fb:'史实推演：史实里就是「拖」。三月十八日夜，城破。时间从来不在犹豫者一边。'}
+   ]},
+  {t:'城破在即。你面前还有最后一件事：如何处置那些你认为「误国」的大臣？',
+   opts:[
+    {txt:'诛之以正国法',fb:'史实推演：崇祯临终前手刃嫔妃公主，又在衣襟写下「诸臣误朕」。十七年里他杀总督七人、巡抚十一人，换阁臣五十人——每一次问责都让下一个人更不敢担责。'},
+    {txt:'一个都不杀，命各自守城',fb:'史实推演：这是史书不会写、而体制也做不到的选择。权力早已被切割成无数个不肯签字的位置，皇帝的宽仁此刻无人承接。'},
+    {txt:'写下罪己诏，然后登煤山',fb:'史实推演：崇祯真的写了。「朕凉德藐躬，上干天咎，然皆诸臣误朕」——到最后，他仍在问是谁的错。而账单从来不是某一个人的错。'}
+   ]}
+];
+let qi=0;
+const qStep=document.getElementById('qStep'),qTitle=document.getElementById('qTitle'),qOpts=document.getElementById('qOpts');
+const qFeedback=document.getElementById('qFeedback'),qNext=document.getElementById('qNext');
+const quiz=document.getElementById('quiz'),finale=document.getElementById('finale');
+function renderQuestion(){
+  const q=questions[qi];
+  qStep.textContent=`选择 ${String(qi+1).padStart(2,'0')} / ${String(questions.length).padStart(2,'0')}`;
+  qTitle.textContent=q.t;
+  qOpts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='opt'; b.textContent=o.txt;
+    b.addEventListener('click',()=>{
+      qOpts.querySelectorAll('.opt').forEach(x=>{x.disabled=true;x.classList.remove('picked')});
+      b.classList.add('picked');
+      qFeedback.textContent=o.fb; qFeedback.classList.add('show');
+      qNext.classList.add('show'); qNext.textContent=qi===questions.length-1?'看史实结局 →':'继续 →';
+    });
+    qOpts.appendChild(b);
+  });
+  qFeedback.classList.remove('show'); qFeedback.textContent='';
+  qNext.classList.remove('show');
+}
+qNext.addEventListener('click',()=>{
+  if(qi<questions.length-1){qi++;renderQuestion();}
+  else{quiz.style.display='none';finale.classList.add('show');}
+});
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  qi=0; finale.classList.remove('show'); quiz.style.display='block'; renderQuestion();
+});
+renderQuestion();
+
+/* 滚动入场 */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
+},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(n=>io.observe(n));
+</script>
+</body>
+</html>

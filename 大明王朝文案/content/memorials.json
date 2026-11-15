@@ -1,0 +1,92 @@
+{
+  "memorials": [
+    {
+      "id": "memorial_haire",
+      "title": "治安疏",
+      "authorId": "hairui",
+      "year": 1566,
+      "eventId": "e1566_hairui",
+      "status": "excerpt-ready",
+      "excerpt": "臣海瑞谨奏：为直言天下第一事，以正君道、明臣职，求万世治安事。",
+      "note": "原文开篇已录入；全文、分段译注与逐段史料校订待补。",
+      "sourceRefs": ["mingshi"]
+    },
+    {
+      "id": "memorial_yanglian",
+      "title": "劾魏忠贤二十四大罪疏",
+      "authorId": "yang_lian",
+      "year": 1624,
+      "eventId": null,
+      "status": "source-pending",
+      "excerpt": "",
+      "note": "篇目与政治背景已确认，原文底本、异文和逐条译注待校。",
+      "sourceRefs": ["mingshi", "mingshilu"]
+    },
+    {
+      "id": "memorial_zhangjuzheng",
+      "title": "陈六事疏",
+      "authorId": "zhangjuzheng",
+      "year": 1568,
+      "eventId": null,
+      "status": "source-pending",
+      "excerpt": "",
+      "note": "拟以原文、白话译文和考成法背景三部分呈现。",
+      "sourceRefs": ["mingshilu", "mingshi"]
+    },
+    {
+      "id": "memorial_yuqian",
+      "title": "北京保卫战奏议选读",
+      "authorId": "yuqian",
+      "year": 1449,
+      "eventId": null,
+      "status": "collection",
+      "excerpt": "",
+      "note": "按调兵、守城、粮饷与战后处置编辑专题，不拼造成单一伪原始文书。",
+      "sourceRefs": ["mingshilu", "mingshi"]
+    },
+    {
+      "id": "memorial_guoben",
+      "title": "国本之争奏疏对读",
+      "authorId": null,
+      "year": 1586,
+      "eventId": null,
+      "status": "collection",
+      "excerpt": "",
+      "note": "按立储、豫教、封王三个争议节点选录双方奏疏。",
+      "sourceRefs": ["mingshilu", "guoque"]
+    },
+    {
+      "id": "memorial_zuiji",
+      "title": "崇祯罪己诏专题",
+      "authorId": "zhu_youjian",
+      "year": 1644,
+      "eventId": null,
+      "status": "collection",
+      "excerpt": "",
+      "note": "需区分不同年份诏书，不将多种文本混为一份。",
+      "sourceRefs": ["mingshilu", "mingshi"]
+    },
+    {
+      "id": "memorial_nandu",
+      "title": "南渡之议奏疏合编",
+      "authorId": null,
+      "year": 1644,
+      "eventId": null,
+      "status": "collection",
+      "excerpt": "",
+      "note": "围绕迁都、守京、调兵与责任归属编排对照。",
+      "sourceRefs": ["mingshi", "guoque"]
+    },
+    {
+      "id": "memorial_finance",
+      "title": "财政奏疏选读",
+      "authorId": null,
+      "year": 1618,
+      "eventId": "e1618_liaoxiang",
+      "status": "collection",
+      "excerpt": "",
+      "note": "围绕一条鞭、辽饷、剿饷与练饷选择代表性奏议。",
+      "sourceRefs": ["mingshilu", "mingshi"]
+    }
+  ]
+}

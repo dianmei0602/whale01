@@ -1,0 +1,62 @@
+[
+ {
+  "id": "yang_pu",
+  "name": "杨溥",
+  "file": null,
+  "reason": "未检索到候选"
+ },
+ {
+  "id": "guo_zixing",
+  "name": "郭子兴",
+  "file": "images/guo_zixing.jpg",
+  "from": "百度百科「郭子兴」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/324534/20385603.htm",
+  "note": "下载并验证成功",
+  "via": "baike:郭子兴",
+  "bytes": 444253
+ },
+ {
+  "id": "qi_tai",
+  "name": "齐泰",
+  "file": "images/qi_tai.jpg",
+  "from": "百度百科「齐泰」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/1297152/1297152.htm",
+  "note": "下载并验证成功",
+  "via": "baike:齐泰",
+  "bytes": 56687
+ },
+ {
+  "id": "wan_guifei",
+  "name": "万贵妃",
+  "file": "images/wan_guifei.jpg",
+  "from": "百度百科「万贞儿」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/29946/29946.htm",
+  "note": "下载并验证成功",
+  "via": "baike:万贵妃",
+  "bytes": 551934
+ },
+ {
+  "id": "changping",
+  "name": "长平公主",
+  "file": null,
+  "reason": "未检索到候选"
+ },
+ {
+  "id": "extra_taizu_yixiang",
+  "name": "朱元璋异相像",
+  "file": "images/extra_taizu_yixiang.jpg",
+  "from": "百度百科「朱元璋画像」词条配图",
+  "pageUrl": "http://baike.baidu.com/item/%E6%9C%B1%E5%85%83%E7%92%8B%E7%94%BB%E5%83%8F/24145900",
+  "note": "下载并验证成功",
+  "via": "baike:朱元璋画像",
+  "bytes": 304179
+ },
+ {
+  "id": "yang_pu",
+  "name": "杨溥",
+  "file": "images/yang_pu.jpg",
+  "from": "清顾沅辑《古圣贤像传略》所收杨文定公像",
+  "pageUrl": "https://www.pinshiwen.com/liwen/lsrw/20190801176839.html",
+  "note": "转录自公开图谱，已下载验证"
+ }
+]

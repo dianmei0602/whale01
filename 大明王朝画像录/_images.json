@@ -1,0 +1,891 @@
+{
+ "extra_geyilong": {
+  "file": "images/extra_geyilong.jpg",
+  "from": "百度百科「葛一龙」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/4594928.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_huercao": {
+  "file": "images/extra_huercao.jpg",
+  "from": "百度百科「胡尔慥」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/3423307.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_huangdaozhou": {
+  "file": "images/extra_huangdaozhou.jpg",
+  "from": "百度百科「黄道周」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/59189/16382387.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_lirihua": {
+  "file": "images/extra_lirihua.jpg",
+  "from": "百度百科「李日华」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/80493/6430287.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_huangzunsu": {
+  "file": "images/extra_huangzunsu.jpg",
+  "from": "百度百科「黄尊素」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/815397.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_geyinliang": {
+  "file": "images/extra_geyinliang.jpg",
+  "from": "百度百科「葛寅亮」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/806357.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_dongqichang": {
+  "file": "images/extra_dongqichang.jpg",
+  "from": "百度百科「董其昌」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/65610/65610.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_liujingting": {
+  "file": "images/extra_liujingting.jpg",
+  "from": "百度百科「柳敬亭」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/65621/65621.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_liuzhi": {
+  "file": "images/extra_liuzhi.jpg",
+  "from": "百度百科「刘伯渊」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/4848716/4848928.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_peiran": {
+  "file": "images/extra_peiran.jpg",
+  "from": "百度百科「沛然」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/1085708.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "li_taihou": {
+  "file": "images/li_taihou.jpg",
+  "from": "百度百科「李太后」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/216999/216999.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "ma_huanghou": {
+  "file": "images/ma_huanghou.jpg",
+  "from": "百度百科「孝慈高皇后」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/172862/5168378.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_luoyingdou": {
+  "file": "images/extra_luoyingdou.jpg",
+  "from": "百度百科「罗应斗」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/7816491.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_matic": {
+  "file": "images/extra_matic.jpg",
+  "from": "百度百科「利玛窦」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/83745/83745.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_wangshimin": {
+  "file": "images/extra_wangshimin.jpg",
+  "from": "百度百科「王时敏」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/202680/202680.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_taochongdao": {
+  "file": "images/extra_taochongdao.jpg",
+  "from": "百度百科「陶崇道」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/7993175.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_wangqingbai": {
+  "file": "images/extra_wangqingbai.jpg",
+  "from": "百度百科「汪庆百」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/2943607.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "qian_huanghou": {
+  "file": "images/qian_huanghou.jpg",
+  "from": "百度百科「孝庄钱皇后」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/6826174/6958685.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "wang_gongfei": {
+  "file": "images/wang_gongfei.jpg",
+  "from": "百度百科「王恭妃」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/3880274.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_xuguangqi": {
+  "file": "images/extra_xuguangqi.jpg",
+  "from": "百度百科「徐光启」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3713/3713.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "wangyangming": {
+  "file": "images/wangyangming.jpg",
+  "from": "百度百科「王守仁」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/26649/19131821.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_wangyining": {
+  "file": "images/extra_wangyining.jpg",
+  "from": "百度百科「王以宁」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/421416/12093711.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_yuanqiqi": {
+  "file": "images/extra_yuanqiqi.jpg",
+  "from": "百度百科「俞安期」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/228355.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xu_wei": {
+  "file": "images/xu_wei.jpg",
+  "from": "百度百科「徐渭」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/22510/6430193.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "画像"
+ },
+ "extra_zhangqingzi": {
+  "file": "images/extra_zhangqingzi.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "xu_huanghou": {
+  "file": "images/xu_huanghou.jpg",
+  "from": "百度百科「明成祖仁孝皇后」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/324092/324092.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_xuyingdeng": {
+  "file": "images/extra_xuyingdeng.jpg",
+  "from": "百度百科「徐应登」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/7916258.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhengchenggong": {
+  "file": "images/zhengchenggong.jpg",
+  "from": "百度百科「郑成功」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/15271/4912996.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_di": {
+  "file": "images/zhu_di.jpg",
+  "from": "百度百科「朱棣」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/5916/19262867.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_houzhao": {
+  "file": "images/zhu_houzhao.jpg",
+  "from": "百度百科「朱厚照」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/48211/19541551.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_houcong": {
+  "file": "images/zhu_houcong.jpg",
+  "from": "百度百科「朱厚熜」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/133712/19539749.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_changluo": {
+  "file": "images/zhu_changluo.jpg",
+  "from": "百度百科「朱常洛」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3321948/3321948.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_gaochi": {
+  "file": "images/zhu_gaochi.jpg",
+  "from": "百度百科「朱高炽」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3269231/3269231.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_qizhen": {
+  "file": "images/zhu_qizhen.jpg",
+  "from": "百度百科「朱祁镇」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3276981/19532349.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_youxiao": {
+  "file": "images/zhu_youxiao.jpg",
+  "from": "百度百科「朱由校」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3273261/19533746.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_jianshen": {
+  "file": "images/zhu_jianshen.jpg",
+  "from": "百度百科「朱见深」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3206989/3206989.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xingxianwang": {
+  "file": "images/xingxianwang.jpg",
+  "from": "百度百科「朱祐杬」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/130327.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_youtang": {
+  "file": "images/zhu_youtang.jpg",
+  "from": "百度百科「朱祐樘」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/177011/177011.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_yuanzhang": {
+  "file": "images/zhu_yuanzhang.jpg",
+  "from": "百度百科「朱元璋」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/1690/7140248.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_yijun": {
+  "file": "images/zhu_yijun.jpg",
+  "from": "百度百科「朱翊钧」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3410236/19529739.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_zaihou": {
+  "file": "images/zhu_zaihou.jpg",
+  "from": "百度百科「朱载坖」词条配图",
+  "pageUrl": "http://baike.baidu.com/item/%E6%9C%B1%E8%BD%BD%E5%9D%96/23415895",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_zhanji": {
+  "file": "images/zhu_zhanji.jpg",
+  "from": "百度百科「朱瞻基」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3334151/3334151.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "shunzhi": {
+  "file": "images/shunzhi.jpg",
+  "from": "百度百科「爱新觉罗·福临」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/119918/119918.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "hairui": {
+  "file": "images/hairui.jpg",
+  "from": "百度百科「海瑞」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/7575/7575.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "fang_xiaoru": {
+  "file": "images/fang_xiaoru.jpg",
+  "from": "百度百科「方孝孺」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/80471.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yang_jisheng": {
+  "file": "images/yang_jisheng.jpg",
+  "from": "百度百科「杨继盛」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/185927/185927.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "changyuchun": {
+  "file": "images/changyuchun.jpg",
+  "from": "百度百科「常遇春」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/16615/16615.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xuda": {
+  "file": "images/xuda.jpg",
+  "from": "百度百科「徐达」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/3069/13225897.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yang_rong": {
+  "file": "images/yang_rong.jpg",
+  "from": "百度百科「杨荣」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/95302/6022174.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yangshiqi": {
+  "file": "images/yangshiqi.jpg",
+  "from": "百度百科「杨士奇」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/72680.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhangjuzheng": {
+  "file": "images/zhangjuzheng.jpg",
+  "from": "百度百科「张居正」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/27396/4965889.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "toyotomi": {
+  "file": "images/toyotomi.jpg",
+  "from": "百度百科「丰臣秀吉」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/8486/18835368.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yuanchonghuan": {
+  "file": "images/yuanchonghuan.jpg",
+  "from": "百度百科「袁崇焕」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/2853/18833880.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yuqian": {
+  "file": "images/yuqian.jpg",
+  "from": "百度百科「于谦」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/22602/4997349.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zu_dashou": {
+  "file": "images/zu_dashou.jpg",
+  "from": "百度百科「祖大寿」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/412191/412191.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "alatan": {
+  "file": "images/alatan.jpg",
+  "from": "百度百科「孛儿只斤·俺答」词条配图",
+  "pageUrl": "http://baike.baidu.com/item/%E5%AD%9B%E5%84%BF%E5%8F%AA%E6%96%A4%C2%B7%E4%BF%BA%E7%AD%94",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "dorgon": {
+  "file": "images/dorgon.jpg",
+  "from": "百度百科「爱新觉罗·多尔衮」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/298026/298026.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yao_guangxiao": {
+  "file": "images/yao_guangxiao.jpg",
+  "from": "百度百科「姚广孝」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/100542/100542.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "fan_jingwen": {
+  "file": "images/fan_jingwen.jpg",
+  "from": "百度百科「范景文」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/222215/222215.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "fang_guozhen": {
+  "file": "images/fang_guozhen.jpg",
+  "from": "百度百科「方国珍」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/109919/109919.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "年画"
+ },
+ "ashikaga": {
+  "file": "images/ashikaga.jpg",
+  "from": "百度百科「足利义满」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/189507.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "chen_youliang": {
+  "file": "images/chen_youliang.jpg",
+  "from": "百度百科「陈友谅」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/24701/5074719.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "gu_xiancheng": {
+  "file": "images/gu_xiancheng.jpg",
+  "from": "百度百科「顾宪成」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/68756.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "han_lin_er": {
+  "file": "images/han_lin_er.jpg",
+  "from": "百度百科「韩林儿」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/124920/124920.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_yunwen": {
+  "file": "images/zhu_yunwen.jpg",
+  "from": "百度百科「朱允炆」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/72718/72718.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "huang_zicheng": {
+  "file": "images/huang_zicheng.jpg",
+  "from": "百度百科「黄子澄」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/295634/295634.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "gao_panlong": {
+  "file": "images/gao_panlong.jpg",
+  "from": "百度百科「高攀龙」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/41793/41793.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_lixianchong": {
+  "file": "images/extra_lixianchong.jpg",
+  "from": "百度百科「刘宪宠」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/4848830.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "ke_shi": {
+  "file": "images/ke_shi.jpg",
+  "from": "百度百科「客氏」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/44964.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "hu_zongxian": {
+  "file": "images/hu_zongxian.jpg",
+  "from": "百度百科「胡宗宪」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/141022/141022.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "画像"
+ },
+ "lanyu": {
+  "file": "images/lanyu.jpg",
+  "from": "百度百科「蓝玉」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/84565/7548585.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "lichengliang": {
+  "file": "images/lichengliang.jpg",
+  "from": "百度百科「李成梁」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/50460/50460.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_qiyu": {
+  "file": "images/zhu_qiyu.jpg",
+  "from": "百度百科「朱祁钰」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/3272897.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "luxiangsheng": {
+  "file": "images/luxiangsheng.jpg",
+  "from": "百度百科「卢象升」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/168777.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xie_jin": {
+  "file": "images/xie_jin.jpg",
+  "from": "百度百科「解缙」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/130090.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "song_lian": {
+  "file": "images/song_lian.jpg",
+  "from": "百度百科「宋濂」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/36673.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "lishanchang": {
+  "file": "images/lishanchang.jpg",
+  "from": "百度百科「李善长」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/109699/109699.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "li_zicheng": {
+  "file": "images/li_zicheng.jpg",
+  "from": "百度百科「李自成」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/9761/6071479.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "ma_shiying": {
+  "file": "images/ma_shiying.jpg",
+  "from": "百度百科「马士英」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/167399/167399.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "ming_yuzhen": {
+  "file": "images/ming_yuzhen.jpg",
+  "from": "百度百科「明玉珍」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/107194/107194.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "mao_wenlong": {
+  "file": "images/mao_wenlong.jpg",
+  "from": "百度百科「毛文龙」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/34789/34789.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "sunchengzong": {
+  "file": "images/sunchengzong.jpg",
+  "from": "百度百科「孙承宗」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/140751.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "tie_xuan": {
+  "file": "images/tie_xuan.jpg",
+  "from": "百度百科「铁铉」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/168762/6817736.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "weizhongxian": {
+  "file": "images/weizhongxian.jpg",
+  "from": "百度百科「魏忠贤」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/19376/19376.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xiong_tingbi": {
+  "file": "images/xiong_tingbi.jpg",
+  "from": "百度百科「熊廷弼」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/100464.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "wu_sangui": {
+  "file": "images/wu_sangui.jpg",
+  "from": "百度百科「吴三桂」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/10050/17322447.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "xujie": {
+  "file": "images/xujie.jpg",
+  "from": "百度百科「徐阶」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/28613/28613.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "戏曲"
+ },
+ "wang_guangyang": {
+  "file": "images/wang_guangyang.jpg",
+  "from": "百度百科「汪广洋」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/219811.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "年画"
+ },
+ "yang_sichang": {
+  "file": "images/yang_sichang.jpg",
+  "from": "百度百科「杨嗣昌」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/456185.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yang_lian": {
+  "file": "images/yang_lian.jpg",
+  "from": "百度百科「杨涟」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/81008/81008.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yansong": {
+  "file": "images/yansong.jpg",
+  "from": "百度百科「严嵩」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/28663/28663.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhang_shicheng": {
+  "file": "images/zhang_shicheng.jpg",
+  "from": "百度百科「张士诚」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/109922/6173282.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhao_nanxing": {
+  "file": "images/zhao_nanxing.jpg",
+  "from": "百度百科「赵南星」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/80555/80555.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zheng_guifei": {
+  "file": "images/zheng_guifei.jpg",
+  "from": "百度百科「郑贵妃」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/472491/472491.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhang_xianzhong": {
+  "file": "images/zhang_xianzhong.jpg",
+  "from": "百度百科「张献忠」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/46514/19795491.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "zhou_huanghou_cz": {
+  "file": "images/zhou_huanghou_cz.jpg",
+  "from": "百度百科「小周后」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/942796/17602648.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "戏曲"
+ },
+ "zheng_he": {
+  "file": "images/zheng_he.jpg",
+  "from": "百度百科「郑和」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/1988/16935833.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhou_chen": {
+  "file": "images/zhou_chen.jpg",
+  "from": "百度百科「周忱」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/113114/19677937.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_sheng": {
+  "file": "images/zhu_sheng.jpg",
+  "from": "百度百科「朱升」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/232678/6472916.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhou_shunchang": {
+  "file": "images/zhou_shunchang.jpg",
+  "from": "百度百科「周顺昌」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/223943/223943.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "hong_chengchou": {
+  "file": "images/hong_chengchou.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "zhang_taihou": {
+  "file": "images/zhang_taihou.jpg",
+  "from": "百度百科「诚孝张皇后」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/6826124.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_yousong": {
+  "file": "images/zhu_yousong.jpg",
+  "from": "百度百科「朱由崧」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/120882.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_youlang": {
+  "file": "images/zhu_youlang.jpg",
+  "from": "百度百科「朱由榔」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/54993/54993.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "huangtaiji": {
+  "file": "images/huangtaiji.jpg",
+  "from": "百度百科「皇太极」词条配图",
+  "pageUrl": "http://baike.baidu.com/item/%E7%9A%87%E5%A4%AA%E6%9E%81/54557605",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zuo_guangdou": {
+  "file": "images/zuo_guangdou.jpg",
+  "from": "百度百科「左光斗」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/56146/56146.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "yisunsin": {
+  "file": "images/yisunsin.jpg",
+  "from": "百度百科「李舜臣」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/60237/5277567.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "kuang_zhong": {
+  "file": "images/kuang_zhong.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "ni_yuanlu": {
+  "file": "images/ni_yuanlu.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "zhu_yujian": {
+  "file": "images/zhu_yujian.jpg",
+  "from": "百度百科「朱聿键」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/120926.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "qijiguang": {
+  "file": "images/qijiguang.jpg",
+  "from": "百度百科「戚继光」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/10438/6777005.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "nurhaci": {
+  "file": "images/nurhaci.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "shi_kefa": {
+  "file": "images/shi_kefa.jpg",
+  "from": "百度百科「史可法」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/25107/5067085.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "wang_xijue": {
+  "file": "images/wang_xijue.jpg",
+  "from": "百度百科「王锡爵」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/123821/5891328.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "tan_lun": {
+  "file": "images/tan_lun.jpg",
+  "from": "百度百科「谭纶」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/76871/76871.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": "塑像"
+ },
+ "liu_ji": {
+  "file": "images/liu_ji.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "muying": {
+  "file": "images/muying.jpg",
+  "from": "百度百科「沐英」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/84540/84540.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "ruan_dacheng": {
+  "file": "images/ruan_dacheng.jpg",
+  "from": "百度百科「阮大铖」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/30456.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "qian_qianyi": {
+  "file": "images/qian_qianyi.jpg",
+  "from": "百度百科「钱谦益」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/63415/63415.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "shenshixing": {
+  "file": "images/shenshixing.jpg",
+  "from": "百度百科「申时行」词条配图",
+  "pageUrl": "http://baike.baidu.com/view/209246.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "zhu_youjian": {
+  "file": "images/zhu_youjian.jpg",
+  "from": "百度百科「崇祯」词条配图",
+  "pageUrl": "http://baike.baidu.com/subview/115567/115567.htm",
+  "note": "按词条名检索并下载原图，服务端统一转制为 JPEG（长边 800px）",
+  "kind": ""
+ },
+ "extra_taizu_yixiang": {
+  "file": "images/extra_taizu_yixiang.jpg",
+  "from": "百度百科「朱元璋画像」词条配图",
+  "pageUrl": "http://baike.baidu.com/item/%E6%9C%B1%E5%85%83%E7%92%8B%E7%94%BB%E5%83%8F/24145900",
+  "note": "下载并验证成功",
+  "kind": "御容"
+ },
+ "yang_pu": {
+  "file": "images/yang_pu.jpg",
+  "from": "馆藏机构　",
+  "pageUrl": "https://www.pinshiwen.com/liwen/lsrw/20190801176839.html",
+  "note": "转录自公开图谱，已下载验证",
+  "kind": ""
+ },
+ "extra_gumengyou": {
+  "file": "images/extra_gumengyou.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "extra_lizuiao": {
+  "file": "images/extra_lizuiao.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "extra_panqintai": {
+  "file": "images/extra_panqintai.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ },
+ "sun_taihou": {
+  "file": "images/sun_taihou.jpg",
+  "from": "公开图源采集（馆藏机构数字资源 / 公开图录）",
+  "pageUrl": "",
+  "note": "已下载并验证",
+  "kind": ""
+ }
+}

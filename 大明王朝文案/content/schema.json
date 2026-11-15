@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dam.local/schema/content-4.0.json",
+  "title": "大明王朝内容包 4.0",
+  "type": "object",
+  "required": ["meta", "people", "events", "chapters", "relations", "places", "sources", "memorials", "works", "editorial"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["schemaVersion", "contentVersion", "people", "events", "chapters"],
+      "properties": {
+        "schemaVersion": {"const": "4.0.0"},
+        "contentVersion": {"type": "string"},
+        "generatedAt": {"type": "string"},
+        "people": {"type": "integer"},
+        "events": {"type": "integer"},
+        "chapters": {"type": "integer"}
+      }
+    },
+    "people": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/person"}
+    },
+    "events": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/event"}
+    },
+    "chapters": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/chapter"}
+    },
+    "relations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/relation"}
+    },
+    "places": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/place"}
+    },
+    "sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "memorials": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/memorial"}
+    },
+    "works": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/work"}
+    },
+    "editorial": {"type": "object"}
+  },
+  "$defs": {
+    "sourceRef": {
+      "type": "object",
+      "required": ["sourceId", "status"],
+      "properties": {
+        "sourceId": {"type": "string"},
+        "locator": {"type": ["string", "null"]},
+        "status": {"enum": ["work-level", "located", "editorial-review-required"]},
+        "note": {"type": "string"}
+      }
+    },
+    "portrait": {
+      "type": "object",
+      "required": ["personId", "status", "label"],
+      "properties": {
+        "personId": {"type": "string"},
+        "status": {"enum": ["historical", "fallback"]},
+        "src": {"type": ["string", "null"]},
+        "label": {"type": "string"},
+        "note": {"type": "string"},
+        "license": {"type": "string"},
+        "credit": {"type": "string"},
+        "sourcePage": {"type": "string"}
+      }
+    },
+    "person": {
+      "type": "object",
+      "required": ["id", "name", "side", "span", "bio", "deeds", "eventIds", "sourceRefs", "contentTier", "portrait"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "side": {"type": "string"},
+        "span": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer"}},
+        "bio": {"type": "string", "minLength": 240},
+        "deeds": {"type": "array", "minItems": 6},
+        "eventIds": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "sourceRefs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceRef"}},
+        "contentTier": {"enum": ["core", "extended", "standard"]},
+        "editorialType": {"enum": ["literaryReconstruction", "referenceProfile"]},
+        "portrait": {"$ref": "#/$defs/portrait"}
+      }
+    },
+    "event": {
+      "type": "object",
+      "required": ["id", "year", "title", "cat", "place", "text", "people", "sourceRefs", "time", "placeRefs"],
+      "properties": {
+        "id": {"type": "string"},
+        "year": {"type": "integer"},
+        "title": {"type": "string"},
+        "cat": {"type": "string"},
+        "place": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 200},
+        "people": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "sourceRefs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceRef"}},
+        "time": {
+          "type": "object",
+          "required": ["year", "precision", "sortValue", "display"],
+          "properties": {
+            "precision": {"enum": ["year", "month", "day"]},
+            "uncertainty": {"enum": ["yearOnly", "statedWorkingDate", "approximate"]}
+          }
+        },
+        "placeRefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["placeId", "match", "confidence"],
+            "properties": {
+              "placeId": {"type": "string"},
+              "match": {"enum": ["keyword", "manual"]},
+              "confidence": {"enum": ["inferred", "verified"]}
+            }
+          }
+        }
+      }
+    },
+    "chapter": {
+      "type": "object",
+      "required": ["no", "title", "from", "to", "eventIds", "membershipBasis"],
+      "properties": {
+        "eventIds": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "membershipBasis": {"enum": ["declared", "year-range"]}
+      }
+    },
+    "relation": {
+      "type": "object",
+      "required": ["id", "from", "to", "types", "evidenceEventIds", "basis", "reviewStatus"],
+      "properties": {
+        "basis": {"enum": ["curated-rule", "shared-events"]},
+        "reviewStatus": {"enum": ["verified", "inferred", "rejected"]}
+      }
+    },
+    "place": {
+      "type": "object",
+      "required": ["id", "name", "lon", "lat", "keywords"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "lon": {"type": "number"},
+        "lat": {"type": "number"},
+        "keywords": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "title", "citationStatus"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "citationStatus": {"type": "string"},
+        "locator": {"type": ["string", "null"]}
+      }
+    },
+    "memorial": {
+      "type": "object",
+      "required": ["id", "title", "year", "status", "note", "sourceRefs"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "authorId": {"type": ["string", "null"]},
+        "year": {"type": "integer"},
+        "eventId": {"type": ["string", "null"]},
+        "status": {"enum": ["excerpt-ready", "source-pending", "collection"]},
+        "excerpt": {"type": "string"},
+        "note": {"type": "string"},
+        "sourceRefs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "work": {
+      "type": "object",
+      "required": ["id", "title", "author", "period", "category", "summary", "note"],
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "author": {"type": "string"},
+        "period": {"type": "string"},
+        "category": {"type": "string"},
+        "summary": {"type": "string"},
+        "note": {"type": "string"}
+      }
+    }
+  }
+}
