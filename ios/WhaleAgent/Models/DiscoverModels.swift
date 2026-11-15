@@ -104,7 +104,6 @@ enum AIPaperCategory: String, CaseIterable, Identifiable, Hashable {
 enum GameSection: String, CaseIterable, Identifiable, Hashable {
     case news
     case steamTop
-    case steamDeals
     case comingSoon
     case free
     case grossing
@@ -115,7 +114,6 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .news: return "游戏资讯"
         case .steamTop: return "Steam畅销"
-        case .steamDeals: return "Steam折扣"
         case .comingSoon: return "新作预告"
         case .free: return "免费榜"
         case .grossing: return "畅销榜"
@@ -124,7 +122,7 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
 
     var board: GameRankBoard? {
         switch self {
-        case .news, .steamTop, .steamDeals, .comingSoon: return nil
+        case .news, .steamTop, .comingSoon: return nil
         case .free: return .free
         case .grossing: return .grossing
         }
@@ -133,16 +131,14 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
     var steamKind: SteamKind? {
         switch self {
         case .steamTop: return .topSellers
-        case .steamDeals: return .specials
         case .comingSoon: return .comingSoon
         case .news, .free, .grossing: return nil
         }
     }
 }
 
-enum SteamKind: String, Identifiable, Hashable {
+enum SteamKind: String, CaseIterable, Identifiable, Hashable {
     case topSellers
-    case specials
     case comingSoon
 
     var id: String { rawValue }
@@ -150,7 +146,6 @@ enum SteamKind: String, Identifiable, Hashable {
     var title: String {
         switch self {
         case .topSellers: return "Steam 全球畅销"
-        case .specials: return "Steam 折扣特惠"
         case .comingSoon: return "即将发售与新作预告"
         }
     }
@@ -158,7 +153,6 @@ enum SteamKind: String, Identifiable, Hashable {
     var subtitle: String {
         switch self {
         case .topSellers: return "Steam 商店中国区 · 实时畅销顺序"
-        case .specials: return "Steam 商店中国区 · 折扣与价格实时变动"
         case .comingSoon: return "Steam 商店中国区 · 即将发售作品"
         }
     }
@@ -263,11 +257,7 @@ extension DiscoverChannel {
                 NewsSectionOption(id: "auto", title: "汽车")
             ]
         case .game:
-            return [
-                NewsSectionOption(id: "all", title: "全部"),
-                NewsSectionOption(id: "cn", title: "国内"),
-                NewsSectionOption(id: "global", title: "国际")
-            ]
+            return []
         case .market, .music, .weibo:
             return []
         }
@@ -290,7 +280,6 @@ struct SteamFeaturedResponse: Codable {
     func items(for kind: SteamKind) -> [SteamItem] {
         switch kind {
         case .topSellers: return topSellers
-        case .specials: return specials
         case .comingSoon: return comingSoon
         }
     }

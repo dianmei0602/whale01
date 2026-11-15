@@ -10,7 +10,6 @@ final class DiscoverModel: ObservableObject {
     private let defaults = UserDefaults.standard
     private static let aiSectionKey = "whale.discover.aiSection"
     private static let headlineSectionKey = "whale.discover.headlineSection"
-    private static let gameNewsSectionKey = "whale.discover.gameNewsSection"
     private static let paperCategoryKey = "whale.discover.paperCategory"
     private static let gameSectionKey = "whale.discover.gameSection"
     private static let hotBoardKey = "whale.discover.hotBoard"
@@ -60,9 +59,7 @@ final class DiscoverModel: ObservableObject {
     @Published var headlineSection: String = "all" {
         didSet { defaults.set(headlineSection, forKey: Self.headlineSectionKey) }
     }
-    @Published var gameNewsSection: String = "all" {
-        didSet { defaults.set(gameNewsSection, forKey: Self.gameNewsSectionKey) }
-    }
+    @Published var gameNewsSection: String = "all"
 
     @Published private(set) var steam: SteamFeaturedResponse?
     @Published private(set) var steamState: DiscoverLoadState = .idle
@@ -104,7 +101,7 @@ final class DiscoverModel: ObservableObject {
         headlineSection = "all"
         saved.removeObject(forKey: Self.aiSectionKey)
         saved.removeObject(forKey: Self.headlineSectionKey)
-        gameNewsSection = saved.string(forKey: Self.gameNewsSectionKey) ?? "all"
+        gameNewsSection = "all"
         paperCategory = AIPaperCategory(rawValue: saved.string(forKey: Self.paperCategoryKey) ?? "") ?? .ai
         hotBoard = HotBoard(rawValue: saved.string(forKey: Self.hotBoardKey) ?? "") ?? .weibo
         gameSection = GameSection(rawValue: saved.string(forKey: Self.gameSectionKey) ?? "") ?? .news
@@ -150,7 +147,7 @@ final class DiscoverModel: ObservableObject {
     }
 
     var gameNews: [NewsItem] {
-        newsItems.filter { DiscoverChannel.game.matches(section: gameNewsSection, itemSection: $0.section, topics: $0.topics) }
+        newsItems
     }
 
     func selectNewsSection(_ section: String, for channel: DiscoverChannel) async {
