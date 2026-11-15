@@ -7,7 +7,7 @@ on:
       scope:
         description: Quick compilation or full simulator interaction regression
         type: choice
-        options: [quick, interaction]
+        options: [quick, interaction, ui]
         default: quick
   push:
     paths:
@@ -35,7 +35,7 @@ concurrency:
 
 jobs:
   backend:
-    if: ${{ inputs.scope != 'interaction' }}
+    if: ${{ inputs.scope != 'interaction' && inputs.scope != 'ui' }}
     name: Backend fixture regression
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -49,7 +49,7 @@ jobs:
         run: npm test
 
   build:
-    if: ${{ inputs.scope != 'interaction' }}
+    if: ${{ inputs.scope != 'interaction' && inputs.scope != 'ui' }}
     name: Compile app and test targets without simulator boot
     runs-on: macos-15
     timeout-minutes: 15
@@ -97,3 +97,57 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'interaction' }}
     name: Manually requested full regression
     uses: ./.github/workflows/ios-ui-tests.yml
+
+  composer_ui:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'ui' }}
+    name: Composer keyboard layout check
+    runs-on: macos-15-intel
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - run: python3 tools/build_identity.py
+      - working-directory: ios
+        run: xcodegen generate
+      - name: Boot iPhone simulator
+        run: |
+          set -euo pipefail
+          DEVICE_ID=$(xcrun simctl list devices available -j | /usr/bin/python3 -c 'import json,sys; c=[x for rt in json.load(sys.stdin)["devices"].values() for x in rt if x["name"].startswith("iPhone")]; c.sort(key=lambda x: x["name"] != "iPhone 16 Pro"); print(c[0]["udid"] if c else "")')
+          test -n "$DEVICE_ID"
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+      - name: Run composer layout test
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project WhaleAgent.xcodeproj \
+            -scheme WhaleAgentInteractions \
+            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
+            -parallel-testing-enabled NO \
+            -test-timeouts-enabled YES \
+            -maximum-test-execution-time-allowance 120 \
+            -derivedDataPath build \
+            -resultBundlePath build/ComposerCheck.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            -only-testing:WhaleAgentUITests/InteractionUITests/testComposerStaysAboveTabsAndTabsYieldToKeyboard \
+            test | tee composer-check.log
+      - name: Export screenshots
+        if: always()
+        working-directory: ios
+        run: |
+          if [ -d build/ComposerCheck.xcresult ]; then
+            xcrun xcresulttool export attachments \
+              --path build/ComposerCheck.xcresult \
+              --output-path build/composer-check-attachments
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: composer-keyboard-layout
+          retention-days: 3
+          path: |
+            ios/composer-check.log
+            ios/build/ComposerCheck.xcresult
+            ios/build/composer-check-attachments
+          if-no-files-found: warn
