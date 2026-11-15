@@ -116,6 +116,31 @@ private struct DSResponse: Decodable {
     let usage: ModelRequestMetrics.Usage?
 }
 
+private enum ModelCallProfile {
+    case agent
+    case toolPlanning
+    case synthesis
+    case answer
+
+    var temperature: Double {
+        switch self {
+        case .agent: return 0.4
+        case .toolPlanning: return 0.15
+        case .synthesis: return 0.6
+        case .answer: return 0.65
+        }
+    }
+
+    var maxTokens: Int {
+        switch self {
+        case .agent: return 2800
+        case .toolPlanning: return 1800
+        case .synthesis: return 4096
+        case .answer: return 4096
+        }
+    }
+}
+
 private struct LocalTurn: Codable {
     var turnId: String
     var conversationId: String
@@ -123,6 +148,7 @@ private struct LocalTurn: Codable {
     var batches: Int
     var permissions: [String: String]
     var taskState: LocalTaskState?
+    var analysis: RequestAnalysis? = nil
     var resultBatch: ToolResultBatch? = nil
 }
 
@@ -132,6 +158,7 @@ actor LocalAgentEngine: AgentTransport {
     private let toolMap: [String: ToolContract.Tool]
     private var turns: [String: LocalTurn]
     private let receipts: TurnReceiptStore
+    private let reasoning = AgentReasoningClient()
     private var processingTurns: Set<String> = []
 
     private static let turnsKey = "whale.local.turns"
@@ -172,19 +199,42 @@ actor LocalAgentEngine: AgentTransport {
         let conversation = conversationId ?? Self.newId("conv")
         let turnId = Self.newId("turn")
         var history = loadHistory(conversation)
+        let priorMessages = Array(history.suffix(8))
         history.append(DSMessage(role: "user", content: text, tool_calls: nil, tool_call_id: nil, name: nil))
         saveHistory(history, for: conversation)
 
+        let analysis = await reasoning.analyze(
+            text: text,
+            recentHistory: priorMessages,
+            tools: tools.map { ($0.name, $0.description) }
+        )
         var turn = LocalTurn(
             turnId: turnId,
             conversationId: conversation,
             pending: [],
             batches: 0,
             permissions: permissions,
-            taskState: LocalTaskState(goal: text, constraints: ["timezone": TimeZone.current.identifier, "userConstraints": text])
+            taskState: LocalTaskState(
+                goal: analysis.goal,
+                constraints: [
+                    "timezone": TimeZone.current.identifier,
+                    "userConstraints": text,
+                    "plannedSteps": analysis.tasks.joined(separator: " → "),
+                    "skills": analysis.normalizedSkills.map(\.rawValue).joined(separator: ",")
+                ]
+            ),
+            analysis: analysis
         )
 
-        let message = try await callModel(history: history, permissions: permissions, taskState: turn.taskState)
+        let profile: ModelCallProfile = analysis.needsFreshData || analysis.needsDeviceAction ||
+            analysis.isMultiStep || !analysis.suggestedTools.isEmpty ? .toolPlanning : .answer
+        let message = try await callModel(
+            history: history,
+            permissions: permissions,
+            taskState: turn.taskState,
+            analysis: analysis,
+            profile: profile
+        )
         return try await advance(message: message, history: &history, turn: &turn)
     }
 
@@ -266,7 +316,13 @@ actor LocalAgentEngine: AgentTransport {
 
         turns[turn.turnId] = turn
         saveTurns()
-        let message = try await callModel(history: history, permissions: turn.permissions, taskState: turn.taskState)
+        let message = try await callModel(
+            history: history,
+            permissions: turn.permissions,
+            taskState: turn.taskState,
+            analysis: turn.analysis,
+            profile: .synthesis
+        )
         return try await advance(message: message, history: &history, turn: &turn)
     }
 
@@ -349,10 +405,46 @@ actor LocalAgentEngine: AgentTransport {
                 history: repairHistory,
                 permissions: turn.permissions,
                 taskState: turn.taskState,
-                toolsEnabled: false
+                analysis: turn.analysis,
+                toolsEnabled: false,
+                profile: .answer
             ), let text = repaired.content?.trimmingCharacters(in: .whitespacesAndNewlines),
                RealDataGuard.isSafeWithoutEvidence(text, for: intent) {
                 candidate = text
+            }
+        }
+
+        if let analysis = turn.analysis,
+           analysis.shouldVerify,
+           !candidate.isEmpty {
+            let review = await reasoning.review(
+                userText: context.userText,
+                analysis: analysis,
+                usedTools: context.tools.sorted(),
+                answer: candidate
+            )
+            if !review.approved, !review.correctionInstruction.isEmpty {
+                var reviewHistory = history
+                reviewHistory.append(
+                    DSMessage(
+                        role: "system",
+                        content: "发送前审查未通过。请按以下要求重写最终回答，保持自然，不展示内部推理：\(review.correctionInstruction)",
+                        tool_calls: nil,
+                        tool_call_id: nil,
+                        name: nil
+                    )
+                )
+                if let revised = try? await callModel(
+                    history: reviewHistory,
+                    permissions: turn.permissions,
+                    taskState: turn.taskState,
+                    analysis: analysis,
+                    toolsEnabled: false,
+                    profile: .answer
+                ), let text = revised.content?.trimmingCharacters(in: .whitespacesAndNewlines),
+                   !text.isEmpty {
+                    candidate = text
+                }
             }
         }
         var reply = intent.map {
@@ -373,6 +465,11 @@ actor LocalAgentEngine: AgentTransport {
             )
         )
         saveHistory(history, for: turn.conversationId)
+        AgentMemoryStore.shared.record(
+            userText: context.userText,
+            reply: reply.isEmpty ? "我这次没有生成可执行的动作。" : reply,
+            conversationId: turn.conversationId
+        )
         let response = makeResponse(
             status: turn.taskState?.hasUnresolvedResults == true || evidenceMissing ? "completed_with_limits" : "completed",
             turn: turn,
@@ -422,10 +519,24 @@ actor LocalAgentEngine: AgentTransport {
         history: [DSMessage],
         permissions: [String: String],
         taskState: LocalTaskState? = nil,
-        toolsEnabled: Bool = true
+        analysis: RequestAnalysis? = nil,
+        toolsEnabled: Bool = true,
+        profile: ModelCallProfile = .agent
     ) async throws -> DSMessage {
+        let exposedTools = toolsEnabled ? relevantTools(for: analysis) : []
         var messages = [
-            DSMessage(role: "system", content: systemPrompt(permissions: permissions, requestText: latestTurnContext(history).userText), tool_calls: nil, tool_call_id: nil, name: nil)
+            DSMessage(
+                role: "system",
+                content: systemPrompt(
+                    permissions: permissions,
+                    requestText: latestTurnContext(history).userText,
+                    analysis: analysis,
+                    exposedTools: exposedTools
+                ),
+                tool_calls: nil,
+                tool_call_id: nil,
+                name: nil
+            )
         ]
         if let taskState {
             let data = try JSONEncoder().encode(taskState)
@@ -437,12 +548,12 @@ actor LocalAgentEngine: AgentTransport {
         }
         messages.append(contentsOf: Self.trimmedHistory(history, limit: 30))
         let suppressTools = RealDataGuard.suppressesTools(context.userText)
-        let shouldExposeTools = toolsEnabled && !suppressTools
+        let shouldExposeTools = toolsEnabled && !suppressTools && !exposedTools.isEmpty
 
         let requestBody = DSRequest(
             model: LocalAgentConfig.model,
             messages: messages,
-            tools: shouldExposeTools ? tools.map { tool in
+            tools: shouldExposeTools ? exposedTools.map { tool in
                 DSTool(
                     function: DSToolFunction(
                         name: tool.name,
@@ -453,8 +564,8 @@ actor LocalAgentEngine: AgentTransport {
             } : nil,
             tool_choice: shouldExposeTools ? "auto" : nil,
             stream: false,
-            max_tokens: 2048,
-            temperature: 0.3
+            max_tokens: profile.maxTokens,
+            temperature: profile.temperature
         )
 
         var request = URLRequest(url: LocalAgentConfig.endpoint)
@@ -502,12 +613,32 @@ actor LocalAgentEngine: AgentTransport {
         }
     }
 
-    private func systemPrompt(permissions: [String: String], requestText: String) -> String {
+    private func relevantTools(for analysis: RequestAnalysis?) -> [ToolContract.Tool] {
+        guard let analysis else { return tools }
+        if analysis.confidence < 0.45 ||
+            (analysis.normalizedSkills == [.general] && analysis.suggestedTools.isEmpty) {
+            return tools
+        }
+        let available = Set(tools.map(\.name))
+        let selected = analysis.selectedToolNames(available: available)
+        let filtered = tools.filter { selected.contains($0.name) }
+        return filtered.isEmpty ? tools : filtered
+    }
+
+    private func systemPrompt(
+        permissions: [String: String],
+        requestText: String,
+        analysis: RequestAnalysis?,
+        exposedTools: [ToolContract.Tool]
+    ) -> String {
         let baseline = loadText("assistant-system.v1") ?? "你是鲸鱼，一个中文日常事务助手。"
-        let rules = loadText("direct-agent-rules") ?? ""
+        let rules = loadText("agent-core-rules.v2")
+            ?? loadText("direct-agent-rules")
+            ?? ""
+        let skills = AgentSkillGuidance.rules(for: analysis?.normalizedSkills ?? [.general])
         let now = ISO8601DateFormatter().string(from: Date())
         let timezone = TimeZone.current.identifier
-        let capabilities = tools
+        let capabilities = exposedTools
             .map { "- \($0.name)：\($0.description)" }
             .joined(separator: "\n")
         let permissionText = permissions
@@ -515,6 +646,8 @@ actor LocalAgentEngine: AgentTransport {
             .map { "- \($0.key)：\($0.value)" }
             .joined(separator: "\n")
         let memoryText = MemoryStore.shared.snapshotText(matching: requestText)
+        let episodicMemory = AgentMemoryStore.shared.snapshotText(matching: requestText)
+        let planText = analysis?.promptText ?? "本轮没有单独规划；先理解问题，再决定直接回答或使用工具。"
 
         return """
         \(baseline)
@@ -529,6 +662,17 @@ actor LocalAgentEngine: AgentTransport {
         ## 本机执行规则
         \(rules)
 
+        ## 本轮理解与建议计划
+        \(planText)
+
+        ## 当前相关技能规则
+        \(skills)
+
+        ## 回答策略
+        - 复述问题没有价值；优先给出用户真正需要的结论、方案、追问或执行结果。
+        - 多步任务按计划推进；若工具失败，说明哪一步没完成，并给出可执行的替代路径。
+        - 搜索、工具目录、权限和历史都只是上下文；最终动作仍由真实工具结果和确认流程决定。
+
         ## 可用工具
         \(capabilities.isEmpty ? "工具目录尚未加载，遇到执行请求先说明本机工具不可用。" : capabilities)
 
@@ -538,6 +682,10 @@ actor LocalAgentEngine: AgentTransport {
         ## 用户明确保存的偏好
         \(memoryText)
         - 偏好只用于建议和默认选择，不代表用户授权执行任何写操作。
+
+        ## 与本轮请求相关的历史记忆
+        \(episodicMemory)
+        - 历史答复只能帮助理解上下文；当前事实必须以本轮工具结果为准。
         """
     }
 
