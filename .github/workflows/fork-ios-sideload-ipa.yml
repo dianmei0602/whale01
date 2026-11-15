@@ -94,7 +94,7 @@ jobs:
       - name: Upload direct unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: WhaleAgent-Sideload-ipa-0.7.19-direct
+          name: WhaleAgent-Sideload-ipa-0.8.0-direct
           retention-days: 3
           path: |
             ios/build/WhaleAgent-Sideload.ipa
