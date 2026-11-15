@@ -423,7 +423,7 @@ function layoutPoints(battles) {
     const ringR = 3.8 * u;
     return `<g class="mp${g.deciding ? ' mp-deciding' : ''}${g.outside ? ' mp-outside' : ''}" data-battle="${esc(g.b.id)}" role="button" tabindex="0" aria-label="${esc(g.b.name)}">
       <circle class="mp-hit" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(19 * u).toFixed(2)}"/>
-      ${g.deciding ? `<circle class="mp-ring" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${ringR.toFixed(2)}" stroke-width="${(1.1 * u).toFixed(2)}"/>` : ''}
+      ${g.deciding ? `<circle class="mp-ring" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${ringR.toFixed(2)}" stroke-width="1.1"/>` : ''}
       <circle class="mp-halo" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(r * 1.45).toFixed(2)}"/>
       <circle class="mp-dot" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${r.toFixed(2)}"/>
     </g>`;

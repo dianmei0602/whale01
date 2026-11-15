@@ -151,7 +151,7 @@
 /* 点位 */
 .map-points { cursor: pointer; }
 .map-points .mp { outline: none; }
-.mp-hit { fill: transparent; pointer-events: all; }
+.mp-hit { fill: none !important; stroke: none !important; opacity: 0 !important; pointer-events: all; }
 .mp-halo { fill: rgba(201, 75, 58, 0.15); }
 .mp-dot {
   fill: var(--cinnabar-bright);
