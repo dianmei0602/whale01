@@ -1,0 +1,178 @@
+/* ============================================================
+   refine.css — 3.3 交互整理：平板侧栏与最小可读字号
+   ============================================================ */
+
+/* The main job remains reading. Functional labels must stay legible. */
+.tab,
+.page-head .head-title .head-sub,
+.cover-tag,
+.cover-year,
+.cover-meta,
+.cover-go,
+.cover-foot,
+.cover-entry,
+.tl-ticker,
+.era-chip-idx,
+.era-chip-name,
+.era-kicker,
+.era-range,
+.deciding-badge,
+.card-progress,
+.card-foot .tag,
+.card-foot .card-index,
+.tl-legend summary,
+.tll-item,
+.filter-bar,
+.info-item .info-k,
+.hero-result-text .hr-label,
+.research-badge,
+.research-foot,
+.ai-k,
+.ai-v i,
+.precision-tag,
+.arm-chip,
+.casualty i,
+.power-kind,
+.power-troops span,
+.power-rows dt,
+.power-note,
+.bterr-sub,
+.bterr-note,
+.terr-tag,
+.terr-note,
+.terr-legend,
+.gp-family span,
+.fac-badge,
+.fac-power-rows dt,
+.fac-power-note,
+.fac-marriage-list p,
+.at-kicker,
+.at-hero-meta span,
+.atlas-panel-head span,
+.atlas-legend,
+.at-era-chip,
+.at-era-chip b,
+.at-rel-main i,
+.rep-era,
+.rep-type,
+.rep-meta,
+.rep-foot,
+.fav-year,
+.fav-meta,
+.fav-state,
+.fav-foot,
+.g-chip,
+.graph-zoom,
+.g-seg,
+.g-label-toggle,
+.g-legend-head,
+.g-legend-item,
+.gp-title,
+.gp-meta,
+.gp-battles-label,
+.gp-battle i,
+.graph-foot,
+.g-layer-btn,
+.g-view-btn,
+.g-radial-hint small,
+.search-note,
+.hot-num,
+.search-group-title,
+.s-era,
+.s-meta,
+.s-hit,
+.s-person-status,
+.gen-section-title span,
+.gen-section-note,
+.gen-bio-scope .seg-btn span,
+.bio-alias,
+.bio-meta,
+.bio-battles-note,
+.settings-group-title,
+.setting-row .sr-desc,
+.sample-text .st-label,
+.about-card .about-sub,
+.about-meta,
+.detail-foot,
+.ph-soon {
+  font-size: 11px !important;
+}
+
+.brand-sub,
+.brand-seal,
+.sv-side,
+.vs,
+.foot-seal {
+  font-size: 11px !important;
+}
+
+.tll-seal,
+.tll-tag {
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0 5px;
+  font-size: 11px !important;
+}
+
+@media (min-width: 760px) {
+  :root { --rail-w: 88px; }
+
+  .view {
+    padding-left: calc(var(--rail-w) + var(--safe-l));
+    padding-bottom: calc(24px + var(--safe-b));
+  }
+  body[data-chrome="none"] .view {
+    padding-left: 0;
+    padding-bottom: calc(20px + var(--safe-b));
+  }
+
+  .tabbar {
+    top: 0;
+    right: auto;
+    bottom: 0;
+    width: calc(var(--rail-w) + var(--safe-l));
+    height: 100dvh;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, 62px);
+    align-content: center;
+    gap: 4px;
+    padding: calc(18px + var(--safe-t)) 8px calc(18px + var(--safe-b)) calc(8px + var(--safe-l));
+    border-top: 0;
+    border-right: 1px solid var(--line-soft);
+  }
+  .tabbar::before {
+    top: 8%;
+    bottom: 8%;
+    left: auto;
+    right: -1px;
+    width: 1px;
+    height: auto;
+    background: linear-gradient(180deg, transparent, var(--line-strong), transparent);
+  }
+  .tab {
+    min-height: 58px;
+    border-radius: 6px;
+  }
+  .tab.is-active::before {
+    top: 50%;
+    left: -9px;
+    width: 2px;
+    height: 26px;
+    transform: translateY(-50%);
+    background: var(--gold-bright);
+    box-shadow: 0 0 10px rgba(224, 192, 96, 0.55);
+  }
+  .update-bar {
+    left: calc(var(--rail-w) + 12px + var(--safe-l));
+  }
+}
+
+@media (max-width: 380px) {
+  .gen-bio-filter-row {
+    grid-template-columns: minmax(0, 1fr) 106px;
+  }
+  .cover-entry {
+    flex-direction: column;
+    gap: 1px;
+  }
+}
