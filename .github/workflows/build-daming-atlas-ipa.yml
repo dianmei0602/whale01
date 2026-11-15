@@ -46,8 +46,9 @@ jobs:
       - name: Package unsigned IPA
         working-directory: DamingAtlasNative
         run: |
-          APP_PATH="build/Build/Products/Release-iphoneos/DamingAtlas.app"
-          test -d "$APP_PATH"
+          APP_PATH="$(find build/Build/Products/Release-iphoneos -maxdepth 1 -type d -name '*.app' -print -quit)"
+          test -n "$APP_PATH"
+          echo "Packaging $APP_PATH"
           test -f "$APP_PATH/content-bundle.json"
           test -f "$APP_PATH/zhu_yuanzhang.png"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
@@ -55,19 +56,20 @@ jobs:
           /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist"
           rm -rf ipa
           mkdir -p ipa/Payload
-          cp -R "$APP_PATH" ipa/Payload/
+          cp -R "$APP_PATH" ipa/Payload/DamingAtlas.app
+          test -f ipa/Payload/DamingAtlas.app/DamingAtlas
           cd ipa
-          zip -qry ../DamingAtlas-0.1.1-unsigned.ipa Payload
+          zip -qry ../DamingAtlas-0.1.2-unsigned.ipa Payload
           cd ..
-          shasum -a 256 DamingAtlas-0.1.1-unsigned.ipa > DamingAtlas-0.1.1-unsigned.ipa.sha256
+          shasum -a 256 DamingAtlas-0.1.2-unsigned.ipa > DamingAtlas-0.1.2-unsigned.ipa.sha256
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: DamingAtlas-unsigned-${{ github.run_number }}
           path: |
-            DamingAtlasNative/DamingAtlas-0.1.1-unsigned.ipa
-            DamingAtlasNative/DamingAtlas-0.1.1-unsigned.ipa.sha256
+            DamingAtlasNative/DamingAtlas-0.1.2-unsigned.ipa
+            DamingAtlasNative/DamingAtlas-0.1.2-unsigned.ipa.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -78,7 +80,7 @@ jobs:
           TAG: daming-atlas-ipa-${{ github.run_number }}
         run: |
           gh release create "$TAG" \
-            DamingAtlas-0.1.1-unsigned.ipa \
-            DamingAtlas-0.1.1-unsigned.ipa.sha256 \
+            DamingAtlas-0.1.2-unsigned.ipa \
+            DamingAtlas-0.1.2-unsigned.ipa.sha256 \
             --title "大明王朝 IPA #${GITHUB_RUN_NUMBER}" \
             --notes "自动构建的未签名 iOS 真机包。请使用 Sideloadly、AltStore 或 Xcode 以你的 Apple ID 重新签名后安装。讯飞密钥不包含在 IPA 中。"
