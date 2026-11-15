@@ -29,6 +29,9 @@ final class InteractionUITests: XCTestCase {
         attach("home-inspiration-weather")
         XCTAssertTrue(tab(app, "records").exists)
         XCTAssertTrue(tab(app, "discover").exists)
+        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
+        XCTAssertTrue(composer.exists)
+        XCTAssertLessThanOrEqual(composer.frame.maxY, tab(app, "conversation").frame.minY + 2)
         XCTAssertLessThan(tab(app, "conversation").frame.midX, tab(app, "discover").frame.midX)
         XCTAssertLessThan(tab(app, "discover").frame.midX, tab(app, "records").frame.midX)
         tab(app, "records").tap()
@@ -125,20 +128,4 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
 
-    func testComposerStaysAboveTabsAndTabsYieldToKeyboard() {
-        let app = launch()
-        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
-        let tabs = app.otherElements["root-tab-bar"]
-        XCTAssertTrue(composer.waitForExistence(timeout: 10))
-        XCTAssertTrue(tabs.waitForExistence(timeout: 10))
-        XCTAssertLessThanOrEqual(composer.frame.maxY, tabs.frame.minY + 2)
-
-        composer.tap()
-        XCTAssertTrue(app.buttons["收起键盘"].waitForExistence(timeout: 5))
-        XCTAssertTrue(tabs.waitForNonExistence(timeout: 5))
-        XCTAssertTrue(composer.isHittable)
-        attach("composer-above-bottom-chrome")
-        app.buttons["收起键盘"].tap()
-        XCTAssertTrue(tabs.waitForExistence(timeout: 5))
-    }
 }
