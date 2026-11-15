@@ -21,6 +21,9 @@ targets:
         buildPhase: resources
         excludes:
           - Info.plist
+      - path: DamingAtlasWeb
+        type: folder
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.damingatlas.app
