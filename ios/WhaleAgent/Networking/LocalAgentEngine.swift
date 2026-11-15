@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 protocol AgentTransport: Sendable {
     func health() async throws -> HealthResponse
@@ -146,6 +149,7 @@ private struct LocalTurn: Codable {
     var conversationId: String
     var pending: [PendingTool]
     var batches: Int
+    var batchBudget: Int? = nil
     var permissions: [String: String]
     var taskState: LocalTaskState?
     var analysis: RequestAnalysis? = nil
@@ -168,7 +172,9 @@ actor LocalAgentEngine: AgentTransport {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.timeoutIntervalForRequest = 120
         configuration.timeoutIntervalForResource = 180
+#if !canImport(FoundationNetworking)
         configuration.waitsForConnectivity = false
+#endif
         session = URLSession(configuration: configuration)
 
         let loaded = Self.loadTools()
@@ -213,6 +219,7 @@ actor LocalAgentEngine: AgentTransport {
             conversationId: conversation,
             pending: [],
             batches: 0,
+            batchBudget: min(max(analysis.tasks.count + 3, 6), 8),
             permissions: permissions,
             taskState: LocalTaskState(
                 goal: analysis.goal,
@@ -290,11 +297,11 @@ actor LocalAgentEngine: AgentTransport {
         if !novelResults.isEmpty {
             turn.batches += 1
         }
-        if turn.batches >= 6 {
+        if turn.batches >= (turn.batchBudget ?? 6) {
             let response = makeResponse(
                 status: "completed_with_limits",
                 turn: turn,
-                reply: "这一轮已达到 6 批工具的执行预算，任务尚需核对。我保留了目标和执行记录，请查看未完成事项后继续。",
+                reply: "这一轮已达到当前工具执行预算，任务尚需核对。我保留了目标和执行记录，请查看未完成事项后继续。",
                 pending: []
             )
             await receipts.record(response)
