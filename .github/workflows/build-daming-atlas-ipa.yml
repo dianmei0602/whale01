@@ -55,6 +55,7 @@ jobs:
           test -f "$APP_PATH/DamingAtlasWeb/content-bundle.js"
           test -f "$APP_PATH/DamingAtlasWeb/audio-experience.js"
           test -f "$APP_PATH/DamingAtlasWeb/assets/portraits/zhu_yuanzhang.png"
+          test -f "$APP_PATH/Assets.car"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist"
@@ -63,17 +64,17 @@ jobs:
           cp -R "$APP_PATH" ipa/Payload/DamingAtlas.app
           test -f ipa/Payload/DamingAtlas.app/DamingAtlas
           cd ipa
-          zip -qry ../DamingAtlas-0.2.0-unsigned.ipa Payload
+          zip -qry ../DamingAtlas-0.2.1-unsigned.ipa Payload
           cd ..
-          shasum -a 256 DamingAtlas-0.2.0-unsigned.ipa > DamingAtlas-0.2.0-unsigned.ipa.sha256
+          shasum -a 256 DamingAtlas-0.2.1-unsigned.ipa > DamingAtlas-0.2.1-unsigned.ipa.sha256
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: DamingAtlas-unsigned-${{ github.run_number }}
           path: |
-            DamingAtlasNative/DamingAtlas-0.2.0-unsigned.ipa
-            DamingAtlasNative/DamingAtlas-0.2.0-unsigned.ipa.sha256
+            DamingAtlasNative/DamingAtlas-0.2.1-unsigned.ipa
+            DamingAtlasNative/DamingAtlas-0.2.1-unsigned.ipa.sha256
           if-no-files-found: error
           retention-days: 14
 
@@ -84,7 +85,7 @@ jobs:
           TAG: daming-atlas-ipa-${{ github.run_number }}
         run: |
           gh release create "$TAG" \
-            DamingAtlas-0.2.0-unsigned.ipa \
-            DamingAtlas-0.2.0-unsigned.ipa.sha256 \
+            DamingAtlas-0.2.1-unsigned.ipa \
+            DamingAtlas-0.2.1-unsigned.ipa.sha256 \
             --title "大明王朝 IPA #${GITHUB_RUN_NUMBER}" \
             --notes "自动构建的未签名 iOS 真机包。请使用 Sideloadly、AltStore 或 Xcode 以你的 Apple ID 重新签名后安装。讯飞密钥不包含在 IPA 中。"
