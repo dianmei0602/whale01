@@ -37,7 +37,7 @@ actor AgentReasoningClient {
         let timezone = TimeZone.current.identifier
         let system = """
         你是鲸鱼 Agent 的请求规划器。只分析用户要达成什么、需要哪些步骤和工具，不直接完成任务，也不执行任何动作。
-        返回一个 JSON 对象，不要 Markdown，不要代码块，不要解释。字段必须为：
+        返回一个 json 对象，不要 Markdown，不要代码块，不要解释。字段必须为：
         {
           "goal": "一句话目标",
           "tasks": ["可执行步骤，按依赖顺序"],
@@ -103,7 +103,7 @@ actor AgentReasoningClient {
         }
         let system = """
         你是鲸鱼 Agent 的发送前审查器。只检查最终回答是否真正解决用户请求，不展示推理过程。
-        返回 JSON，不要 Markdown：
+        返回 json，不要 Markdown：
         {
           "approved": true/false,
           "needsUserInput": true/false,
