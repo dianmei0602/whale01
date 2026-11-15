@@ -43,28 +43,7 @@ enum XfyunTTSClient {
             socket.cancel(with: .normalClosure, reason: nil)
         }
 
-        let encodedText = Data(text.utf8).base64EncodedString()
-        let payload: [String: Any] = [
-            "common": ["app_id": config.appId],
-            "business": [
-                "aue": "lame",
-                "sfl": 1,
-                "auf": "audio/L16;rate=16000",
-                "speed": 55,
-                "volume": 65,
-                "pitch": 48,
-                "tte": "UTF8",
-                "bgs": 0,
-                "reg": "2",
-                "rdn": "3",
-                "vcn": XfyunConfig.ttsVoice
-            ],
-            "data": [
-                "status": 2,
-                "text": encodedText
-            ]
-        ]
-        let request = try JSONSerialization.data(withJSONObject: payload)
+        let request = try requestPayload(text: text, config: config)
         guard let requestText = String(data: request, encoding: .utf8) else {
             throw XfyunTTSError.invalidResponse
         }
@@ -98,6 +77,30 @@ enum XfyunTTSClient {
             throw XfyunTTSError.emptyAudio
         }
         return audio
+    }
+
+    static func requestPayload(text: String, config: XfyunConfig) throws -> Data {
+        let encodedText = Data(text.utf8).base64EncodedString()
+        return try JSONSerialization.data(withJSONObject: [
+            "common": ["app_id": config.appId],
+            "business": [
+                "aue": "lame",
+                "sfl": 1,
+                "auf": "audio/L16;rate=16000",
+                "speed": 55,
+                "volume": 65,
+                "pitch": 48,
+                "tte": "UTF8",
+                "bgs": 0,
+                "reg": "2",
+                "rdn": "3",
+                "vcn": XfyunConfig.ttsVoice
+            ],
+            "data": [
+                "status": 2,
+                "text": encodedText
+            ]
+        ])
     }
 
     static func splitText(_ text: String, limit: Int = 1600) -> [String] {

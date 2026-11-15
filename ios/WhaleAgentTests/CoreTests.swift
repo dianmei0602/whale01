@@ -216,6 +216,19 @@ final class CoreTests: XCTestCase {
         XCTAssertTrue(decoded?.contains("signature=\"") == true)
     }
 
+    func testXfyunTTSPayloadUsesStringRoundParametersForXiaolu() throws {
+        let config = XfyunConfig(appId: "app-id", apiKey: "api-key", apiSecret: "api-secret")
+        let data = try XfyunTTSClient.requestPayload(text: "鲸鱼助手", config: config)
+        let root = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        let business = try XCTUnwrap(root["business"] as? [String: Any])
+
+        XCTAssertEqual(business["vcn"] as? String, "x4_yezi")
+        XCTAssertEqual(business["reg"] as? String, "2")
+        XCTAssertEqual(business["rdn"] as? String, "3")
+    }
+
     func testResultDetailSeparatesReadsFromWrites() {
         let emptyRange = JSONValue.object([
             "count": .number(0),
