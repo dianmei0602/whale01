@@ -16,7 +16,6 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
-    @GestureState private var pagerDrag: CGFloat = 0
 
     var body: some View {
         pager
@@ -66,31 +65,27 @@ struct RootView: View {
         }
     }
 
-    // MARK: - Horizontal pager
+    // MARK: - Main pages
 
-    /// Three main entries sit side by side. The pager follows the finger and
-    /// settles on the nearest page; Discover owns its own horizontal gestures,
-    /// so the root pager stands down while that tab is visible.
+    /// Keep all three pages mounted so drafts and scroll positions survive tab
+    /// changes, but do not compete with channel, reading and back-swipe gestures.
     private var pager: some View {
-        GeometryReader { geo in
-            HStack(spacing: 0) {
-                conversationPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .conversation)
-                    .allowsHitTesting(page == .conversation)
-                discoverPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .discover)
-                    .allowsHitTesting(page == .discover)
-                recordsPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .records)
-                    .allowsHitTesting(page == .records)
-            }
-            .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
-            .animation(.interactiveSpring(response: 0.34, dampingFraction: 0.88), value: page)
-            .simultaneousGesture(pagerGesture(width: geo.size.width))
+        ZStack {
+            conversationPage
+                .opacity(page == .conversation ? 1 : 0)
+                .accessibilityHidden(page != .conversation)
+                .allowsHitTesting(page == .conversation)
+            discoverPage
+                .opacity(page == .discover ? 1 : 0)
+                .accessibilityHidden(page != .discover)
+                .allowsHitTesting(page == .discover)
+            recordsPage
+                .opacity(page == .records ? 1 : 0)
+                .accessibilityHidden(page != .records)
+                .allowsHitTesting(page == .records)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut(duration: 0.16), value: page)
     }
 
     private var conversationPage: some View {
@@ -135,38 +130,10 @@ struct RootView: View {
         TodoView(model: model, embedded: true, onBackToChat: { page = .conversation }, bottomBarInset: 0)
     }
 
-    private func pagerGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 18)
-            .updating($pagerDrag) { value, state, _ in
-                guard page != .discover else { return }
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                state = rubberBanded(dx)
-            }
-            .onEnded { value in
-                guard page != .discover else { return }
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                let projected = value.predictedEndTranslation.width
-                if projected < -width * 0.20 || dx < -width * 0.28 {
-                    move(to: page.pagerNext)
-                } else if projected > width * 0.20 || dx > width * 0.28 {
-                    move(to: page.pagerPrevious)
-                }
-            }
-    }
-
-    private func rubberBanded(_ dx: CGFloat) -> CGFloat {
-        if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
-            return dx / 3
-        }
-        return dx
-    }
-
     private func move(to tab: AppTab) {
         guard tab != page else { return }
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { page = tab }
+        withAnimation(.easeInOut(duration: 0.16)) { page = tab }
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {
@@ -192,31 +159,6 @@ enum RootBottomChromePolicy {
     ) -> Bool {
         guard !keyboardVisible else { return false }
         return page != .conversation || !composerFocused
-    }
-}
-
-private extension AppTab {
-    var pagerIndex: Int {
-        switch self {
-        case .conversation: return 0
-        case .discover: return 1
-        case .records: return 2
-        case .settings: return 0
-        }
-    }
-    var pagerNext: AppTab {
-        switch self {
-        case .conversation: return .discover
-        case .discover: return .records
-        default: return .records
-        }
-    }
-    var pagerPrevious: AppTab {
-        switch self {
-        case .records: return .discover
-        case .discover: return .conversation
-        default: return .conversation
-        }
     }
 }
 
