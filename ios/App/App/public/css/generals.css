@@ -1,0 +1,606 @@
+/* ============================================================
+   generals.css — M3 名将榜：聚合卡片 / 搜索 / 排序 / 关联战役
+   ============================================================ */
+
+.generals-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ink-0);
+}
+.gen-body {
+  padding: 4px calc(18px + var(--safe-r)) calc(26px + var(--safe-b)) calc(18px + var(--safe-l));
+}
+
+/* ---------------- 卷首 ---------------- */
+.gen-intro {
+  position: relative;
+  margin: 6px 0 14px;
+  padding: 18px 16px 15px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(110% 90% at 92% 0%, rgba(201, 162, 39, 0.12), transparent 58%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.82), rgba(21, 18, 14, 0.82));
+  overflow: hidden;
+}
+.gen-intro::after {
+  content: "";
+  position: absolute;
+  right: -32px;
+  bottom: -48px;
+  width: 190px;
+  height: 140px;
+  background: url("../assets/mountains.svg") center bottom / cover no-repeat;
+  opacity: 0.26;
+  pointer-events: none;
+}
+.gen-intro-head { position: relative; z-index: 1; }
+.gen-intro h1 {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+}
+.gen-intro-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+}
+.gen-stats-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.1);
+}
+.gen-stat { display: flex; flex-direction: column; gap: 1px; }
+.gen-stat b {
+  font-family: var(--num);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--gold-bright);
+}
+.gen-stat i {
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.05em;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.gen-intro-note {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  font-size: 10px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  color: rgba(156, 144, 123, 0.95);
+}
+
+/* 关系图谱入口 */
+.gen-graph-cta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: 14px;
+  padding: 7px 11px;
+  border: 1px solid rgba(201, 162, 39, 0.34);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(201, 162, 39, 0.14), transparent 62%),
+    rgba(14, 12, 10, 0.34);
+  color: var(--paper);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.gen-graph-cta:active { border-color: var(--gold-bright); }
+.gen-graph-cta-icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 3px;
+  color: var(--gold-bright);
+  background: rgba(201, 162, 39, 0.08);
+}
+.gen-graph-cta-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gen-graph-cta-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.gen-graph-cta-main strong {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+}
+.gen-graph-cta-main span {
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  color: var(--mute);
+}
+.gen-graph-cta-arrow {
+  flex: 0 0 auto;
+  color: rgba(201, 162, 39, 0.6);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ---------------- 工具条 ---------------- */
+.gen-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 4px 0 12px;
+}
+.gen-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 6px;
+  background: linear-gradient(165deg, rgba(31, 26, 20, 0.9), rgba(21, 18, 14, 0.9));
+}
+.gen-search svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.gen-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  outline: none;
+  background: transparent;
+}
+.gen-search input::placeholder { color: rgba(156, 144, 123, 0.9); font-size: 12px; }
+.gen-search input::-webkit-search-cancel-button { display: none; }
+.gen-toolbar .segmented {
+  align-self: flex-end;
+  padding: 3px;
+}
+.gen-toolbar .seg-btn {
+  min-width: 64px;
+  min-height: 38px;
+  font-size: 11.5px;
+}
+
+/* ---------------- 列表 ---------------- */
+.gen-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+  padding: 0 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+}
+.gen-list-head b {
+  font-family: var(--num);
+  font-size: 15px;
+  color: var(--gold-bright);
+  margin: 0 2px;
+}
+.gen-list-sort { color: var(--mute); }
+
+.gen-list { display: flex; flex-direction: column; gap: 8px; }
+.gen-card {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background: linear-gradient(165deg, rgba(31, 26, 20, 0.7), rgba(21, 18, 14, 0.7));
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+.gen-card.is-open { border-color: rgba(201, 162, 39, 0.34); }
+.gen-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 66px;
+  padding: 10px 12px 8px;
+  text-align: left;
+}
+.gen-seal {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(178, 58, 46, 0.5);
+  border-radius: 3px;
+  background:
+    radial-gradient(120% 120% at 20% 0%, rgba(255, 236, 214, 0.14), transparent 58%),
+    linear-gradient(152deg, rgba(178, 58, 46, 0.32), rgba(142, 43, 34, 0.16));
+  color: var(--paper);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.gen-main { flex: 1; min-width: 0; }
+.gen-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  color: var(--paper);
+}
+.gen-sub {
+  display: -webkit-box;
+  margin-top: 2px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: var(--mute);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gen-sub b { color: var(--gold); font-family: var(--num); font-size: 11.5px; font-weight: 600; }
+.gen-right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.gen-rate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+.gen-rate b {
+  font-family: var(--num);
+  font-size: 16px;
+  line-height: 1.1;
+  color: var(--paper-dim);
+  font-weight: 600;
+}
+.gen-rate i {
+  font-size: 8.5px;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+.gen-chevron {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--mute);
+  transition: transform var(--dur) var(--ease);
+}
+.gen-chevron svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gen-card.is-open .gen-chevron { transform: rotate(180deg); }
+.gen-era-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 12px 10px 65px;
+}
+.gen-era {
+  padding: 1px 6px;
+  border: 1px solid var(--era, var(--line-soft));
+  border-radius: 2px;
+  color: var(--paper-dim);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+/* 展开的关联战役 */
+.gen-battles {
+  border-top: 1px dashed rgba(233, 223, 200, 0.1);
+  padding: 4px 4px 7px;
+  background: rgba(14, 12, 10, 0.35);
+}
+.gen-battle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 8px;
+  border-bottom: 1px dashed rgba(233, 223, 200, 0.06);
+}
+.gen-battle:last-child { border-bottom: 0; }
+.gen-battle:active { background: rgba(233, 223, 200, 0.04); }
+.gb-year {
+  flex: 0 0 46px;
+  font-family: var(--num);
+  font-size: 12px;
+  color: var(--gold);
+}
+.gb-name {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--paper);
+}
+.gb-result {
+  flex: 1;
+  min-width: 0;
+  font-size: 10.5px;
+  color: var(--mute);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gen-more {
+  width: 100%;
+  margin-top: 10px;
+  border-style: dashed;
+  color: var(--paper-dim);
+}
+.gen-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--mute);
+  font-size: 12px;
+}
+.gen-empty .btn { margin-top: 14px; }
+.gen-foot {
+  margin: 20px 2px 0;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.08);
+  font-size: 9.5px;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+  color: rgba(156, 144, 123, 0.88);
+}
+
+/* ============================================================
+   M3.5 名将小传 / 全部将帅折叠
+   ============================================================ */
+.gen-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 20px 2px 10px;
+}
+.gen-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--paper);
+}
+.gen-section-title span {
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+.gen-section-note {
+  margin-left: auto;
+  font-family: var(--num);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  border: 1px solid var(--line-soft);
+  border-radius: 2px;
+  padding: 2px 6px;
+}
+
+.gen-bio-loading {
+  padding: 26px 16px;
+  border: 1px dashed var(--line-soft);
+  border-radius: var(--radius-s);
+  text-align: center;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  animation: bio-loading-pulse 1.8s var(--ease) infinite;
+}
+@keyframes bio-loading-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+html[data-motion="reduce"] .gen-bio-loading { animation: none; }
+
+.gen-bio-list { display: flex; flex-direction: column; gap: 10px; }
+.gen-bio-card {
+  position: relative;
+  padding: 14px 15px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(201, 162, 39, 0.06), transparent 58%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.78), rgba(21, 18, 14, 0.78));
+  transition: border-color var(--dur) var(--ease);
+}
+.gen-bio-card.is-open { border-color: rgba(201, 162, 39, 0.34); }
+.bio-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+.bio-seal {
+  width: 48px;
+  height: 52px;
+  font-size: 21px;
+  flex: 0 0 auto;
+}
+.bio-head-main { flex: 1; min-width: 0; }
+.bio-name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  color: var(--paper);
+}
+.bio-alias {
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+.bio-title {
+  margin-top: 1px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+}
+.bio-meta {
+  margin-top: 2px;
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+}
+.bio-era-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding-top: 2px;
+}
+.bio-era-row .gen-era { white-space: nowrap; }
+
+.bio-text {
+  margin-top: 10px;
+  font-size: 12.5px;
+  line-height: 1.85;
+  letter-spacing: 0.015em;
+  color: rgba(233, 223, 200, 0.82);
+  text-align: justify;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.gen-bio-card.is-open .bio-text {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+.bio-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.bio-toggle {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--cinnabar-text);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.bio-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.bio-tag {
+  padding: 1px 6px;
+  border: 1px solid var(--line-soft);
+  border-radius: 2px;
+  color: var(--mute);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+.bio-battles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.08);
+}
+.bio-battles-label {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+  margin-right: 2px;
+}
+.bio-battles-note {
+  flex: 1 1 100%;
+  order: 3;
+  font-size: 8.5px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: rgba(156, 144, 123, 0.88);
+}
+.bio-battle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 0 9px;
+  border: 1px solid var(--line-soft);
+  border-radius: 3px;
+  color: var(--paper-dim);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.bio-battle:active { border-color: var(--line); color: var(--gold-bright); }
+.bio-battle i {
+  font-family: var(--num);
+  font-style: normal;
+  font-size: 9.5px;
+  color: var(--mute);
+}
+
+/* 全部将帅 */
+.gen-all { margin-top: 26px; }
+.gen-all-head { align-items: center; }
+.gen-all-toggle {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: rgba(233, 223, 200, 0.03);
+  color: var(--gold-bright);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.gen-all-toggle:active { background: rgba(201, 162, 39, 0.1); }
+.gen-all-body { margin-top: 4px; }
+.gen-toolbar { margin-top: 0; }
+.gen-toolbar .seg-btn { min-height: 44px; }

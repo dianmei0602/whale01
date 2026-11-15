@@ -1,0 +1,299 @@
+/* ============================================================
+   stats.css — M3 统计：柱状 / 环形 / 折线 / 胜负与以少胜多
+   ============================================================ */
+
+.stats-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ink-0);
+}
+.st-body {
+  padding: 4px calc(18px + var(--safe-r)) calc(28px + var(--safe-b)) calc(18px + var(--safe-l));
+}
+
+/* ---------------- 概览 ---------------- */
+.st-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+.st-ov-item {
+  padding: 11px 8px 9px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(201, 162, 39, 0.11), transparent 66%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.8), rgba(21, 18, 14, 0.8));
+  text-align: center;
+}
+.st-ov-item b {
+  display: block;
+  font-family: var(--num);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--gold-bright);
+}
+.st-ov-item i {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+/* ---------------- 面板 ---------------- */
+.st-panel {
+  position: relative;
+  margin-top: 14px;
+  padding: 15px 14px 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 90% at 92% 0%, rgba(201, 162, 39, 0.07), transparent 60%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.72), rgba(21, 18, 14, 0.72));
+}
+.st-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--paper);
+}
+.st-title span {
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+
+/* ---------------- 柱状图 ---------------- */
+.st-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 132px;
+  padding-top: 4px;
+}
+.st-bar-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.st-bar-count {
+  font-family: var(--num);
+  font-size: 9.5px;
+  line-height: 1.2;
+  color: var(--paper-dim);
+  margin-bottom: 2px;
+}
+.st-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.16);
+}
+.st-bar {
+  display: block;
+  width: 72%;
+  min-height: 4px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--era, #C9A227), rgba(201, 162, 39, 0.22));
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.12);
+  animation: st-bar-in 620ms var(--ease-out) both;
+  transform-origin: bottom center;
+}
+@keyframes st-bar-in { from { transform: scaleY(0.05); opacity: 0.4; } to { transform: none; opacity: 1; } }
+html[data-motion="reduce"] .st-bar { animation: none; }
+.st-bar-label {
+  margin-top: 5px;
+  font-size: 7.5px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
+}
+
+/* ---------------- 环形图 ---------------- */
+.st-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.st-donut {
+  flex: 0 0 148px;
+  width: 148px;
+  height: 148px;
+}
+.st-donut-seg { transition: stroke-width var(--dur) var(--ease); }
+.st-donut-num {
+  fill: var(--gold-bright);
+  font-family: var(--num);
+  font-size: 30px;
+  font-weight: 600;
+}
+.st-donut-label {
+  fill: var(--mute);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.st-legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.st-legend li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+}
+.st-legend li i {
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+}
+.st-legend li span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-legend li b { font-family: var(--num); font-size: 12px; color: var(--paper); font-weight: 600; }
+.st-legend li em {
+  font-family: var(--num);
+  font-size: 9px;
+  font-style: normal;
+  color: var(--mute);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* ---------------- 折线图 ---------------- */
+.st-chart-wrap { margin-top: 2px; }
+.st-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.st-grid line { stroke: rgba(201, 162, 39, 0.12); stroke-width: 1; }
+.st-line {
+  fill: none;
+  stroke: #D0604F;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(201, 75, 58, 0.4));
+}
+.st-dot { fill: var(--gold-bright); stroke: rgba(14, 12, 10, 0.8); stroke-width: 1; }
+.st-axis text {
+  fill: rgba(156, 144, 123, 0.95);
+  font-family: var(--num);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+.st-chart-caption {
+  margin-top: 4px;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: rgba(156, 144, 123, 0.95);
+}
+
+/* ---------------- 胜负 / 以少胜多 ---------------- */
+.st-stack {
+  display: flex;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(233, 223, 200, 0.06);
+}
+.st-stack-seg {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  transition: width 500ms var(--ease-out);
+}
+.st-outcome-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+}
+.st-outcome-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--paper-dim);
+}
+.st-outcome-legend li i {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+}
+.st-outcome-legend li b { font-family: var(--num); font-size: 12px; color: var(--paper); }
+.st-outcome-legend li em { font-style: normal; font-size: 9px; color: var(--mute); }
+.st-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.st-highlight {
+  padding: 10px 11px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background: rgba(14, 12, 10, 0.3);
+}
+.st-highlight b {
+  font-family: var(--num);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--gold-bright);
+}
+.st-highlight span {
+  margin-left: 5px;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--paper-dim);
+}
+.st-highlight em {
+  display: block;
+  margin-top: 3px;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.6;
+  color: var(--mute);
+}
+.st-outcome-note {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.08);
+  font-size: 9.5px;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+}
+.st-foot {
+  margin: 20px 2px 0;
+  font-size: 9.5px;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+  color: rgba(156, 144, 123, 0.88);
+}

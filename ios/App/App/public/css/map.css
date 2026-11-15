@@ -1,0 +1,590 @@
+﻿/* ============================================================
+   map.css — M3 战役地图：示意底图 / 点位聚合 / 筛选 / 摘要卡
+   ============================================================ */
+
+.map-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ink-0);
+}
+
+.map-body {
+  padding: 2px calc(16px + var(--safe-r)) calc(26px + var(--safe-b)) calc(16px + var(--safe-l));
+}
+
+/* ---------------- 筛选 ---------------- */
+.map-filters { margin-top: 2px; }
+.map-filter-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 4px 0 6px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.m-chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 11px;
+  border: 1px solid var(--line-soft);
+  border-radius: 3px;
+  background: rgba(233, 223, 200, 0.025);
+  color: var(--paper-dim);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  scroll-snap-align: center;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.m-chip .m-chip-idx {
+  font-family: var(--num);
+  font-size: 9px;
+  color: var(--mute);
+  letter-spacing: 0.04em;
+}
+.m-chip.is-active {
+  border-color: rgba(224, 192, 96, 0.55);
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.05));
+  color: var(--gold-bright);
+  box-shadow: inset 0 0 0 1px rgba(224, 192, 96, 0.12);
+}
+.m-chip.is-active .m-chip-idx { color: var(--gold); }
+.m-chip:active { transform: scale(0.97); }
+
+.map-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 2px 2px;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+}
+.map-count b {
+  font-family: var(--num);
+  font-size: 17px;
+  color: var(--gold-bright);
+  letter-spacing: 0.02em;
+  margin-right: 3px;
+}
+.map-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  font-size: 9.5px;
+  color: rgba(156, 144, 123, 0.95);
+}
+.map-legend .lg {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+.map-legend .lg:first-child { margin-left: 0; }
+.map-legend .lg-dot { background: var(--cinnabar-bright); box-shadow: 0 0 6px rgba(201, 75, 58, 0.6); }
+.map-legend .lg-ring {
+  background: transparent;
+  border: 1.5px solid var(--gold-bright);
+  box-shadow: 0 0 6px rgba(224, 192, 96, 0.45);
+}
+.map-legend .lg-out {
+  background: transparent;
+  border: 1.5px dashed var(--bronze);
+}
+
+/* ---------------- 地图画布 ---------------- */
+.map-frame {
+  position: relative;
+  margin: 8px calc(-16px - var(--safe-r)) 0 calc(-16px - var(--safe-l));
+  aspect-ratio: 3200 / 2073;
+  background:
+    radial-gradient(80% 80% at 50% 40%, rgba(201, 162, 39, 0.05), transparent 66%),
+    #0C0A08;
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.map-frame:active { cursor: grabbing; }
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.map-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.map-grid-line { stroke: rgba(201, 162, 39, 0.09); stroke-width: 1; }
+.map-grid-label {
+  fill: rgba(156, 144, 123, 0.8);
+  font-family: var(--num);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+}
+.map-land { fill-rule: evenodd; }
+.map-islands { fill-rule: evenodd; }
+
+.map-inset-rect {
+  fill: rgba(14, 12, 10, 0.55);
+  stroke: rgba(201, 162, 39, 0.22);
+  stroke-width: 1;
+}
+.map-inset-title { fill: rgba(233, 223, 200, 0.55); font-size: 17px; letter-spacing: 0.18em; }
+.map-inset-sub { fill: rgba(156, 144, 123, 0.8); font-size: 12px; letter-spacing: 0.18em; }
+.map-inset-dots circle { fill: rgba(201, 162, 39, 0.5); }
+.map-inset-dash { fill: none; stroke: rgba(111, 123, 102, 0.4); stroke-width: 1; stroke-dasharray: 3 4; }
+
+/* 点位 */
+.map-points { cursor: pointer; }
+.map-points .mp { outline: none; }
+.mp-hit { fill: transparent; pointer-events: all; }
+.mp-halo { fill: rgba(201, 75, 58, 0.15); }
+.mp-dot {
+  fill: var(--cinnabar-bright);
+  stroke: rgba(14, 12, 10, 0.85);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transition: fill var(--dur) var(--ease);
+}
+.mp-ring {
+  fill: none;
+  stroke: var(--gold-bright);
+  opacity: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+.mp-deciding .mp-halo { fill: rgba(224, 192, 96, 0.16); }
+.mp-deciding .mp-dot { fill: var(--cinnabar-bright); }
+.mp-outside .mp-dot {
+  fill: #1A1712;
+  stroke: var(--bronze);
+  stroke-dasharray: 2.4 2;
+}
+.mp-outside .mp-halo { fill: rgba(111, 123, 102, 0.1); }
+.mp.is-selected .mp-dot { fill: var(--gold-bright); }
+.mp.is-selected .mp-halo {
+  fill: rgba(224, 192, 96, 0.32);
+  animation: mp-pulse 1.9s var(--ease) infinite;
+}
+@keyframes mp-pulse {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 1; }
+}
+.mp:focus-visible .mp-halo,
+.mp-cluster:focus-visible .mp-cluster-glow {
+  fill: rgba(224, 192, 96, 0.32);
+  stroke: var(--gold-bright);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+
+/* 聚合出现动画（由 JS 在筛选/缩放停止后加 points-anim 触发） */
+.map-points.points-anim .mp {
+  animation: mp-in 240ms var(--ease-out) both;
+}
+.map-points.points-anim .mp-cluster {
+  animation: mp-pop 280ms var(--ease-out) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes mp-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes mp-pop {
+  from { opacity: 0; transform: scale(0.55); }
+  to { opacity: 1; transform: none; }
+}
+html[data-motion="reduce"] .map-points.points-anim .mp,
+html[data-motion="reduce"] .map-points.points-anim .mp-cluster,
+html[data-motion="reduce"] .mp.is-selected .mp-halo {
+  animation: none;
+}
+
+.mp-cluster { cursor: pointer; outline: none; }
+.mp-cluster-glow { fill: rgba(201, 75, 58, 0.16); }
+.mp-cluster-bg {
+  fill: rgba(178, 58, 46, 0.88);
+  stroke: rgba(224, 192, 96, 0.65);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.mp-cluster text {
+  fill: #FBEFD8;
+  font-family: var(--num);
+  font-weight: 600;
+  pointer-events: none;
+}
+.mp-cluster:active .mp-cluster-bg { fill: rgba(201, 75, 58, 1); }
+
+/* 控件 */
+.map-controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.map-ctl {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(14, 12, 10, 0.82);
+  color: var(--paper-dim);
+  font-size: 20px;
+  line-height: 1;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.map-ctl:active { color: var(--gold-bright); border-color: var(--line-strong); }
+.map-zoom {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 3;
+  padding: 2px 7px;
+  border: 1px solid var(--line-soft);
+  border-radius: 2px;
+  background: rgba(14, 12, 10, 0.7);
+  color: var(--gold);
+  font-family: var(--num);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+.map-hint {
+  margin: 8px 2px 0;
+  font-size: 10px;
+  line-height: 1.7;
+  letter-spacing: 0.05em;
+  color: rgba(156, 144, 123, 0.95);
+}
+.map-hint b {
+  color: var(--gold);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+/* ---------------- 点位列表 ---------------- */
+.map-list-wrap {
+  margin-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 12px;
+}
+.map-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.mlh-title {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--paper-dim);
+}
+.mlh-title b {
+  font-family: var(--num);
+  font-size: 15px;
+  color: var(--gold-bright);
+  margin: 0 2px;
+}
+.mlh-toggle {
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--cinnabar-text);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.map-list { display: flex; flex-direction: column; }
+.map-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 54px;
+  padding: 7px 2px;
+  border-bottom: 1px dashed rgba(233, 223, 200, 0.07);
+  transition: background var(--dur) var(--ease);
+}
+.map-row:active { background: rgba(233, 223, 200, 0.03); }
+.mr-year {
+  flex: 0 0 48px;
+  font-family: var(--num);
+  font-size: 13px;
+  color: var(--paper-dim);
+  letter-spacing: 0.02em;
+}
+.mr-main { flex: 1; min-width: 0; }
+.mr-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mr-deciding {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 4px;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  border-radius: 2px;
+  color: var(--gold-bright);
+  font-size: 8.5px;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  vertical-align: 1px;
+}
+.mr-sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 10.5px;
+  color: var(--mute);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mr-era {
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border: 1px solid var(--era, var(--line-soft));
+  border-radius: 2px;
+  color: var(--paper-dim);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+}
+
+/* ---------------- 摘要卡 ---------------- */
+.map-popup {
+  position: fixed;
+  left: calc(12px + var(--safe-l));
+  right: calc(12px + var(--safe-r));
+  bottom: calc(80px + var(--safe-b));
+  z-index: 55;
+  padding: 14px 15px 13px;
+  border: 1px solid rgba(201, 162, 39, 0.38);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(201, 162, 39, 0.12), transparent 60%),
+    linear-gradient(165deg, #1F1A14 0%, #15120E 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.66), inset 0 1px 0 rgba(233, 223, 200, 0.06);
+  transform: translateY(14px);
+  opacity: 0;
+  transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+}
+.map-popup.is-open { opacity: 1; transform: none; }
+.map-popup[hidden] { display: none; }
+.map-popup-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--mute);
+}
+.map-popup-close svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.mp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding-right: 26px;
+}
+.mp-year {
+  font-family: var(--num);
+  font-size: 25px;
+  font-weight: 600;
+  color: var(--gold-bright);
+  line-height: 1;
+}
+.mp-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--paper);
+}
+.mp-era {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.mp-sides {
+  margin-top: 5px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--paper-dim);
+}
+.mp-vs { color: var(--mute); font-size: 10px; }
+.mp-result {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgba(233, 223, 200, 0.86);
+}
+.mp-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(233, 223, 200, 0.1);
+}
+.mp-loc {
+  flex: 1;
+  min-width: 0;
+  font-size: 10.5px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+}
+.mp-outside-tag {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 0 4px;
+  border: 1px dashed rgba(111, 123, 102, 0.7);
+  border-radius: 2px;
+  color: var(--bronze-text);
+  font-size: 9px;
+  font-style: normal;
+}
+.mp-foot .btn { flex: 0 0 auto; min-height: 44px; padding: 0 14px; font-size: 11.5px; }
+
+/* ---------------- 横屏地图（沉浸式：左栏筛选 / 右侧地图） ---------------- */
+@media (orientation: landscape) and (max-height: 560px) {
+  .map-page {
+    max-width: none !important;
+    height: calc(100dvh - 76px - var(--safe-b));
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .map-page .page-head {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding-top: calc(2px + var(--safe-t));
+    padding-bottom: 2px;
+    position: relative;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .map-page .head-title { font-size: 14px; letter-spacing: 0.14em; }
+  .map-page .head-title .head-sub { display: none; }
+  .map-page .page-head .icon-btn { width: 40px; height: 40px; }
+
+  .map-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 228px minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 0 10px calc(4px + var(--safe-b));
+  }
+  .map-filters {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .map-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 1px 0 3px;
+  }
+  .m-chip {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+  .map-meta {
+    grid-column: 1;
+    grid-row: 2;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    padding: 1px 0 3px;
+    font-size: 9px;
+  }
+  .map-legend { display: none; }
+  .map-count b { font-size: 14px; }
+  .map-frame {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    margin: 0;
+    height: 100%;
+    aspect-ratio: auto;
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+  }
+  .map-hint { display: none; }
+  .map-controls { top: 8px; right: 8px; }
+  .map-ctl { width: 38px; height: 38px; font-size: 18px; }
+  .map-zoom { top: 8px; left: 8px; }
+  .map-list-wrap {
+    grid-column: 1;
+    grid-row: 3;
+    min-height: 0;
+    margin: 2px 0 0;
+    padding-top: 4px;
+    overflow-y: auto;
+    border-top: 1px solid var(--line-soft);
+  }
+  .map-list-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 2px 0;
+    background: var(--ink-0);
+  }
+  .map-row { min-height: 42px; padding: 4px 2px; }
+  .map-list-head { align-items: center; gap: 6px; padding: 2px 0; }
+  .mlh-title { font-size: 10px; white-space: nowrap; }
+  .mlh-toggle { min-height: 34px; padding: 0 4px; font-size: 10px; white-space: nowrap; }
+  .mr-year { flex-basis: 42px; font-size: 12px; }
+  .mr-name { font-size: 12.5px; }
+  .mr-sub { display: none; }
+  .mr-era { display: none; }
+  .map-popup {
+    left: calc(258px + var(--safe-l));
+    right: calc(14px + var(--safe-r));
+    bottom: calc(82px + var(--safe-b));
+    max-width: 520px;
+    margin-left: auto;
+  }
+}
+
+
+

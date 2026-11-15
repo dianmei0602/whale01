@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-font="std" data-motion="full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0E0C0A">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="山河战纪：从涿鹿到加勒万，一部装在口袋里的中国战史时间轴。12 期 120 场战役，全量离线阅读。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="山河战纪">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon-180.png">
+  <title>山河战纪 · 中国战史时间轴</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/timeline.css">
+  <link rel="stylesheet" href="css/detail.css">
+  <link rel="stylesheet" href="css/search.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/generals.css">
+  <link rel="stylesheet" href="css/factions.css">
+  <link rel="stylesheet" href="css/graph.css">
+  <link rel="stylesheet" href="css/stats.css">
+  <link rel="stylesheet" href="css/motion.css">
+</head>
+<body data-chrome="full" data-route="timeline">
+  <a class="skip-link" href="#view">跳到主内容</a>
+  <div id="view" class="view" role="main" tabindex="-1"></div>
+
+  <nav class="tabbar" id="tabbar" aria-label="主导航">
+    <a class="tab" data-tab="timeline" href="#/">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.5h10v17H7z" opacity=".55"/><path d="M9.5 3.5v17M14.5 3.5v17M7 8h10M7 12.5h10M7 17h10"/></svg>
+      <span>时间轴</span>
+    </a>
+    <a class="tab" data-tab="map" href="#/map">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18.5 8.5 15l4 2.5L21 13v3.5L12.5 21 3 18.5Z" opacity=".5"/><path d="M3 8.5 9 5l5 3 7-3.5v10L14 18l-5-3-6 3.5z"/><path d="M8 5v7M15 8v6"/></svg>
+      <span>地图</span>
+    </a>
+    <a class="tab" data-tab="factions" href="#/factions">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20V9.5L12 5l6 4.5V20"/><path d="M9 20v-5.5h6V20"/><path d="M4 20h16" opacity=".55"/><path d="M12 5V3"/></svg>
+      <span>势力</span>
+    </a>
+    <a class="tab" data-tab="generals" href="#/generals">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5z"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/><path d="M14.5 4.5v5h4.5" opacity=".5"/></svg>
+      <span>名将</span>
+    </a>
+    <a class="tab" data-tab="stats" href="#/stats">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9M9 20V5M14 20v-8M19 20V7"/><path d="M3 20h18" opacity=".55"/></svg>
+      <span>统计</span>
+    </a>
+    <a class="tab" data-tab="more" href="#/more">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.4" fill="currentColor" stroke="none"/><path d="M3 6.5h18M3 17.5h18" opacity=".45"/></svg>
+      <span>更多</span>
+    </a>
+  </nav>
+
+  <div id="overlay-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="boot" class="boot" aria-hidden="true">
+    <div class="boot-inner">
+      <span class="boot-seal">山</span>
+      <span class="boot-title">山河战纪</span>
+      <span class="boot-line" aria-hidden="true"></span>
+      <span class="boot-sub">展卷 · 从涿鹿到加勒万</span>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        try {
+          navigator.serviceWorker.register('sw.js').catch(function () { /* PWA 离线能力可选，失败静默 */ });
+        } catch (err) { /* ignore */ }
+      });
+    }
+  </script>
+</body>
+</html>

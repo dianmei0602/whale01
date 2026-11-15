@@ -1,0 +1,308 @@
+[
+  {
+    "id": "huang-di--jiang-shang",
+    "source": "huang-di",
+    "target": "jiang-shang",
+    "type": "世交",
+    "note": "姜姓出自炎帝，炎黄二族由阪泉之战后结盟，世代共奉华夏；太公望为姜姓苗裔，此属族群渊源，非同时之人。",
+    "eraIds": ["era-01"],
+    "strength": 1
+  },
+  {
+    "id": "sun-wu--wu-zi-xu",
+    "source": "sun-wu",
+    "target": "wu-zi-xu",
+    "type": "举荐",
+    "note": "伍子胥在吴王阖闾前力荐孙武，孙武得以见用；后二人共谋破楚，同入郢都。《吴越春秋》载七荐之说。",
+    "eraIds": ["era-02"],
+    "strength": 3
+  },
+  {
+    "id": "sun-wu--sun-bin",
+    "source": "sun-wu",
+    "target": "sun-bin",
+    "type": "世交",
+    "note": "孙膑为孙武后世子孙，世传其兵法；银雀山汉墓同出《孙子兵法》《孙膑兵法》，可见其学脉相承。",
+    "eraIds": ["era-02", "era-03"],
+    "strength": 2
+  },
+  {
+    "id": "sun-bin--tian-dan",
+    "source": "sun-bin",
+    "target": "tian-dan",
+    "type": "同僚",
+    "note": "同为齐国名将：孙膑以桂陵、马陵破魏，田单以即墨火牛复国，前后相隔约六十年，未及共事。",
+    "eraIds": ["era-03"],
+    "strength": 2
+  },
+  {
+    "id": "bai-qi--wang-jian",
+    "source": "bai-qi",
+    "target": "wang-jian",
+    "type": "同僚",
+    "note": "同为秦国名将，白起以野战歼灭著称、王翦以持重灭国见长；白起卒时王翦尚未柄兵，属前后相承。",
+    "eraIds": ["era-03"],
+    "strength": 2
+  },
+  {
+    "id": "wang-jian--li-mu",
+    "source": "wang-jian",
+    "target": "li-mu",
+    "type": "对手",
+    "note": "前229年王翦攻赵，秦以反间使赵王迁杀李牧；李牧既死，王翦遂破邯郸灭赵，二人是战国末期秦赵对决的主角。",
+    "eraIds": ["era-03"],
+    "strength": 3
+  },
+  {
+    "id": "xiang-yu--han-xin",
+    "source": "xiang-yu",
+    "target": "han-xin",
+    "type": "对手",
+    "note": "韩信早年事项羽，官不过郎中；后归刘邦，垓下设十面埋伏破楚，项羽自刎乌江，二人是楚汉兴亡的对手。",
+    "eraIds": ["era-04"],
+    "strength": 3
+  },
+  {
+    "id": "wei-qing--huo-qu-bing",
+    "source": "wei-qing",
+    "target": "huo-qu-bing",
+    "type": "舅甥",
+    "note": "卫青为霍去病之舅，二人同出卫氏，皆以外戚领兵，分道出击匈奴，后世并称卫霍。",
+    "eraIds": ["era-05"],
+    "strength": 3
+  },
+  {
+    "id": "huo-qu-bing--ban-chao",
+    "source": "huo-qu-bing",
+    "target": "ban-chao",
+    "type": "同僚",
+    "note": "同为汉朝经略西北的名将，霍去病开河西、班超通西域，前后相隔约二百年，未及共事，然皆以孤军远略著称。",
+    "eraIds": ["era-05"],
+    "strength": 1
+  },
+  {
+    "id": "cao-cao--zhou-yu",
+    "source": "cao-cao",
+    "target": "zhou-yu",
+    "type": "对手",
+    "note": "208年赤壁之战，周瑜率孙刘联军以火攻破曹操水军，曹操北还，三分之势由此奠定。",
+    "eraIds": ["era-05"],
+    "strength": 3
+  },
+  {
+    "id": "cao-cao--zhu-ge-liang",
+    "source": "cao-cao",
+    "target": "zhu-ge-liang",
+    "type": "对手",
+    "note": "诸葛亮促成孙刘联盟，赤壁共抗曹操；此后蜀汉北伐中原，与曹魏长期对峙。",
+    "eraIds": ["era-05", "era-06"],
+    "strength": 2
+  },
+  {
+    "id": "cao-cao--si-ma-yi",
+    "source": "cao-cao",
+    "target": "si-ma-yi",
+    "type": "君臣",
+    "note": "司马懿于曹操时入仕为文学掾，历事魏四代；曹操用其谋而防其志，二人是魏国创业与守成的两代人。",
+    "eraIds": ["era-05", "era-06"],
+    "strength": 3
+  },
+  {
+    "id": "zhou-yu--zhu-ge-liang",
+    "source": "zhou-yu",
+    "target": "zhu-ge-liang",
+    "type": "盟友",
+    "note": "赤壁战前诸葛亮出使江东，与周瑜共促孙刘联盟；战后两家在荆州归属上渐生嫌隙。",
+    "eraIds": ["era-05"],
+    "strength": 3
+  },
+  {
+    "id": "zhou-yu--lu-xun",
+    "source": "zhou-yu",
+    "target": "lu-xun",
+    "type": "同僚",
+    "note": "先后为东吴军事支柱：周瑜主赤壁、陆逊主夷陵，陆逊入孙权幕府时周瑜尚在，二人同朝为将。",
+    "eraIds": ["era-05", "era-06"],
+    "strength": 2
+  },
+  {
+    "id": "zhu-ge-liang--si-ma-yi",
+    "source": "zhu-ge-liang",
+    "target": "si-ma-yi",
+    "type": "对手",
+    "note": "231至234年诸葛亮屡出祁山，司马懿坚壁不战、以逸待劳；五丈原对峙百余日，诸葛亮病卒军中。",
+    "eraIds": ["era-06"],
+    "strength": 3
+  },
+  {
+    "id": "lu-xun--zhu-ge-liang",
+    "source": "lu-xun",
+    "target": "zhu-ge-liang",
+    "type": "盟友",
+    "note": "夷陵之战后蜀吴复盟，陆逊与诸葛亮分主两国军政，共维联盟以抗曹魏，二人有书信往还。",
+    "eraIds": ["era-06"],
+    "strength": 2
+  },
+  {
+    "id": "lu-xun--si-ma-yi",
+    "source": "lu-xun",
+    "target": "si-ma-yi",
+    "type": "对手",
+    "note": "魏吴对峙中陆逊主东线、司马懿主西线，各为两国军事支柱；二人未正面交锋，属同一战局的隔线对手。",
+    "eraIds": ["era-06"],
+    "strength": 1
+  },
+  {
+    "id": "wei-rui--chen-qing-zhi",
+    "source": "wei-rui",
+    "target": "chen-qing-zhi",
+    "type": "同僚",
+    "note": "同为梁武帝倚重的将领：韦睿以钟离水战成名，陈庆之继以七千白袍北伐，同朝为将而先后相去数年。",
+    "eraIds": ["era-07"],
+    "strength": 2
+  },
+  {
+    "id": "li-shi-min--li-jing",
+    "source": "li-shi-min",
+    "target": "li-jing",
+    "type": "君臣",
+    "note": "李靖为唐初方面统帅，李世民为秦王、后为帝；虎牢平中原、阴山灭突厥，君臣共成唐初武功。",
+    "eraIds": ["era-08"],
+    "strength": 3
+  },
+  {
+    "id": "li-jing--guo-zi-yi",
+    "source": "li-jing",
+    "target": "guo-zi-yi",
+    "type": "同僚",
+    "note": "同为唐朝名将：李靖佐唐初统一、郭子仪平安史之乱，前后相去百余年，未及共事，后世并称唐之柱石。",
+    "eraIds": ["era-08"],
+    "strength": 1
+  },
+  {
+    "id": "yue-fei--han-shi-zhong",
+    "source": "yue-fei",
+    "target": "han-shi-zhong",
+    "type": "同僚",
+    "note": "南宋中兴名将：1140年岳飞郾城大捷、韩世忠自淮东出击，两路呼应；二人皆反对和议。",
+    "eraIds": ["era-09"],
+    "strength": 3
+  },
+  {
+    "id": "yue-fei--yu-yun-wen",
+    "source": "yue-fei",
+    "target": "yu-yun-wen",
+    "type": "同僚",
+    "note": "同为南宋抗金名臣，岳飞殉国时虞允文尚未入仕；两代相接，未及共事，而以采石之功续其未竟之志。",
+    "eraIds": ["era-09"],
+    "strength": 1
+  },
+  {
+    "id": "han-shi-zhong--yu-yun-wen",
+    "source": "han-shi-zhong",
+    "target": "yu-yun-wen",
+    "type": "同僚",
+    "note": "同朝为南宋臣：韩世忠晚年反对和议、杜门谢客，虞允文于1161年采石御敌，属前后辈名将。",
+    "eraIds": ["era-09"],
+    "strength": 1
+  },
+  {
+    "id": "xu-da--chang-yu-chun",
+    "source": "xu-da",
+    "target": "chang-yu-chun",
+    "type": "同僚",
+    "note": "明初开国双璧：徐达持重统全局、常遇春勇猛为先锋，同破陈友谅、同北伐灭元，时人并称徐常。",
+    "eraIds": ["era-10"],
+    "strength": 3
+  },
+  {
+    "id": "xu-da--qi-ji-guang",
+    "source": "xu-da",
+    "target": "qi-ji-guang",
+    "type": "同僚",
+    "note": "同为明朝名将：徐达开国北伐、戚继光抗倭练兵，前后相隔百余年，未及共事，同为明军典范。",
+    "eraIds": ["era-10"],
+    "strength": 1
+  },
+  {
+    "id": "qi-ji-guang--li-ru-song",
+    "source": "qi-ji-guang",
+    "target": "li-ru-song",
+    "type": "同僚",
+    "note": "同为万历朝边将：戚继光镇蓟、李如松镇辽，未及共事；平壤之役中戚家军旧部吴惟忠率先登城。",
+    "eraIds": ["era-10"],
+    "strength": 2
+  },
+  {
+    "id": "qi-ji-guang--yuan-chong-huan",
+    "source": "qi-ji-guang",
+    "target": "yuan-chong-huan",
+    "type": "同僚",
+    "note": "同为明朝边将：戚继光练兵东南、袁崇焕守辽西，前后相隔一代，未及共事，皆以练兵筑城见长。",
+    "eraIds": ["era-10"],
+    "strength": 1
+  },
+  {
+    "id": "li-ru-song--yuan-chong-huan",
+    "source": "li-ru-song",
+    "target": "yuan-chong-huan",
+    "type": "同僚",
+    "note": "同为明末辽东战事中的将领与督师，李如松卒时袁崇焕尚幼；二人前后相承，未及共事。",
+    "eraIds": ["era-10"],
+    "strength": 1
+  },
+  {
+    "id": "peng-de-huai--su-yu",
+    "source": "peng-de-huai",
+    "target": "su-yu",
+    "type": "同僚",
+    "note": "解放军名将：1950年中央曾拟由粟裕指挥入朝部队，后因其病未行、彭德怀受命，二人同为大战役指挥者。",
+    "eraIds": ["era-11", "era-12"],
+    "strength": 3
+  },
+  {
+    "id": "peng-de-huai--lin-biao",
+    "source": "peng-de-huai",
+    "target": "lin-biao",
+    "type": "同僚",
+    "note": "解放军元帅：抗战分任八路军副总指挥与一一五师师长，解放战争分领一野、四野，抗美援朝由彭德怀挂帅。",
+    "eraIds": ["era-11", "era-12"],
+    "strength": 3
+  },
+  {
+    "id": "peng-de-huai--liu-bo-cheng",
+    "source": "peng-de-huai",
+    "target": "liu-bo-cheng",
+    "type": "同僚",
+    "note": "解放军元帅：抗战中彭德怀主持八路军总部、刘伯承率一二九师，解放战争分领一野、二野。",
+    "eraIds": ["era-11"],
+    "strength": 3
+  },
+  {
+    "id": "su-yu--lin-biao",
+    "source": "su-yu",
+    "target": "lin-biao",
+    "type": "同僚",
+    "note": "解放战争中华东、东北两大野战军的指挥者，1948年辽沈与淮海两役几乎同时展开，彼此战略配合。",
+    "eraIds": ["era-11"],
+    "strength": 2
+  },
+  {
+    "id": "su-yu--liu-bo-cheng",
+    "source": "su-yu",
+    "target": "liu-bo-cheng",
+    "type": "同僚",
+    "note": "淮海战役中粟裕指挥华东野战军、刘伯承参与中原野战军指挥，两军协同围歼国民党军重兵集团。",
+    "eraIds": ["era-11"],
+    "strength": 2
+  },
+  {
+    "id": "lin-biao--liu-bo-cheng",
+    "source": "lin-biao",
+    "target": "liu-bo-cheng",
+    "type": "同僚",
+    "note": "解放军元帅：抗战分任一一五师、一二九师师长，解放战争分领四野、二野，同为战略决战主要指挥者。",
+    "eraIds": ["era-11"],
+    "strength": 2
+  }
+]

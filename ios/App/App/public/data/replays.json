@@ -1,0 +1,2110 @@
+[
+  {
+    "battleId": "muye-1046bc",
+    "title": "牧野之战 · 推演",
+    "subtitle": "阵前倒戈与商亡周兴",
+    "terrain": "plain",
+    "summary": "约公元前1046年，周武王率诸侯联军东进至牧野，与商纣王的大军决战。商军多为临时征发的奴隶与战俘，接战即倒戈相向，商军崩溃，纣王自焚，商亡周兴。此战是商周更替的关键一役。",
+    "stages": [
+      {
+        "title": "周师东进",
+        "narration": "周武王率战车三百乘、虎贲三千、甲士四万五千东进，诸侯联军会于孟津后北上。商军主力集结于朝歌郊外，号称七十万，多为临时征发之人。",
+        "duration": 6,
+        "units": [
+          { "id": "zhou", "label": "周军主力", "side": "A", "pos": [22, 55], "kind": "infantry" },
+          { "id": "zhouche", "label": "周军战车", "side": "A", "pos": [28, 62], "kind": "cavalry" },
+          { "id": "shang", "label": "商军主力", "side": "B", "pos": [70, 48], "kind": "infantry" },
+          { "id": "chaoge", "label": "朝歌", "side": "N", "pos": [90, 42], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [24, 55], "to": [40, 54], "kind": "advance", "label": "东进牧野" }
+        ],
+        "focus": [45, 52, 24]
+      },
+      {
+        "title": "牧野列阵",
+        "narration": "两军在牧野列阵。周军以战车与虎贲为前锋，阵容严整；商军人多而杂，由奴隶、战俘临时编成，士气不齐。商纣王亲临阵前督战。周军前锋已逼近阵前。",
+        "duration": 5,
+        "units": [
+          { "id": "zhou", "label": "周军主力", "side": "A", "pos": [48, 56], "kind": "infantry" },
+          { "id": "zhouche", "label": "周军战车", "side": "A", "pos": [52, 60], "kind": "cavalry" },
+          { "id": "shang", "label": "商军主力", "side": "B", "pos": [62, 48], "kind": "infantry" },
+          { "id": "chaoge", "label": "朝歌", "side": "N", "pos": [90, 42], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [52, 56], "to": [60, 50], "kind": "attack", "label": "周军前锋压上" }
+        ],
+        "focus": [55, 52, 16]
+      },
+      {
+        "title": "前徒倒戈",
+        "narration": "两军接战，商军前列的奴隶与战俘掉转戈矛，反身冲击本阵，史称前徒倒戈。商军阵形自乱，周军车徒趁势猛攻，商军全线溃散。商军阵线随即瓦解。",
+        "duration": 6,
+        "units": [
+          { "id": "zhou", "label": "周军主力", "side": "A", "pos": [55, 52], "kind": "infantry" },
+          { "id": "zhouche", "label": "周军战车", "side": "A", "pos": [60, 54], "kind": "cavalry" },
+          { "id": "shang", "label": "商军主力", "side": "B", "pos": [58, 44], "kind": "infantry" },
+          { "id": "chaoge", "label": "朝歌", "side": "N", "pos": [90, 42], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [62, 50], "to": [56, 44], "kind": "attack", "label": "倒戈反冲" },
+          { "from": [55, 52], "to": [62, 46], "kind": "advance", "label": "周军进击" }
+        ],
+        "focus": [58, 48, 14]
+      },
+      {
+        "title": "商军崩溃",
+        "narration": "商军溃散，纣王退入朝歌，登鹿台自焚而死。周军进入朝歌，商朝灭亡。武王封纣子武庚于殷，以安抚商朝遗民。商朝近六百年的统治就此结束。",
+        "duration": 6,
+        "units": [
+          { "id": "zhou", "label": "周军主力", "side": "A", "pos": [70, 46], "kind": "infantry" },
+          { "id": "zhouche", "label": "周军战车", "side": "A", "pos": [74, 46], "kind": "cavalry" },
+          { "id": "shang", "label": "商军残部", "side": "B", "pos": [80, 44], "kind": "infantry" },
+          { "id": "chaoge", "label": "朝歌", "side": "N", "pos": [90, 42], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [72, 46], "to": [84, 42], "kind": "retreat", "label": "商军溃退" }
+        ],
+        "focus": [80, 44, 18]
+      },
+      {
+        "title": "西周肇建",
+        "narration": "牧野一战后，周武王班师镐京，分封同姓与功臣，确立封建宗法秩序。此战是中国历史上以新兴取代腐朽的著名战例，商周更替由此完成。",
+        "duration": 5,
+        "units": [
+          { "id": "zhou", "label": "周军主力", "side": "A", "pos": [80, 45], "kind": "infantry" },
+          { "id": "zhouche", "label": "周军战车", "side": "A", "pos": [84, 45], "kind": "cavalry" },
+          { "id": "shang", "label": "商朝遗民", "side": "B", "pos": [84, 40], "kind": "infantry" },
+          { "id": "chaoge", "label": "朝歌", "side": "N", "pos": [92, 40], "kind": "city" }
+        ],
+        "arrows": [],
+        "focus": [84, 43, 20]
+      }
+    ]
+  },
+  {
+    "battleId": "chengpu-632bc",
+    "title": "城濮之战 · 推演",
+    "subtitle": "退避三舍与虎皮蒙马",
+    "terrain": "plain",
+    "summary": "公元前632年，晋文公履行退避三舍之诺，诱楚军深入城濮。晋军先以虎皮蒙马冲溃陈蔡之师，再以佯退诱敌、中军横击，大破楚军，奠定晋国霸业。战后晋文公在践土会盟，成为春秋霸主。",
+    "stages": [
+      {
+        "title": "楚军北进",
+        "narration": "楚成王遣令尹成得臣率若敖六卒为主力，合陈、蔡之师北上救宋；晋文公率军南下迎击。两军在卫地城濮一带相遇，楚众而晋寡。晋军列阵以待，兵力处于劣势。",
+        "duration": 6,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [26, 34], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [38, 36], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [50, 38], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军", "side": "B", "pos": [26, 68], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军", "side": "B", "pos": [38, 70], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军（陈蔡）", "side": "B", "pos": [52, 68], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [38, 74], "to": [38, 54], "kind": "advance", "label": "楚军北上" }
+        ],
+        "focus": [39, 53, 24]
+      },
+      {
+        "title": "退避三舍",
+        "narration": "晋文公履行退避三舍之诺，命全军后撤九十里至城濮。楚军以为晋军怯战，成得臣挥军追击，楚军三军阵形渐次拉开，补给线也随之延长。",
+        "duration": 6,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [24, 30], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [36, 32], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [48, 34], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军", "side": "B", "pos": [26, 62], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军", "side": "B", "pos": [38, 64], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军（陈蔡）", "side": "B", "pos": [52, 62], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [36, 40], "to": [36, 32], "kind": "retreat", "label": "退避三舍" },
+          { "from": [38, 70], "to": [38, 64], "kind": "advance", "label": "楚军追击" }
+        ],
+        "focus": [38, 48, 24]
+      },
+      {
+        "title": "虎皮蒙马",
+        "narration": "晋下军胥臣以虎皮蒙马，率先冲击楚右军。陈、蔡之师临时会合、战力不齐，见虎皮战马冲来，惊骇奔溃，楚右军先败。陈蔡之师四散奔逃，晋下军追击。",
+        "duration": 5,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [24, 30], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [36, 32], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [56, 44], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军", "side": "B", "pos": [26, 62], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军", "side": "B", "pos": [38, 64], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军（陈蔡）", "side": "B", "pos": [56, 56], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [54, 40], "to": [56, 52], "kind": "attack", "label": "虎皮蒙马冲阵" }
+        ],
+        "focus": [52, 48, 16]
+      },
+      {
+        "title": "佯退诱敌",
+        "narration": "晋上军狐毛、狐偃设二旆佯退，晋下军栾枝以车曳柴伪遁，扬起尘土。楚左军子西误以为晋军溃败，脱离中军全力追击，侧翼暴露。晋中军已在侧后待机。",
+        "duration": 5,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [30, 24], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [38, 34], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [48, 42], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军", "side": "B", "pos": [30, 48], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军", "side": "B", "pos": [38, 66], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军（陈蔡）", "side": "B", "pos": [56, 56], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [32, 32], "to": [32, 24], "kind": "feint", "label": "二旆伪退" },
+          { "from": [30, 60], "to": [30, 50], "kind": "advance", "label": "楚左军追击" }
+        ],
+        "focus": [34, 42, 20]
+      },
+      {
+        "title": "中军横击",
+        "narration": "晋中军先轸、郤溱率公族横击楚左军侧后，晋上军回身夹攻，楚左军溃败。成得臣见左右两军皆溃，只得收中军而退，楚军全线败走。楚军退守连谷，晋军追至。",
+        "duration": 6,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [28, 30], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [34, 40], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [46, 42], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军", "side": "B", "pos": [28, 52], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军", "side": "B", "pos": [40, 70], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军（陈蔡）", "side": "B", "pos": [56, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [36, 38], "to": [30, 48], "kind": "attack", "label": "中军横击" },
+          { "from": [40, 72], "to": [42, 84], "kind": "retreat", "label": "楚军退师" }
+        ],
+        "focus": [36, 46, 22]
+      },
+      {
+        "title": "践土会盟",
+        "narration": "城濮战后，晋文公献楚俘于周王，周襄王策命其为侯伯。同年践土会盟，诸侯朝晋，晋国霸业确立，晋文公成为春秋第二位霸主。此后晋楚争霸成为春秋主线。",
+        "duration": 5,
+        "units": [
+          { "id": "jin_shang", "label": "晋上军", "side": "A", "pos": [38, 50], "kind": "infantry" },
+          { "id": "jin_zhong", "label": "晋中军", "side": "A", "pos": [44, 54], "kind": "infantry" },
+          { "id": "jin_xia", "label": "晋下军", "side": "A", "pos": [50, 52], "kind": "infantry" },
+          { "id": "chu_zuo", "label": "楚左军残部", "side": "B", "pos": [36, 78], "kind": "infantry" },
+          { "id": "chu_zhong", "label": "楚中军残部", "side": "B", "pos": [44, 82], "kind": "infantry" },
+          { "id": "chu_you", "label": "楚右军残部", "side": "B", "pos": [54, 80], "kind": "infantry" }
+        ],
+        "arrows": [],
+        "focus": [44, 62, 28]
+      }
+    ]
+  },
+  {
+    "battleId": "changping-260bc",
+    "title": "长平之战 · 推演",
+    "subtitle": "廉颇固垒与白起包抄",
+    "terrain": "mountain",
+    "summary": "公元前260年，秦赵决战长平。赵括代廉颇出击，白起以奇兵断后、骑兵隔绝营垒，围赵军四十六日。赵括战死，降卒遭坑杀，赵国自此一蹶不振。此役秦军兵力号称六十万，赵军号称四十五万，数字皆有争议。",
+    "stages": [
+      {
+        "title": "上党之争",
+        "narration": "公元前262年，秦攻韩上党，上党降赵。秦将王龁挥军攻赵，赵将廉颇率军迎击，两军在长平相遇。秦军自南向北推进，赵军据险扼守。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [42, 72], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [30, 66], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [68, 66], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [54, 36], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 30], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [42, 66], "to": [44, 50], "kind": "advance", "label": "秦军北上" }
+        ],
+        "focus": [50, 50, 26]
+      },
+      {
+        "title": "廉颇固垒",
+        "narration": "廉颇深沟高垒，坚壁不战。秦军屡次挑战，赵军始终不出，两军在丹河一线相持。秦军远来，粮运艰难，急于求战，遂以反间之计动摇赵廷。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [46, 60], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [32, 58], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [66, 58], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [58, 36], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 30], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [46, 56], "to": [52, 40], "kind": "attack", "label": "秦军挑战" }
+        ],
+        "focus": [52, 46, 22]
+      },
+      {
+        "title": "赵括出击",
+        "narration": "赵孝成王中秦反间计，以赵括代廉颇。赵括到任即改守为攻，率赵军主力出垒，渡过丹河向秦军发起攻击。秦军佯败后撤，诱其深入。赵军主力脱离营垒，渐入秦军预设之地。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [46, 62], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [32, 58], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [66, 58], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [52, 46], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 32], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [54, 42], "to": [50, 54], "kind": "advance", "label": "赵军出击" },
+          { "from": [46, 58], "to": [42, 66], "kind": "feint", "label": "秦军佯退" }
+        ],
+        "focus": [50, 50, 20]
+      },
+      {
+        "title": "两翼包抄",
+        "narration": "白起以奇兵二万五千人从两翼迂回，断赵军后路；另以骑兵五千切断赵军营垒与主力的联系。赵括的退路与粮道同时被截，赵军主力被围于河谷之中。",
+        "duration": 7,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [46, 58], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [40, 26], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [64, 30], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [50, 44], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 30], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [30, 58], "to": [50, 24], "kind": "advance", "label": "奇兵断后" },
+          { "from": [68, 58], "to": [60, 30], "kind": "advance", "label": "骑兵隔绝营垒" }
+        ],
+        "focus": [50, 42, 26]
+      },
+      {
+        "title": "围师四十六日",
+        "narration": "赵军被围四十六日，粮尽援绝，士卒相食。赵括率精锐突围，被秦军射杀，赵军大乱。白起认为赵卒反覆，遂将降卒坑杀，只放归二百四十人。",
+        "duration": 7,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [46, 56], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [40, 28], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [64, 30], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [52, 42], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 32], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [46, 54], "to": [52, 46], "kind": "attack", "label": "秦军合击" }
+        ],
+        "focus": [50, 42, 18]
+      },
+      {
+        "title": "赵军覆没",
+        "narration": "赵括战死，赵军降后被坑杀，长平战场尸骨枕藉。赵国从此无力与秦争锋，山东六国的抗秦力量由盛转衰，秦统一天下的进程大大加速。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "秦军主力", "side": "A", "pos": [50, 50], "kind": "infantry" },
+          { "id": "qin_qi", "label": "秦军奇兵", "side": "A", "pos": [44, 36], "kind": "infantry" },
+          { "id": "qin_qi2", "label": "秦军骑兵", "side": "A", "pos": [60, 38], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军降卒", "side": "B", "pos": [52, 46], "kind": "infantry" },
+          { "id": "zhao_lei", "label": "赵军营垒", "side": "B", "pos": [56, 32], "kind": "fort" }
+        ],
+        "arrows": [],
+        "focus": [52, 44, 22]
+      }
+    ]
+  },
+  {
+    "battleId": "handan-259bc",
+    "title": "邯郸之战 · 推演",
+    "subtitle": "窃符救赵与邯郸解围",
+    "terrain": "plain",
+    "summary": "公元前259年，秦军围邯郸，赵国危在旦夕。平原君赴楚求援，信陵君窃符救赵，魏、楚、赵内外夹击，秦军大败，邯郸之围遂解，秦国统一进程受挫。此役是战国后期合纵抗秦的一次成功范例。",
+    "stages": [
+      {
+        "title": "长平之后",
+        "narration": "长平战后赵国精锐尽丧，白起主张乘胜灭赵，范雎受赵游说，劝秦王允赵割地罢兵。赵王悔约不割地，秦昭襄王遂再举兵伐赵。赵军仓促应战，邯郸被围之势渐成。",
+        "duration": 6,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [32, 52], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [80, 58], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [72, 82], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [20, 44], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军（郑安平）", "side": "B", "pos": [24, 64], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [12, 44], "to": [20, 44], "kind": "advance", "label": "秦军东进" }
+        ],
+        "focus": [40, 52, 40]
+      },
+      {
+        "title": "邯郸被围",
+        "narration": "秦将王陵攻邯郸不利，秦王改以王龁代之，围城益急。城中粮尽，平原君散尽家财，编妻妾于行伍，招募敢死之士三千，数次出击秦军。",
+        "duration": 6,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [32, 52], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [78, 58], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [70, 80], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [22, 42], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军（郑安平）", "side": "B", "pos": [26, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [24, 42], "to": [30, 48], "kind": "attack", "label": "秦军围城" }
+        ],
+        "focus": [34, 50, 18]
+      },
+      {
+        "title": "毛遂自荐",
+        "narration": "平原君赴楚求援，门客毛遂自荐同行。至楚，平原君与楚王议合纵，日出而议不决，毛遂按剑登阶，陈说利害，楚王遂许合纵，歃血于殿上。",
+        "duration": 6,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [32, 52], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [76, 58], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [68, 78], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [22, 42], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军（郑安平）", "side": "B", "pos": [26, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [74, 88], "to": [68, 80], "kind": "advance", "label": "楚军应约北上" }
+        ],
+        "focus": [60, 66, 40]
+      },
+      {
+        "title": "窃符救赵",
+        "narration": "魏王使晋鄙率十万救赵，军于邺而不进。信陵君听侯嬴之谋，请如姬盗兵符，至军中，朱亥椎杀晋鄙，夺其军，率魏军北上救赵。魏军夺军之后，直趋邯郸。",
+        "duration": 6,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [32, 52], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [58, 54], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [66, 72], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [22, 42], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军（郑安平）", "side": "B", "pos": [26, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [76, 58], "to": [58, 54], "kind": "advance", "label": "夺军北上" }
+        ],
+        "focus": [46, 52, 26]
+      },
+      {
+        "title": "内外夹击",
+        "narration": "公元前257年，魏、楚、赵内外夹击，秦军大败。郑安平率二万人降赵，王龁引兵退走，邯郸之围遂解，赵国在长平的废墟上得以幸存。",
+        "duration": 6,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [34, 52], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [46, 54], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [58, 68], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [20, 42], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军（郑安平）", "side": "B", "pos": [26, 60], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [46, 54], "to": [30, 50], "kind": "attack", "label": "魏军夹击" },
+          { "from": [58, 68], "to": [36, 58], "kind": "attack", "label": "楚军夹击" },
+          { "from": [36, 52], "to": [24, 48], "kind": "attack", "label": "赵军出击" }
+        ],
+        "focus": [38, 54, 26]
+      },
+      {
+        "title": "战后格局",
+        "narration": "邯郸解围后，魏、楚声威大振，信陵君、平原君名重天下。秦国东进受挫，灭赵的计划落空，统一进程被迫推迟了数十年。信陵君因窃符之事留居赵国，终身未再回魏。",
+        "duration": 5,
+        "units": [
+          { "id": "zhao", "label": "赵军守城", "side": "A", "pos": [32, 50], "kind": "infantry" },
+          { "id": "city", "label": "邯郸城", "side": "N", "pos": [30, 50], "kind": "city" },
+          { "id": "wei", "label": "魏军（信陵君）", "side": "A", "pos": [42, 52], "kind": "infantry" },
+          { "id": "chu", "label": "楚军（春申君）", "side": "A", "pos": [52, 64], "kind": "infantry" },
+          { "id": "qin", "label": "秦军（王龁）", "side": "B", "pos": [14, 38], "kind": "infantry" },
+          { "id": "qin2", "label": "秦军降卒", "side": "B", "pos": [28, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [20, 42], "to": [12, 38], "kind": "retreat", "label": "秦军退走" }
+        ],
+        "focus": [34, 50, 30]
+      }
+    ]
+  },
+  {
+    "battleId": "julu-207bc",
+    "title": "巨鹿之战 · 推演",
+    "subtitle": "破釜沉舟与九战秦军",
+    "terrain": "plain",
+    "summary": "公元前207年，项羽杀宋义夺军，率楚军渡漳水、破釜沉舟，先断秦军甬道，再九战破王离，章邯随后归降，秦军主力覆没，秦亡已成定局。项羽由此成为诸侯上将军，秦亡进程不可逆转。",
+    "stages": [
+      {
+        "title": "章邯围巨鹿",
+        "narration": "秦将章邯破项梁后北上，与王离合围巨鹿，赵王歇与张耳困守城中。章邯筑甬道输粮，王离急攻，诸侯援军壁于城外，皆不敢战。巨鹿城内粮尽，守军日夜告急。",
+        "duration": 6,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军", "side": "B", "pos": [56, 38], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [48, 64], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [28, 24], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [38, 86], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [56, 42], "to": [55, 32], "kind": "attack", "label": "王离围城" }
+        ],
+        "focus": [50, 48, 26]
+      },
+      {
+        "title": "项羽夺军渡河",
+        "narration": "楚怀王遣宋义救赵，宋义屯兵安阳四十六日不进。项羽斩宋义夺军，率楚军北上，先遣英布、蒲将军率二万余人渡漳水，抢占滩头。楚军渡过漳水，直逼巨鹿。",
+        "duration": 6,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军", "side": "B", "pos": [56, 38], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [48, 64], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [28, 24], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [40, 78], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [40, 84], "to": [42, 68], "kind": "advance", "label": "渡漳水北上" }
+        ],
+        "focus": [44, 56, 22]
+      },
+      {
+        "title": "破釜沉舟",
+        "narration": "项羽率全军渡河，沉船破釜，烧庐舍，持三日粮，以示必死。楚军士气大振，直逼巨鹿，诸侯军仍在壁上观望。项羽亲自持戟督战，楚军呼声动天。",
+        "duration": 6,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军", "side": "B", "pos": [56, 38], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [48, 64], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [28, 24], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [48, 56], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [42, 70], "to": [48, 54], "kind": "advance", "label": "破釜沉舟" }
+        ],
+        "focus": [48, 46, 20]
+      },
+      {
+        "title": "断绝甬道",
+        "narration": "项羽先遣军切断章邯与王离之间的甬道，秦军粮运断绝。章邯军数次救援都被击退，王离军陷入孤立，巨鹿城内的赵军士气复振。王离军粮尽，军心开始动摇。",
+        "duration": 6,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军", "side": "B", "pos": [56, 38], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [48, 64], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [28, 24], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [48, 56], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [48, 54], "to": [48, 62], "kind": "attack", "label": "断绝甬道" }
+        ],
+        "focus": [48, 58, 18]
+      },
+      {
+        "title": "九战破王离",
+        "narration": "项羽亲率楚军猛攻王离，九战九捷。王离被俘，苏角战死，涉间自焚，秦军长城兵团覆没。诸侯军这才敢出壁助战。诸侯军望见楚军死战，人人震恐。",
+        "duration": 7,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军", "side": "B", "pos": [56, 36], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [48, 62], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [34, 30], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [52, 46], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [50, 50], "to": [55, 40], "kind": "attack", "label": "九战九捷" },
+          { "from": [34, 32], "to": [44, 40], "kind": "advance", "label": "诸侯出壁" }
+        ],
+        "focus": [52, 38, 18]
+      },
+      {
+        "title": "章邯归降",
+        "narration": "巨鹿战后，章邯退守棘原，内外交困，于公元前207年七月率二十余万众降于项羽。诸侯将入辕门，膝行而前，项羽由此为诸侯上将军。",
+        "duration": 6,
+        "units": [
+          { "id": "julu", "label": "巨鹿城", "side": "N", "pos": [55, 28], "kind": "city" },
+          { "id": "qin_wang", "label": "王离军残部", "side": "B", "pos": [48, 34], "kind": "infantry" },
+          { "id": "qin_zhang", "label": "章邯军", "side": "B", "pos": [44, 66], "kind": "infantry" },
+          { "id": "zhuhou", "label": "诸侯军", "side": "N", "pos": [40, 54], "kind": "camp" },
+          { "id": "chu", "label": "楚军", "side": "A", "pos": [48, 58], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [48, 60], "to": [44, 66], "kind": "advance", "label": "章邯归降" }
+        ],
+        "focus": [46, 60, 22]
+      }
+    ]
+  },
+  {
+    "battleId": "jingxing-204bc",
+    "title": "井陉之战 · 推演",
+    "subtitle": "背水列阵与拔旗易帜",
+    "terrain": "mountain",
+    "summary": "公元前204年，韩信率数万汉军东下井陉，背水列阵诱赵军倾巢而出，另以奇兵袭占赵营、拔旗易帜，大破号称二十万的赵军，成背水一战经典。此役赵军号称二十万，汉军仅数万，数字皆有夸大。",
+    "stages": [
+      {
+        "title": "井陉天险",
+        "narration": "公元前204年，韩信率数万汉军东下井陉，赵王歇与陈余聚兵二十万于井陉口，据险而守。李左车献策断汉军粮道，陈余自恃兵多，不纳。",
+        "duration": 6,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [42, 50], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [48, 58], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [46, 28], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [70, 46], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 44], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [34, 50], "to": [42, 50], "kind": "advance", "label": "东下井陉" }
+        ],
+        "focus": [52, 46, 32]
+      },
+      {
+        "title": "背水列阵",
+        "narration": "韩信遣万人先出，背水列阵，赵军望见大笑，以为汉军不知兵法。韩信另选轻骑二千，各持赤帜，从间道隐蔽于山上，约以赵军空壁出击时入营拔帜。",
+        "duration": 6,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [44, 52], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [48, 60], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [46, 30], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [70, 46], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 44], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [48, 52], "to": [48, 60], "kind": "advance", "label": "背水列阵" }
+        ],
+        "focus": [54, 48, 22]
+      },
+      {
+        "title": "佯败诱敌",
+        "narration": "天明，韩信、张耳率军出井陉口，与赵军大战良久，佯败弃鼓旗，退入背水阵中。赵军果倾巢而出，争夺汉军旗鼓，营垒空虚。赵军空壁而出，汉军伏兵得以乘虚而入。",
+        "duration": 6,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [40, 54], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [46, 60], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [48, 30], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [60, 48], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 44], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [70, 48], "to": [48, 54], "kind": "attack", "label": "赵军倾巢而出" },
+          { "from": [46, 54], "to": [47, 58], "kind": "retreat", "label": "佯败弃旗" }
+        ],
+        "focus": [56, 50, 20]
+      },
+      {
+        "title": "拔旗易帜",
+        "narration": "汉军背水而战，无路可退，人人死战。二千轻骑驰入赵营，拔赵帜，立汉赤帜。赵军久战不胜，回望营中尽是汉军旗帜，军心大乱。汉军乘势反击，赵军进退失据。",
+        "duration": 7,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [42, 54], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [48, 58], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [76, 42], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [56, 50], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 44], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [48, 30], "to": [76, 42], "kind": "advance", "label": "奇兵袭赵营" },
+          { "from": [56, 50], "to": [47, 57], "kind": "attack", "label": "赵军回攻背水阵" }
+        ],
+        "focus": [64, 48, 26]
+      },
+      {
+        "title": "赵军崩散",
+        "narration": "赵军进退失据，阵形大乱。汉军两面夹击，大破赵军，斩陈余于泜水之上，擒赵王歇。韩信下令不杀李左车，亲解其缚，师事之。李左车后为韩信出谋，劝其按甲休兵、安抚赵地。",
+        "duration": 6,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [44, 54], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [50, 58], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [78, 44], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军主力", "side": "B", "pos": [62, 52], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 48], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [50, 56], "to": [60, 52], "kind": "attack", "label": "两面夹击" },
+          { "from": [78, 44], "to": [64, 50], "kind": "attack", "label": "夺营夹击" }
+        ],
+        "focus": [60, 50, 22]
+      },
+      {
+        "title": "北方底定",
+        "narration": "井陉之战后，汉军平定赵国，河北大局底定，为韩信下一步伐齐、最后合围项羽创造了条件。背水一战由此成为兵家经典。韩信以少数兵力平定赵国，声威大振。",
+        "duration": 5,
+        "units": [
+          { "id": "han_main", "label": "韩信本部", "side": "A", "pos": [58, 50], "kind": "infantry" },
+          { "id": "han_bei", "label": "汉军背水阵", "side": "A", "pos": [64, 52], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军奇兵（赤帜）", "side": "A", "pos": [74, 46], "kind": "cavalry" },
+          { "id": "zhao", "label": "赵军降众", "side": "B", "pos": [64, 58], "kind": "infantry" },
+          { "id": "zhao_camp", "label": "赵军营垒", "side": "B", "pos": [80, 50], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [62, 50], "to": [66, 60], "kind": "retreat", "label": "赵军溃散" }
+        ],
+        "focus": [66, 52, 26]
+      }
+    ]
+  },
+  {
+    "battleId": "gaixia-202bc",
+    "title": "垓下之战 · 推演",
+    "subtitle": "十面合围与四面楚歌",
+    "terrain": "plain",
+    "summary": "公元前202年，刘邦会合韩信、彭越、英布，以约六十万之众合围垓下。项羽兵少粮尽，闻四面楚歌而夜遁，兵败自刎乌江，楚汉相争告终。刘邦称帝建立汉朝，四百年汉家天下由此开端。",
+    "stages": [
+      {
+        "title": "汉军合围",
+        "narration": "公元前202年，刘邦背鸿沟之约，会合韩信、彭越、英布等部，以约六十万之众将项羽十万楚军合围于垓下。韩信自将三十万为中军。",
+        "duration": 6,
+        "units": [
+          { "id": "han_zhong", "label": "韩信中军", "side": "A", "pos": [50, 20], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [22, 44], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [78, 44], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [45, 30], "kind": "cavalry" },
+          { "id": "chu", "label": "楚军", "side": "B", "pos": [50, 52], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [50, 12], "to": [50, 30], "kind": "advance", "label": "韩信南下" },
+          { "from": [18, 44], "to": [30, 46], "kind": "advance", "label": "左翼合围" },
+          { "from": [82, 44], "to": [70, 46], "kind": "advance", "label": "右翼合围" }
+        ],
+        "focus": [50, 38, 30]
+      },
+      {
+        "title": "韩信接战",
+        "narration": "韩信率先与楚军接战，不利而稍却。楚军乘势反击，汉军左右两翼孔熙、陈贺纵兵夹击，楚军阵形被压缩，退守壁垒。楚军虽勇，兵力与汉军相差悬殊。",
+        "duration": 6,
+        "units": [
+          { "id": "han_zhong", "label": "韩信中军", "side": "A", "pos": [50, 28], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [30, 46], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [70, 46], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [47, 38], "kind": "cavalry" },
+          { "id": "chu", "label": "楚军", "side": "B", "pos": [50, 46], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [50, 30], "to": [50, 42], "kind": "attack", "label": "韩信接战" },
+          { "from": [50, 46], "to": [47, 36], "kind": "attack", "label": "楚军反击" },
+          { "from": [34, 44], "to": [46, 44], "kind": "attack", "label": "两翼夹击" }
+        ],
+        "focus": [50, 40, 20]
+      },
+      {
+        "title": "四面楚歌",
+        "narration": "入夜，汉军四面唱起楚歌。项羽大惊，以为楚地尽失，军中士气崩溃。虞姬和歌，项羽率八百余骑趁夜突围南走。汉军知楚军粮少，围而不攻，专以楚歌乱其军心。",
+        "duration": 7,
+        "units": [
+          { "id": "han_zhong", "label": "韩信中军", "side": "A", "pos": [50, 28], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [30, 44], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [70, 44], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [47, 40], "kind": "cavalry" },
+          { "id": "chu", "label": "楚军", "side": "B", "pos": [50, 48], "kind": "infantry" }
+        ],
+        "arrows": [],
+        "focus": [50, 40, 18]
+      },
+      {
+        "title": "阴陵迷道",
+        "narration": "项羽南走，至阴陵迷失道路，向田父问路，田父故意指错方向，楚军陷入大泽之中。汉军追至，项羽收拢二十八骑，东至东城。汉骑灌婴率五千骑追击。",
+        "duration": 6,
+        "units": [
+          { "id": "han_zhong", "label": "韩信中军", "side": "A", "pos": [50, 40], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [36, 52], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [64, 52], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [50, 64], "kind": "cavalry" },
+          { "id": "chu", "label": "楚军", "side": "B", "pos": [54, 72], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [50, 48], "to": [54, 70], "kind": "retreat", "label": "八百骑夜遁" },
+          { "from": [50, 40], "to": [52, 64], "kind": "advance", "label": "汉骑追击" }
+        ],
+        "focus": [52, 58, 22]
+      },
+      {
+        "title": "乌江自刎",
+        "narration": "项羽至乌江，亭长舣船相待，愿渡其东归。项羽不肯，下马步战，杀汉军数百，身被十余创，自刎而死，年三十一。汉军分割楚军，项羽身边仅余二十八骑，仍力战不退。",
+        "duration": 6,
+        "units": [
+          { "id": "han_zhong", "label": "韩信中军", "side": "A", "pos": [50, 44], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [40, 56], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [62, 56], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [54, 80], "kind": "cavalry" },
+          { "id": "chu", "label": "楚军残部", "side": "B", "pos": [58, 88], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [52, 76], "to": [57, 86], "kind": "attack", "label": "汉军围击" }
+        ],
+        "focus": [56, 82, 16]
+      },
+      {
+        "title": "楚汉终结",
+        "narration": "项羽既死，楚地皆降。公元前202年，刘邦称帝，建立汉朝，四百年汉家天下由此开端。楚汉相争以刘邦的最终胜利告终。同年刘邦称帝于定陶，西汉王朝建立。",
+        "duration": 5,
+        "units": [
+          { "id": "han_zhong", "label": "汉军", "side": "A", "pos": [56, 50], "kind": "infantry" },
+          { "id": "han_zuo", "label": "汉军左翼", "side": "A", "pos": [44, 58], "kind": "infantry" },
+          { "id": "han_you", "label": "汉军右翼", "side": "A", "pos": [66, 58], "kind": "infantry" },
+          { "id": "han_qi", "label": "汉军骑兵", "side": "A", "pos": [60, 70], "kind": "cavalry" },
+          { "id": "chu", "label": "楚地降众", "side": "B", "pos": [64, 78], "kind": "infantry" }
+        ],
+        "arrows": [],
+        "focus": [58, 64, 24]
+      }
+    ]
+  },
+  {
+    "battleId": "kunyang-23",
+    "title": "昆阳之战 · 推演",
+    "subtitle": "四十二万围城与三千冲阵",
+    "terrain": "city",
+    "summary": "公元23年，王邑、王寻率四十二万新军围昆阳。刘秀突围求援，以三千敢死队冲击新军中军，内外夹击，新军大溃，新朝根基动摇，刘秀由此声望大振。此役是东汉兴起的前奏，也是以少胜多的经典战例。",
+    "stages": [
+      {
+        "title": "新军围城",
+        "narration": "公元23年，王邑、王寻率四十二万新军围昆阳，围数十重，列营百余座。守军仅八九千人，凭城死战；严尤劝先取宛城，王邑不听。新军掘地道、撞城门，守军凭城死战。",
+        "duration": 6,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 55], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [44, 84], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [50, 22], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [40, 32], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [50, 12], "to": [50, 30], "kind": "advance", "label": "新军围城" },
+          { "from": [40, 34], "to": [46, 46], "kind": "attack", "label": "围数十重" }
+        ],
+        "focus": [48, 44, 26]
+      },
+      {
+        "title": "刘秀突围",
+        "narration": "刘秀趁夜率十三骑冲出重围，至郾城、定陵调集援兵，得数千人。他劝诸将：今若破敌，珍宝万倍；如败，首领无余，何财物之有。诸将乃从，得援兵数千。",
+        "duration": 6,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 55], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [44, 78], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [50, 22], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [40, 32], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [52, 58], "to": [46, 76], "kind": "retreat", "label": "十三骑突围" },
+          { "from": [40, 88], "to": [44, 78], "kind": "advance", "label": "调集援兵" }
+        ],
+        "focus": [48, 60, 28]
+      },
+      {
+        "title": "援军逼近",
+        "narration": "刘秀率步骑千余为前锋，屡挫新军小部，斩首数十级，诸将胆气渐壮，遂并力而进。刘秀又选敢死者三千人，准备冲击新军中军。王邑轻敌，令诸营不得擅自出兵。",
+        "duration": 5,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 55], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [46, 66], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [50, 30], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [38, 34], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [46, 78], "to": [48, 64], "kind": "advance", "label": "援军北上" }
+        ],
+        "focus": [48, 50, 22]
+      },
+      {
+        "title": "三千冲阵",
+        "narration": "刘秀率三千敢死队自城西水上冲击新军中军。王邑、王寻轻敌，自率万余人巡阵，令诸营不得擅自出兵，中军遂被冲乱，王寻被杀。新军失去统一号令，阵脚开始松动。",
+        "duration": 7,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 55], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [48, 52], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [50, 32], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [38, 36], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [48, 58], "to": [50, 36], "kind": "attack", "label": "三千敢死队冲中军" }
+        ],
+        "focus": [49, 44, 18]
+      },
+      {
+        "title": "内外夹击",
+        "narration": "城中守军鼓噪而出，内外合势，新军大乱。史载其时大雷风、屋瓦皆飞，滍水暴涨，新军赴水溺死者不可胜数——此类神异记载带有渲染成分。",
+        "duration": 7,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 52], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [50, 46], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [50, 28], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [40, 32], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [52, 56], "to": [50, 32], "kind": "attack", "label": "内外夹击" },
+          { "from": [52, 52], "to": [48, 44], "kind": "attack", "label": "守军鼓噪而出" }
+        ],
+        "focus": [49, 42, 20]
+      },
+      {
+        "title": "新朝动摇",
+        "narration": "王邑仅率轻骑数千逃归洛阳，新军主力尽丧。昆阳一战，新朝根基动摇，海内豪杰并起，刘秀由此声望大振。更始政权随后入主长安，新朝覆亡进入倒计时。更始政权随后入主长安，新朝覆亡进入倒计时。",
+        "duration": 6,
+        "units": [
+          { "id": "kunyang", "label": "昆阳城", "side": "N", "pos": [50, 50], "kind": "city" },
+          { "id": "han_shou", "label": "汉军守军", "side": "A", "pos": [52, 50], "kind": "infantry" },
+          { "id": "han_yuan", "label": "刘秀援军", "side": "A", "pos": [50, 48], "kind": "infantry" },
+          { "id": "xin", "label": "新军主力（王邑）", "side": "B", "pos": [54, 10], "kind": "infantry" },
+          { "id": "xin_wei", "label": "新军围城部队", "side": "B", "pos": [44, 18], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [52, 22], "to": [54, 10], "kind": "retreat", "label": "王邑北逃" }
+        ],
+        "focus": [50, 30, 26]
+      }
+    ]
+  },
+  {
+    "battleId": "guandu-200",
+    "title": "官渡之战 · 推演",
+    "subtitle": "乌巢劫粮与以寡敌众",
+    "terrain": "plain",
+    "summary": "公元200年，曹操以两三万之众在官渡迎击袁绍十万大军。相持之际，曹操纳许攸之策，亲率精骑奇袭乌巢，焚其粮草，袁军崩溃，曹操由此奠定统一北方的基础。此役被视为以少胜多的经典战例。",
+    "stages": [
+      {
+        "title": "袁军南下",
+        "narration": "公元200年，袁绍率精兵十万、骑万匹南下，进屯阳武、延津一线，前锋颜良进围白马。曹操以荀攸之计声东击西，率军迎击。曹军兵力处于劣势，须以奇制胜。",
+        "duration": 6,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 68], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [48, 64], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [46, 26], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部（颜良）", "side": "B", "pos": [66, 30], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [28, 20], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [46, 20], "to": [46, 40], "kind": "advance", "label": "袁军南下" }
+        ],
+        "focus": [48, 44, 28]
+      },
+      {
+        "title": "白马延津",
+        "narration": "曹操佯攻延津，诱袁绍分兵，亲率轻骑急趋白马。关羽于阵中斩颜良，白马之围解；袁军渡河追击，又在延津被斩文丑。袁军锐气受挫，但主力未损。",
+        "duration": 6,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 66], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [62, 36], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [48, 30], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部（颜良）", "side": "B", "pos": [68, 30], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [28, 20], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [56, 40], "to": [66, 32], "kind": "attack", "label": "轻骑袭白马" }
+        ],
+        "focus": [60, 40, 20]
+      },
+      {
+        "title": "相持官渡",
+        "narration": "曹操退守官渡，筑垒与袁军相持。袁绍起土山、掘地道进攻，曹军以霹雳车、长堑应对，两军相持数月，曹军粮少兵疲。双方相持官渡，胜负取决于粮道与耐力。",
+        "duration": 6,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [50, 58], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [50, 40], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部", "side": "B", "pos": [52, 42], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [28, 22], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [50, 38], "to": [50, 56], "kind": "attack", "label": "袁军强攻" }
+        ],
+        "focus": [50, 48, 20]
+      },
+      {
+        "title": "许攸献计",
+        "narration": "袁绍谋士许攸因家人犯法获罪，怒而投曹，告知乌巢粮草守备不严。曹操留曹洪守营，亲率步骑五千，打袁军旗号，连夜走间道奔乌巢。",
+        "duration": 7,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [42, 50], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [50, 40], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部", "side": "B", "pos": [52, 42], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [28, 22], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [46, 54], "to": [30, 26], "kind": "advance", "label": "间道袭乌巢" }
+        ],
+        "focus": [38, 40, 26]
+      },
+      {
+        "title": "乌巢火起",
+        "narration": "曹军围乌巢，四面纵火，袁军粮草尽焚。袁绍不救乌巢，反遣张郃、高览攻曹营；张郃见大势已去，与高览焚械投降。乌巢火光冲天，袁军士气骤降。",
+        "duration": 7,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [30, 26], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [50, 40], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部", "side": "B", "pos": [52, 42], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [28, 22], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [34, 30], "to": [28, 24], "kind": "fire", "label": "纵火焚粮" }
+        ],
+        "focus": [30, 28, 16]
+      },
+      {
+        "title": "袁军崩溃",
+        "narration": "粮草既焚，袁军军心崩溃，全线溃退。袁绍仅率八百骑渡河北还，曹军斩首七万余级。此后曹操用数年平定河北，统一北方。官渡一战，北方格局由此底定。",
+        "duration": 6,
+        "units": [
+          { "id": "cao", "label": "曹操军", "side": "A", "pos": [50, 52], "kind": "infantry" },
+          { "id": "cao_qi", "label": "曹军奇兵", "side": "A", "pos": [40, 40], "kind": "infantry" },
+          { "id": "yuan", "label": "袁绍军", "side": "B", "pos": [46, 14], "kind": "infantry" },
+          { "id": "yuan_qian", "label": "袁军前部", "side": "B", "pos": [50, 30], "kind": "infantry" },
+          { "id": "yuan_liang", "label": "乌巢粮营", "side": "B", "pos": [30, 18], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [48, 36], "to": [45, 14], "kind": "retreat", "label": "袁绍北还" },
+          { "from": [50, 56], "to": [50, 40], "kind": "advance", "label": "曹军追击" }
+        ],
+        "focus": [46, 34, 24]
+      }
+    ]
+  },
+  {
+    "battleId": "chibi-208",
+    "title": "赤壁之战 · 推演",
+    "subtitle": "连环船与火攻乌林",
+    "terrain": "river",
+    "summary": "公元208年，曹操率二十余万众顺江东下，与孙刘联军五万对峙于赤壁。黄盖诈降，以火船趁东南风焚曹军连环船，曹操引军北还，三国鼎立的基础由此奠定。此战是中国历史上著名的以少胜多的水战。",
+    "stages": [
+      {
+        "title": "曹军南下",
+        "narration": "公元208年，曹操得荆州水军，顺江东下，致书孙权称治水军八十万众。孙刘结盟，以周瑜、程普率五万联军溯江西上，两军相遇于赤壁。",
+        "duration": 6,
+        "units": [
+          { "id": "cao_shui", "label": "曹军水军", "side": "B", "pos": [48, 18], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [56, 24], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [52, 70], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [58, 74], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨", "side": "B", "pos": [44, 34], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [48, 10], "to": [46, 32], "kind": "advance", "label": "顺江东下" }
+        ],
+        "focus": [48, 44, 28]
+      },
+      {
+        "title": "初战赤壁",
+        "narration": "两军初战，曹军多为北方步骑，不习水战，军中又流行疾疫，初战失利，退驻江北乌林，与联军隔江对峙。曹军疾疫流行，战斗力大减。",
+        "duration": 6,
+        "units": [
+          { "id": "cao_shui", "label": "曹军水军", "side": "B", "pos": [46, 34], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [52, 36], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [50, 62], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [56, 66], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨", "side": "B", "pos": [44, 34], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [50, 58], "to": [47, 42], "kind": "attack", "label": "联军进击" },
+          { "from": [44, 40], "to": [45, 36], "kind": "retreat", "label": "曹军退驻乌林" }
+        ],
+        "focus": [47, 48, 18]
+      },
+      {
+        "title": "铁索连环",
+        "narration": "曹军为稳船身，以铁索连接舰船，首尾相接。周瑜部将黄盖看出可烧而走，遂献诈降火攻之策，联军加紧备战。曹军水寨首尾相连，看似稳固，实则最忌火攻。",
+        "duration": 5,
+        "units": [
+          { "id": "cao_shui", "label": "曹军水军", "side": "B", "pos": [46, 34], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [52, 36], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [50, 60], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [56, 64], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨", "side": "B", "pos": [44, 34], "kind": "camp" }
+        ],
+        "arrows": [],
+        "focus": [47, 46, 18]
+      },
+      {
+        "title": "黄盖诈降",
+        "narration": "黄盖遣人致书诈降，率蒙冲斗舰十艘，载荻草膏油，裹以帷幕，后系走舸，趁东南风急驶向曹军水寨。曹军以为降船，皆出营观望。曹军不知是计，竟无戒备。",
+        "duration": 6,
+        "units": [
+          { "id": "cao_shui", "label": "曹军水军", "side": "B", "pos": [46, 34], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [52, 36], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [52, 58], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [58, 62], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨", "side": "B", "pos": [44, 34], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [52, 56], "to": [46, 36], "kind": "feint", "label": "诈降船队" }
+        ],
+        "focus": [48, 46, 16]
+      },
+      {
+        "title": "火攻乌林",
+        "narration": "船队逼近，同时发火，火烈风猛，延及岸上营落。曹军连环船首尾相接，无法拆解，人马烧溺而死者甚众，乌林营寨尽焚。曹军水寨烟火蔽江，战船连环无从拆解。",
+        "duration": 7,
+        "units": [
+          { "id": "cao_shui", "label": "曹军水军", "side": "B", "pos": [46, 32], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [52, 34], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [54, 54], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [58, 60], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨", "side": "B", "pos": [44, 32], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [52, 50], "to": [45, 34], "kind": "fire", "label": "东南风急·火船冲阵" }
+        ],
+        "focus": [48, 42, 16]
+      },
+      {
+        "title": "曹操北还",
+        "narration": "曹操引军自华容道步走，北还江陵，留曹仁守城。赤壁一战挫其统一之势，孙刘各据荆州一部，三国鼎立的轮廓自此显现。刘备取荆南四郡，周瑜攻取江陵。",
+        "duration": 6,
+        "units": [
+          { "id": "cao_shui", "label": "曹军残部", "side": "B", "pos": [44, 14], "kind": "navy" },
+          { "id": "cao_bu", "label": "曹军步骑", "side": "B", "pos": [50, 16], "kind": "infantry" },
+          { "id": "sun_liu_shui", "label": "孙刘水军", "side": "A", "pos": [54, 56], "kind": "navy" },
+          { "id": "sun_liu_lu", "label": "孙刘陆军", "side": "A", "pos": [60, 62], "kind": "infantry" },
+          { "id": "wulin", "label": "乌林营寨残迹", "side": "B", "pos": [44, 30], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [44, 32], "to": [50, 10], "kind": "retreat", "label": "曹操北还" }
+        ],
+        "focus": [48, 32, 26]
+      }
+    ]
+  },
+  {
+    "battleId": "yiling-222",
+    "title": "夷陵之战 · 推演",
+    "subtitle": "坚守待疲与火烧连营",
+    "terrain": "river",
+    "summary": "公元221年，刘备东征伐吴，沿江连营推进至夷陵。陆逊坚守待疲，趁暑热移营之际火攻连破蜀营，蜀军大败，刘备退守白帝城，三国鼎立格局自此固定。此役是三国鼎立格局的最后一块拼图。",
+    "stages": [
+      {
+        "title": "出峡东进",
+        "narration": "公元221年，刘备以替关羽报仇、夺回荆州为名东征，蜀军自秭归出三峡，前锋连破吴军，推进至夷陵、猇亭一线，沿江立营数十处。",
+        "duration": 6,
+        "units": [
+          { "id": "shu_main", "label": "蜀军主力", "side": "B", "pos": [24, 50], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军沿江连营", "side": "B", "pos": [38, 60], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [72, 50], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [76, 58], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [16, 50], "to": [26, 50], "kind": "advance", "label": "蜀军出峡东进" }
+        ],
+        "focus": [48, 54, 38]
+      },
+      {
+        "title": "陆逊坚守",
+        "narration": "吴军诸将请战，陆逊不许，主动放弃峡口险要，退守猇亭，把数百里山地让给蜀军。诸将不服，陆逊按剑立威，一守就是七八个月。蜀军求战不得，师老兵疲。",
+        "duration": 6,
+        "units": [
+          { "id": "shu_main", "label": "蜀军主力", "side": "B", "pos": [32, 52], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军沿江连营", "side": "B", "pos": [46, 62], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [70, 52], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [74, 60], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [66, 52], "to": [72, 52], "kind": "retreat", "label": "吴军退守猇亭" },
+          { "from": [30, 52], "to": [38, 54], "kind": "advance", "label": "蜀军推进" }
+        ],
+        "focus": [52, 56, 26]
+      },
+      {
+        "title": "暑热移营",
+        "narration": "闰六月，暑热难当，蜀军移营林间避暑，阵形散开，营寨绵延。陆逊见蜀军师老兵疲、营地分散，断定战机已至。吴军诸将这才请战，陆逊令各持茅草待命。",
+        "duration": 6,
+        "units": [
+          { "id": "shu_main", "label": "蜀军主力", "side": "B", "pos": [36, 54], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军沿江连营", "side": "B", "pos": [46, 64], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [66, 52], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [70, 60], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [42, 58], "to": [48, 64], "kind": "advance", "label": "移营林间" }
+        ],
+        "focus": [54, 58, 22]
+      },
+      {
+        "title": "火攻连营",
+        "narration": "陆逊令士卒各持一束茅草，趁夜顺风纵火，同时进攻蜀军诸营。火起之后，吴军连破四十余营，蜀军主力溃散，冯习、张南等战死。刘备仅率残部突围西走。",
+        "duration": 7,
+        "units": [
+          { "id": "shu_main", "label": "蜀军主力", "side": "B", "pos": [40, 56], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军沿江连营", "side": "B", "pos": [46, 62], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [56, 54], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [60, 60], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [60, 56], "to": [44, 62], "kind": "fire", "label": "顺风纵火" },
+          { "from": [54, 54], "to": [44, 60], "kind": "attack", "label": "连破蜀营" }
+        ],
+        "focus": [52, 58, 18]
+      },
+      {
+        "title": "退守白帝",
+        "narration": "刘备连夜西退，在马鞍山收拢残部又被围击，只得退入白帝城，改鱼复为永安。吴将请乘胜入蜀，陆逊虑曹魏南下，收兵而还。陆逊不追，吴军回师荆州。",
+        "duration": 6,
+        "units": [
+          { "id": "shu_main", "label": "蜀军残部", "side": "B", "pos": [22, 60], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军连营残迹", "side": "B", "pos": [26, 66], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [58, 52], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [62, 58], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [38, 58], "to": [22, 62], "kind": "retreat", "label": "刘备西退" },
+          { "from": [58, 54], "to": [34, 62], "kind": "attack", "label": "吴军追击" }
+        ],
+        "focus": [42, 60, 30]
+      },
+      {
+        "title": "三国定型",
+        "narration": "夷陵一战，蜀汉元气大伤，再无力东进。刘备次年病逝于永安，诸葛亮执政后修复吴蜀联盟，三国鼎立的格局自此固定。此后蜀汉转为守势，诸葛亮只能以攻为守。",
+        "duration": 5,
+        "units": [
+          { "id": "shu_main", "label": "蜀军残部", "side": "B", "pos": [18, 64], "kind": "infantry" },
+          { "id": "shu_ying", "label": "蜀军连营残迹", "side": "B", "pos": [22, 70], "kind": "camp" },
+          { "id": "wu", "label": "吴军主力", "side": "A", "pos": [48, 52], "kind": "infantry" },
+          { "id": "wu_shui", "label": "吴军水军", "side": "A", "pos": [52, 58], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [24, 62], "to": [18, 66], "kind": "retreat", "label": "退守白帝" }
+        ],
+        "focus": [36, 58, 30]
+      }
+    ]
+  },
+  {
+    "battleId": "feishui-383",
+    "title": "淝水之战 · 推演",
+    "subtitle": "半渡而击与阵后呼败",
+    "terrain": "river",
+    "summary": "公元383年，前秦苻坚率号称百万的大军南下，东晋以八万北府兵迎战。晋军于洛涧先胜，又请秦军后撤，趁其阵乱渡水猛击，前秦崩溃，南北分立延续。此役也留下投鞭断流、草木皆兵、风声鹤唳等典故。",
+    "stages": [
+      {
+        "title": "秦军南下",
+        "narration": "公元383年，前秦苻坚发兵号称百万，前锋苻融率三十万先至颍口，攻破寿阳。东晋以谢石、谢玄率八万北府兵迎击，两军夹淝水对峙。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "前秦军主力", "side": "B", "pos": [50, 20], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋", "side": "B", "pos": [58, 32], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [48, 70], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [56, 74], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [66, 40], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [50, 12], "to": [50, 28], "kind": "advance", "label": "秦军南下" }
+        ],
+        "focus": [52, 46, 28]
+      },
+      {
+        "title": "洛涧之捷",
+        "narration": "晋将刘牢之率五千北府精兵夜袭洛涧，大破秦军梁成部，斩梁成。秦军溃散，晋军士气大振，水陆并进，苻坚登寿阳城望见晋军，始有惧色。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "前秦军主力", "side": "B", "pos": [50, 28], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋", "side": "B", "pos": [56, 34], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [54, 56], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [58, 60], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [64, 42], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [56, 54], "to": [63, 44], "kind": "attack", "label": "夜袭洛涧" }
+        ],
+        "focus": [58, 46, 20]
+      },
+      {
+        "title": "淝水对峙",
+        "narration": "秦军沿淝水西岸列阵，晋军不得渡。谢玄遣使请秦军稍退，使晋军得渡决战。苻坚欲趁晋军半渡而击，遂下令后撤。两军夹水列阵，晋军无法速战，只能等待时机。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "前秦军主力", "side": "B", "pos": [50, 38], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋", "side": "B", "pos": [54, 40], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [52, 58], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [58, 62], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [66, 44], "kind": "camp" }
+        ],
+        "arrows": [],
+        "focus": [52, 48, 20]
+      },
+      {
+        "title": "秦军后撤",
+        "narration": "秦军一退便收束不住，各族士卒本无战心，后阵不知缘由，以为前军败退。晋军趁势渡水，八千精骑直冲秦军中军。秦军后退中阵形渐乱，号令不统一。",
+        "duration": 7,
+        "units": [
+          { "id": "qin", "label": "前秦军主力", "side": "B", "pos": [50, 30], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋", "side": "B", "pos": [54, 34], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [52, 50], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [56, 54], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [64, 40], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [50, 38], "to": [50, 28], "kind": "retreat", "label": "秦军后撤" },
+          { "from": [52, 56], "to": [52, 44], "kind": "advance", "label": "晋军渡水" }
+        ],
+        "focus": [52, 42, 20]
+      },
+      {
+        "title": "阵后呼败",
+        "narration": "被俘后任秦尚书的晋将朱序在阵后大呼秦兵败矣，后阵信以为真，转身奔逃。秦军全线崩溃，苻融战死，苻坚中箭单骑北逃。秦军后阵不知虚实，一退即溃，不可收拾。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "前秦军主力", "side": "B", "pos": [52, 24], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋", "side": "B", "pos": [54, 28], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [52, 42], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [56, 46], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [62, 36], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [52, 46], "to": [52, 28], "kind": "attack", "label": "阵后呼败" }
+        ],
+        "focus": [53, 36, 18]
+      },
+      {
+        "title": "前秦瓦解",
+        "narration": "淝水一败，前秦帝国迅速瓦解，慕容垂、姚苌各据一方，北方重归分裂。东晋保全江南，南北对峙又延续近两百年。晋军乘胜收复寿阳，前秦的南下计划彻底失败。",
+        "duration": 6,
+        "units": [
+          { "id": "qin", "label": "前秦军残部", "side": "B", "pos": [54, 12], "kind": "infantry" },
+          { "id": "qin_qian", "label": "前秦前锋残部", "side": "B", "pos": [58, 16], "kind": "cavalry" },
+          { "id": "jin", "label": "东晋北府兵", "side": "A", "pos": [52, 44], "kind": "infantry" },
+          { "id": "jin_shui", "label": "东晋水军", "side": "A", "pos": [56, 50], "kind": "navy" },
+          { "id": "luojian", "label": "洛涧梁成部", "side": "B", "pos": [60, 40], "kind": "camp" }
+        ],
+        "arrows": [
+          { "from": [52, 26], "to": [54, 10], "kind": "retreat", "label": "秦军北溃" }
+        ],
+        "focus": [54, 32, 26]
+      }
+    ]
+  },
+  {
+    "battleId": "hulao-621",
+    "title": "虎牢之战 · 推演",
+    "subtitle": "扼险待疲与玄甲突击",
+    "terrain": "mountain",
+    "summary": "公元621年，李世民围洛阳、据虎牢，以三千五百玄甲精骑扼守险关。相持二十余日后，唐军趁夏军阵乱突击，一战擒窦建德，王世充出降，郑夏同日而灭。此役是李世民军事生涯的代表作。",
+    "stages": [
+      {
+        "title": "围洛阳",
+        "narration": "公元620年，李世民率唐军东征，将王世充围困于洛阳。洛阳城坚，久攻不下，王世充向河北的夏王窦建德求援。唐军围洛阳未下，夏军西援，唐军两面受敌。",
+        "duration": 6,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [26, 62], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [30, 58], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [16, 62], "kind": "city" },
+          { "id": "xia", "label": "夏军", "side": "B", "pos": [86, 46], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [24, 58], "to": [18, 60], "kind": "attack", "label": "唐军围城" },
+          { "from": [86, 40], "to": [78, 44], "kind": "advance", "label": "夏军西援" }
+        ],
+        "focus": [50, 54, 36]
+      },
+      {
+        "title": "分兵据虎牢",
+        "narration": "李世民留屈突通等继续围城，自率玄甲精骑三千五百东趋虎牢，抢占洛阳东面的门户。虎牢关南连嵩山、北临黄河，据之则夏军不能西进。",
+        "duration": 6,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [26, 62], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [58, 50], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [16, 62], "kind": "city" },
+          { "id": "xia", "label": "夏军", "side": "B", "pos": [78, 44], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [32, 56], "to": [56, 50], "kind": "advance", "label": "抢占虎牢" }
+        ],
+        "focus": [52, 52, 26]
+      },
+      {
+        "title": "相持二十日",
+        "narration": "夏军屯于虎牢以东，屡次挑战，唐军坚壁不出。李世民遣轻骑抄掠夏军粮道，又亲率小队侦察敌营，二十余日相持，夏军锐气渐消。夏军求战不得，粮道又受袭扰。",
+        "duration": 6,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [26, 62], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [60, 50], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [16, 62], "kind": "city" },
+          { "id": "xia", "label": "夏军", "side": "B", "pos": [74, 44], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [62, 48], "to": [70, 44], "kind": "feint", "label": "轻骑扰敌" }
+        ],
+        "focus": [56, 50, 18]
+      },
+      {
+        "title": "汜水列阵",
+        "narration": "窦建德倾众而来，在汜水东岸列阵，自晨至午，士卒饥渴，争相饮水，阵形渐乱。李世民登高观察，认定时机已到，命宇文士及率三百骑沿阵试探。",
+        "duration": 6,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [40, 56], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [62, 52], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [16, 62], "kind": "city" },
+          { "id": "xia", "label": "夏军", "side": "B", "pos": [70, 46], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [72, 42], "to": [66, 46], "kind": "advance", "label": "夏军列阵" },
+          { "from": [64, 50], "to": [70, 46], "kind": "feint", "label": "三百骑试探" }
+        ],
+        "focus": [62, 50, 18]
+      },
+      {
+        "title": "玄甲突击",
+        "narration": "试探之骑退回，夏军阵脚松动。李世民率玄甲军自阵后突入，唐军高举旗帜从侧背贯穿敌阵，夏军大溃，自相践踏，窦建德受伤被擒。唐军旗帜高举，贯阵而过。",
+        "duration": 7,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [46, 54], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [70, 50], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [16, 62], "kind": "city" },
+          { "id": "xia", "label": "夏军", "side": "B", "pos": [74, 46], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [68, 52], "to": [76, 44], "kind": "attack", "label": "玄甲贯阵" }
+        ],
+        "focus": [68, 48, 16]
+      },
+      {
+        "title": "擒两王",
+        "narration": "窦建德被押至洛阳城下，王世充见援军已灭，次日开城出降。郑夏同日而灭，唐朝统一中原，李世民因功授天策上将。郑夏两地尽入唐境，中原局势由此明朗。",
+        "duration": 6,
+        "units": [
+          { "id": "tang", "label": "唐军主力", "side": "A", "pos": [50, 54], "kind": "infantry" },
+          { "id": "tang_xuan", "label": "唐玄甲骑", "side": "A", "pos": [80, 44], "kind": "cavalry" },
+          { "id": "zheng", "label": "郑军守洛阳", "side": "B", "pos": [18, 60], "kind": "city" },
+          { "id": "xia", "label": "夏军残部", "side": "B", "pos": [88, 42], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [70, 44], "to": [86, 40], "kind": "retreat", "label": "夏军溃退" },
+          { "from": [40, 56], "to": [24, 60], "kind": "advance", "label": "唐军受降" }
+        ],
+        "focus": [56, 54, 32]
+      }
+    ]
+  },
+  {
+    "battleId": "yancheng-1140",
+    "title": "郾城之战 · 推演",
+    "subtitle": "步破重骑与十二道金牌",
+    "terrain": "plain",
+    "summary": "公元1140年，岳飞率岳家军北伐，在郾城以步兵破金军重甲骑兵，大败完颜宗弼，旋因十二道金牌奉诏班师，中原州县得而复失，北伐成果付诸东流。此役是岳飞军事生涯的代表作，也是南宋北伐的高峰。",
+    "stages": [
+      {
+        "title": "北伐连捷",
+        "narration": "公元1140年，岳飞自鄂州北伐，连复颍昌、陈州、郑州、洛阳，前锋进抵朱仙镇，中原义军纷起响应，金军在河南的统治动摇。岳飞随即挥军北上，直指郾城。",
+        "duration": 6,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [50, 64], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [46, 58], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [50, 26], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [34, 32], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [66, 32], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [50, 78], "to": [50, 64], "kind": "advance", "label": "岳家军北伐" },
+          { "from": [50, 18], "to": [50, 28], "kind": "advance", "label": "金军南下" }
+        ],
+        "focus": [50, 46, 30]
+      },
+      {
+        "title": "金军反扑",
+        "narration": "完颜宗弼集中主力南下，欲趁岳家军兵力分散之机决战。金军以重甲骑兵铁浮图居中，左右翼拐子马列阵，直逼郾城。岳飞令将士持麻札刀、伏地砍马足。",
+        "duration": 6,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [46, 56], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [50, 34], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [34, 38], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [66, 38], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [50, 36], "to": [50, 52], "kind": "attack", "label": "铁浮图直逼郾城" },
+          { "from": [34, 40], "to": [42, 50], "kind": "attack", "label": "拐子马包抄" },
+          { "from": [66, 40], "to": [58, 50], "kind": "attack", "label": "右翼包抄" }
+        ],
+        "focus": [50, 46, 20]
+      },
+      {
+        "title": "步破重骑",
+        "narration": "岳飞令将士以麻札刀入阵，低头专砍马足；岳云率骑兵八百先冲敌阵，往来鏖战数十合。金军重骑马倒阵乱，岳家军步兵乘势而进。双方在郾城城下鏖战竟日。",
+        "duration": 7,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [50, 56], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [46, 50], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [50, 40], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [38, 42], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [62, 42], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [50, 54], "to": [50, 44], "kind": "attack", "label": "麻札刀砍马足" },
+          { "from": [46, 52], "to": [48, 42], "kind": "attack", "label": "岳云八百骑冲阵" }
+        ],
+        "focus": [50, 46, 14]
+      },
+      {
+        "title": "拐子马溃",
+        "narration": "金军左右两翼拐子马被岳家军分割击破，阵形大乱。杨再兴单骑冲阵，几获完颜宗弼，金军大败而退，岳家军追杀数十里。郾城之战，岳家军以步破骑，声威大振。",
+        "duration": 6,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [48, 54], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [44, 48], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [54, 36], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [30, 40], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [68, 40], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [48, 52], "to": [34, 42], "kind": "attack", "label": "分割拐子马" },
+          { "from": [48, 50], "to": [62, 40], "kind": "attack", "label": "击破右翼" }
+        ],
+        "focus": [50, 44, 20]
+      },
+      {
+        "title": "颍昌再捷",
+        "narration": "郾城战后，金军转攻颍昌，岳飞遣岳云、王贵驰援，再破金军。岳家军前锋进抵朱仙镇，金军一度准备北撤，中原形势对宋军极为有利。",
+        "duration": 6,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [50, 52], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [46, 46], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [50, 26], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [36, 32], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [64, 32], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [50, 50], "to": [50, 30], "kind": "attack", "label": "颍昌再破金军" },
+          { "from": [50, 32], "to": [50, 22], "kind": "retreat", "label": "金军北退" }
+        ],
+        "focus": [50, 40, 22]
+      },
+      {
+        "title": "金牌班师",
+        "narration": "就在北伐形势大好之际，宋高宗、秦桧连发金牌召岳飞班师，一日十二道。岳飞被迫南撤，所得州县复失，叹十年之力废于一旦。次年岳飞被解除兵权，不久下狱冤死。",
+        "duration": 6,
+        "units": [
+          { "id": "song", "label": "岳家军步兵", "side": "A", "pos": [50, 68], "kind": "infantry" },
+          { "id": "song_qi", "label": "岳家军骑兵（岳云）", "side": "A", "pos": [46, 62], "kind": "cavalry" },
+          { "id": "jin", "label": "金军铁浮图", "side": "B", "pos": [50, 20], "kind": "cavalry" },
+          { "id": "jin_zuo", "label": "金军拐子马（左）", "side": "B", "pos": [36, 26], "kind": "cavalry" },
+          { "id": "jin_you", "label": "金军拐子马（右）", "side": "B", "pos": [64, 26], "kind": "cavalry" }
+        ],
+        "arrows": [
+          { "from": [50, 50], "to": [50, 72], "kind": "retreat", "label": "十二道金牌班师" }
+        ],
+        "focus": [50, 46, 32]
+      }
+    ]
+  },
+  {
+    "battleId": "caishi-1161",
+    "title": "采石之战 · 推演",
+    "subtitle": "临危督战与江防决战",
+    "terrain": "river",
+    "summary": "公元1161年，完颜亮率金军南下直抵长江，虞允文在采石整编散卒、督战江防，以车船冲撞金军舟师，金军渡江失败，完颜亮为部下所杀，南宋转危为安。此役以少胜多，遏止了金军渡江南下的势头。",
+    "stages": [
+      {
+        "title": "淮防崩溃",
+        "narration": "1161年秋，金军渡淮南下，宋淮西主将王权弃庐州南逃，金军长驱直入，直抵长江北岸。南宋朝廷震动，临安一度准备疏散。采石江防无人统辖，形势危急。",
+        "duration": 6,
+        "units": [
+          { "id": "jin", "label": "金军（完颜亮）", "side": "B", "pos": [50, 20], "kind": "infantry" },
+          { "id": "jin_zhou", "label": "金军舟师", "side": "B", "pos": [54, 30], "kind": "navy" },
+          { "id": "song", "label": "宋军步骑", "side": "A", "pos": [50, 68], "kind": "infantry" },
+          { "id": "song_chuan", "label": "宋军车船", "side": "A", "pos": [52, 74], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [50, 12], "to": [50, 28], "kind": "advance", "label": "金军渡淮南下" }
+        ],
+        "focus": [50, 46, 32]
+      },
+      {
+        "title": "临危受命",
+        "narration": "采石江防无人统辖，虞允文到采石犒军，见将士散坐路旁、解甲无备，遂召集诸将，激以忠义，整编散卒一万八千人，分布江岸。宋军将士见主帅亲临，士气稍振。",
+        "duration": 6,
+        "units": [
+          { "id": "jin", "label": "金军（完颜亮）", "side": "B", "pos": [50, 22], "kind": "infantry" },
+          { "id": "jin_zhou", "label": "金军舟师", "side": "B", "pos": [54, 32], "kind": "navy" },
+          { "id": "song", "label": "宋军步骑", "side": "A", "pos": [50, 66], "kind": "infantry" },
+          { "id": "song_chuan", "label": "宋军车船", "side": "A", "pos": [52, 72], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [50, 78], "to": [50, 68], "kind": "advance", "label": "散卒归队" }
+        ],
+        "focus": [50, 46, 26]
+      },
+      {
+        "title": "江防部署",
+        "narration": "虞允文命步骑列阵江岸，以海鳅船、车船冲撞金军舟船，又以神臂弓、强弩压制登陆之敌。宋军船大，据上游之势以逸待劳。宋军水军以车船为主，船身高大坚固。",
+        "duration": 6,
+        "units": [
+          { "id": "jin", "label": "金军（完颜亮）", "side": "B", "pos": [50, 24], "kind": "infantry" },
+          { "id": "jin_zhou", "label": "金军舟师", "side": "B", "pos": [56, 34], "kind": "navy" },
+          { "id": "song", "label": "宋军步骑", "side": "A", "pos": [50, 64], "kind": "infantry" },
+          { "id": "song_chuan", "label": "宋军车船", "side": "A", "pos": [52, 72], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [52, 78], "to": [52, 70], "kind": "advance", "label": "车船列阵" }
+        ],
+        "focus": [51, 48, 20]
+      },
+      {
+        "title": "采石大战",
+        "narration": "金军强行渡江，宋军车船往来冲击，金舟多被撞沉；登陆金军被岸上步骑夹击，死伤甚众。完颜亮怒斩逃将，仍不能取胜。金军舟师损失惨重，被迫退回北岸。",
+        "duration": 7,
+        "units": [
+          { "id": "jin", "label": "金军（完颜亮）", "side": "B", "pos": [50, 28], "kind": "infantry" },
+          { "id": "jin_zhou", "label": "金军舟师", "side": "B", "pos": [54, 42], "kind": "navy" },
+          { "id": "song", "label": "宋军步骑", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "song_chuan", "label": "宋军车船", "side": "A", "pos": [52, 68], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [54, 42], "to": [52, 60], "kind": "attack", "label": "金军强渡" },
+          { "from": [52, 66], "to": [54, 44], "kind": "attack", "label": "车船冲撞金舟" }
+        ],
+        "focus": [52, 52, 20]
+      },
+      {
+        "title": "金军内变",
+        "narration": "完颜亮强令诸军渡江，限日过江，否则尽杀。部下恐惧，完颜元宜等发动兵变，杀完颜亮于瓜洲渡。金军北撤，南宋转危为安。采石之战是南宋立国以来最重要的江防胜利之一。",
+        "duration": 6,
+        "units": [
+          { "id": "jin", "label": "金军（完颜亮）", "side": "B", "pos": [50, 14], "kind": "infantry" },
+          { "id": "jin_zhou", "label": "金军舟师", "side": "B", "pos": [54, 24], "kind": "navy" },
+          { "id": "song", "label": "宋军步骑", "side": "A", "pos": [50, 64], "kind": "infantry" },
+          { "id": "song_chuan", "label": "宋军车船", "side": "A", "pos": [52, 70], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [54, 32], "to": [54, 14], "kind": "retreat", "label": "金军北撤" }
+        ],
+        "focus": [52, 40, 30]
+      }
+    ]
+  },
+  {
+    "battleId": "poyanghu-1363",
+    "title": "鄱阳湖之战 · 推演",
+    "subtitle": "火攻巨舰与湖口封锁",
+    "terrain": "sea",
+    "summary": "公元1363年，朱元璋与陈友谅决战鄱阳湖。朱军以火船乘东北风焚陈军巨舰，又封锁湖口断其粮道，陈友谅突围时中箭身亡，陈军水师投降，江南大局遂定。此役是中国古代规模最大的水战之一。",
+    "stages": [
+      {
+        "title": "洪都告急",
+        "narration": "1363年，陈友谅围洪都八十五日，城守危急。朱元璋决意亲征，率舟师二十万自应天溯江西上，救援洪都，陈友谅则撤围东出迎战。",
+        "duration": 6,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [74, 58], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [68, 52], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [26, 52], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [30, 42], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [84, 58], "to": [74, 58], "kind": "advance", "label": "朱军溯江西上" }
+        ],
+        "focus": [50, 52, 40]
+      },
+      {
+        "title": "康郎山初战",
+        "narration": "七月，两军相遇于康郎山。徐达、常遇春率舟师冲阵，击败陈军前锋；激战中朱元璋座舰搁浅，张定边直冲而至，常遇春一箭射中张定边，朱元璋方得脱险。",
+        "duration": 7,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [66, 56], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [60, 50], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [30, 50], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [38, 44], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [66, 54], "to": [42, 48], "kind": "attack", "label": "徐达常遇春冲阵" },
+          { "from": [38, 44], "to": [58, 52], "kind": "attack", "label": "张定边直冲" }
+        ],
+        "focus": [52, 50, 22]
+      },
+      {
+        "title": "巨舰联舟",
+        "narration": "陈友谅军巨舰联舟而阵，进退不便。朱元璋军船小，难以正面冲撞，遂决定以火攻破敌，命将士备火药、芦苇，等待风向。朱元璋登船督战，诸将分率舟师待命。",
+        "duration": 5,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [62, 56], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [56, 50], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [32, 50], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [40, 46], "kind": "navy" }
+        ],
+        "arrows": [],
+        "focus": [46, 52, 22]
+      },
+      {
+        "title": "火攻破舰",
+        "narration": "朱元璋命七艘火船载火药、芦苇，趁东北风起纵火，陈军巨舰接连被焚，数百艘化为灰烬，湖水尽赤，陈军士气大挫。陈友谅军巨舰虽多，已无力再战。",
+        "duration": 7,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [58, 56], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [44, 52], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [30, 52], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [38, 46], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [48, 56], "to": [34, 52], "kind": "fire", "label": "东北风纵火" }
+        ],
+        "focus": [40, 52, 18]
+      },
+      {
+        "title": "湖口封锁",
+        "narration": "陈友谅退保鞋山，朱元璋移军湖口，封锁长江出口，切断陈军粮道。两军相持月余，陈军粮尽，士卒离心，陈友谅决意突围。朱元璋命舟师分守湖口，以逸待劳。",
+        "duration": 6,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [56, 60], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [50, 54], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [34, 56], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [40, 50], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [64, 62], "to": [56, 60], "kind": "advance", "label": "移军湖口" },
+          { "from": [36, 54], "to": [34, 58], "kind": "retreat", "label": "退保鞋山" }
+        ],
+        "focus": [44, 56, 22]
+      },
+      {
+        "title": "友谅中箭",
+        "narration": "陈友谅率舟师突围，途中被流矢射中，伤重而死。张定边载其尸与子陈善儿逃回武昌，陈军水师大部投降，鄱阳湖决战以朱元璋全胜告终。",
+        "duration": 6,
+        "units": [
+          { "id": "zhu", "label": "朱元璋水军", "side": "A", "pos": [54, 62], "kind": "navy" },
+          { "id": "zhu_huo", "label": "朱军火船", "side": "A", "pos": [48, 56], "kind": "navy" },
+          { "id": "chen", "label": "陈友谅巨舰", "side": "B", "pos": [38, 66], "kind": "navy" },
+          { "id": "chen_bu", "label": "陈军别部（张定边）", "side": "B", "pos": [42, 58], "kind": "navy" }
+        ],
+        "arrows": [
+          { "from": [36, 56], "to": [40, 66], "kind": "retreat", "label": "陈军突围" },
+          { "from": [54, 62], "to": [42, 64], "kind": "attack", "label": "朱军截击" }
+        ],
+        "focus": [46, 62, 20]
+      }
+    ]
+  },
+  {
+    "battleId": "saerhu-1619",
+    "title": "萨尔浒之战 · 推演",
+    "subtitle": "集中兵力与各个击破",
+    "terrain": "mountain",
+    "summary": "公元1619年，明军四路合击后金。努尔哈赤集中八旗主力，先后破杜松、马林、刘綎三路，李如柏不战而退，明军大败，辽东局势由此逆转。此役是明清在辽东力量对比的转折点。",
+    "stages": [
+      {
+        "title": "四路出师",
+        "narration": "公元1619年，明廷以杨镐为经略，发兵号称四十七万、实约八万八千，分四路进攻后金：杜松出抚顺，马林出开原，李如柏出清河，刘綎出宽甸。",
+        "duration": 6,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [55, 45], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军（杜松）", "side": "B", "pos": [28, 45], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军（马林）", "side": "B", "pos": [45, 12], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 88], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军（刘綎）", "side": "B", "pos": [88, 50], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [28, 40], "to": [32, 44], "kind": "advance", "label": "杜松西进" },
+          { "from": [45, 18], "to": [45, 26], "kind": "advance", "label": "马林南进" },
+          { "from": [85, 50], "to": [80, 48], "kind": "advance", "label": "刘綎西进" }
+        ],
+        "focus": [55, 48, 38]
+      },
+      {
+        "title": "只一路去",
+        "narration": "努尔哈赤判断明军分兵，决定凭尔几路来，我只一路去，集中八旗主力先迎杜松。后金军留少量兵力牵制其余各路，主力向西疾进。后金军轻装疾行，不携重辎。",
+        "duration": 6,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [40, 44], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军（杜松）", "side": "B", "pos": [30, 45], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军（马林）", "side": "B", "pos": [45, 16], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 86], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军（刘綎）", "side": "B", "pos": [84, 50], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [52, 44], "to": [40, 44], "kind": "advance", "label": "集中兵力西进" }
+        ],
+        "focus": [40, 42, 22]
+      },
+      {
+        "title": "萨尔浒破杜松",
+        "narration": "杜松军抵萨尔浒，分兵两处扎营。后金趁其立足未稳，集中兵力猛攻，杜松战死，西路军覆没。明军车营火器未能展开。西路军大营被焚，辎重尽失。",
+        "duration": 6,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [32, 44], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军（杜松）", "side": "B", "pos": [28, 44], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军（马林）", "side": "B", "pos": [45, 18], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 86], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军（刘綎）", "side": "B", "pos": [84, 50], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [38, 44], "to": [30, 44], "kind": "attack", "label": "破杜松" }
+        ],
+        "focus": [34, 42, 16]
+      },
+      {
+        "title": "北上破马林",
+        "narration": "后金军连夜北上，直扑尚间崖的马林部，明北路军溃败，马林仅以身免。明军两路已失，合击之势瓦解。后金军乘夜疾行，次日清晨出现在明军阵前。",
+        "duration": 6,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [45, 28], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军残部", "side": "B", "pos": [24, 48], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军（马林）", "side": "B", "pos": [45, 14], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 84], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军（刘綎）", "side": "B", "pos": [84, 50], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [40, 40], "to": [44, 30], "kind": "advance", "label": "连夜北上" },
+          { "from": [44, 26], "to": [45, 16], "kind": "attack", "label": "破马林" }
+        ],
+        "focus": [44, 28, 18]
+      },
+      {
+        "title": "东进破刘綎",
+        "narration": "后金主力随即东进，迎击刘綎的东路军，另以缴获的明军号炮诱其轻进。刘綎力战而死，东路军覆没。三路明军相继败亡。东路军大营被攻破，辎重尽失。",
+        "duration": 7,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [70, 48], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军残部", "side": "B", "pos": [24, 48], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军残部", "side": "B", "pos": [44, 18], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 84], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军（刘綎）", "side": "B", "pos": [86, 50], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [48, 30], "to": [66, 46], "kind": "advance", "label": "主力东进" },
+          { "from": [74, 50], "to": [84, 50], "kind": "attack", "label": "破刘綎" }
+        ],
+        "focus": [72, 48, 22]
+      },
+      {
+        "title": "李如柏退兵",
+        "narration": "南路的李如柏进兵迟缓，闻三路败报，仓皇撤退，明军四路合击彻底失败。此役明军阵亡四万余人，损失惨重。明廷震动，杨镐被下狱论罪，辽东形势急转直下。",
+        "duration": 5,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [64, 46], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明西路军残部", "side": "B", "pos": [24, 50], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明北路军残部", "side": "B", "pos": [44, 20], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军（李如柏）", "side": "B", "pos": [55, 94], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军残部", "side": "B", "pos": [88, 54], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [55, 86], "to": [55, 96], "kind": "retreat", "label": "李如柏撤退" }
+        ],
+        "focus": [56, 66, 30]
+      },
+      {
+        "title": "辽东逆转",
+        "narration": "萨尔浒之战后，后金由防御转入进攻，明军在辽东转为守势。努尔哈赤乘胜西进，数年间攻取开原、铁岭、辽阳、沈阳，明朝的辽东防线全面动摇。",
+        "duration": 6,
+        "units": [
+          { "id": "houjin", "label": "后金军", "side": "A", "pos": [60, 36], "kind": "cavalry" },
+          { "id": "ming_xi", "label": "明军残部", "side": "B", "pos": [28, 52], "kind": "infantry" },
+          { "id": "ming_bei", "label": "明军残部", "side": "B", "pos": [44, 24], "kind": "infantry" },
+          { "id": "ming_nan", "label": "明南路军残部", "side": "B", "pos": [56, 90], "kind": "infantry" },
+          { "id": "ming_dong", "label": "明东路军残部", "side": "B", "pos": [86, 56], "kind": "infantry" }
+        ],
+        "arrows": [
+          { "from": [58, 40], "to": [58, 26], "kind": "advance", "label": "后金西进" }
+        ],
+        "focus": [58, 40, 32]
+      }
+    ]
+  },
+  {
+    "battleId": "yipianshi-1644",
+    "title": "一片石之战 · 推演",
+    "subtitle": "关宁军与清军夹击",
+    "terrain": "plain",
+    "summary": "公元1644年，吴三桂引清军入关，与多尔衮在一片石夹击李自成大顺军。大顺军溃退，李自成败走北京，清军随即入关，明清易代的格局由此确定。一片石之战是清军入关、定鼎中原的关键一战。",
+    "stages": [
+      {
+        "title": "北京易主",
+        "narration": "1644年，大顺军攻入北京，明廷崩溃。吴三桂奉命放弃宁远入卫，行至丰润得知北京已破，退回山海关，收拢关宁军与辽东难民，据关自守。",
+        "duration": 6,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [55, 42], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [84, 22], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [22, 46], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [28, 58], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [12, 46], "to": [22, 46], "kind": "advance", "label": "大顺军东进" },
+          { "from": [60, 36], "to": [56, 42], "kind": "retreat", "label": "吴三桂退守山海关" }
+        ],
+        "focus": [54, 42, 40]
+      },
+      {
+        "title": "招降反目",
+        "narration": "李自成遣使许以高官，吴三桂率军西行准备归顺，途中得知大顺军在京追赃助饷，父亲被拷掠、家产被籍没，遂回师破关东出，并向多尔衮求援。",
+        "duration": 6,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [52, 42], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [82, 24], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [22, 46], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [28, 58], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [54, 42], "to": [44, 46], "kind": "advance", "label": "西行归顺" },
+          { "from": [44, 46], "to": [52, 42], "kind": "retreat", "label": "回师山海关" }
+        ],
+        "focus": [44, 46, 26]
+      },
+      {
+        "title": "一片石鏖战",
+        "narration": "四月二十一日，李自成亲率主力猛攻山海关，吴三桂军据关死战。双方在一片石、石河一线反复冲杀，关宁军兵力单薄，渐渐不支。吴三桂数次遣使赴清营求援。",
+        "duration": 7,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [54, 42], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [80, 26], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [36, 46], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [40, 56], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [36, 46], "to": [52, 44], "kind": "attack", "label": "大顺军猛攻山海关" },
+          { "from": [40, 56], "to": [54, 48], "kind": "attack", "label": "别部侧击" }
+        ],
+        "focus": [46, 48, 20]
+      },
+      {
+        "title": "清军待机",
+        "narration": "多尔衮率清军至关外，按兵不动，坐观吴三桂与大顺军鏖战，待双方疲惫再定进退。吴三桂数次遣使催促，清军仍不轻动。多尔衮要的是坐收渔利，而非替明守关。",
+        "duration": 5,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [54, 44], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [76, 28], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [38, 46], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [42, 56], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [],
+        "focus": [58, 42, 30]
+      },
+      {
+        "title": "清军突入",
+        "narration": "鏖战至午后，多尔衮令清军从侧翼突起，蓄锐已久的满洲骑兵直冲大顺军侧背，大顺军阵形大乱，全线溃退。关宁军趁势出关反击，与大顺军鏖战至日暮。",
+        "duration": 7,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [54, 46], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [56, 34], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [40, 50], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [44, 60], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [72, 28], "to": [46, 46], "kind": "attack", "label": "清骑突入侧背" },
+          { "from": [56, 46], "to": [42, 48], "kind": "attack", "label": "关宁军出关反击" }
+        ],
+        "focus": [52, 46, 22]
+      },
+      {
+        "title": "清军入关",
+        "narration": "李自成退回北京，匆匆称帝后西撤；清军随即入关，定都北京。一片石之战成为明清易代的转折点，此后清军逐步统一全国。吴三桂受封平西王，关宁军成为清军前驱。",
+        "duration": 6,
+        "units": [
+          { "id": "wu", "label": "关宁军（吴三桂）", "side": "A", "pos": [54, 44], "kind": "infantry" },
+          { "id": "qing", "label": "清军（多尔衮）", "side": "A", "pos": [52, 38], "kind": "cavalry" },
+          { "id": "shun", "label": "大顺军（李自成）", "side": "B", "pos": [16, 50], "kind": "infantry" },
+          { "id": "shun_2", "label": "大顺军别部", "side": "B", "pos": [20, 58], "kind": "infantry" },
+          { "id": "guan", "label": "山海关", "side": "N", "pos": [55, 45], "kind": "fort" }
+        ],
+        "arrows": [
+          { "from": [34, 48], "to": [16, 50], "kind": "retreat", "label": "大顺军西撤" },
+          { "from": [66, 32], "to": [54, 38], "kind": "advance", "label": "清军入关" }
+        ],
+        "focus": [46, 48, 32]
+      }
+    ]
+  },
+  {
+    "battleId": "taierzhuang-1938",
+    "title": "台儿庄战役 · 推演",
+    "subtitle": "死守庄内与外线合围",
+    "terrain": "city",
+    "summary": "公元1938年春，日军两支队南下进攻台儿庄。中国守军死守庄内，与敌巷战；汤恩伯部于外线集结侧击，合围日军，取得抗战正面战场首次大捷。此役极大振奋了全国军民的抗战信心。",
+    "stages": [
+      {
+        "title": "日军南下",
+        "narration": "公元1938年3月，日军第5、第10师团各一部自鲁南南犯，企图夺取台儿庄、进窥徐州。第五战区司令长官李宗仁调集部队，以孙连仲部守台儿庄。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [82, 72], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [50, 20], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [64, 14], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [50, 14], "to": [50, 34], "kind": "advance", "label": "日军南下" }
+        ],
+        "focus": [50, 44, 28]
+      },
+      {
+        "title": "滕县临沂",
+        "narration": "日军先攻滕县、临沂，川军王铭章部死守滕县，张自忠、庞炳勋部在临沂阻击板垣师团，为中国军队调兵争取了时间，但滕县终告失守。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [50, 62], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [82, 72], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [50, 34], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [60, 26], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [50, 34], "to": [50, 48], "kind": "advance", "label": "日军逼近台儿庄" }
+        ],
+        "focus": [50, 44, 22]
+      },
+      {
+        "title": "攻入庄内",
+        "narration": "日军濑谷支队攻入台儿庄，占领庄内大部。中国守军退守西南一隅，与日军逐屋争夺，巷战惨烈，池峰城率部死守不退。守军退入街巷，逐屋抵抗，庄内厮杀不绝。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [48, 66], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [82, 72], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [50, 58], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [58, 50], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [50, 50], "to": [50, 60], "kind": "attack", "label": "日军攻入庄内" }
+        ],
+        "focus": [50, 56, 14]
+      },
+      {
+        "title": "庄内死守",
+        "narration": "日军增援部队投入庄内，中国守军伤亡惨重，仍死守阵地，夜间组织敢死队反击。李宗仁严令守军再守三日，为外线部队合围争取时机。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [50, 68], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [80, 70], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [50, 58], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [54, 54], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [54, 52], "to": [51, 62], "kind": "attack", "label": "日军续攻" }
+        ],
+        "focus": [51, 62, 14]
+      },
+      {
+        "title": "外线合围",
+        "narration": "汤恩伯第20集团军自外线南下，向日军侧背发起攻击；孙连仲部亦从庄内出击。中国军队内外夹击，切断日军退路，日军陷入包围。外围日军数次增援，均被击退。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [52, 66], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [62, 58], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [52, 50], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [58, 50], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [80, 68], "to": [64, 58], "kind": "advance", "label": "汤恩伯侧击" },
+          { "from": [52, 64], "to": [52, 54], "kind": "attack", "label": "守军出击" }
+        ],
+        "focus": [58, 56, 18]
+      },
+      {
+        "title": "日军溃退",
+        "narration": "日军突围北撤，中国军队追歼，台儿庄战役以中国军队胜利告终。此役是抗战正面战场的首次大捷，全国军民士气为之一振。日军残部撤回峄县，第五战区取得重大胜利。",
+        "duration": 6,
+        "units": [
+          { "id": "tg", "label": "中国守军", "side": "A", "pos": [52, 58], "kind": "infantry" },
+          { "id": "tangenbo", "label": "汤恩伯兵团", "side": "A", "pos": [64, 52], "kind": "infantry" },
+          { "id": "ri", "label": "日军主力", "side": "B", "pos": [52, 30], "kind": "infantry" },
+          { "id": "ri_zeng", "label": "日军增援", "side": "B", "pos": [58, 26], "kind": "infantry" },
+          { "id": "city", "label": "台儿庄城", "side": "N", "pos": [50, 56], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [52, 46], "to": [52, 24], "kind": "retreat", "label": "日军北撤" },
+          { "from": [60, 52], "to": [56, 40], "kind": "advance", "label": "中国军队追击" }
+        ],
+        "focus": [54, 42, 26]
+      }
+    ]
+  },
+  {
+    "battleId": "huaihai-1948",
+    "title": "淮海战役 · 推演",
+    "subtitle": "分割包围与各个歼灭",
+    "terrain": "plain",
+    "summary": "公元1948年11月至1949年1月，解放军以约六十万之众对国民党军约八十万，先后围歼黄百韬、黄维、杜聿明各部，取得战略决战的胜利，长江以北大局底定。此役是解放战争三大战役中规模最大的一次。",
+    "stages": [
+      {
+        "title": "战役发起",
+        "narration": "公元1948年11月，华东野战军与中原野战军约六十万人发起淮海战役，以徐州为中心，分割包围国民党军徐州剿总各部，首战目标为东线的黄百韬兵团。",
+        "duration": 6,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [42, 22], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [22, 62], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团", "side": "B", "pos": [78, 50], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团", "side": "B", "pos": [36, 82], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团", "side": "B", "pos": [52, 46], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [42, 28], "to": [56, 40], "kind": "advance", "label": "华野南下" },
+          { "from": [24, 64], "to": [34, 66], "kind": "advance", "label": "中野东进" }
+        ],
+        "focus": [52, 48, 38]
+      },
+      {
+        "title": "碾庄围黄百韬",
+        "narration": "华野主力直插徐州以东，将黄百韬兵团合围于碾庄。黄百韬据守村落顽抗，华野经十余日激战，全歼该兵团，黄百韬兵败身亡。华野以近迫作业方式逼近敌阵，逐点攻取村落。",
+        "duration": 7,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [66, 46], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [26, 66], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团", "side": "B", "pos": [78, 50], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团", "side": "B", "pos": [36, 82], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团", "side": "B", "pos": [52, 46], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [66, 46], "to": [76, 50], "kind": "attack", "label": "围歼黄百韬" }
+        ],
+        "focus": [72, 48, 20]
+      },
+      {
+        "title": "双堆集围黄维",
+        "narration": "中原野战军将黄维兵团合围于双堆集，国民党军多次突围未成。经二十余日激战，黄维兵团被全歼，黄维被俘，南线威胁解除。中原野战军以壕堑逼近，分割包围敌军各部。",
+        "duration": 7,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [66, 46], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [30, 76], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团残部", "side": "B", "pos": [80, 52], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团", "side": "B", "pos": [36, 82], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团", "side": "B", "pos": [52, 46], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [30, 74], "to": [35, 80], "kind": "attack", "label": "围歼黄维" }
+        ],
+        "focus": [34, 78, 18]
+      },
+      {
+        "title": "徐东阻击",
+        "narration": "徐州方面派邱清泉、李弥兵团东援黄百韬，被华野阻援部队挡在徐东。黄百韬兵团被歼后，杜聿明集团放弃徐州，率部西撤。华野以部分兵力阻击援军，为主力围歼争取时间。",
+        "duration": 6,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [60, 46], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [26, 72], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团残部", "side": "B", "pos": [82, 54], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团", "side": "B", "pos": [38, 84], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团", "side": "B", "pos": [40, 56], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [50, 46], "to": [40, 58], "kind": "retreat", "label": "杜聿明西撤" },
+          { "from": [58, 44], "to": [48, 54], "kind": "advance", "label": "华野追击" }
+        ],
+        "focus": [48, 52, 24]
+      },
+      {
+        "title": "陈官庄围杜聿明",
+        "narration": "杜聿明集团西撤至永城陈官庄，被华野、中野合围。时值严冬，国民党军粮弹俱尽，士气崩溃，多次突围均被击退。国民党军空投补给杯水车薪，军心涣散。",
+        "duration": 6,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [44, 54], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [22, 66], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团残部", "side": "B", "pos": [84, 56], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团残部", "side": "B", "pos": [40, 86], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团", "side": "B", "pos": [30, 62], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [44, 54], "to": [32, 60], "kind": "attack", "label": "合围陈官庄" }
+        ],
+        "focus": [34, 62, 20]
+      },
+      {
+        "title": "战役结束",
+        "narration": "1949年1月，解放军发起总攻，全歼杜聿明集团，杜聿明被俘。淮海战役共歼灭国民党军约五十五万，长江以北的局势由此底定。淮海战役与辽沈、平津战役共同奠定全国胜利的基础。",
+        "duration": 6,
+        "units": [
+          { "id": "huaye", "label": "华东野战军", "side": "A", "pos": [42, 54], "kind": "infantry" },
+          { "id": "zhongye", "label": "中原野战军", "side": "A", "pos": [24, 64], "kind": "infantry" },
+          { "id": "huangbd", "label": "黄百韬兵团残部", "side": "B", "pos": [86, 58], "kind": "infantry" },
+          { "id": "huangwei", "label": "黄维兵团残部", "side": "B", "pos": [44, 88], "kind": "infantry" },
+          { "id": "du", "label": "杜聿明集团残部", "side": "B", "pos": [34, 66], "kind": "infantry" },
+          { "id": "xuzhou", "label": "徐州", "side": "N", "pos": [55, 44], "kind": "city" }
+        ],
+        "arrows": [
+          { "from": [40, 56], "to": [34, 64], "kind": "attack", "label": "总攻" }
+        ],
+        "focus": [40, 62, 26]
+      }
+    ]
+  }
+]

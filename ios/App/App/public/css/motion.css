@@ -1,0 +1,394 @@
+/* ============================================================
+   motion.css — 2.2 动效系统：令牌 / keyframes / 工具类 / 降级
+   约束：只动 transform / opacity / filter / clip-path（accordion 用 grid rows）；
+        进入视口动画一次性；持续动画 ≤2 处；全部支持减弱动效。
+   ============================================================ */
+
+:root {
+  --ease-ink: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.3, 1.4, 0.5, 1);
+  --m-dur-fast: 160ms;
+  --m-dur-base: 280ms;
+  --m-dur-slow: 520ms;
+  --m-dur-cinema: 800ms;
+  --m-ripple: rgba(178, 58, 46, 0.08);
+}
+
+/* ---------------- 页面路由转场 ---------------- */
+.view.route-push > * { animation: m-route-push 320ms var(--ease-ink) both; }
+.view.route-pop > * { animation: m-route-pop 320ms var(--ease-ink) both; }
+.view.route-fade > * { animation: m-route-fade 260ms var(--ease-ink) both; }
+@keyframes m-route-push {
+  from { opacity: 0; transform: translate3d(26px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes m-route-pop {
+  from { opacity: 0; transform: translate3d(-18px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes m-route-fade {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------- 进入视口 reveal / blurUp ---------------- */
+.m-reveal {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  filter: blur(4px);
+  transition:
+    opacity 420ms var(--ease-ink) var(--m-delay, 0ms),
+    transform 420ms var(--ease-spring) var(--m-delay, 0ms),
+    filter 420ms var(--ease-ink) var(--m-delay, 0ms);
+}
+.m-reveal.is-in { opacity: 1; transform: none; filter: none; }
+
+/* 时间轴卡片统一 stagger 参数（沿用既有 reveal-armed 结构） */
+.timeline.reveal-armed .tl-card.m-reveal { transition-delay: var(--m-delay, 0ms); filter: none; }
+.timeline.reveal-armed .tl-card.m-reveal.is-in { filter: none; }
+.timeline.reveal-armed .tl-card.m-reveal.is-in {
+  transition:
+    opacity 520ms var(--ease-ink) var(--m-delay, 0ms),
+    transform 520ms var(--ease-spring) var(--m-delay, 0ms),
+    filter 520ms var(--ease-ink) var(--m-delay, 0ms);
+  filter: none;
+}
+
+/* ---------------- 大标题折叠 ---------------- */
+.brand-title,
+.brand-sub {
+  transition: transform 240ms var(--ease-ink), opacity 200ms var(--ease-ink);
+}
+.tl-head.is-collapsed .brand-title {
+  transform: scale(0.78) translateY(1px);
+  transform-origin: left bottom;
+  opacity: 0.94;
+}
+.tl-head.is-collapsed .brand-sub {
+  opacity: 0;
+  transform: translate3d(0, -5px, 0);
+}
+
+/* ---------------- Hero 标题逐字 / 印章 spring ---------------- */
+.hero-title .m-ch {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  line-height: 1.24;
+}
+.hero-title .m-ch-i {
+  display: inline-block;
+  transform: translate3d(0, 112%, 0);
+  animation: m-char-up 480ms var(--ease-spring) both;
+  animation-delay: calc(80ms + var(--i, 0) * 42ms);
+}
+@keyframes m-char-up {
+  to { transform: none; }
+}
+.hero-seal {
+  animation: m-seal-spring 560ms var(--ease-snap) both;
+  animation-delay: 260ms;
+}
+@keyframes m-seal-spring {
+  from { opacity: 0; transform: translate3d(0, -18px, 0) scale(0.82) rotate(-9deg); }
+  60% { opacity: 1; transform: translate3d(0, 2px, 0) scale(1.04) rotate(-2deg); }
+  to { opacity: 1; transform: rotate(-3deg); }
+}
+
+/* Hero 滑动切换 */
+.detail-page { --swipe-x: 0px; }
+.detail-page.is-swiping { user-select: none; }
+.detail-page.is-swiping .detail-body { transform: translate3d(var(--swipe-x, 0px), 0, 0); transition: none; }
+.detail-body { transition: transform 260ms var(--ease-spring); }
+
+/* ---------------- 鎏金流光 / 光晕呼吸（装饰性，持续动画） ---------------- */
+.m-shimmer { position: relative; overflow: hidden; }
+.m-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 38%, rgba(240, 226, 192, 0.32) 50%, transparent 62%);
+  transform: translate3d(-130%, 0, 0);
+  animation: m-shimmer 12s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+@keyframes m-shimmer {
+  0% { transform: translate3d(-130%, 0, 0); }
+  100% { transform: translate3d(130%, 0, 0); }
+}
+.m-glow { position: relative; overflow: hidden; }
+.m-glow::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(50% 50% at 30% 30%, rgba(201, 162, 39, 0.16), transparent 70%);
+  opacity: 0.32;
+  animation: m-glow 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes m-glow {
+  0%, 100% { opacity: 0.24; }
+  50% { opacity: 0.46; }
+}
+
+/* ---------------- Tab 弹簧 / 开关双弹跳 ---------------- */
+.tab.is-bounce svg { animation: m-tab-bounce 420ms var(--ease-snap); }
+@keyframes m-tab-bounce {
+  0% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-4px) scale(1.08); }
+  65% { transform: translateY(1px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
+.switch.is-pop::after { animation: m-switch-pop 180ms var(--ease-snap); }
+@keyframes m-switch-pop {
+  0% { scale: 1; }
+  45% { scale: 1.06; }
+  100% { scale: 1; }
+}
+
+/* ---------------- Ripple ---------------- */
+.m-ripple {
+  position: fixed;
+  z-index: 2500;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--m-ripple);
+  pointer-events: none;
+  transform: scale(0.1);
+  opacity: 0.9;
+  animation: m-ripple 420ms var(--ease-ink) forwards;
+}
+@keyframes m-ripple {
+  to { transform: scale(1.4); opacity: 0; }
+}
+
+/* ---------------- Toast 过冲 + 进度 ---------------- */
+.toast.is-visible {
+  animation: m-toast 320ms var(--ease-snap) both;
+}
+@keyframes m-toast {
+  0% { opacity: 0; transform: translate(-50%, 14px) scale(0.96); }
+  60% { opacity: 1; transform: translate(-50%, -1px) scale(1.04); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 1px;
+  background: rgba(224, 192, 96, 0.55);
+  transform-origin: left center;
+  transform: scaleX(0);
+  opacity: 0;
+  pointer-events: none;
+}
+.toast.is-visible::after {
+  animation: m-toast-progress var(--toast-dur, 2200ms) linear both;
+}
+@keyframes m-toast-progress {
+  0% { transform: scaleX(1); opacity: 0.7; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+
+/* ---------------- 手风琴（0fr → 1fr） ---------------- */
+.m-acc {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--m-dur-base) var(--ease-ink);
+}
+.m-acc.is-open { grid-template-rows: 1fr; }
+.m-acc > .m-acc-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+html[data-motion="reduce"] .m-acc,
+body[data-motion="reduce"] .m-acc { transition: none; }
+
+/* 名将小传 */
+.gen-bio-card .bio-acc { margin-top: 0; }
+.gen-bio-card .bio-full {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.85;
+  letter-spacing: 0.015em;
+  color: rgba(233, 223, 200, 0.82);
+  text-align: justify;
+}
+.gen-bio-card.is-open .bio-text { display: none; }
+.gen-bio-card.is-open .bio-acc { margin-top: 10px; }
+
+/* ---------------- 骨架屏 ---------------- */
+.m-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 18px;
+}
+.m-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background: rgba(233, 223, 200, 0.025);
+}
+.m-sk {
+  display: block;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(233, 223, 200, 0.06) 0%, rgba(201, 162, 39, 0.16) 45%, rgba(233, 223, 200, 0.06) 100%);
+  background-size: 240% 100%;
+  animation: m-skeleton 1.5s linear infinite;
+}
+.m-sk--dot { width: 34px; height: 34px; border-radius: 50%; flex: 0 0 auto; }
+.m-sk--line { height: 12px; width: var(--w, 78%); }
+@keyframes m-skeleton {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ---------------- FLIP 幽灵 ---------------- */
+.m-flip-ghost {
+  position: fixed;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  border-radius: var(--radius-s);
+  background: rgba(31, 26, 20, 0.94);
+  color: var(--paper);
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  transform-origin: 0 0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------------- 搜索聚焦 / 字号切换 ---------------- */
+.search-field { transition: transform 180ms var(--ease-ink); }
+.search-field:focus-within { transform: scale(1.01); }
+.more-page.is-font-flip .page-body { animation: m-text-fade 180ms var(--ease-ink); }
+@keyframes m-text-fade {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+
+/* ---------------- 势力时间带点亮 ---------------- */
+.fac-band-svg.m-band-playing .fac-bar-row .fac-bar {
+  transform-origin: left center;
+  animation: m-band-light 520ms var(--ease-spring) both;
+  animation-delay: var(--m-delay, 0ms);
+}
+@keyframes m-band-light {
+  from { opacity: 0.1; transform: scaleX(0.05); }
+  to { opacity: 0.82; transform: scaleX(1); }
+}
+.fac-band-svg.m-band-playing .fac-bar-row.is-selected .fac-bar {
+  animation-name: m-band-light;
+  opacity: 1;
+}
+
+/* ---------------- 抽屉拖拽态 ---------------- */
+.bottom-sheet.is-dragging,
+.graph-panel.is-dragging { transition: none !important; }
+.bottom-sheet.is-dragging::before,
+.graph-panel.is-dragging .gp-head { cursor: grabbing; }
+
+/* ---------------- 势力详情段落手风琴 ---------------- */
+.fac-acc-btn {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 6px;
+  color: var(--cinnabar-text);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+}
+.fac-acc .m-acc { margin-top: 2px; }
+.fac-acc .m-acc .d-p { margin-top: 4px; }
+.fac-acc .m-acc > .m-acc-inner { padding-bottom: 2px; }
+
+/* ---------------- 减弱动效：统一降级为 ≤120ms 透明度 ---------------- */
+html[data-motion="reduce"] .m-reveal,
+body[data-motion="reduce"] .m-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: opacity 120ms linear !important;
+  animation: none !important;
+}
+html[data-motion="reduce"] .view.route-push > *,
+html[data-motion="reduce"] .view.route-pop > *,
+html[data-motion="reduce"] .view.route-fade > *,
+body[data-motion="reduce"] .view.route-push > *,
+body[data-motion="reduce"] .view.route-pop > *,
+body[data-motion="reduce"] .view.route-fade > * { animation: none !important; }
+
+html[data-motion="reduce"] .hero-title .m-ch-i,
+body[data-motion="reduce"] .hero-title .m-ch-i {
+  transform: none !important;
+  animation: none !important;
+}
+html[data-motion="reduce"] .brand-title,
+html[data-motion="reduce"] .brand-sub,
+body[data-motion="reduce"] .brand-title,
+body[data-motion="reduce"] .brand-sub { transition: none !important; }
+html[data-motion="reduce"] .tl-head.is-collapsed .brand-title,
+body[data-motion="reduce"] .tl-head.is-collapsed .brand-title { transform: none !important; }
+html[data-motion="reduce"] .hero-seal,
+body[data-motion="reduce"] .hero-seal { animation: none !important; }
+html[data-motion="reduce"] .m-shimmer,
+body[data-motion="reduce"] .m-shimmer {
+  animation: none !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor;
+  color: var(--paper);
+}
+html[data-motion="reduce"] .m-shimmer::after,
+body[data-motion="reduce"] .m-shimmer::after { animation: none !important; opacity: 0; }
+html[data-motion="reduce"] .m-glow::after,
+body[data-motion="reduce"] .m-glow::after { animation: none !important; opacity: 0.2; }
+html[data-motion="reduce"] .tab.is-bounce svg,
+body[data-motion="reduce"] .tab.is-bounce svg { animation: none !important; }
+html[data-motion="reduce"] .switch.is-pop::after,
+body[data-motion="reduce"] .switch.is-pop::after { animation: none !important; }
+html[data-motion="reduce"] .m-ripple,
+body[data-motion="reduce"] .m-ripple { display: none; }
+html[data-motion="reduce"] .toast.is-visible,
+body[data-motion="reduce"] .toast.is-visible { animation: none !important; transition-duration: 120ms !important; }
+html[data-motion="reduce"] .toast.is-visible::after,
+body[data-motion="reduce"] .toast.is-visible::after { animation: none !important; opacity: 0; }
+html[data-motion="reduce"] .fac-band-svg.m-band-playing .fac-bar,
+body[data-motion="reduce"] .fac-band-svg.m-band-playing .fac-bar { animation: none !important; }
+html[data-motion="reduce"] .m-skeleton .m-sk,
+body[data-motion="reduce"] .m-skeleton .m-sk { animation: none !important; }
+html[data-motion="reduce"] .detail-body,
+body[data-motion="reduce"] .detail-body { transition: opacity 120ms linear; }
+html[data-motion="reduce"] .detail-page.is-swiping .detail-body,
+body[data-motion="reduce"] .detail-page.is-swiping .detail-body { transform: none !important; }
+html[data-motion="reduce"] .more-page.is-font-flip .page-body,
+body[data-motion="reduce"] .more-page.is-font-flip .page-body { animation: m-text-fade 120ms linear; }
+
+@media (prefers-reduced-motion: reduce) {
+  .view.route-push > *,
+  .view.route-pop > *,
+  .view.route-fade > * { animation: none !important; }
+  .m-reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: opacity 120ms linear !important; }
+  .hero-title .m-ch-i { transform: none !important; animation: none !important; }
+  .hero-seal { animation: none !important; }
+  .m-shimmer { animation: none !important; background: none !important; -webkit-text-fill-color: currentColor; }
+  .m-shimmer::after { animation: none !important; opacity: 0; }
+  .m-glow::after { animation: none !important; opacity: 0.2; }
+  .tab.is-bounce svg, .switch.is-pop::after { animation: none !important; }
+  .m-ripple { display: none; }
+  .toast.is-visible { animation: none !important; }
+  .toast.is-visible::after { animation: none !important; opacity: 0; }
+  .fac-band-svg.m-band-playing .fac-bar { animation: none !important; }
+  .m-sk { animation: none !important; }
+  .m-acc { transition: none !important; }
+  .detail-page.is-swiping .detail-body { transform: none !important; }
+}

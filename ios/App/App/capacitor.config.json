@@ -1,0 +1,10 @@
+{
+	"appId": "com.shanhezhanji.app",
+	"appName": "山河战纪",
+	"webDir": "www",
+	"ios": {
+		"contentInset": "always",
+		"backgroundColor": "#0E0C0A"
+	},
+	"packageClassList": []
+}
