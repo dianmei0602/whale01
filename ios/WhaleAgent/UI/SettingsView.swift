@@ -832,7 +832,7 @@ private struct ServiceSettingsView: View {
                         }
 
                         Button {
-                            model.speech.speak("大明王朝，山河入卷。")
+                            model.speech.speak("鲸鱼助手，正在听候你的指令。")
                         } label: {
                             Label("试听小露 x4_yezi", systemImage: "speaker.wave.2.fill")
                                 .whaleFont(size: 14, weight: .semibold)
