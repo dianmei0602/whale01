@@ -106,7 +106,7 @@ struct RootView: View {
     private var bottomChrome: some View {
         if page == .conversation {
             VStack(spacing: 0) {
-                ConversationComposerBar(model: model, draft: $composerDraft, externalFocused: $composerFocused)
+                ConversationComposerBar(model: model, externalFocused: $composerFocused, draft: $composerDraft)
                 if !keyboard.isVisible && !composerFocused {
                     WhaleRootTabBar(selection: $page)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
