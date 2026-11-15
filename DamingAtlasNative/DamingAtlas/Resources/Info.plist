@@ -19,20 +19,9 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>0.2.2</string>
+  <string>0.3.0</string>
   <key>CFBundleVersion</key>
-  <string>6</string>
-  <key>DamingTTSServer</key>
-  <string>http://192.168.110.10:4173</string>
-  <key>NSLocalNetworkUsageDescription</key>
-  <string>连接同一 Wi-Fi 下的大明王朝语音服务，以使用讯飞小露朗读。</string>
-  <key>NSAppTransportSecurity</key>
-  <dict>
-    <key>NSAllowsLocalNetworking</key>
-    <true/>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-  </dict>
+  <string>7</string>
   <key>LSRequiresIPhoneOS</key>
   <true/>
   <key>UIApplicationSceneManifest</key>

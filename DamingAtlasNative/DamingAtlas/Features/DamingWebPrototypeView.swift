@@ -39,18 +39,17 @@ private struct PrototypeWebContainer: UIViewRepresentable {
         let configuration = WKWebViewConfiguration()
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
-        if let ttsServer = Bundle.main.object(forInfoDictionaryKey: "DamingTTSServer") as? String,
-           !ttsServer.isEmpty,
-           let encoded = try? JSONEncoder().encode(ttsServer),
-           let json = String(data: encoded, encoding: .utf8) {
-            configuration.userContentController.addUserScript(
-                WKUserScript(
-                    source: "window.DAM_TTS_BASE_URL = \(json);",
-                    injectionTime: .atDocumentStart,
-                    forMainFrameOnly: true
-                )
+        configuration.userContentController.addUserScript(
+            WKUserScript(
+                source: """
+                window.DAM_NATIVE_TTS_DIRECT = true;
+                window.DAM_TTS_VOICE = "x4_yezi";
+                window.DAM_TTS_ENDPOINT = "wss://tts-api.xfyun.cn/v2/tts";
+                """,
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: true
             )
-        }
+        )
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator

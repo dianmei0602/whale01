@@ -7,6 +7,11 @@
   const notify = (message) => {
     if (typeof window.toast === 'function') window.toast(message);
   };
+  const escUIAttr = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
   const PENTATONIC = [146.83, 164.81, 185.00, 220.00, 246.94, 293.66, 329.63, 369.99, 440.00];
   const MELODY = [
@@ -222,6 +227,34 @@
     return chunks;
   }
 
+  function bytesToBase64(bytes) {
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let index = 0; index < bytes.length; index += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+    }
+    return btoa(binary);
+  }
+
+  async function signIflytekUrl(config) {
+    const endpoint = new URL(config.endpoint || 'wss://tts-api.xfyun.cn/v2/tts');
+    const date = new Date().toUTCString();
+    const signatureOrigin = `host: ${endpoint.host}\ndate: ${date}\nGET ${endpoint.pathname} HTTP/1.1`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(config.apiSecret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const signatureBytes = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signatureOrigin)));
+    const signature = bytesToBase64(signatureBytes);
+    const authorizationOrigin = `api_key="${config.apiKey}", algorithm="hmac-sha256", headers="host date request-line", signature="${signature}"`;
+    const authorization = btoa(authorizationOrigin);
+    const query = new URLSearchParams({ authorization, date, host: endpoint.host });
+    return `${endpoint.protocol}//${endpoint.host}${endpoint.pathname}?${query.toString()}`;
+  }
+
   class SpeechReader {
     constructor(buttons) {
       this.buttons = buttons;
@@ -235,10 +268,18 @@
       this.apiStatus = 'unknown';
       this.voice = null;
       this.apiBase = String(window.DAM_TTS_BASE_URL || '').replace(/\/+$/, '');
+      this.direct = Boolean(window.DAM_NATIVE_TTS_DIRECT);
+      this.directConfig = this.readDirectConfig();
+      this.socket = null;
       this.checkBackend();
     }
 
     async checkBackend() {
+      if (this.direct) {
+        this.apiStatus = this.directConfig ? 'configured' : 'unconfigured';
+        this.voice = this.directConfig?.voice || window.DAM_TTS_VOICE || 'x4_yezi';
+        return;
+      }
       try {
         const response = await fetch(`${this.apiBase}/api/tts/status`, { cache: 'no-store' });
         if (!response.ok) throw new Error('status unavailable');
@@ -248,6 +289,71 @@
       } catch {
         this.apiStatus = 'unavailable';
       }
+    }
+
+    readDirectConfig() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('dam_xfyun_tts_v1') || 'null');
+        if (!parsed?.appId || !parsed?.apiKey || !parsed?.apiSecret) return null;
+        return {
+          appId: parsed.appId,
+          apiKey: parsed.apiKey,
+          apiSecret: parsed.apiSecret,
+          endpoint: parsed.endpoint || window.DAM_TTS_ENDPOINT || 'wss://tts-api.xfyun.cn/v2/tts',
+          voice: parsed.voice || 'x4_yezi'
+        };
+      } catch {
+        return null;
+      }
+    }
+
+    showDirectSetup() {
+      document.getElementById('ttsSetup')?.remove();
+      const overlay = document.createElement('div');
+      overlay.id = 'ttsSetup';
+      overlay.className = 'voice-setup';
+      overlay.innerHTML = `
+        <form class="voice-setup-card" aria-label="讯飞语音设置">
+          <div class="voice-setup-head">
+            <div><h2>连接讯飞小露</h2><p>直连讯飞 API，不经过电脑或局域网服务。</p></div>
+            <button type="button" data-tts-close aria-label="关闭">×</button>
+          </div>
+          <label>APPID<input name="appId" autocomplete="off" value="${escUIAttr(this.directConfig?.appId || '')}"></label>
+          <label>APIKey<input name="apiKey" autocomplete="off" value="${escUIAttr(this.directConfig?.apiKey || '')}"></label>
+          <label>APISecret<input name="apiSecret" type="password" autocomplete="off" value="${escUIAttr(this.directConfig?.apiSecret || '')}"></label>
+          <div class="voice-setup-mode">发音人：讯飞小露 · x4_yezi</div>
+          <p class="voice-setup-note">凭据只保存在本机 App 沙盒，不写入网页源码、安装包或仓库。</p>
+          <div class="voice-setup-actions">
+            <button type="button" data-tts-close>取消</button>
+            <button type="submit">保存并朗读</button>
+          </div>
+        </form>`;
+      document.body.appendChild(overlay);
+      const close = () => overlay.remove();
+      overlay.querySelectorAll('[data-tts-close]').forEach((button) => button.addEventListener('click', close));
+      overlay.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const config = {
+          appId: String(data.get('appId') || '').trim(),
+          apiKey: String(data.get('apiKey') || '').trim(),
+          apiSecret: String(data.get('apiSecret') || '').trim(),
+          endpoint: window.DAM_TTS_ENDPOINT || 'wss://tts-api.xfyun.cn/v2/tts',
+          voice: window.DAM_TTS_VOICE || 'x4_yezi'
+        };
+        if (!config.appId || !config.apiKey || !config.apiSecret) {
+          notify('请完整填写 APPID、APIKey 和 APISecret');
+          return;
+        }
+        localStorage.setItem('dam_xfyun_tts_v1', JSON.stringify(config));
+        this.directConfig = config;
+        this.apiStatus = 'configured';
+        this.voice = config.voice;
+        close();
+        notify('讯飞语音已连接 · 小露');
+        this.toggle();
+      });
+      requestAnimationFrame(() => overlay.querySelector('input[name="appId"]')?.focus({ preventScroll: true }));
     }
 
     currentScope() {
@@ -297,6 +403,10 @@
         notify('当前页面没有可朗读的正文');
         return;
       }
+      if (this.direct && !this.directConfig) {
+        this.showDirectSetup();
+        return;
+      }
       this.cancelled = false;
       this.setState('loading');
       window.DamMusic?.duck();
@@ -323,6 +433,7 @@
     }
 
     async requestIflytek(text) {
+      if (this.direct) return this.requestIflytekDirect(text);
       const response = await fetch(`${this.apiBase}/api/tts`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -331,6 +442,69 @@
       });
       if (!response.ok) throw new Error(`TTS ${response.status}`);
       return response.blob();
+    }
+
+    async requestIflytekDirect(text) {
+      const config = this.directConfig;
+      const url = await signIflytekUrl(config);
+      return new Promise((resolve, reject) => {
+        const chunks = [];
+        const socket = new WebSocket(url);
+        this.socket = socket;
+        const timer = window.setTimeout(() => {
+          try { socket.close(); } catch {}
+          reject(new Error('讯飞语音连接超时'));
+        }, 30000);
+        const finish = (error, blob) => {
+          window.clearTimeout(timer);
+          if (this.socket === socket) this.socket = null;
+          if (error) reject(error);
+          else resolve(blob);
+        };
+        socket.addEventListener('open', () => {
+          socket.send(JSON.stringify({
+            common: { app_id: config.appId },
+            business: {
+              aue: 'lame',
+              sfl: 1,
+              auf: 'audio/L16;rate=16000',
+              vcn: config.voice || 'x4_yezi',
+              speed: 55,
+              volume: 65,
+              pitch: 48,
+              tte: 'UTF8',
+              bgs: 0,
+              reg: '2',
+              rdn: '3'
+            },
+            data: {
+              status: 2,
+              text: bytesToBase64(new TextEncoder().encode(text))
+            }
+          }));
+        });
+        socket.addEventListener('message', (event) => {
+          try {
+            const payload = JSON.parse(event.data);
+            if (payload.code !== 0) {
+              finish(new Error(payload.message || `讯飞错误 ${payload.code}`));
+              try { socket.close(); } catch {}
+              return;
+            }
+            if (payload.data?.audio) {
+              const binary = atob(payload.data.audio);
+              chunks.push(Uint8Array.from(binary, (character) => character.charCodeAt(0)));
+            }
+            if (payload.data?.status === 2) {
+              finish(null, new Blob(chunks, { type: 'audio/mpeg' }));
+              try { socket.close(); } catch {}
+            }
+          } catch (error) {
+            finish(error);
+          }
+        });
+        socket.addEventListener('error', () => finish(new Error('讯飞语音连接失败')));
+      });
     }
 
     async playCloudQueue(chunks, firstAudio) {
@@ -441,6 +615,8 @@
       this.cancelled = true;
       this.abortController?.abort();
       this.abortController = null;
+      try { this.socket?.close(); } catch {}
+      this.socket = null;
       if (this.audio) {
         this.audio.pause();
         this.audio.src = '';
