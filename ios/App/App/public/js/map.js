@@ -9,7 +9,7 @@ import { TYPES } from './store.js';
 import { navigate } from './router.js';
 import * as geo from './china-geo.js';
 
-const CLUSTER_SCREEN_PX = 34; // 聚合格子（屏幕像素）
+const CLUSTER_SCREEN_PX = 40; // 聚合格子（屏幕像素）
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
 
@@ -191,7 +191,7 @@ function filtersHTML(ctx) {
 }
 
 function pageHTML(ctx, mode) {
-  return `<div class="map-page">
+  return `<div class="map-page map-page--paper">
     <header class="page-head">
       <div class="head-title">战役地图<span class="head-sub">${ctx.data.total} 场 · ${
       mode === 'vector' ? '示意轮廓（底图回退）' : '标准地图'
@@ -386,40 +386,45 @@ function layoutPoints(battles) {
     return { b, x, y, outside: !inChinaLL(b.location.lng, b.location.lat), deciding: b.scale === '战略决战' };
   });
 
-  const buckets = new Map();
-  for (const p of points) {
-    const key = `${Math.floor(p.x / cell)},${Math.floor(p.y / cell)}`;
-    if (!buckets.has(key)) buckets.set(key, []);
-    buckets.get(key).push(p);
-  }
-
-  const groups = [];
-  for (const list of buckets.values()) {
-    if (list.length === 1) {
-      groups.push({ ...list[0], count: 1 });
-    } else {
-      const cx = list.reduce((s, p) => s + p.x, 0) / list.length;
-      const cy = list.reduce((s, p) => s + p.y, 0) / list.length;
-      groups.push({ x: cx, y: cy, count: list.length, items: list, outside: list.every((p) => p.outside) });
+  // 放大到 1.75× 以上不再聚合：120 个小点直接铺开，避免圆环遮住地图文字
+  let groups;
+  if (state.scale >= 1.75) {
+    groups = points.map((p) => ({ ...p, count: 1 }));
+  } else {
+    const buckets = new Map();
+    for (const p of points) {
+      const key = `${Math.floor(p.x / cell)},${Math.floor(p.y / cell)}`;
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(p);
+    }
+    groups = [];
+    for (const list of buckets.values()) {
+      if (list.length === 1) {
+        groups.push({ ...list[0], count: 1 });
+      } else {
+        const cx = list.reduce((s, p) => s + p.x, 0) / list.length;
+        const cy = list.reduce((s, p) => s + p.y, 0) / list.length;
+        groups.push({ x: cx, y: cy, count: list.length, items: list, outside: list.every((p) => p.outside) });
+      }
     }
   }
 
   const parts = groups.map((g) => {
     if (g.count > 1) {
-      const r = 12 * u;
+      const r = 4.8 * u;
       return `<g class="mp-cluster" data-cluster="${g.items.map((p) => esc(p.b.id)).join(',')}" role="button" tabindex="0" aria-label="${g.count} 场战役聚合，点击放大">
-        <circle class="mp-hit" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(25 * u).toFixed(2)}"/>
-        <circle class="mp-cluster-glow" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(r * 1.5).toFixed(2)}"/>
+        <title>${g.count} 场战役聚合 · 点按放大</title>
+        <circle class="mp-hit" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(19 * u).toFixed(2)}"/>
+        <circle class="mp-cluster-glow" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(r * 1.2).toFixed(2)}"/>
         <circle class="mp-cluster-bg" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${r.toFixed(2)}"/>
-        <text x="${g.x.toFixed(1)}" y="${(g.y + 0.5 * u).toFixed(1)}" font-size="${(10 * u).toFixed(2)}" text-anchor="middle" dominant-baseline="middle">${g.count}</text>
       </g>`;
     }
-    const r = (g.deciding ? 5.6 : 4.1) * u;
-    const ringR = 8.2 * u;
+    const r = (g.deciding ? 2.4 : 1.6) * u;
+    const ringR = 3.8 * u;
     return `<g class="mp${g.deciding ? ' mp-deciding' : ''}${g.outside ? ' mp-outside' : ''}" data-battle="${esc(g.b.id)}" role="button" tabindex="0" aria-label="${esc(g.b.name)}">
-      <circle class="mp-hit" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(23 * u).toFixed(2)}"/>
-      ${g.deciding ? `<circle class="mp-ring" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${ringR.toFixed(2)}" stroke-width="${(1.3 * u).toFixed(2)}"/>` : ''}
-      <circle class="mp-halo" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(r * 2.1).toFixed(2)}"/>
+      <circle class="mp-hit" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(19 * u).toFixed(2)}"/>
+      ${g.deciding ? `<circle class="mp-ring" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${ringR.toFixed(2)}" stroke-width="${(1.1 * u).toFixed(2)}"/>` : ''}
+      <circle class="mp-halo" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${(r * 1.45).toFixed(2)}"/>
       <circle class="mp-dot" cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="${r.toFixed(2)}"/>
     </g>`;
   });
@@ -1080,6 +1085,7 @@ export function renderMap(root, ctx) {
 
   const mode = 'std';
   root.innerHTML = pageHTML(ctx, mode);
+  document.body.classList.add('map-paper');
 
   // 摘要卡挂在 body 上：避免被 .view > * 的动画 transform 影响 fixed 定位
   const popup = document.createElement('div');
@@ -1183,6 +1189,7 @@ export function disposeMap() {
     if (state.pending) cancelAnimationFrame(state.pending);
   }
   document.getElementById('mapPopup')?.remove();
+  document.body.classList.remove('map-paper');
   // 释放高清底图解码引用，离开地图页后让 WKWebView 更早回收内存
   try {
     const img = state?.canvas?.querySelector('image');
