@@ -1,0 +1,776 @@
+[
+  {
+    "id": "ying-qin",
+    "name": "嬴秦",
+    "factionId": "qin",
+    "note": "嬴姓赵氏，自西陲附庸而诸侯而帝，秦统一后二世而亡；谱系据《史记·秦本纪》《秦始皇本纪》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "秦非子", "role": "周孝王时附庸", "generalId": null, "note": "养马于汧渭之间，受封秦邑，为嬴秦立国开端。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "秦仲", "role": "周宣王时大夫", "generalId": null, "note": "非子曾孙，伐西戎战死，周室始命秦为大夫。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "秦庄公", "role": "西垂大夫", "generalId": null, "parent": "秦仲", "note": "破西戎，周宣王予大骆犬丘之地，秦势渐起。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "秦襄公", "role": "秦开国诸侯", "generalId": null, "parent": "秦庄公", "note": "护送周平王东迁，受封诸侯，赐岐以西之地。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "秦穆公", "role": "春秋五霸之一", "generalId": null, "note": "德公少子，用百里奚、蹇叔，霸西戎，与晋争衡。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "秦孝公", "role": "秦国变法之君", "generalId": null, "note": "献公之子，前356年用商鞅变法，秦国由弱转强。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "秦惠文王", "role": "秦称王", "generalId": null, "parent": "秦孝公", "note": "车裂商鞅而存其法，前325年称王，取巴蜀。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "秦昭襄王", "role": "在位五十六年", "generalId": null, "parent": "秦惠文王", "note": "用白起破长平、拔郢，秦统一之势成于此。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "秦庄襄王", "role": "秦国王", "generalId": null, "note": "昭襄王之孙，安国君之子，灭东周，在位三年。" }
+        ]
+      },
+      {
+        "gen": 10,
+        "members": [
+          { "name": "秦始皇", "role": "秦始皇帝", "generalId": null, "parent": "秦庄襄王", "note": "前221年并六国，废分封行郡县，二世而亡。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "嬴姓 · 秦", "to": "芈姓 · 楚", "member": "芈八子（宣太后）", "year": -330, "note": "秦惠文王娶楚女芈八子，其子即秦昭襄王；秦楚联姻而终为敌国。据《史记·穰侯列传》，年份为约数。", "factionIds": ["qin"] }
+    ]
+  },
+  {
+    "id": "liu-han",
+    "name": "刘汉",
+    "factionId": "xihan",
+    "note": "刘姓汉室，西汉、东汉与蜀汉同出帝系；谱系据《史记》《汉书》《后汉书》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "刘邦", "role": "汉高祖", "generalId": null, "note": "沛县亭长起兵，前202年称帝，定都长安。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "刘盈", "role": "汉惠帝", "generalId": null, "parent": "刘邦", "note": "吕后所生，在位七年，政由吕氏。" },
+          { "name": "刘恒", "role": "汉文帝", "generalId": null, "parent": "刘邦", "note": "薄姬所生，自代王入继，与民休息，开文景之治。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "刘启", "role": "汉景帝", "generalId": null, "parent": "刘恒", "note": "平七国之乱，削抑诸侯，中央集权加强。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "刘彻", "role": "汉武帝", "generalId": null, "parent": "刘启", "note": "罢黜百家，北击匈奴，通西域，在位五十四年。" },
+          { "name": "刘胜", "role": "中山靖王", "generalId": null, "parent": "刘启", "note": "景帝之子，蜀汉刘备即其后裔，封中山，乐酒好内。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "刘据", "role": "戾太子", "generalId": null, "parent": "刘彻", "note": "巫蛊之祸被诬，兵败自杀，宣帝为其孙。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "刘进", "role": "史皇孙", "generalId": null, "parent": "刘据", "note": "戾太子之子，与父同死于巫蛊之祸。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "刘询", "role": "汉宣帝", "generalId": null, "parent": "刘进", "note": "民间长大，昭帝后入继，中兴汉室。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "刘秀", "role": "汉光武帝", "generalId": null, "note": "景帝子长沙定王刘发之后，重建汉室，定都洛阳。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "刘协", "role": "汉献帝", "generalId": null, "note": "灵帝之子，东汉末帝，禅位于曹丕。" },
+          { "name": "刘备", "role": "蜀汉昭烈帝", "generalId": null, "note": "中山靖王刘胜之后，三顾诸葛亮，建蜀汉。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "刘氏 · 汉", "to": "挛鞮氏 · 匈奴", "member": "汉宗室女（名失载）", "year": -199, "note": "白登解围后，高祖采刘敬之策结和亲，以宗室女嫁冒顿单于，开汉匈和亲之端。据《史记·匈奴列传》。", "factionIds": ["xihan"] },
+      { "from": "刘氏 · 汉", "to": "挛鞮氏 · 匈奴", "member": "王昭君", "year": -33, "note": "竟宁元年，昭君嫁呼韩邪单于，号宁胡阏氏，汉匈由此罢兵数十年。据《汉书·元帝纪》《匈奴传》。", "factionIds": ["xihan"] },
+      { "from": "刘氏 · 汉", "to": "昆莫 · 乌孙", "member": "刘细君", "year": -105, "note": "江都王刘建之女，封江都公主，嫁乌孙昆莫猎骄靡，汉与乌孙共制匈奴。据《汉书·西域传》。", "factionIds": ["xihan"] },
+      { "from": "刘氏 · 汉", "to": "昆莫 · 乌孙", "member": "刘解忧", "year": -101, "note": "楚王刘戊之孙，继细君之后嫁乌孙军须靡，留西域五十余年。据《汉书·西域传》。", "factionIds": ["xihan"] }
+    ]
+  },
+  {
+    "id": "cao-wei",
+    "name": "曹魏",
+    "factionId": "caowei",
+    "note": "沛国谯县曹氏，曹操起兵、曹丕代汉；谱系据《三国志·魏书》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "曹腾", "role": "中常侍", "generalId": null, "note": "东汉宦官，养子曹嵩，为曹操之祖父。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "曹嵩", "role": "太尉", "generalId": null, "parent": "曹腾", "note": "曹腾养子，本姓存疑，官至太尉。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "曹操", "role": "魏武帝", "generalId": "cao-cao", "parent": "曹嵩", "note": "起兵讨董，迎献帝都许，官渡破袁绍，赤壁受挫。", "battleIds": ["guandu-200", "chibi-208"] }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "曹丕", "role": "魏文帝", "generalId": null, "parent": "曹操", "note": "代汉称帝，都洛阳，行九品中正制。" },
+          { "name": "曹植", "role": "陈思王", "generalId": null, "parent": "曹操", "note": "七步成诗，文名冠建安，封陈王，郁郁而终。" },
+          { "name": "曹彰", "role": "任城王", "generalId": null, "parent": "曹操", "note": "黄须儿，勇冠诸子，北征乌桓，封任城王。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "曹叡", "role": "魏明帝", "generalId": null, "parent": "曹丕", "note": "托孤司马懿，屡拒诸葛亮北伐，晚年大兴土木。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "曹芳", "role": "齐王", "generalId": null, "note": "明帝养子，曹楷之子，为司马师所废。" },
+          { "name": "曹奂", "role": "魏元帝", "generalId": null, "note": "曹操之孙，曹宇之子，禅位于司马炎。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "曹氏 · 魏", "to": "刘氏 · 汉", "member": "曹节", "year": 214, "note": "建安十九年，曹操三女入宫，曹节立为皇后；曹丕代汉时力争玺绶。据《后汉书·献帝纪》。", "factionIds": ["caowei", "xihan"] }
+    ]
+  },
+  {
+    "id": "si-ma-jin",
+    "name": "司马晋",
+    "factionId": "xijin",
+    "note": "河内温县司马氏，司马懿奠基，孙司马炎代魏；谱系据《晋书》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "司马防", "role": "东汉京兆尹", "generalId": null, "note": "司马懿之父，举荐曹操为北部尉。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "司马懿", "role": "魏太傅", "generalId": "si-ma-yi", "parent": "司马防", "note": "拒诸葛亮于渭南，发动高平陵之变，专魏政。", "battleIds": ["jieting-228", "wuzhangyuan-234"] }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "司马师", "role": "魏大将军", "generalId": null, "parent": "司马懿", "note": "平毌丘俭、文钦之乱，废曹芳，专魏政。" },
+          { "name": "司马昭", "role": "魏相国", "generalId": null, "parent": "司马懿", "note": "灭蜀汉，封晋王，其子司马炎代魏。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "司马炎", "role": "晋武帝", "generalId": null, "parent": "司马昭", "note": "代魏建晋，灭吴统一，大封宗室。" },
+          { "name": "司马攸", "role": "齐王", "generalId": null, "parent": "司马昭", "note": "出继司马师，与司马炎争位不成，忧愤而卒。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "司马衷", "role": "晋惠帝", "generalId": null, "parent": "司马炎", "note": "问蛤蟆何不食肉糜，八王之乱由是而起。" },
+          { "name": "司马炽", "role": "晋怀帝", "generalId": null, "parent": "司马炎", "note": "永嘉之乱中为匈奴所俘，西晋将亡。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "司马睿", "role": "晋元帝", "generalId": null, "note": "司马懿曾孙，南渡建东晋，王与马共天下。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "司马氏 · 晋", "to": "弘农杨氏 · 曹魏旧族", "member": "杨艳", "year": 266, "note": "泰始二年，晋武帝立杨艳为皇后；弘农杨氏为曹魏旧族，婚姻联结新旧士族。据《晋书·后妃传》。", "factionIds": ["xijin", "caowei"] }
+    ]
+  },
+  {
+    "id": "li-tang",
+    "name": "李唐",
+    "factionId": "tang",
+    "note": "陇西李氏，关陇军事贵族集团核心；谱系据《旧唐书》《新唐书》宗室世系。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "李虎", "role": "西魏八柱国", "generalId": null, "note": "唐追尊太祖景皇帝，关陇集团奠基者之一。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "李昞", "role": "北周安州总管", "generalId": null, "parent": "李虎", "note": "唐追尊世祖元皇帝，娶独孤信第四女。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "李渊", "role": "唐高祖", "generalId": null, "parent": "李昞", "note": "太原起兵，618年称帝，定都长安。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "李建成", "role": "隐太子", "generalId": null, "parent": "李渊", "note": "玄武门之变被杀，其子嗣多遭诛。" },
+          { "name": "李世民", "role": "唐太宗", "generalId": "li-shi-min", "parent": "李渊", "note": "虎牢一战擒两王，贞观之治，天可汗。", "battleIds": ["qianshuiyuan-618", "hulao-621"] },
+          { "name": "李元吉", "role": "齐王", "generalId": null, "parent": "李渊", "note": "玄武门之变与李建成同死，年二十四，五子皆诛。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "李治", "role": "唐高宗", "generalId": null, "parent": "李世民", "note": "灭高句丽，疆域最盛，后期政归武氏。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "李显", "role": "唐中宗", "generalId": null, "parent": "李治", "note": "两度即位，复位后为韦后所制，凡六年。" },
+          { "name": "李旦", "role": "唐睿宗", "generalId": null, "parent": "李治", "note": "两度即位，禅位于李隆基，自请为太上皇。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "李隆基", "role": "唐玄宗", "generalId": null, "parent": "李旦", "note": "开元盛世，天宝后安史之乱起，乱后为太上皇。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "李亨", "role": "唐肃宗", "generalId": null, "parent": "李隆基", "note": "灵武即位，平乱未竟而崩，宦官专权自此始。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "李豫", "role": "唐代宗", "generalId": null, "parent": "李亨", "note": "平安史之乱，藩镇割据之势已成。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "李氏 · 唐", "to": "杨氏 · 隋", "member": "独孤氏（李昞妻）", "year": 550, "note": "独孤信第四女嫁李昞，其姐为隋文帝皇后独孤伽罗，李渊与杨广为姨表兄弟。据《周书·独孤信传》《旧唐书·高祖本纪》，年份约。", "factionIds": ["tang", "sui"] },
+      { "from": "李氏 · 唐", "to": "悉勃野氏 · 吐蕃", "member": "文成公主", "year": 641, "note": "贞观十五年，文成公主嫁吐蕃赞普松赞干布，唐蕃自此通好。据《旧唐书·吐蕃传》。", "factionIds": ["tang"] },
+      { "from": "李氏 · 唐", "to": "悉勃野氏 · 吐蕃", "member": "金城公主", "year": 710, "note": "景龙四年，中宗以雍王女金城公主嫁吐蕃赞普尺带珠丹。据《旧唐书·吐蕃传》。", "factionIds": ["tang"] },
+      { "from": "李氏 · 唐", "to": "药罗葛氏 · 回纥", "member": "宁国公主", "year": 758, "note": "乾元元年，肃宗以亲女宁国公主嫁回纥毗伽阙可汗，借兵平乱。据《旧唐书·回纥传》。", "factionIds": ["tang"] }
+    ]
+  },
+  {
+    "id": "zhao-song",
+    "name": "赵宋",
+    "factionId": "beisong",
+    "note": "赵姓宋室，北宋、南宋分承太祖、太宗两系；谱系据《宋史·宗室世系表》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "赵弘殷", "role": "后周检校司徒", "generalId": null, "note": "赵匡胤、赵光义之父，追尊宣祖。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "赵匡胤", "role": "宋太祖", "generalId": null, "parent": "赵弘殷", "note": "陈桥兵变称帝，杯酒释兵权，先南后北。" },
+          { "name": "赵光义", "role": "宋太宗", "generalId": null, "parent": "赵弘殷", "note": "灭北汉，两伐辽失利，高粱河之败。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "赵德昭", "role": "武功郡王", "generalId": null, "parent": "赵匡胤", "note": "太祖长子，因太宗责让自杀，事见《宋史》本传。" },
+          { "name": "赵恒", "role": "宋真宗", "generalId": null, "parent": "赵光义", "note": "澶渊之盟，宋辽罢兵，岁币三十万，封禅泰山。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "赵祯", "role": "宋仁宗", "generalId": null, "parent": "赵恒", "note": "在位四十二年，庆历新政未竟，庙号仁宗。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "赵曙", "role": "宋英宗", "generalId": null, "note": "仁宗养子，濮王赵允让之子，濮议之争起。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "赵顼", "role": "宋神宗", "generalId": null, "parent": "赵曙", "note": "用王安石变法，元丰改制，五路伐夏失败。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "赵煦", "role": "宋哲宗", "generalId": null, "parent": "赵顼", "note": "亲政后绍述新法，对西夏取攻势。" },
+          { "name": "赵佶", "role": "宋徽宗", "generalId": null, "parent": "赵顼", "note": "书画皇帝，联金灭辽，靖康之变被俘。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "赵构", "role": "宋高宗", "generalId": null, "parent": "赵佶", "note": "南渡建南宋，杀岳飞，绍兴和议。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "赵昚", "role": "宋孝宗", "generalId": null, "note": "太祖七世孙，高宗养子，为岳飞平反，隆兴北伐。" }
+        ]
+      },
+      {
+        "gen": 10,
+        "members": [
+          { "name": "赵惇", "role": "宋光宗", "generalId": null, "parent": "赵昚", "note": "在位五年，因病不能视事，被迫内禅。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "zhu-ming",
+    "name": "朱明",
+    "factionId": "ming",
+    "note": "濠州钟离朱氏，朱元璋开国，十六帝；谱系据《明史·诸王传》《明实录》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "朱世珍", "role": "朱元璋之父", "generalId": null, "note": "濠州佃农，追尊仁祖淳皇帝，生四子，元璋最幼。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "朱元璋", "role": "明太祖", "generalId": null, "parent": "朱世珍", "note": "布衣起兵，逐元建明，废丞相，兴大狱。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "朱标", "role": "懿文太子", "generalId": null, "parent": "朱元璋", "note": "早卒，其子建文帝继位，谥懿文，追尊兴宗。" },
+          { "name": "朱棣", "role": "明成祖", "generalId": null, "parent": "朱元璋", "note": "靖难之役夺位，迁都北京，五征蒙古。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "朱允炆", "role": "建文帝", "generalId": null, "parent": "朱标", "note": "削藩失败，靖难后不知所终，年号建文，在位四年。" },
+          { "name": "朱高炽", "role": "明仁宗", "generalId": null, "parent": "朱棣", "note": "在位十月，与民休息，仁宣之治开端。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "朱瞻基", "role": "明宣宗", "generalId": null, "parent": "朱高炽", "note": "平定汉王高煦之叛，仁宣之治，在位十年。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "朱祁镇", "role": "明英宗", "generalId": null, "parent": "朱瞻基", "note": "土木堡之变被俘，复辟后杀于谦。" },
+          { "name": "朱祁钰", "role": "景泰帝", "generalId": null, "parent": "朱瞻基", "note": "北京保卫战，任用于谦，后夺门被废。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "朱见深", "role": "明宪宗", "generalId": null, "parent": "朱祁镇", "note": "成化年间，设西厂，宠万贵妃，晚年怠于政事。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "朱祐樘", "role": "明孝宗", "generalId": null, "parent": "朱见深", "note": "弘治中兴，勤政纳谏，独宠张皇后，早逝。" },
+          { "name": "朱祐杬", "role": "兴献王", "generalId": null, "parent": "朱见深", "note": "明世宗之父，大礼议由此而起，封兴献王，葬钟祥。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "朱厚照", "role": "明武宗", "generalId": null, "parent": "朱祐樘", "note": "正德年间，豹房理政，应州御边。" },
+          { "name": "朱厚熜", "role": "明世宗", "generalId": null, "parent": "朱祐杬", "note": "嘉靖年间，大礼议，崇道，倭患渐起。" }
+        ]
+      },
+      {
+        "gen": 10,
+        "members": [
+          { "name": "朱载垕", "role": "明穆宗", "generalId": null, "parent": "朱厚熜", "note": "隆庆开关，俺答封贡，与蒙古议和。" }
+        ]
+      },
+      {
+        "gen": 11,
+        "members": [
+          { "name": "朱翊钧", "role": "明神宗", "generalId": null, "parent": "朱载垕", "note": "万历三大征，后期怠政，党争渐炽。" }
+        ]
+      },
+      {
+        "gen": 12,
+        "members": [
+          { "name": "朱常洛", "role": "明光宗", "generalId": null, "parent": "朱翊钧", "note": "在位一月，红丸案起，年号泰昌，在位仅一月。" }
+        ]
+      },
+      {
+        "gen": 13,
+        "members": [
+          { "name": "朱由校", "role": "明熹宗", "generalId": null, "parent": "朱常洛", "note": "天启年间，魏忠贤专权，辽东失利。" },
+          { "name": "朱由检", "role": "明思宗", "generalId": null, "parent": "朱常洛", "note": "崇祯年间，内有流寇，外有后金，自缢煤山。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "aisin-gioro-qing",
+    "name": "爱新觉罗清",
+    "factionId": "qing",
+    "note": "满洲爱新觉罗氏，自建州起兵至逊位；谱系据《清史稿》本纪与后妃传。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "觉昌安", "role": "建州左卫首领", "generalId": null, "note": "努尔哈赤祖父，清追尊景祖，为明军误杀。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "塔克世", "role": "建州左卫首领", "generalId": null, "parent": "觉昌安", "note": "努尔哈赤之父，清追尊显祖，与父同死。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "努尔哈赤", "role": "后金建立者", "generalId": null, "parent": "塔克世", "note": "十三副遗甲起兵，创八旗，萨尔浒破明军。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "皇太极", "role": "清太宗", "generalId": null, "parent": "努尔哈赤", "note": "改国号大清，松锦大战定辽东，联蒙入关。" },
+          { "name": "多尔衮", "role": "摄政王", "generalId": null, "parent": "努尔哈赤", "note": "率清军入关，定都北京，行剃发令。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "福临", "role": "顺治帝", "generalId": null, "parent": "皇太极", "note": "六岁登极，由多尔衮摄政，亲政后早逝。" }
+        ]
+      },
+      {
+        "gen": 6,
+        "members": [
+          { "name": "玄烨", "role": "康熙帝", "generalId": null, "parent": "福临", "note": "平三藩、收台湾、征噶尔丹，在位六十一年。" }
+        ]
+      },
+      {
+        "gen": 7,
+        "members": [
+          { "name": "胤禛", "role": "雍正帝", "generalId": null, "parent": "玄烨", "note": "摊丁入亩，改土归流，设军机处，严治贪腐。" }
+        ]
+      },
+      {
+        "gen": 8,
+        "members": [
+          { "name": "弘历", "role": "乾隆帝", "generalId": null, "parent": "胤禛", "note": "十全武功，修四库全书，后期吏治渐弛。" }
+        ]
+      },
+      {
+        "gen": 9,
+        "members": [
+          { "name": "颙琰", "role": "嘉庆帝", "generalId": null, "parent": "弘历", "note": "诛和珅，白莲教起，国势由盛转衰。" }
+        ]
+      },
+      {
+        "gen": 10,
+        "members": [
+          { "name": "旻宁", "role": "道光帝", "generalId": null, "parent": "颙琰", "note": "鸦片战争爆发，签南京条约，清由盛转衰。" }
+        ]
+      },
+      {
+        "gen": 11,
+        "members": [
+          { "name": "奕詝", "role": "咸丰帝", "generalId": null, "parent": "旻宁", "note": "太平天国与英法联军并起，避走热河。" },
+          { "name": "奕譞", "role": "醇亲王", "generalId": null, "parent": "旻宁", "note": "光绪帝生父，创办北洋海军，号醇贤亲王。" }
+        ]
+      },
+      {
+        "gen": 12,
+        "members": [
+          { "name": "载淳", "role": "同治帝", "generalId": null, "parent": "奕詝", "note": "在位十三年，洋务运动初兴，年号同治，无子而崩。" },
+          { "name": "载湉", "role": "光绪帝", "generalId": null, "parent": "奕譞", "note": "戊戌变法失败，被囚瀛台，年号光绪，在位三十四年。" },
+          { "name": "载沣", "role": "摄政王", "generalId": null, "parent": "奕譞", "note": "宣统朝摄政，辛亥革命后退位，晚年不问政事。" }
+        ]
+      },
+      {
+        "gen": 13,
+        "members": [
+          { "name": "溥仪", "role": "宣统帝", "generalId": null, "parent": "载沣", "note": "末代皇帝，1912年退位，后为伪满傀儡。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "爱新觉罗氏 · 清", "to": "博尔济吉特氏 · 科尔沁蒙古", "member": "博尔济吉特氏哲哲（孝端文皇后）", "year": 1614, "note": "万历四十二年，皇太极娶科尔沁贝勒莽古思之女哲哲，满蒙联姻渐成制度。据《清史稿·后妃传》。", "factionIds": ["qing"] },
+      { "from": "爱新觉罗氏 · 清", "to": "博尔济吉特氏 · 科尔沁蒙古", "member": "博尔济吉特氏布木布泰（孝庄文皇后）", "year": 1625, "note": "天命十年，皇太极娶科尔沁贝勒寨桑之女布木布泰，即后来的孝庄文皇后。据《清史稿·后妃传》。", "factionIds": ["qing"] }
+    ]
+  },
+  {
+    "id": "xiang-chu",
+    "name": "项楚",
+    "factionId": null,
+    "note": "项氏世为楚将，项燕殉楚，项梁、项羽起兵反秦；项羽无后，谱系据《史记·项羽本纪》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "项燕", "role": "楚将", "generalId": null, "note": "前224年为秦将王翦所败，自杀，楚人怜之。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "项梁", "role": "楚武信君", "generalId": null, "parent": "项燕", "note": "项羽季父，立楚怀王，定陶之战败死。" },
+          { "name": "项伯", "role": "射阳侯", "generalId": null, "parent": "项燕", "note": "项羽季父，鸿门宴护刘邦，后归汉。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "项羽", "role": "西楚霸王", "generalId": "xiang-yu", "note": "巨鹿破秦军主力，垓下兵败自刎，无后。", "battleIds": ["julu-207bc", "pengcheng-205bc", "gaixia-202bc"] },
+          { "name": "项庄", "role": "项羽部将", "generalId": null, "note": "鸿门宴舞剑，事见《史记》，世系未详。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "zhu-ge-shu",
+    "name": "诸葛蜀",
+    "factionId": "shuhan",
+    "note": "琅琊诸葛氏，亮仕蜀、瑾仕吴、诞仕魏，号一门三方；谱系据《三国志·蜀书》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "诸葛珪", "role": "汉末太山郡丞", "generalId": null, "note": "诸葛亮之父，早卒，子女由叔父诸葛玄抚养。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "诸葛亮", "role": "蜀汉丞相", "generalId": "zhu-ge-liang", "parent": "诸葛珪", "note": "隆中对定三分，五次北伐，卒于五丈原。", "battleIds": ["chibi-208", "jieting-228", "wuzhangyuan-234"] },
+          { "name": "诸葛均", "role": "蜀汉长水校尉", "generalId": null, "parent": "诸葛珪", "note": "诸葛亮之弟，随兄入蜀，官至长水校尉。" },
+          { "name": "诸葛瑾", "role": "吴大将军", "generalId": null, "parent": "诸葛珪", "note": "诸葛亮之兄，仕吴，孙权倚重，官至大将军。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "诸葛瞻", "role": "蜀汉卫将军", "generalId": null, "parent": "诸葛亮", "note": "绵竹力战邓艾，与子诸葛尚俱死。" },
+          { "name": "诸葛乔", "role": "蜀汉驸马都尉", "generalId": null, "parent": "诸葛瑾", "note": "诸葛瑾之子，过继诸葛亮，早卒。" },
+          { "name": "诸葛恪", "role": "吴太傅", "generalId": null, "parent": "诸葛瑾", "note": "东兴之战获胜，后骄横被诛，夷三族。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "诸葛尚", "role": "蜀汉将领", "generalId": null, "parent": "诸葛瞻", "note": "随父战死绵竹，年未及冠，年未及冠，父子俱殁。" },
+          { "name": "诸葛京", "role": "西晋郿令", "generalId": null, "parent": "诸葛瞻", "note": "蜀亡后内迁，诸葛氏一支由此延续。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "sun-wu",
+    "name": "孙吴",
+    "factionId": "dongwu",
+    "note": "吴郡孙氏，孙坚起兵，孙策、孙权据江东；谱系据《三国志·吴书》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "孙钟", "role": "孙坚之父", "generalId": null, "note": "吴郡富春人，种瓜为业，孙氏起家之祖。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "孙坚", "role": "讨逆将军", "generalId": null, "parent": "孙钟", "note": "讨董卓，斩华雄，后死于襄阳之战。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "孙策", "role": "吴侯", "generalId": null, "parent": "孙坚", "note": "平江东六郡，遇刺早卒，弟孙权继业。" },
+          { "name": "孙权", "role": "吴大帝", "generalId": null, "parent": "孙坚", "note": "赤壁联刘破曹，称帝建吴，都建业。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "孙登", "role": "吴太子", "generalId": null, "parent": "孙权", "note": "早卒，孙权为之流涕，年三十三而卒，孙权流涕。" },
+          { "name": "孙和", "role": "废太子", "generalId": null, "parent": "孙权", "note": "二宫之争被废，其子孙皓为末帝。" },
+          { "name": "孙休", "role": "吴景帝", "generalId": null, "parent": "孙权", "note": "诛孙綝亲政，在位六年，年号永安，谥景帝。" },
+          { "name": "孙亮", "role": "会稽王", "generalId": null, "parent": "孙权", "note": "幼年即位，为孙綝所废，年号建兴，被废后自杀。" }
+        ]
+      },
+      {
+        "gen": 5,
+        "members": [
+          { "name": "孙皓", "role": "吴末帝", "generalId": null, "parent": "孙和", "note": "暴虐失人心，280年降晋，吴亡。" }
+        ]
+      }
+    ],
+    "marriages": [
+      { "from": "孙氏 · 吴", "to": "刘氏 · 蜀汉", "member": "孙夫人", "year": 209, "note": "建安十四年，孙权以妹嫁刘备，巩固孙刘联盟；后归吴，事见《三国志·蜀书·先主传》。", "factionIds": ["dongwu", "shuhan"] }
+    ]
+  },
+  {
+    "id": "wei-shi",
+    "name": "卫氏",
+    "factionId": "xihan",
+    "note": "河东平阳卫氏，以卫青、霍去病显于汉匈战争；谱系据《史记·卫将军骠骑列传》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "卫媪", "role": "平阳侯家婢", "generalId": null, "note": "卫青、卫子夫、卫少儿之母，出身微贱。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "卫青", "role": "大将军", "generalId": "wei-qing", "parent": "卫媪", "note": "七战匈奴，官至大司马大将军，封长平侯。", "battleIds": ["henan-127bc", "mobei-119bc"] },
+          { "name": "卫子夫", "role": "汉武帝皇后", "generalId": null, "parent": "卫媪", "note": "由歌女入宫，立为皇后三十八年，巫蛊之祸自杀。" },
+          { "name": "卫少儿", "role": "霍去病生母", "generalId": null, "parent": "卫媪", "note": "与霍仲孺生霍去病，后嫁詹事陈掌。" },
+          { "name": "霍仲孺", "role": "平阳县吏", "generalId": null, "note": "与卫少儿生霍去病，后另娶生霍光。" }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "霍去病", "role": "骠骑将军", "generalId": "huo-qu-bing", "parent": "卫少儿", "note": "六击匈奴，封狼居胥，年二十四卒。", "battleIds": ["hexi-121bc", "mobei-119bc"] },
+          { "name": "霍光", "role": "大司马大将军", "generalId": null, "parent": "霍仲孺", "note": "霍去病异母弟，辅昭帝、宣帝，权倾朝野。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "霍嬗", "role": "冠军侯", "generalId": null, "parent": "霍去病", "note": "霍去病之子，嗣爵，早卒无后，谥哀侯，国除。" },
+          { "name": "霍禹", "role": "右将军", "generalId": null, "parent": "霍光", "note": "霍光之子，谋反被诛，霍氏败亡。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "yue-shi",
+    "name": "岳氏",
+    "factionId": "nansong",
+    "note": "相州汤阴岳氏，岳飞以军功显，冤死风波亭；谱系据《宋史·岳飞传》及岳珂《金佗稡编》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "岳和", "role": "农户", "generalId": null, "note": "岳飞之父，家贫而好施，岳飞少负气节。" }
+        ]
+      },
+      {
+        "gen": 2,
+        "members": [
+          { "name": "岳飞", "role": "南宋名将", "generalId": "yue-fei", "parent": "岳和", "note": "郾城大破拐子马，以莫须有冤死风波亭。", "battleIds": ["bianjing-1126", "yancheng-1140"] }
+        ]
+      },
+      {
+        "gen": 3,
+        "members": [
+          { "name": "岳云", "role": "岳家军将", "generalId": null, "parent": "岳飞", "note": "年十二从军，与父同死风波亭，年二十三。" },
+          { "name": "岳雷", "role": "岳飞次子", "generalId": null, "parent": "岳飞", "note": "父死时年十六，随母流放岭南，卒年不详。" },
+          { "name": "岳霖", "role": "岳飞三子", "generalId": null, "parent": "岳飞", "note": "孝宗时复官，收集父遗文，官至朝请大夫。" },
+          { "name": "岳震", "role": "岳飞四子", "generalId": null, "parent": "岳飞", "note": "父死时年幼，后官至朝奉大夫，宋孝宗时复官。" },
+          { "name": "岳霆", "role": "岳飞五子", "generalId": null, "parent": "岳飞", "note": "后改名岳霭，官至修武郎，宋孝宗时复官。" }
+        ]
+      },
+      {
+        "gen": 4,
+        "members": [
+          { "name": "岳珂", "role": "南宋文学家", "generalId": null, "parent": "岳霖", "note": "著《金佗稡编》《桯史》，为岳飞辨诬。" }
+        ]
+      }
+    ],
+    "marriages": []
+  },
+  {
+    "id": "han-shi",
+    "name": "韩氏",
+    "factionId": "xihan",
+    "note": "淮阴韩信，家世史无明文，佐汉灭楚而终被夷三族；谱系据《史记·淮阴侯列传》。",
+    "generations": [
+      {
+        "gen": 1,
+        "members": [
+          { "name": "韩信", "role": "汉初名将", "generalId": "han-xin", "note": "定三秦、破赵齐，封楚王，后以谋反罪被诛，夷三族无后。", "battleIds": ["jingxing-204bc", "weishui-203bc", "gaixia-202bc"] }
+        ]
+      }
+    ],
+    "marriages": []
+  }
+]

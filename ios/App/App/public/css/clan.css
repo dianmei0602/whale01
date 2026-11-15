@@ -1,0 +1,760 @@
+/* ============================================================
+   clan.css — 3.0 家族谱：世代谱 / 父子缩进 / 联姻 / 图例
+   墨金风格，复用 base.css 变量；375/390/430 无横向溢出
+   减弱动效：html/body[data-motion="reduce"] 下无动画
+   ============================================================ */
+
+/* ---------------- 页面壳 ---------------- */
+.clan-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(90% 44% at 50% -8%, rgba(201, 162, 39, 0.07), transparent 60%),
+    var(--ink-0);
+}
+.clan-page--state .cl-body {
+  padding-top: 6px;
+}
+
+/* ---------------- Hero ---------------- */
+.cl-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line-soft);
+  background:
+    radial-gradient(120% 100% at 84% -10%, rgba(201, 162, 39, 0.14), transparent 62%),
+    linear-gradient(180deg, #1B1712 0%, #15120E 60%, var(--ink-0) 100%);
+}
+.cl-hero-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(68% 80% at 78% 0%, rgba(178, 58, 46, 0.16), transparent 62%),
+    radial-gradient(90% 70% at 8% 0%, rgba(201, 162, 39, 0.1), transparent 66%);
+}
+.cl-hero::after {
+  content: "";
+  position: absolute;
+  right: -26px;
+  bottom: -34px;
+  width: 220px;
+  height: 156px;
+  background: url("../assets/mountains.svg") center bottom / cover no-repeat;
+  opacity: 0.24;
+  pointer-events: none;
+}
+.cl-hero-seal {
+  position: absolute;
+  right: 8px;
+  bottom: -22px;
+  z-index: 1;
+  width: 108px;
+  height: 108px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(201, 162, 39, 0.14);
+  border-radius: 6px;
+  color: rgba(201, 162, 39, 0.13);
+  font-size: 66px;
+  font-weight: 600;
+  line-height: 1;
+  transform: rotate(-7deg);
+  pointer-events: none;
+  user-select: none;
+}
+.cl-hero-inner {
+  position: relative;
+  z-index: 2;
+  padding: calc(14px + var(--safe-t)) calc(20px + var(--safe-r)) 18px calc(20px + var(--safe-l));
+}
+.cl-hero-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.cl-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: rgba(14, 12, 10, 0.42);
+  color: var(--gold-bright);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+}
+.cl-hero-badge::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 8px var(--gold-bright);
+}
+.cl-faction-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 26px;
+  padding: 2px 8px;
+  border: 1px solid rgba(111, 123, 102, 0.4);
+  border-radius: 2px;
+  background: rgba(111, 123, 102, 0.12);
+  color: var(--bronze-text);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.cl-faction-link:active { background: rgba(111, 123, 102, 0.24); }
+.cl-hero-title {
+  margin-top: 12px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  color: #F4EAD6;
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.66);
+  overflow-wrap: anywhere;
+}
+.cl-hero-note {
+  margin-top: 8px;
+  max-width: 24em;
+  font-size: 12.5px;
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+}
+.cl-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  margin: 15px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid var(--line-soft);
+}
+.cl-fact {
+  min-width: 0;
+  padding-left: 9px;
+  border-left: 1px solid rgba(201, 162, 39, 0.18);
+}
+.cl-fact:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.cl-fact dt {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+}
+.cl-fact dd {
+  margin: 2px 0 0;
+  font-family: var(--num);
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  white-space: nowrap;
+}
+.cl-fact dd a { color: var(--gold-bright); }
+
+/* ---------------- 主体 ---------------- */
+.cl-body {
+  padding: 0 calc(18px + var(--safe-r)) calc(34px + var(--safe-b)) calc(18px + var(--safe-l));
+}
+.cl-section { margin-top: 22px; }
+.cl-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+.cl-sec-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--paper);
+}
+.cl-sec-num {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  border: 1px solid rgba(201, 162, 39, 0.42);
+  border-radius: 2px;
+  background: rgba(201, 162, 39, 0.08);
+  color: var(--gold-bright);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.cl-sec-rule {
+  flex: 1;
+  min-width: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+.cl-sec-note {
+  flex: 0 1 auto;
+  max-width: 46%;
+  font-size: 9.5px;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+  text-align: right;
+}
+.cl-empty-line {
+  padding: 16px 14px;
+  border: 1px dashed var(--line-soft);
+  border-radius: var(--radius-s);
+  color: var(--mute);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* ---------------- 世代谱 ---------------- */
+.cl-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cl-gen { position: relative; }
+.cl-gen-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cl-gen-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 2px;
+  background: rgba(201, 162, 39, 0.09);
+  color: var(--gold-bright);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.cl-gen-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--paper-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cl-gen-rule {
+  flex: 1;
+  min-width: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.24), transparent);
+}
+.cl-gen-count {
+  flex: 0 0 auto;
+  font-family: var(--num);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--mute);
+}
+
+/* 世代纵列 + 连接线 */
+.cl-members {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 9px 0 0 9px;
+  padding: 2px 0 2px 20px;
+  border-left: 1px solid rgba(201, 162, 39, 0.17);
+  list-style: none;
+}
+.cl-member {
+  position: relative;
+  min-width: 0;
+}
+/* 世代节点圆点（落在纵向连接线上） */
+.cl-member::before {
+  content: "";
+  position: absolute;
+  left: -23.5px;
+  top: 19px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-0);
+  border: 1px solid rgba(201, 162, 39, 0.55);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.06);
+}
+.cl-member-card {
+  position: relative;
+  min-width: 0;
+  padding: 10px 12px 11px;
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid rgba(201, 162, 39, 0.36);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 130% at 100% 0%, rgba(201, 162, 39, 0.055), transparent 62%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.72), rgba(21, 18, 14, 0.72));
+}
+/* 父子缩进：子辈卡片右移，左缘线加深 */
+.cl-member.is-child .cl-member-card {
+  margin-left: calc(var(--cl-depth, 0) * 12px);
+  border-left-color: rgba(201, 162, 39, 0.56);
+}
+/* 父子连线：自世代纵列连接到缩进后的卡片左缘 */
+.cl-member.is-child .cl-member-card::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * (20px + var(--cl-depth, 1) * 12px));
+  top: 19px;
+  width: calc(20px + var(--cl-depth, 1) * 12px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.42), rgba(201, 162, 39, 0.24));
+}
+.cl-member-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+.cl-member-name {
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+.cl-member-role {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--gold-bright);
+}
+.cl-member-flag {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  height: 17px;
+  padding: 0 5px;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  border-radius: 2px;
+  background: rgba(201, 162, 39, 0.1);
+  color: var(--gold-bright);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+.cl-member-parent {
+  margin-top: 4px;
+  font-size: 9.5px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: rgba(156, 144, 123, 0.95);
+}
+.cl-tree-glyph {
+  margin-right: 3px;
+  color: rgba(201, 162, 39, 0.6);
+}
+.cl-member-note {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.72;
+  letter-spacing: 0.01em;
+  color: var(--paper-dim);
+  overflow-wrap: anywhere;
+}
+.cl-member-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line-soft);
+}
+.cl-link-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgba(201, 162, 39, 0.42);
+  border-radius: 3px;
+  background: rgba(201, 162, 39, 0.07);
+  color: var(--gold-bright);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.cl-link-btn:active { background: rgba(201, 162, 39, 0.18); border-color: rgba(201, 162, 39, 0.7); }
+.cl-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.cl-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--line-soft);
+  border-radius: 3px;
+  background: rgba(233, 223, 200, 0.026);
+  color: var(--paper-dim);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.cl-chip:active { border-color: var(--line); color: var(--gold-bright); }
+.cl-chip--battle { color: rgba(224, 192, 96, 0.9); border-color: rgba(201, 162, 39, 0.2); }
+.cl-chip--faction { color: var(--bronze-text); border-color: rgba(111, 123, 102, 0.32); }
+
+/* ---------------- 联姻 ---------------- */
+.cl-marriages {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  list-style: none;
+}
+.cl-marriage {
+  position: relative;
+  min-width: 0;
+  padding: 11px 12px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(178, 58, 46, 0.09), transparent 60%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.7), rgba(21, 18, 14, 0.7));
+}
+.cl-marriage-route {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 8px;
+  min-width: 0;
+}
+.cl-marriage-side {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+.cl-marriage-knot {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(178, 58, 46, 0.55);
+  border-radius: 2px;
+  background: rgba(178, 58, 46, 0.16);
+  color: var(--cinnabar-text);
+  font-size: 11px;
+  font-weight: 600;
+  transform: rotate(-2deg);
+}
+.cl-marriage-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+  margin-top: 7px;
+}
+.cl-marriage-member {
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--paper-dim);
+}
+.cl-marriage-year {
+  font-family: var(--num);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+.cl-marriage-facs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.cl-marriage-note {
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: rgba(233, 223, 200, 0.78);
+  overflow-wrap: anywhere;
+}
+
+/* ---------------- 图例 ---------------- */
+.cl-legend {
+  margin-top: 24px;
+  padding: 12px 13px 13px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-s);
+  background: rgba(233, 223, 200, 0.022);
+}
+.cl-legend-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+.cl-legend-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  list-style: none;
+}
+.cl-legend-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 9.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--mute);
+}
+.cl-lg {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 8.5px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.cl-lg--gen {
+  min-width: 30px;
+  height: 17px;
+  padding: 0 4px;
+  border: 1px solid rgba(201, 162, 39, 0.42);
+  border-radius: 2px;
+  color: var(--gold-bright);
+  background: rgba(201, 162, 39, 0.08);
+}
+.cl-lg--line {
+  width: 18px;
+  height: 12px;
+  border-left: 1px solid rgba(201, 162, 39, 0.5);
+  border-bottom: 1px solid rgba(201, 162, 39, 0.5);
+  border-bottom-left-radius: 5px;
+}
+.cl-lg--knot {
+  width: 17px;
+  height: 17px;
+  border: 1px solid rgba(178, 58, 46, 0.5);
+  border-radius: 2px;
+  background: rgba(178, 58, 46, 0.14);
+  color: var(--cinnabar-text);
+}
+.cl-lg--general {
+  min-width: 30px;
+  height: 17px;
+  padding: 0 4px;
+  border: 1px solid rgba(201, 162, 39, 0.42);
+  border-radius: 2px;
+  color: var(--gold-bright);
+}
+.cl-lg--battle {
+  min-width: 30px;
+  height: 17px;
+  padding: 0 4px;
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  border-radius: 2px;
+  color: rgba(224, 192, 96, 0.9);
+}
+
+/* ---------------- 页脚 ---------------- */
+.cl-foot {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+  text-align: center;
+  color: var(--mute);
+  font-size: 9.5px;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+}
+.cl-foot-seal {
+  margin-top: 4px;
+  color: rgba(201, 162, 39, 0.6);
+  letter-spacing: 0.2em;
+}
+
+/* ---------------- 家族总览（#/clan 无 id 兜底） ---------------- */
+.cl-index-intro {
+  margin: 12px 0 14px;
+  font-size: 12px;
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+  color: var(--paper-dim);
+}
+.cl-index-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  list-style: none;
+}
+.cl-index-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-left: 2px solid rgba(201, 162, 39, 0.34);
+  border-radius: var(--radius-s);
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(201, 162, 39, 0.05), transparent 60%),
+    linear-gradient(165deg, rgba(31, 26, 20, 0.74), rgba(21, 18, 14, 0.74));
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.cl-index-card:active { border-color: rgba(201, 162, 39, 0.45); }
+.cl-index-seal {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 46px;
+  border-radius: 3px;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(158deg, #3A3126, #241E17);
+  color: var(--gold-bright);
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 2px rgba(14, 12, 10, 0.28);
+}
+.cl-index-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cl-index-name {
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+.cl-index-fac {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+}
+.cl-index-note-line {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: rgba(233, 223, 200, 0.78);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cl-index-stats {
+  margin-top: 4px;
+  font-family: var(--num);
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  color: var(--mute);
+}
+.cl-index-arrow {
+  flex: 0 0 auto;
+  align-self: center;
+  color: rgba(201, 162, 39, 0.45);
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ---------------- 加载 ---------------- */
+.cl-loading {
+  padding: 26px 0 60px;
+}
+.cl-loading-text {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+}
+
+/* ---------------- 窄屏微调 ---------------- */
+@media (max-width: 374px) {
+  .cl-hero-inner { padding-left: 16px; padding-right: 16px; }
+  .cl-body { padding-left: calc(14px + var(--safe-l)); padding-right: calc(14px + var(--safe-r)); }
+  .cl-hero-title { font-size: 27px; }
+  .cl-fact { padding-left: 7px; }
+  .cl-fact dd { font-size: 12.5px; }
+  .cl-sec-title { font-size: 14.5px; }
+  .cl-legend-list { gap: 7px 8px; }
+  .cl-legend-list li { font-size: 9px; gap: 5px; }
+  .cl-member-card { padding: 9px 10px 10px; }
+  .cl-marriage { padding: 10px 10px 11px; }
+  .cl-index-card { padding: 10px; gap: 9px; }
+  .cl-index-seal { width: 38px; height: 42px; font-size: 18px; }
+}
+
+/* 大屏：内容限宽，避免谱系行过长 */
+@media (min-width: 700px) {
+  .cl-hero-inner { max-width: 720px; margin: 0 auto; }
+  .cl-body { max-width: 720px; margin: 0 auto; }
+}
+
+/* ---------------- 减弱动效 ---------------- */
+[data-motion="reduce"] .clan-page *,
+[data-motion="reduce"] .clan-page *::before,
+[data-motion="reduce"] .clan-page *::after {
+  animation: none !important;
+  transition: none !important;
+}
+/* .m-reveal 在 motion.css 里带 120ms 透明度过渡，这里按「reduce 无动画」要求压掉 */
+html[data-motion="reduce"] .clan-page .m-reveal,
+body[data-motion="reduce"] .clan-page .m-reveal {
+  transition: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion]) .clan-page *,
+  html:not([data-motion]) .clan-page *::before,
+  html:not([data-motion]) .clan-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  html:not([data-motion]) .clan-page .m-reveal {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
