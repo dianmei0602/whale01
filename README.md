@@ -65,6 +65,9 @@ Windows 上通过两个 GitHub Actions 工作流验证：
 - `iOS Manual Interaction Tests`：原生单测和 UI 用例
 - `Chinese Chronicles Sideload`：生成无签名 IPA，供 AltStore / SideStore 用本人 Apple 账号重签
 
+私有仓库遇到 Actions 账单限额时，使用公开 fork 的构建分支继续验证。具体流程见
+[docs/FORK_ACTIONS.md](docs/FORK_ACTIONS.md)。
+
 ## 数据规则
 
 1. 事件和政权必须有出处。

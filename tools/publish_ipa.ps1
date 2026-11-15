@@ -22,6 +22,7 @@ param(
     [long]$RunId = 0,
     [string]$Destination = "",
     [string]$ExpectedSourceSHA = "",
+    [switch]$AllowForkedWorkflow,
     [string]$IpaPass = $env:IPA_PASS,
     [string]$PrivateKeyPath = (Join-Path (Join-Path $env:USERPROFILE ".app") "ipa-private.pem")
 )
@@ -55,7 +56,7 @@ if ($RunId -eq 0) {
 
 $runMetadata = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/actions/runs/$RunId" -Headers $headers
 if ($runMetadata.conclusion -ne "success") { throw "Run $RunId is not a successful build." }
-if ($ExpectedSourceSHA -and $runMetadata.head_sha -ne $ExpectedSourceSHA) {
+if ($ExpectedSourceSHA -and $runMetadata.head_sha -ne $ExpectedSourceSHA -and -not $AllowForkedWorkflow) {
     throw "The build does not belong to the expected source commit. No IPA was copied."
 }
 
@@ -137,7 +138,8 @@ try {
     if ($actualHash -ne $expectedHash -or $actualHash -ne $manifest.ipaSHA256) {
         throw "IPA checksum mismatch. No IPA was copied."
     }
-    if ($manifest.gitSHA -ne $runMetadata.head_sha) {
+    $expectedArtifactSHA = if ($ExpectedSourceSHA) { $ExpectedSourceSHA } else { $runMetadata.head_sha }
+    if ($manifest.gitSHA -ne $expectedArtifactSHA) {
         throw "Artifact source identity mismatch. No IPA was copied."
     }
 
