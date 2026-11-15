@@ -238,6 +238,10 @@ try {
       previous,
       labels: columns.map((column) => column.querySelector(':scope > span')?.textContent),
       firstTime: columns[0].querySelector('time')?.textContent,
+      articleParagraphs: [...document.querySelectorAll('#detailScroll .person-full-bio p')].map((paragraph) => ({
+        align: getComputedStyle(paragraph).textAlign,
+        indent: getComputedStyle(paragraph).textIndent
+      })),
       stacked: Math.abs(first.left - second.left) < 1 && second.top >= first.bottom,
       touchTargets: [...flow.querySelectorAll('.causal-link')].map((button) => button.getBoundingClientRect().height),
       bodyFont: getComputedStyle(columns[0].querySelector('p, em') || columns[0]).fontSize,
@@ -253,6 +257,7 @@ try {
   check('causal text is readable', parseFloat(causal.bodyFont) >= 12, causal.bodyFont);
   check('causal has no page overflow', causal.pageOverflow <= 0, causal.pageOverflow);
   check('causal has no detail overflow', causal.detailOverflow <= 0, causal.detailOverflow);
+  check('article paragraphs share a left edge', causal.articleParagraphs.length > 0 && causal.articleParagraphs.every((paragraph) => paragraph.align === 'left' && paragraph.indent === '0px'), causal.articleParagraphs);
   check('sample event shows only earlier evidence', !causal.previous.includes('e1449_dingce') && !causal.previous.includes('e1449_beijing'), causal.previous);
 
   await page.setViewport({ width: 700, height: 874, dsf: 1, mobile: false });
