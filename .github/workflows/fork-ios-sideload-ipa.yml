@@ -2,6 +2,20 @@ name: Fork iOS Sideload IPA
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Build from source or inject Xunfei into the verified IPA
+        type: choice
+        options: [repackage, build]
+        default: repackage
+      artifact_id:
+        description: Verified unsigned IPA artifact for repackage mode
+        required: true
+        default: "14170511404"
+
+permissions:
+  actions: read
+  contents: read
 
 concurrency:
   group: fork-ios-sideload-${{ github.ref }}
@@ -9,6 +23,7 @@ concurrency:
 
 jobs:
   package:
+    if: ${{ inputs.mode != 'repackage' }}
     name: Build unsigned device IPA for AltStore / SideStore
     runs-on: macos-15
     timeout-minutes: 30
@@ -103,3 +118,73 @@ jobs:
         run: |
           /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' build/Payload/WhaleAgent.app/Info.plist
           /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' build/Payload/WhaleAgent.app/Info.plist
+
+  repackage:
+    if: ${{ inputs.mode == 'repackage' }}
+    name: Repackage verified IPA with Xunfei credentials
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download verified unsigned IPA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" \
+            -o source-artifact.zip
+          mkdir -p repackage
+          unzip -q source-artifact.zip -d repackage
+
+      - name: Inject credentials and verify
+        env:
+          XFYUN_APP_ID: ${{ secrets.XFYUN_APP_ID }}
+          XFYUN_API_KEY: ${{ secrets.XFYUN_API_KEY }}
+          XFYUN_API_SECRET: ${{ secrets.XFYUN_API_SECRET }}
+        run: |
+          set -euo pipefail
+          IPA="$(find repackage -type f -name 'WhaleAgent-Sideload.ipa' | head -1)"
+          test -n "$IPA"
+          WORK="$(mktemp -d)"
+          unzip -q "$IPA" -d "$WORK"
+          INFO="$WORK/Payload/WhaleAgent.app/Info.plist"
+          python3 tools/inject_xfyun_credentials.py "$INFO"
+          (
+            cd "$WORK"
+            zip -qry xfyun.ipa Payload
+          )
+          cp "$WORK/xfyun.ipa" repackage/WhaleAgent-Xfyun.ipa
+          python3 tools/verify_ipa.py \
+            repackage/WhaleAgent-Xfyun.ipa \
+            --sha a376f490e0b2b8062d6e1f49a7ab13fe3c2fc275 \
+            --require-xfyun
+
+      - name: Encrypt repackaged IPA
+        run: |
+          set -euo pipefail
+          PASS_FILE="$(mktemp)"
+          openssl rand -hex 32 > "$PASS_FILE"
+          openssl enc -aes-256-cbc -pbkdf2 -salt -md sha256 \
+            -in repackage/WhaleAgent-Xfyun.ipa \
+            -out repackage/WhaleAgent-Xfyun.ipa.enc \
+            -pass "file:$PASS_FILE"
+          openssl rsautl -encrypt -pubin -inkey .github/xfyun-ipa-public.pem -pkcs \
+            -in "$PASS_FILE" \
+            -out repackage/WhaleAgent-Xfyun-pass.enc
+          rm -f "$PASS_FILE"
+          sha256sum repackage/WhaleAgent-Xfyun.ipa > repackage/WhaleAgent-Xfyun.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WhaleAgent-Xfyun-repackaged-enc
+          path: |
+            repackage/WhaleAgent-Xfyun.ipa.enc
+            repackage/WhaleAgent-Xfyun-pass.enc
+            repackage/WhaleAgent-Xfyun.sha256
+            repackage/WhaleAgent-Xfyun.manifest.json
