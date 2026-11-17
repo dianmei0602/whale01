@@ -8,7 +8,7 @@ const peopleById = new Map(dataset.people.map((item) => [item.id, item]));
 const placesById = new Map(dataset.places.map((item) => [item.id, item]));
 const topicsById = new Map(dataset.topics.map((item) => [item.id, item]));
 
-const views = new Set(["river", "catalog", "atlas", "search"]);
+const views = new Set(["river", "catalog", "atlas", "search", "people", "places", "topics"]);
 const preferredYears = {
   "pre-qin": -551,
   "qin-han": 105,
@@ -483,6 +483,65 @@ function renderSearch() {
   `;
 }
 
+function renderDirectory(kind) {
+  const configs = {
+    people: {
+      title: "人物",
+      description: "从君主与将相，到思想、科学、技术和航海人物。",
+      items: dataset.people,
+      action: "open-person",
+      titleOf: (person) => person.name,
+      detailOf: (person) => `${personKindLabel(person.kind)} · ${person.periodLabel}`
+    },
+    places: {
+      title: "地点",
+      description: "历史名称、现代位置与它们在多个政权中的角色。",
+      items: dataset.places,
+      action: "open-place",
+      titleOf: (place) => place.name,
+      detailOf: (place) => place.modernName
+    },
+    topics: {
+      title: "主题",
+      description: "沿制度、军事、经济、技术、社会与文化线索跨时代阅读。",
+      items: dataset.topics,
+      action: "open-topic",
+      titleOf: (topic) => topic.title,
+      detailOf: (topic) => `${topicCategoryLabel(topic.category)} · ${topic.keywords.join(" · ")}`
+    }
+  };
+  const config = configs[kind];
+
+  return `
+    <section class="screen">
+      <button type="button" class="text-link" data-action="back-to-index">‹ 返回索引</button>
+      <h1 class="screen-title">${escapeHTML(config.title)}</h1>
+      <p class="screen-subtitle">${escapeHTML(config.description)}</p>
+      <div class="section-heading">
+        <h2>全部条目</h2>
+        <span>${config.items.length} 条</span>
+      </div>
+      <div class="result-list">
+        ${config.items.map((item) => `
+          <button
+            type="button"
+            class="result-row"
+            data-action="${config.action}"
+            data-id="${escapeHTML(item.id)}"
+          >
+            <span>
+              <small>${escapeHTML(config.detailOf(item))}</small>
+              <strong>${escapeHTML(config.titleOf(item))}</strong>
+            </span>
+            <span></span>
+            <span class="row-arrow" aria-hidden="true">›</span>
+          </button>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function searchResults(query) {
   const needle = query.trim().toLocaleLowerCase("zh-CN");
   if (!needle) {
@@ -560,6 +619,11 @@ function renderSearchResults() {
       <div class="empty-state is-search-empty">
         <h2>从一个名字开始</h2>
         <p>可搜索的内容包括政权名、别名、建立者、都城、事件标题和摘要。</p>
+      </div>
+      <div class="directory-links">
+        <button type="button" data-route="people"><strong>人物</strong><span>${dataset.people.length} 位</span></button>
+        <button type="button" data-route="places"><strong>地点</strong><span>${dataset.places.length} 个</span></button>
+        <button type="button" data-route="topics"><strong>主题</strong><span>${dataset.topics.length} 个</span></button>
       </div>
     `;
     return;
@@ -1000,7 +1064,10 @@ function renderHeader(route) {
     river: "长河",
     catalog: "卷目",
     atlas: "并立",
-    search: "索引"
+    search: "索引",
+    people: "人物",
+    places: "地点",
+    topics: "主题"
   };
 
   appHeader.innerHTML = `
@@ -1048,13 +1115,18 @@ function render() {
       river: renderRiver,
       catalog: renderCatalog,
       atlas: renderAtlas,
-      search: renderSearch
+      search: renderSearch,
+      people: () => renderDirectory("people"),
+      places: () => renderDirectory("places"),
+      topics: () => renderDirectory("topics")
     };
     appContent.innerHTML = renderers[route.name]();
     if (route.name === "search") renderSearchResults();
   }
 
-  const activeView = primaryView(route);
+  const activeView = ["people", "places", "topics"].includes(primaryView(route))
+    ? "search"
+    : primaryView(route);
   appTabs.querySelectorAll("a").forEach((link) => {
     const active = link.dataset.view === activeView;
     link.classList.toggle("is-active", active);
@@ -1166,6 +1238,12 @@ function showToast(message) {
 }
 
 document.addEventListener("click", (event) => {
+  const routeTarget = event.target.closest("[data-route]");
+  if (routeTarget) {
+    location.hash = `#/${routeTarget.dataset.route}`;
+    return;
+  }
+
   const target = event.target.closest("[data-action]");
   if (!target) return;
 
@@ -1173,6 +1251,8 @@ document.addEventListener("click", (event) => {
 
   if (action.startsWith("open-")) {
     openDetail(action.replace("open-", ""), target.dataset.id);
+  } else if (action === "back-to-index") {
+    location.hash = "#/search";
   } else if (action === "select-era") {
     changeEra(target.dataset.id);
   } else if (action === "quick-search") {

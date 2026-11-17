@@ -935,6 +935,45 @@ input[type="range"] {
   justify-content: center;
 }
 
+.directory-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--app-line);
+  border-bottom: 1px solid var(--app-line);
+}
+
+.directory-links button {
+  min-height: 68px;
+  padding: 10px 8px;
+  border: 0;
+  border-right: 1px solid var(--app-line);
+  color: var(--app-ink);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.directory-links button:last-child {
+  border-right: 0;
+}
+
+.directory-links strong,
+.directory-links span {
+  display: block;
+}
+
+.directory-links strong {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.directory-links span {
+  margin-top: 3px;
+  color: var(--app-muted);
+  font-size: 11px;
+}
+
 .detail-page {
   padding-bottom: 16px;
 }

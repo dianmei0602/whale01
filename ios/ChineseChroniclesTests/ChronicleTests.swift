@@ -58,6 +58,13 @@ final class ChronicleTests: XCTestCase {
             }
             return false
         })
+
+        XCTAssertTrue(repository.search("郡县制").contains { result in
+            if case .topic(let topic) = result {
+                return topic.id == "county-system"
+            }
+            return false
+        })
     }
 
     func testEveryEventHasContextAndLinks() {
@@ -67,6 +74,16 @@ final class ChronicleTests: XCTestCase {
             XCTAssertFalse(event.consequence.isEmpty, event.id)
             XCTAssertFalse(event.significance.isEmpty, event.id)
             XCTAssertFalse(event.topicIDs.isEmpty, event.id)
+        }
+    }
+
+    func testEveryDynastyHasContextAndConnections() {
+        for dynasty in repository.dataset.dynasties {
+            XCTAssertFalse(dynasty.structure.isEmpty, dynasty.id)
+            XCTAssertFalse(dynasty.society.isEmpty, dynasty.id)
+            XCTAssertFalse(dynasty.legacy.isEmpty, dynasty.id)
+            XCTAssertFalse(dynasty.peopleIDs.isEmpty, dynasty.id)
+            XCTAssertFalse(dynasty.topicIDs.isEmpty, dynasty.id)
         }
     }
 

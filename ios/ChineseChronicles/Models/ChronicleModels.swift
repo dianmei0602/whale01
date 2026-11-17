@@ -144,7 +144,7 @@ struct ChronicleSource: Codable, Identifiable, Hashable {
     let note: String
 }
 
-enum ChroniclePersonKind: String, Codable {
+enum ChroniclePersonKind: String, Codable, CaseIterable {
     case ruler
     case statesman
     case general
@@ -218,7 +218,7 @@ struct ChroniclePlace: Codable, Identifiable, Hashable {
     }
 }
 
-enum ChronicleTopicCategory: String, Codable {
+enum ChronicleTopicCategory: String, Codable, CaseIterable {
     case governance
     case society
     case military

@@ -5,12 +5,12 @@ struct PersonDetailView: View {
     let person: ChroniclePerson
 
     private var dynasties: [ChronicleDynasty] {
-        person.dynastyIDs.compactMap(repository.dynasty(id:))
+        person.dynastyIDs.compactMap { repository.dynasty(id: $0) }
             .sorted { $0.startYear < $1.startYear }
     }
 
     private var events: [ChronicleEvent] {
-        person.eventIDs.compactMap(repository.event(id:))
+        person.eventIDs.compactMap { repository.event(id: $0) }
             .sorted { $0.date < $1.date }
     }
 
@@ -129,12 +129,12 @@ struct PlaceDetailView: View {
     let place: ChroniclePlace
 
     private var dynasties: [ChronicleDynasty] {
-        place.dynastyIDs.compactMap(repository.dynasty(id:))
+        place.dynastyIDs.compactMap { repository.dynasty(id: $0) }
             .sorted { $0.startYear < $1.startYear }
     }
 
     private var events: [ChronicleEvent] {
-        place.eventIDs.compactMap(repository.event(id:))
+        place.eventIDs.compactMap { repository.event(id: $0) }
             .sorted { $0.date < $1.date }
     }
 
@@ -259,12 +259,12 @@ struct TopicDetailView: View {
     let topic: ChronicleTopic
 
     private var dynasties: [ChronicleDynasty] {
-        topic.dynastyIDs.compactMap(repository.dynasty(id:))
+        topic.dynastyIDs.compactMap { repository.dynasty(id: $0) }
             .sorted { $0.startYear < $1.startYear }
     }
 
     private var events: [ChronicleEvent] {
-        topic.eventIDs.compactMap(repository.event(id:))
+        topic.eventIDs.compactMap { repository.event(id: $0) }
             .sorted { $0.date < $1.date }
     }
 
@@ -372,5 +372,167 @@ struct TopicDetailView: View {
                 SourceBadge(source: source)
             }
         }
+    }
+}
+
+struct PeopleDirectoryView: View {
+    let repository: ChronicleRepository
+
+    var body: some View {
+        ZStack {
+            PaperBackdrop()
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 22) {
+                    Text("人物")
+                        .font(ChronicleTheme.title)
+                        .foregroundStyle(ChronicleTheme.ink)
+                    Text("从君主、将相与改革者，到思想、科学、技术和航海人物。")
+                        .font(ChronicleTheme.bodySerif)
+                        .foregroundStyle(ChronicleTheme.secondaryInk)
+
+                    ForEach(ChroniclePersonKind.allCases, id: \.self) { kind in
+                        let people = repository.dataset.people.filter { $0.kind == kind }
+                        if !people.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                directoryHeading(kind.label, count: people.count)
+                                ForEach(people) { person in
+                                    NavigationLink {
+                                        PersonDetailView(repository: repository, person: person)
+                                    } label: {
+                                        LinkedEntityRow(
+                                            title: person.name,
+                                            eyebrow: person.kind.label,
+                                            detail: "\(person.periodLabel) · \(person.summary)"
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 60)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .navigationTitle("人物")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+
+    private func directoryHeading(_ title: String, count: Int) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title)
+                .font(ChronicleTheme.section)
+                .foregroundStyle(ChronicleTheme.ink)
+            Spacer()
+            Text("\(count)")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(ChronicleTheme.faintInk)
+        }
+        .padding(.top, 10)
+    }
+}
+
+struct PlacesDirectoryView: View {
+    let repository: ChronicleRepository
+
+    var body: some View {
+        ZStack {
+            PaperBackdrop()
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 14) {
+                    Text("地点")
+                        .font(ChronicleTheme.title)
+                        .foregroundStyle(ChronicleTheme.ink)
+                    Text("历史名称、现代位置，以及它们在多个政权中的角色。")
+                        .font(ChronicleTheme.bodySerif)
+                        .foregroundStyle(ChronicleTheme.secondaryInk)
+                        .padding(.bottom, 8)
+                    ForEach(repository.dataset.places) { place in
+                        NavigationLink {
+                            PlaceDetailView(repository: repository, place: place)
+                        } label: {
+                            LinkedEntityRow(
+                                title: place.name,
+                                eyebrow: "历史地点",
+                                detail: place.modernName
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 60)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .navigationTitle("地点")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+}
+
+struct TopicsDirectoryView: View {
+    let repository: ChronicleRepository
+
+    var body: some View {
+        ZStack {
+            PaperBackdrop()
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 22) {
+                    Text("主题")
+                        .font(ChronicleTheme.title)
+                        .foregroundStyle(ChronicleTheme.ink)
+                    Text("沿制度、军事、经济、技术、社会与文化线索跨时代阅读。")
+                        .font(ChronicleTheme.bodySerif)
+                        .foregroundStyle(ChronicleTheme.secondaryInk)
+
+                    ForEach(ChronicleTopicCategory.allCases, id: \.self) { category in
+                        let topics = repository.dataset.topics.filter { $0.category == category }
+                        if !topics.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                directoryHeading(category.label, count: topics.count)
+                                ForEach(topics) { topic in
+                                    NavigationLink {
+                                        TopicDetailView(repository: repository, topic: topic)
+                                    } label: {
+                                        LinkedEntityRow(
+                                            title: topic.title,
+                                            eyebrow: topic.category.label,
+                                            detail: topic.summary
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 60)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .navigationTitle("主题")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+    }
+
+    private func directoryHeading(_ title: String, count: Int) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title)
+                .font(ChronicleTheme.section)
+                .foregroundStyle(ChronicleTheme.ink)
+            Spacer()
+            Text("\(count)")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(ChronicleTheme.faintInk)
+        }
+        .padding(.top, 10)
     }
 }

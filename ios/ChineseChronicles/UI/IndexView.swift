@@ -62,9 +62,76 @@ struct ChronicleIndexView: View {
                 quickQuery("南宋")
                 quickQuery("统一")
             }
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("浏览全部")
+                    .font(.caption.weight(.bold))
+                    .tracking(1.2)
+                    .foregroundStyle(ChronicleTheme.cinnabar)
+                NavigationLink {
+                    PeopleDirectoryView(repository: repository)
+                } label: {
+                    directoryLink(
+                        title: "人物",
+                        detail: "\(repository.dataset.people.count) 位 · 君主、将相与思想者",
+                        symbol: "person.text.rectangle"
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink {
+                    PlacesDirectoryView(repository: repository)
+                } label: {
+                    directoryLink(
+                        title: "地点",
+                        detail: "\(repository.dataset.places.count) 个 · 都城、边地与交通节点",
+                        symbol: "mappin.and.ellipse"
+                    )
+                }
+                .buttonStyle(.plain)
+
+                NavigationLink {
+                    TopicsDirectoryView(repository: repository)
+                } label: {
+                    directoryLink(
+                        title: "主题",
+                        detail: "\(repository.dataset.topics.count) 个 · 制度、军事、经济与文化",
+                        symbol: "square.stack.3d.up"
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.top, 6)
         }
         .padding(.top, 18)
         .accessibilityIdentifier("search-empty")
+    }
+
+    private func directoryLink(title: String, detail: String, symbol: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: symbol)
+                .font(.system(size: 17, weight: .regular))
+                .foregroundStyle(ChronicleTheme.bronze)
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(ChronicleTheme.section)
+                    .foregroundStyle(ChronicleTheme.ink)
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(ChronicleTheme.secondaryInk)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(ChronicleTheme.faintInk)
+        }
+        .padding(15)
+        .background(ChronicleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 14))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(ChronicleTheme.hairline.opacity(0.65), lineWidth: 0.7)
+        }
     }
 
     private func quickQuery(_ text: String) -> some View {
