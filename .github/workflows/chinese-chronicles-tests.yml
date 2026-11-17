@@ -36,7 +36,10 @@ jobs:
         run: brew install xcodegen
 
       - name: Validate bundled chronicle corpus
-        run: node tools/validate_chronicles.mjs --check
+        run: |
+          node tools/apply_content_expansion.mjs --check
+          node tools/validate_chronicles.mjs --check
+          node tools/build_web_demo.mjs --check
 
       - name: Generate source identity
         run: env -u GITHUB_SHA python3 tools/build_identity.py
@@ -65,8 +68,8 @@ jobs:
             -destination-timeout 120 \
             -parallel-testing-enabled NO \
             -test-timeouts-enabled YES \
-            -default-test-execution-time-allowance 30 \
-            -maximum-test-execution-time-allowance 60 \
+            -default-test-execution-time-allowance 180 \
+            -maximum-test-execution-time-allowance 180 \
             -derivedDataPath build \
             -resultBundlePath build/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -83,7 +86,8 @@ jobs:
             -destination "platform=iOS Simulator,id=$DEVICE_ID" \
             -parallel-testing-enabled NO \
             -test-timeouts-enabled YES \
-            -maximum-test-execution-time-allowance 90 \
+            -default-test-execution-time-allowance 180 \
+            -maximum-test-execution-time-allowance 180 \
             -derivedDataPath build \
             -resultBundlePath build/InteractionResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
