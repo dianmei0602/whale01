@@ -14,14 +14,20 @@ on:
       - "ios/**"
       - "!ios/**/*.md"
       - "tools/validate_chronicles.mjs"
+      - "tools/apply_content_expansion.mjs"
+      - "tools/build_web_demo.mjs"
       - "tools/build_identity.py"
+      - "content/**"
       - ".github/workflows/ios-*.yml"
   pull_request:
     paths:
       - "ios/**"
       - "!ios/**/*.md"
       - "tools/validate_chronicles.mjs"
+      - "tools/apply_content_expansion.mjs"
+      - "tools/build_web_demo.mjs"
       - "tools/build_identity.py"
+      - "content/**"
       - ".github/workflows/ios-*.yml"
 
 permissions:
@@ -61,7 +67,10 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Validate bundled chronicle corpus
-        run: node tools/validate_chronicles.mjs --check
+        run: |
+          node tools/apply_content_expansion.mjs --check
+          node tools/validate_chronicles.mjs --check
+          node tools/build_web_demo.mjs --check
       - name: Generate source identity
         run: python3 tools/build_identity.py
       - name: Generate Xcode project

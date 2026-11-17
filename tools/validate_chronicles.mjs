@@ -43,6 +43,9 @@ for (const [key, label] of [
   ["dynasties", "dynasty"],
   ["events", "event"],
   ["sources", "source"],
+  ["people", "person"],
+  ["places", "place"],
+  ["topics", "topic"],
 ]) {
   if (!Array.isArray(data[key]) || data[key].length === 0) {
     problems.push(`${key} 必须是非空数组`);
@@ -54,6 +57,10 @@ for (const [key, label] of [
 const eraIds = new Set(data.eras.map((item) => item.id));
 const dynastyIds = new Set(data.dynasties.map((item) => item.id));
 const sourceIds = new Set(data.sources.map((item) => item.id));
+const eventIds = new Set(data.events.map((item) => item.id));
+const personIds = new Set(data.people.map((item) => item.id));
+const placeIds = new Set(data.places.map((item) => item.id));
+const topicIds = new Set(data.topics.map((item) => item.id));
 
 for (const era of data.eras) {
   requireText(era.title, `${era.id}.title`);
@@ -65,6 +72,9 @@ for (const era of data.eras) {
 for (const dynasty of data.dynasties) {
   requireText(dynasty.name, `${dynasty.id}.name`);
   requireText(dynasty.summary, `${dynasty.id}.summary`);
+  requireText(dynasty.structure, `${dynasty.id}.structure`);
+  requireText(dynasty.society, `${dynasty.id}.society`);
+  requireText(dynasty.legacy, `${dynasty.id}.legacy`);
   if (!eraIds.has(dynasty.eraId)) problems.push(`${dynasty.id} 引用了未知时代 ${dynasty.eraId}`);
   if (!Number.isInteger(dynasty.startYear) || !Number.isInteger(dynasty.endYear) || dynasty.startYear > dynasty.endYear) {
     problems.push(`${dynasty.id} 起止年份无效`);
@@ -76,11 +86,24 @@ for (const dynasty of data.dynasties) {
       if (!sourceIds.has(sourceId)) problems.push(`${dynasty.id} 引用了未知出处 ${sourceId}`);
     }
   }
+  for (const personId of dynasty.peopleIds ?? []) {
+    if (!personIds.has(personId)) problems.push(`${dynasty.id} 引用了未知人物 ${personId}`);
+  }
+  for (const placeId of dynasty.placeIds ?? []) {
+    if (!placeIds.has(placeId)) problems.push(`${dynasty.id} 引用了未知地点 ${placeId}`);
+  }
+  for (const topicId of dynasty.topicIds ?? []) {
+    if (!topicIds.has(topicId)) problems.push(`${dynasty.id} 引用了未知主题 ${topicId}`);
+  }
 }
 
 for (const event of data.events) {
   requireText(event.title, `${event.id}.title`);
   requireText(event.summary, `${event.id}.summary`);
+  requireText(event.background, `${event.id}.background`);
+  requireText(event.process, `${event.id}.process`);
+  requireText(event.consequence, `${event.id}.consequence`);
+  requireText(event.significance, `${event.id}.significance`);
   requireText(event.date?.display, `${event.id}.date.display`);
   if (!dynastyIds.has(event.dynastyId)) problems.push(`${event.id} 引用了未知政权 ${event.dynastyId}`);
   if (!Number.isInteger(event.date?.year)) problems.push(`${event.id}.date.year 必须是整数`);
@@ -94,6 +117,20 @@ for (const event of data.events) {
       if (!sourceIds.has(sourceId)) problems.push(`${event.id} 引用了未知出处 ${sourceId}`);
     }
   }
+  for (const personId of event.peopleIds ?? []) {
+    if (!personIds.has(personId)) problems.push(`${event.id} 引用了未知人物 ${personId}`);
+  }
+  for (const placeId of event.placeIds ?? []) {
+    if (!placeIds.has(placeId)) problems.push(`${event.id} 引用了未知地点 ${placeId}`);
+  }
+  for (const topicId of event.topicIds ?? []) {
+    if (!topicIds.has(topicId)) problems.push(`${event.id} 引用了未知主题 ${topicId}`);
+  }
+  for (const relatedDynastyId of event.relatedDynastyIds ?? []) {
+    if (!dynastyIds.has(relatedDynastyId)) {
+      problems.push(`${event.id} 引用了未知关联政权 ${relatedDynastyId}`);
+    }
+  }
 }
 
 for (const source of data.sources) {
@@ -101,6 +138,50 @@ for (const source of data.sources) {
   requireText(source.citation, `${source.id}.citation`);
   if (!["primary", "reference"].includes(source.kind)) {
     problems.push(`${source.id}.kind 非法`);
+  }
+}
+
+for (const person of data.people) {
+  requireText(person.name, `${person.id}.name`);
+  requireText(person.periodLabel, `${person.id}.periodLabel`);
+  requireText(person.summary, `${person.id}.summary`);
+  for (const dynastyId of person.dynastyIds ?? []) {
+    if (!dynastyIds.has(dynastyId)) problems.push(`${person.id} 引用了未知政权 ${dynastyId}`);
+  }
+  for (const eventId of person.eventIds ?? []) {
+    if (!eventIds.has(eventId)) problems.push(`${person.id} 引用了未知事件 ${eventId}`);
+  }
+  for (const sourceId of person.sourceIds ?? []) {
+    if (!sourceIds.has(sourceId)) problems.push(`${person.id} 引用了未知出处 ${sourceId}`);
+  }
+}
+
+for (const place of data.places) {
+  requireText(place.name, `${place.id}.name`);
+  requireText(place.modernName, `${place.id}.modernName`);
+  requireText(place.summary, `${place.id}.summary`);
+  for (const dynastyId of place.dynastyIds ?? []) {
+    if (!dynastyIds.has(dynastyId)) problems.push(`${place.id} 引用了未知政权 ${dynastyId}`);
+  }
+  for (const eventId of place.eventIds ?? []) {
+    if (!eventIds.has(eventId)) problems.push(`${place.id} 引用了未知事件 ${eventId}`);
+  }
+  for (const sourceId of place.sourceIds ?? []) {
+    if (!sourceIds.has(sourceId)) problems.push(`${place.id} 引用了未知出处 ${sourceId}`);
+  }
+}
+
+for (const topic of data.topics) {
+  requireText(topic.title, `${topic.id}.title`);
+  requireText(topic.summary, `${topic.id}.summary`);
+  for (const dynastyId of topic.dynastyIds ?? []) {
+    if (!dynastyIds.has(dynastyId)) problems.push(`${topic.id} 引用了未知政权 ${dynastyId}`);
+  }
+  for (const eventId of topic.eventIds ?? []) {
+    if (!eventIds.has(eventId)) problems.push(`${topic.id} 引用了未知事件 ${eventId}`);
+  }
+  for (const sourceId of topic.sourceIds ?? []) {
+    if (!sourceIds.has(sourceId)) problems.push(`${topic.id} 引用了未知出处 ${sourceId}`);
   }
 }
 
@@ -116,6 +197,9 @@ const manifest = {
   dynastyCount: data.dynasties.length,
   eventCount: data.events.length,
   sourceCount: data.sources.length,
+  personCount: data.people.length,
+  placeCount: data.places.length,
+  topicCount: data.topics.length,
   chroniclesSHA256: crypto.createHash("sha256").update(raw).digest("hex"),
 };
 
@@ -142,6 +226,9 @@ console.log(
       dynasties: data.dynasties.length,
       events: data.events.length,
       sources: data.sources.length,
+      people: data.people.length,
+      places: data.places.length,
+      topics: data.topics.length,
       contentVersion: data.contentVersion,
       sha256: manifest.chroniclesSHA256,
     },

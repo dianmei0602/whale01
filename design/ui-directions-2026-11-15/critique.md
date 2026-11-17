@@ -4,7 +4,7 @@ Idea (one sentence): 将“多个政权在同一时间段内并存”从资料�
 Live thing: 在年代线上定位 1127 年，同时看见北宋终结、南宋开始与金、西夏的并存。
 Layout words by section: hero=statement / schemes=four-column gallery / recommendation=split conclusion.
 Scores: design 8.4 · usability 8.2 · creativity 8.7 · content 8.8 → overall 8.4.
-Caps applied: 产品界面片段是真实的 DOM 界面，不是灰色占位图；四个方案均使用现有 23 个政权、34 个事件和 19 个出处的真实数据。
+Caps applied: 产品界面片段是真实的 DOM 界面，不是灰色占位图；四个方案均使用同一份真实编年史资料。
 Top three problems:
 1. 桌面首屏只能看到手机预览的上半部分，四套方案的差异需要滚动后才能完整判断。修复：压缩页头纵向占用，但保留大标题作为四个方案的总命题。
 2. “长河”和“天下”都以横向轨道呈现时间；两者需要更明确的职责区分。修复：将“长河”定位为阅读入口，把“天下”定位为对照工具，并在导航与首屏文案中直接说明。

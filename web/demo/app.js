@@ -4,6 +4,9 @@ const dataset = chronicles;
 const dynastiesById = new Map(dataset.dynasties.map((item) => [item.id, item]));
 const eventsById = new Map(dataset.events.map((item) => [item.id, item]));
 const sourcesById = new Map(dataset.sources.map((item) => [item.id, item]));
+const peopleById = new Map(dataset.people.map((item) => [item.id, item]));
+const placesById = new Map(dataset.places.map((item) => [item.id, item]));
+const topicsById = new Map(dataset.topics.map((item) => [item.id, item]));
 
 const views = new Set(["river", "catalog", "atlas", "search"]);
 const preferredYears = {
@@ -22,6 +25,7 @@ const appTabs = document.querySelector("#app-tabs");
 const appToast = document.querySelector("#app-toast");
 const routeReadout = document.querySelector("#route-readout");
 const contentVersion = document.querySelector("#content-version");
+const dataSummary = document.querySelector("#data-summary");
 const parameters = new URLSearchParams(location.search);
 
 const storedTheme = localStorage.getItem("chinese-chronicles-demo-theme");
@@ -46,6 +50,7 @@ if (["light", "night"].includes(parameters.get("theme"))) {
 let toastTimer = 0;
 
 contentVersion.textContent = dataset.contentVersion;
+dataSummary.textContent = `${dataset.dynasties.length} 个政权条目 · ${dataset.events.length} 个事件 · ${dataset.people.length} 位人物 · ${dataset.places.length} 个地点 · ${dataset.topics.length} 个主题`;
 appScreen.dataset.theme = state.theme;
 if (!location.hash) history.replaceState(null, "", "#/river");
 
@@ -66,7 +71,7 @@ function parseRoute() {
   const value = location.hash.replace(/^#\/?/, "");
   const [name, id] = value.split("/");
 
-  if ((name === "dynasty" || name === "event") && id) {
+  if (["dynasty", "event", "person", "place", "topic"].includes(name) && id) {
     return { kind: "detail", detailType: name, id: decodeURIComponent(id) };
   }
 
@@ -107,6 +112,33 @@ function roleLabel(role) {
     parallel: "并立政权",
     disputed: "纪年有争议"
   }[role] ?? "政权";
+}
+
+function personKindLabel(kind) {
+  return {
+    ruler: "君主",
+    statesman: "政治人物",
+    general: "军事人物",
+    reformer: "改革者",
+    thinker: "思想人物",
+    artist: "文化人物",
+    scientist: "科学人物",
+    technologist: "技术人物",
+    navigator: "航海人物",
+    leader: "历史人物"
+  }[kind] ?? "历史人物";
+}
+
+function topicCategoryLabel(category) {
+  return {
+    governance: "制度",
+    society: "社会",
+    military: "军事",
+    economy: "经济",
+    culture: "文化",
+    technology: "技术",
+    environment: "环境"
+  }[category] ?? "主题";
 }
 
 function dynastyPeriod(dynasty) {
@@ -453,7 +485,9 @@ function renderSearch() {
 
 function searchResults(query) {
   const needle = query.trim().toLocaleLowerCase("zh-CN");
-  if (!needle) return { dynasties: [], events: [] };
+  if (!needle) {
+    return { dynasties: [], events: [], people: [], places: [], topics: [] };
+  }
 
   const dynasties = dataset.dynasties.filter((dynasty) => {
     const text = [
@@ -462,6 +496,9 @@ function searchResults(query) {
       dynasty.founder,
       dynasty.capital,
       dynasty.summary,
+      dynasty.structure,
+      dynasty.society,
+      dynasty.legacy,
       ...dynasty.aliases
     ].join(" ");
     return text.toLocaleLowerCase("zh-CN").includes(needle);
@@ -471,15 +508,45 @@ function searchResults(query) {
     const text = [
       event.title,
       event.summary,
+      event.background,
+      event.process,
+      event.consequence,
+      event.significance,
       event.date.display,
       ...event.tags
     ].join(" ");
     return text.toLocaleLowerCase("zh-CN").includes(needle);
   });
 
+  const people = dataset.people.filter((person) =>
+    [
+      person.name,
+      person.periodLabel,
+      person.summary,
+      ...person.aliases
+    ].join(" ").toLocaleLowerCase("zh-CN").includes(needle)
+  );
+
+  const places = dataset.places.filter((place) =>
+    [place.name, place.modernName, place.summary]
+      .join(" ")
+      .toLocaleLowerCase("zh-CN")
+      .includes(needle)
+  );
+
+  const topics = dataset.topics.filter((topic) =>
+    [topic.title, topic.summary, ...topic.keywords]
+      .join(" ")
+      .toLocaleLowerCase("zh-CN")
+      .includes(needle)
+  );
+
   return {
     dynasties,
-    events: events.sort((a, b) => a.date.year - b.date.year)
+    events: events.sort((a, b) => a.date.year - b.date.year),
+    people,
+    places,
+    topics
   };
 }
 
@@ -499,11 +566,11 @@ function renderSearchResults() {
   }
 
   const results = searchResults(query);
-  if (!results.dynasties.length && !results.events.length) {
+  if (!results.dynasties.length && !results.events.length && !results.people.length && !results.places.length && !results.topics.length) {
     container.innerHTML = `
       <div class="empty-state is-search-empty">
         <h2>本机资料中暂无“${escapeHTML(query)}”</h2>
-        <p>当前版本只收录经过整理的 23 个政权条目和 34 个事件。</p>
+        <p>当前版本收录 23 个政权条目、57 个事件、61 位人物、23 个地点和 31 个主题。</p>
       </div>
     `;
     return;
@@ -541,7 +608,67 @@ function renderSearchResults() {
     `
     : "";
 
-  container.innerHTML = dynastyMarkup + eventMarkup;
+  const peopleMarkup = results.people.length
+    ? `
+      <p class="search-result-label">人物 ${results.people.length}</p>
+      <div class="result-list">
+        ${results.people.map((person) => `
+          <button
+            type="button"
+            class="result-row"
+            data-action="open-person"
+            data-id="${escapeHTML(person.id)}"
+          >
+            <span><small>${escapeHTML(personKindLabel(person.kind))}</small><strong>${escapeHTML(person.name)}</strong></span>
+            <span>${escapeHTML(person.periodLabel)}</span>
+            <span class="row-arrow" aria-hidden="true">›</span>
+          </button>
+        `).join("")}
+      </div>
+    `
+    : "";
+
+  const placeMarkup = results.places.length
+    ? `
+      <p class="search-result-label">地点 ${results.places.length}</p>
+      <div class="result-list">
+        ${results.places.map((place) => `
+          <button
+            type="button"
+            class="result-row"
+            data-action="open-place"
+            data-id="${escapeHTML(place.id)}"
+          >
+            <span><small>历史地点</small><strong>${escapeHTML(place.name)}</strong></span>
+            <span>${escapeHTML(place.modernName)}</span>
+            <span class="row-arrow" aria-hidden="true">›</span>
+          </button>
+        `).join("")}
+      </div>
+    `
+    : "";
+
+  const topicMarkup = results.topics.length
+    ? `
+      <p class="search-result-label">主题 ${results.topics.length}</p>
+      <div class="result-list">
+        ${results.topics.map((topic) => `
+          <button
+            type="button"
+            class="result-row"
+            data-action="open-topic"
+            data-id="${escapeHTML(topic.id)}"
+          >
+            <span><small>${escapeHTML(topicCategoryLabel(topic.category))}</small><strong>${escapeHTML(topic.title)}</strong></span>
+            <span>${escapeHTML(topic.keywords.slice(0, 2).join(" · "))}</span>
+            <span class="row-arrow" aria-hidden="true">›</span>
+          </button>
+        `).join("")}
+      </div>
+    `
+    : "";
+
+  container.innerHTML = dynastyMarkup + eventMarkup + peopleMarkup + placeMarkup + topicMarkup;
 }
 
 function sourceMarkup(ids) {
@@ -552,6 +679,42 @@ function sourceMarkup(ids) {
       <p>${escapeHTML(source.note)}</p>
     </article>
   `).join("");
+}
+
+function linkedEntityMarkup(ids, collection, type, labeler) {
+  return ids.map((id) => {
+    const item = collection.get(id);
+    if (!item) return "";
+    return `
+      <button
+        type="button"
+        class="linked-row"
+        data-action="open-${type}"
+        data-id="${escapeHTML(id)}"
+      >
+        <span>
+          <small>${escapeHTML(labeler(item))}</small>
+          <strong>${escapeHTML(item.name ?? item.title)}</strong>
+        </span>
+        <span class="row-arrow" aria-hidden="true">›</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function relatedSections(peopleIds, placeIds, topicIds, heading = "继续探索") {
+  const people = linkedEntityMarkup(peopleIds, peopleById, "person", (person) => personKindLabel(person.kind));
+  const places = linkedEntityMarkup(placeIds, placesById, "place", () => "历史地点");
+  const topics = linkedEntityMarkup(topicIds, topicsById, "topic", (topic) => topicCategoryLabel(topic.category));
+  if (!people && !places && !topics) return "";
+
+  return `
+    <div class="section-heading">
+      <h2>${escapeHTML(heading)}</h2>
+      <span>人物、地点与制度</span>
+    </div>
+    <div class="linked-list">${people}${places}${topics}</div>
+  `;
 }
 
 function renderDynastyDetail(dynasty) {
@@ -574,6 +737,23 @@ function renderDynastyDetail(dynasty) {
         <div><dt>都城</dt><dd>${escapeHTML(dynasty.capital)}</dd></div>
         <div><dt>又称</dt><dd>${escapeHTML(dynasty.aliases.join("、") || "暂无别名")}</dd></div>
       </dl>
+
+      <div class="detail-prose">
+        <section>
+          <h2>权力结构</h2>
+          <p>${escapeHTML(dynasty.structure)}</p>
+        </section>
+        <section>
+          <h2>社会与生活</h2>
+          <p>${escapeHTML(dynasty.society)}</p>
+        </section>
+        <section>
+          <h2>历史影响</h2>
+          <p>${escapeHTML(dynasty.legacy)}</p>
+        </section>
+      </div>
+
+      ${relatedSections(dynasty.peopleIds, dynasty.placeIds, dynasty.topicIds)}
 
       <div class="section-heading">
         <h2>编年摘记</h2>
@@ -608,6 +788,25 @@ function renderEventDetail(event) {
       <div class="detail-separator"></div>
       <p class="detail-body">${escapeHTML(event.summary)}</p>
 
+      <div class="detail-prose">
+        <section>
+          <h2>背景</h2>
+          <p>${escapeHTML(event.background)}</p>
+        </section>
+        <section>
+          <h2>经过</h2>
+          <p>${escapeHTML(event.process)}</p>
+        </section>
+        <section>
+          <h2>结果</h2>
+          <p>${escapeHTML(event.consequence)}</p>
+        </section>
+        <section>
+          <h2>为什么重要</h2>
+          <p>${escapeHTML(event.significance)}</p>
+        </section>
+      </div>
+
       ${event.caveat ? `
         <div class="detail-caveat">
           <strong>阅读提示</strong>
@@ -621,6 +820,8 @@ function renderEventDetail(event) {
         </button>
       ` : ""}
 
+      ${relatedSections(event.peopleIds, event.placeIds, event.topicIds, "继续查证")}
+
       <div class="section-heading">
         <h2>这页的依据</h2>
         <span>可追溯</span>
@@ -630,13 +831,166 @@ function renderEventDetail(event) {
   `;
 }
 
+function dynastyRows(ids) {
+  return ids.map((id) => dynastiesById.get(id)).filter(Boolean).map((dynasty) => `
+    <button
+      type="button"
+      class="dynasty-row"
+      data-action="open-dynasty"
+      data-id="${escapeHTML(dynasty.id)}"
+    >
+      <span class="dynasty-dot" style="--row-color:${escapeHTML(dynasty.accent)}"></span>
+      <span class="dynasty-copy">
+        <strong>${escapeHTML(dynasty.name)}</strong>
+        <span>${escapeHTML(dynastyPeriod(dynasty))} · ${escapeHTML(dynasty.subtitle)}</span>
+      </span>
+      <span class="row-arrow" aria-hidden="true">›</span>
+    </button>
+  `).join("");
+}
+
+function linkedEventRows(ids) {
+  return ids.map((id) => eventsById.get(id)).filter(Boolean)
+    .sort((a, b) => a.date.year - b.date.year)
+    .map((event) => {
+      const dynasty = dynastiesById.get(event.dynastyId);
+      return `
+        <button
+          type="button"
+          class="event-row"
+          data-action="open-event"
+          data-id="${escapeHTML(event.id)}"
+        >
+          <span class="event-date">${escapeHTML(event.date.display)}</span>
+          <span class="event-copy">
+            <strong>${escapeHTML(event.title)}</strong>
+            <span>${escapeHTML(dynasty?.name ?? "政权待核")} · ${escapeHTML(event.summary)}</span>
+          </span>
+          <span class="row-arrow" aria-hidden="true">›</span>
+        </button>
+      `;
+    }).join("");
+}
+
+function renderPersonDetail(person) {
+  return `
+    <section class="screen detail-page">
+      <p class="detail-period">${escapeHTML(personKindLabel(person.kind))}</p>
+      <h1 class="detail-title">${escapeHTML(person.name)}</h1>
+      <p class="detail-subtitle">${escapeHTML(person.periodLabel)}${person.aliases.length ? ` · ${escapeHTML(person.aliases.join("、"))}` : ""}</p>
+      <div class="detail-separator"></div>
+      <p class="detail-body">${escapeHTML(person.summary)}</p>
+
+      <div class="section-heading">
+        <h2>相关政权</h2>
+        <span>${person.dynastyIds.length} 个</span>
+      </div>
+      <div class="dynasty-list">${dynastyRows(person.dynastyIds)}</div>
+
+      ${person.eventIds.length ? `
+        <div class="section-heading">
+          <h2>相关事件</h2>
+          <span>${person.eventIds.length} 条</span>
+        </div>
+        <div class="event-list">${linkedEventRows(person.eventIds)}</div>
+      ` : ""}
+
+      <div class="section-heading">
+        <h2>资料出处</h2>
+        <span>可追溯</span>
+      </div>
+      <div class="source-list">${sourceMarkup(person.sourceIds)}</div>
+    </section>
+  `;
+}
+
+function renderPlaceDetail(place) {
+  return `
+    <section class="screen detail-page">
+      <p class="detail-period">历史地点</p>
+      <h1 class="detail-title">${escapeHTML(place.name)}</h1>
+      <p class="detail-subtitle">今地 · ${escapeHTML(place.modernName)}</p>
+      <div class="detail-separator"></div>
+      <p class="detail-body">${escapeHTML(place.summary)}</p>
+
+      ${place.caveat ? `
+        <div class="detail-caveat">
+          <strong>地名提示</strong>
+          <p>${escapeHTML(place.caveat)}</p>
+        </div>
+      ` : ""}
+
+      <div class="section-heading">
+        <h2>历史角色</h2>
+        <span>${place.dynastyIds.length} 个政权</span>
+      </div>
+      <div class="dynasty-list">${dynastyRows(place.dynastyIds)}</div>
+
+      ${place.eventIds.length ? `
+        <div class="section-heading">
+          <h2>发生于此</h2>
+          <span>${place.eventIds.length} 条</span>
+        </div>
+        <div class="event-list">${linkedEventRows(place.eventIds)}</div>
+      ` : ""}
+
+      <div class="section-heading">
+        <h2>资料出处</h2>
+        <span>可追溯</span>
+      </div>
+      <div class="source-list">${sourceMarkup(place.sourceIds)}</div>
+    </section>
+  `;
+}
+
+function renderTopicDetail(topic) {
+  return `
+    <section class="screen detail-page">
+      <p class="detail-period">${escapeHTML(topicCategoryLabel(topic.category))}</p>
+      <h1 class="detail-title">${escapeHTML(topic.title)}</h1>
+      <div class="detail-meta">
+        ${topic.keywords.map((keyword) => `<span>${escapeHTML(keyword)}</span>`).join("")}
+      </div>
+      <div class="detail-separator"></div>
+      <p class="detail-body">${escapeHTML(topic.summary)}</p>
+
+      <div class="section-heading">
+        <h2>跨时代</h2>
+        <span>${topic.dynastyIds.length} 个政权</span>
+      </div>
+      <div class="dynasty-list">${dynastyRows(topic.dynastyIds)}</div>
+
+      ${topic.eventIds.length ? `
+        <div class="section-heading">
+          <h2>关键节点</h2>
+          <span>${topic.eventIds.length} 条</span>
+        </div>
+        <div class="event-list">${linkedEventRows(topic.eventIds)}</div>
+      ` : ""}
+
+      <div class="section-heading">
+        <h2>资料出处</h2>
+        <span>可追溯</span>
+      </div>
+      <div class="source-list">${sourceMarkup(topic.sourceIds)}</div>
+    </section>
+  `;
+}
+
 function renderHeader(route) {
   const themeLabel = state.theme === "night" ? "日读" : "夜读";
 
   if (route.kind === "detail") {
+    const detailTitles = {
+      dynasty: "政权",
+      event: "事件",
+      person: "人物",
+      place: "地点",
+      topic: "主题"
+    };
     appHeader.innerHTML = `
       <button type="button" class="back-button" data-action="back">返回</button>
-      <p class="header-title">${route.detailType === "dynasty" ? "政权" : "事件"}</p>
+      <p class="header-title">${detailTitles[route.detailType]}</p>
       <button type="button" class="header-action" data-action="toggle-theme">${themeLabel}</button>
     `;
     return;
@@ -665,17 +1019,29 @@ function render() {
 
   if (route.kind === "detail") {
     appScreen.classList.add("is-detail");
-    if (route.detailType === "dynasty") {
-      const dynasty = dynastiesById.get(route.id);
-      appContent.innerHTML = dynasty
-        ? renderDynastyDetail(dynasty)
-        : renderMissingDetail("没有找到这个政权");
-    } else {
-      const event = eventsById.get(route.id);
-      appContent.innerHTML = event
-        ? renderEventDetail(event)
-        : renderMissingDetail("没有找到这个事件");
-    }
+    const detailRenderers = {
+      dynasty: () => {
+        const dynasty = dynastiesById.get(route.id);
+        return dynasty ? renderDynastyDetail(dynasty) : renderMissingDetail("没有找到这个政权");
+      },
+      event: () => {
+        const event = eventsById.get(route.id);
+        return event ? renderEventDetail(event) : renderMissingDetail("没有找到这个事件");
+      },
+      person: () => {
+        const person = peopleById.get(route.id);
+        return person ? renderPersonDetail(person) : renderMissingDetail("没有找到这个人物");
+      },
+      place: () => {
+        const place = placesById.get(route.id);
+        return place ? renderPlaceDetail(place) : renderMissingDetail("没有找到这个地点");
+      },
+      topic: () => {
+        const topic = topicsById.get(route.id);
+        return topic ? renderTopicDetail(topic) : renderMissingDetail("没有找到这个主题");
+      }
+    };
+    appContent.innerHTML = detailRenderers[route.detailType]?.() ?? renderMissingDetail("没有找到这条资料");
   } else {
     appScreen.classList.remove("is-detail");
     const renderers = {
@@ -805,8 +1171,8 @@ document.addEventListener("click", (event) => {
 
   const action = target.dataset.action;
 
-  if (action === "open-dynasty" || action === "open-event") {
-    openDetail(action === "open-dynasty" ? "dynasty" : "event", target.dataset.id);
+  if (action.startsWith("open-")) {
+    openDetail(action.replace("open-", ""), target.dataset.id);
   } else if (action === "select-era") {
     changeEra(target.dataset.id);
   } else if (action === "quick-search") {

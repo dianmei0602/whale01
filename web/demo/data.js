@@ -2,11 +2,11 @@
 // The native app and this HTML demo share the same reviewed corpus.
 export default {
   "schemaVersion": "1.0",
-  "contentVersion": "2026.11.15-seed1",
+  "contentVersion": "2026.11.18-0.2.0",
   "title": "中国朝代编年史",
   "subtitle": "沿着时间，看见制度的更替与文明的延续",
-  "editorialNote": "本版以传统历史叙事为主轴，并单独标出并存政权、分裂时期和纪年异说。古代年代常存在不同考订，页面中的“约”“通行纪年”“存在异说”是资料状态，不是装饰。",
-  "reviewedAt": "2026-11-15",
+  "editorialNote": "本版以传统历史叙事为主轴，并单独标出并存政权、分裂时期和纪年异说。每个政权分别说明政治结构、社会条件与历史影响；每个事件补充背景、经过、结果和意义。古代年代和史事解释仍有不同学术意见，所有内容仍属于可继续校订的编年史种子版。",
+  "reviewedAt": "2026-11-18",
   "eras": [
     {
       "id": "pre-qin",
@@ -79,6 +79,19 @@ export default {
         "shangshu",
         "shiji",
         "xiashangzhou"
+      ],
+      "structure": "传统文献把夏后氏描述为王位世袭与区域联盟逐步发展的政治共同体；目前尚不能据此复原一套与后世王朝相同的官僚制度。",
+      "society": "农业定居、聚落组织与治水协作是理解夏代叙事的核心线索，但具体社会形态必须结合考古材料审慎判断。",
+      "legacy": "后世把夏置于王朝序列的开端，形成“三代”历史观；这一记忆本身也影响了中国政治合法性的表达。",
+      "peopleIds": [
+        "yu"
+      ],
+      "placeIds": [
+        "yangcheng"
+      ],
+      "topicIds": [
+        "early-state",
+        "flood-control"
       ]
     },
     {
@@ -103,6 +116,21 @@ export default {
         "shangshu",
         "shiji",
         "xiashangzhou"
+      ],
+      "structure": "商王通过王族、贵族与地方势力维系统治，祭祀和占卜在国家事务中具有重要作用。",
+      "society": "甲骨文、青铜器和聚落遗址显示，商代已形成复杂的手工业、农业和礼仪体系。",
+      "legacy": "商代留下成体系的中国早期文字材料，也让后世关于王朝更替的叙述获得了更早的物质支点。",
+      "peopleIds": [
+        "tang",
+        "wuding"
+      ],
+      "placeIds": [
+        "yin"
+      ],
+      "topicIds": [
+        "early-state",
+        "bronze-culture",
+        "writing"
       ]
     },
     {
@@ -126,6 +154,21 @@ export default {
         "shangshu",
         "shiji",
         "xiashangzhou"
+      ],
+      "structure": "周王以宗法、分封和礼制维系王畿与诸侯之间的关系，王权合法性通过“天命”观念表达。",
+      "society": "贵族家族、土地与礼仪身份彼此关联，青铜礼器和铭文成为政治与社会关系的重要载体。",
+      "legacy": "西周形成的天命观、宗法秩序和礼制想象长期影响后世政治文化，但实际制度并非一成不变。",
+      "peopleIds": [
+        "zhou-wu",
+        "duke-zhou"
+      ],
+      "placeIds": [
+        "fenghao"
+      ],
+      "topicIds": [
+        "feudal-order",
+        "ritual-order",
+        "bronze-culture"
       ]
     },
     {
@@ -148,6 +191,22 @@ export default {
       ],
       "sourceIds": [
         "shiji"
+      ],
+      "structure": "周王室仍保有象征地位，实际权力则逐渐转移到诸侯国。各国通过变法、军制和土地制度竞争资源。",
+      "society": "城市、商业和士人流动增加，不同学派围绕秩序、伦理与治理展开长期论辩。",
+      "legacy": "春秋战国时期的思想与制度试验，为秦汉帝国的统一行政提供了概念和人才资源。",
+      "peopleIds": [
+        "confucius",
+        "shang-yang"
+      ],
+      "placeIds": [
+        "luoyi",
+        "xianyang"
+      ],
+      "topicIds": [
+        "feudal-order",
+        "hundred-schools",
+        "legal-system"
       ]
     },
     {
@@ -169,6 +228,21 @@ export default {
       ],
       "sourceIds": [
         "shiji"
+      ],
+      "structure": "皇帝制度、郡县制和统一的官僚文书体系把中央权力延伸到地方，形成此后帝国行政的基本模型。",
+      "society": "户籍、赋役和工程动员强化国家能力，也加重了社会负担；秦末动荡与制度执行和统治成本密切相关。",
+      "legacy": "秦朝存续短促，却确立“大一统”的政治尺度。后世既继承其制度，也不断批评其统治方式。",
+      "peopleIds": [
+        "qin-shi-huang",
+        "li-si"
+      ],
+      "placeIds": [
+        "xianyang"
+      ],
+      "topicIds": [
+        "county-system",
+        "standardization",
+        "legal-system"
       ]
     },
     {
@@ -192,6 +266,23 @@ export default {
       "sourceIds": [
         "shiji",
         "hanshu"
+      ],
+      "structure": "西汉在秦制基础上调整中央官制与地方治理，并通过诸侯王国、郡县和边疆机构的组合维持统治。",
+      "society": "农业、商业和交通网络继续发展，儒学逐渐进入国家教育和选官体系。",
+      "legacy": "西汉奠定了“汉”作为政治共同体长期称谓的基础，也把对外交通与边疆经营纳入帝国叙事。",
+      "peopleIds": [
+        "liu-bang",
+        "han-wudi",
+        "zhang-qian"
+      ],
+      "placeIds": [
+        "changan",
+        "dunhuang"
+      ],
+      "topicIds": [
+        "frontier",
+        "silk-road",
+        "civil-service"
       ]
     },
     {
@@ -213,6 +304,19 @@ export default {
       ],
       "sourceIds": [
         "hanshu"
+      ],
+      "structure": "王莽以禅让和复古改制建立新朝，试图用经典理想重组爵制、土地与货币制度。",
+      "society": "频繁改制和战争动员加剧了经济与社会不稳定，地方控制迅速削弱。",
+      "legacy": "新朝说明制度改革的正当性不能只靠经典语言；政策执行、利益结构与社会承受能力同样决定成败。",
+      "peopleIds": [
+        "wang-mang"
+      ],
+      "placeIds": [
+        "changan"
+      ],
+      "topicIds": [
+        "fiscal-reform",
+        "legal-system"
       ]
     },
     {
@@ -235,6 +339,22 @@ export default {
       ],
       "sourceIds": [
         "houhanshu"
+      ],
+      "structure": "东汉恢复汉室后，皇帝、外戚、宦官和士大夫之间的权力关系持续变化，地方豪族影响增强。",
+      "society": "洛阳成为政治与学术中心，造纸改良、经学和地方社会网络共同发展。",
+      "legacy": "东汉的政治失衡最终导向三国格局；其技术和学术积累则延续到魏晋以后。",
+      "peopleIds": [
+        "guangwu",
+        "cai-lun",
+        "zhang-heng"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "papermaking",
+        "astronomy",
+        "central-local"
       ]
     },
     {
@@ -259,6 +379,25 @@ export default {
       ],
       "sourceIds": [
         "sanguozhi"
+      ],
+      "structure": "魏、蜀、吴分别依靠不同的军事集团和地方资源维持政权，正统争论与联盟关系持续存在。",
+      "society": "长期战争推动人口迁徙、屯田和区域开发，蜀、吴也各自形成不同的政治中心。",
+      "legacy": "三国在正史之外形成强大的文学与民间记忆，但理解这一时期仍需区分史料、演义与后世想象。",
+      "peopleIds": [
+        "cao-cao",
+        "liu-bei",
+        "sun-quan",
+        "zhuge-liang"
+      ],
+      "placeIds": [
+        "luoyang",
+        "chengdu",
+        "jianye"
+      ],
+      "topicIds": [
+        "military-system",
+        "division-integration",
+        "frontier"
       ]
     },
     {
@@ -281,6 +420,19 @@ export default {
       ],
       "sourceIds": [
         "jinshu"
+      ],
+      "structure": "西晋以司马氏宗室和门阀士族为统治基础，中央与宗王之间的权力安排成为严重隐患。",
+      "society": "短暂统一后，人口流动、土地关系和地方势力并未得到稳定整合。",
+      "legacy": "西晋的统一很短，却暴露了宗室分权与中央控制之间的结构性矛盾。",
+      "peopleIds": [
+        "sima-yan"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "central-local",
+        "military-system"
       ]
     },
     {
@@ -303,6 +455,20 @@ export default {
       ],
       "sourceIds": [
         "jinshu"
+      ],
+      "structure": "晋室南渡后依赖侨姓士族与地方军事力量维持政权，皇权受到门阀政治制约。",
+      "society": "北方人口南迁推动江南开发和城市文化发展，南北社会差异进一步扩大。",
+      "legacy": "东晋与十六国共同构成南北分裂的经验，为南北朝的制度调整提供背景。",
+      "peopleIds": [
+        "wang-xizhi"
+      ],
+      "placeIds": [
+        "jiankang"
+      ],
+      "topicIds": [
+        "migration",
+        "calligraphy",
+        "division-integration"
       ]
     },
     {
@@ -326,6 +492,22 @@ export default {
       "sourceIds": [
         "songshu",
         "weishu"
+      ],
+      "structure": "南朝与北朝并非单一政权。南朝继承东晋制度，北朝则由多个北方政权推动军政整合。",
+      "society": "人口迁徙、民族互动、佛教传播和城市发展共同改变社会结构。",
+      "legacy": "南北朝的制度实验和文化融合，为隋唐统一提供了行政、军事与文化资源。",
+      "peopleIds": [
+        "xiaowen"
+      ],
+      "placeIds": [
+        "jiankang",
+        "pingcheng",
+        "luoyang"
+      ],
+      "topicIds": [
+        "migration",
+        "buddhism",
+        "division-integration"
       ]
     },
     {
@@ -347,6 +529,21 @@ export default {
       ],
       "sourceIds": [
         "suishu"
+      ],
+      "structure": "隋朝重建中央官制、地方行政和统一法制，并通过大运河强化南北联系。",
+      "society": "大规模工程和征役显示国家动员能力，也加重了民众负担。",
+      "legacy": "隋制为唐代所继承和发展，南北统一则重新定义了帝国的空间尺度。",
+      "peopleIds": [
+        "sui-wendi"
+      ],
+      "placeIds": [
+        "daxing",
+        "luoyang"
+      ],
+      "topicIds": [
+        "canal",
+        "civil-service",
+        "legal-system"
       ]
     },
     {
@@ -369,6 +566,27 @@ export default {
       "sourceIds": [
         "jiutangshu",
         "xintangshu"
+      ],
+      "structure": "唐代前期形成较完整的中央官制、律令体系和军事组织，中后期藩镇与财政变化重塑中央地方关系。",
+      "society": "长安、洛阳等城市连接广阔区域，人口流动、宗教、商业和文学创造十分活跃。",
+      "legacy": "唐代的律令、科举、城市文化与对外交流深刻影响东亚，也成为后世帝国政治的参照。",
+      "peopleIds": [
+        "tang-taizong",
+        "wu-zetian",
+        "xuanzang",
+        "tang-xuanzong",
+        "an-lushan"
+      ],
+      "placeIds": [
+        "changan",
+        "luoyang",
+        "dunhuang"
+      ],
+      "topicIds": [
+        "civil-service",
+        "legal-system",
+        "silk-road",
+        "commerce"
       ]
     },
     {
@@ -391,6 +609,21 @@ export default {
       ],
       "sourceIds": [
         "xinwudaishi"
+      ],
+      "structure": "北方五个短命王朝与南方十国等政权并存，军事将领和地方节度使在政治更替中占据关键位置。",
+      "society": "战争与迁徙持续影响人口分布，南方一些地区保持经济和文化发展。",
+      "legacy": "五代十国的军事割据经验促使北宋重新设计中央军政关系。",
+      "peopleIds": [
+        "zhu-wen"
+      ],
+      "placeIds": [
+        "kaifeng",
+        "luoyang"
+      ],
+      "topicIds": [
+        "military-system",
+        "central-local",
+        "commerce"
       ]
     },
     {
@@ -412,6 +645,21 @@ export default {
       ],
       "sourceIds": [
         "liaoshi"
+      ],
+      "structure": "辽由契丹建立，以皇族、后族和部族军事组织为权力核心，并发展出兼顾不同人群的治理安排。",
+      "society": "草原畜牧、农业定居和多族群交往共同构成辽的社会基础，契丹文字也留下了自身记录。",
+      "legacy": "辽与五代、北宋长期并立，理解十至十二世纪的中国不能只沿北宋一条线阅读。",
+      "peopleIds": [
+        "abaoji",
+        "xiao-chuo"
+      ],
+      "placeIds": [
+        "liao-shangjing"
+      ],
+      "topicIds": [
+        "frontier",
+        "multi-regime",
+        "writing"
       ]
     },
     {
@@ -434,6 +682,23 @@ export default {
       ],
       "sourceIds": [
         "songshi"
+      ],
+      "structure": "北宋强化文官政治和中央财政，以分割军权、扩大科举和官僚考核维持统治。",
+      "society": "城市商业、印刷出版、教育与士人网络获得显著发展，社会流动和文化生产更加活跃。",
+      "legacy": "北宋的官僚国家和文化成就影响深远，但与辽、西夏的长期竞争也塑造了其对外关系。",
+      "peopleIds": [
+        "zhao-kuangyin",
+        "wang-anshi",
+        "sima-guang"
+      ],
+      "placeIds": [
+        "kaifeng"
+      ],
+      "topicIds": [
+        "civil-service",
+        "fiscal-reform",
+        "commerce",
+        "multi-regime"
       ]
     },
     {
@@ -457,6 +722,20 @@ export default {
       "sourceIds": [
         "songshi",
         "jinshi"
+      ],
+      "structure": "西夏由党项政权建立，王室、贵族和军政机构共同治理西北地区，并形成自己的文字和制度。",
+      "society": "河西走廊与河套地区的农牧业、交通和宗教交流构成其社会基础。",
+      "legacy": "西夏与宋、辽、金长期互动，提醒我们十至十三世纪的政治地图始终是多中心而非单线的。",
+      "peopleIds": [
+        "li-yuanhao"
+      ],
+      "placeIds": [
+        "xingqing"
+      ],
+      "topicIds": [
+        "frontier",
+        "multi-regime",
+        "writing"
       ]
     },
     {
@@ -479,6 +758,23 @@ export default {
       ],
       "sourceIds": [
         "songshi"
+      ],
+      "structure": "南宋以临安为政治中心，在军事压力下维持中央财政、地方行政和多个战区。",
+      "society": "江南城市经济、印刷、书院和士人文化继续发展，海上贸易的重要性上升。",
+      "legacy": "南宋的制度与文化影响延续后世，但它始终处在与金、西夏及蒙古并立的复杂格局中。",
+      "peopleIds": [
+        "yue-fei",
+        "zhu-xi",
+        "wen-tianxiang"
+      ],
+      "placeIds": [
+        "linan",
+        "quanzhou"
+      ],
+      "topicIds": [
+        "neo-confucianism",
+        "maritime",
+        "multi-regime"
       ]
     },
     {
@@ -501,6 +797,21 @@ export default {
       ],
       "sourceIds": [
         "jinshi"
+      ],
+      "structure": "金由女真建立，以猛安谋克等军事社会组织为基础，同时吸收汉地官僚制度治理北方。",
+      "society": "女真、汉、契丹等群体长期共处，人口迁徙和制度融合持续改变北方社会。",
+      "legacy": "金与南宋、西夏并立百余年，北方政治传统和经济结构在其统治期间继续演变。",
+      "peopleIds": [
+        "aguda"
+      ],
+      "placeIds": [
+        "huining",
+        "beijing"
+      ],
+      "topicIds": [
+        "military-system",
+        "migration",
+        "multi-regime"
       ]
     },
     {
@@ -523,6 +834,22 @@ export default {
       ],
       "sourceIds": [
         "yuanshi"
+      ],
+      "structure": "元朝把蒙古帝国的政治传统与汉地官僚制度结合，以行省、军队和多层级机构治理辽阔疆域。",
+      "society": "多族群、跨区域贸易和宗教并存是其社会特征，人口与资源流动规模显著扩大。",
+      "legacy": "行省制度、交通体系和多区域整合影响明清，元朝也处在更广阔的欧亚历史联系中。",
+      "peopleIds": [
+        "genghis",
+        "kublai",
+        "guo-shoujing"
+      ],
+      "placeIds": [
+        "dadu"
+      ],
+      "topicIds": [
+        "provincial-government",
+        "exchange",
+        "astronomy"
       ]
     },
     {
@@ -545,6 +872,25 @@ export default {
       ],
       "sourceIds": [
         "mingshi"
+      ],
+      "structure": "明朝强化皇权，以内阁、六部和监察体系处理政务，同时依靠里甲、军户等制度组织基层。",
+      "society": "商业城市、白银流通、出版与宗族网络发展，社会流动和区域差异并存。",
+      "legacy": "明代重新组织汉地王朝秩序，也在海洋交流、财政转型和边疆治理中积累新的矛盾。",
+      "peopleIds": [
+        "zhu-yuanzhang",
+        "zheng-he",
+        "zhang-juzheng"
+      ],
+      "placeIds": [
+        "nanjing",
+        "beijing",
+        "quanzhou"
+      ],
+      "topicIds": [
+        "civil-service",
+        "fiscal-reform",
+        "maritime",
+        "commerce"
       ]
     },
     {
@@ -567,6 +913,23 @@ export default {
       ],
       "sourceIds": [
         "qingshigao"
+      ],
+      "structure": "清朝以满洲皇权、八旗组织、军机处和多元地区治理结构统治广阔疆域。",
+      "society": "多族群社会、人口增长和区域经济联系加强，晚清则面临条约体系与工业化的压力。",
+      "legacy": "清朝完成了帝制时代的最后整合，也在十九世纪后被迫进入全球政治经济的新格局。",
+      "peopleIds": [
+        "hong-taiji",
+        "kangxi",
+        "lin-zexu"
+      ],
+      "placeIds": [
+        "beijing",
+        "shengjing"
+      ],
+      "topicIds": [
+        "frontier",
+        "treaty-system",
+        "fiscal-reform"
       ]
     }
   ],
@@ -593,7 +956,24 @@ export default {
         "shiji",
         "xiashangzhou"
       ],
-      "caveat": "夏代的年代、社会形态与考古遗存对应关系均存在学术讨论。"
+      "caveat": "夏代的年代、社会形态与考古遗存对应关系均存在学术讨论。",
+      "background": "后世文献把禹和夏后氏放在商代之前，形成中国早期王朝更替的叙事。考古材料与传世文献之间的关系仍需分别讨论。",
+      "process": "传统故事强调禹治水、划定区域以及王位传承的变化；这些内容经长期传述和整理，不是同时代逐日记录。",
+      "consequence": "夏被纳入“三代”框架，成为后来王朝讲述自身历史起点的重要参照。",
+      "significance": "阅读夏代应同时保留传统记忆、考古发现和年代学争议，不能把约数当成已经确证的单一年份。",
+      "peopleIds": [
+        "yu"
+      ],
+      "placeIds": [
+        "yangcheng"
+      ],
+      "topicIds": [
+        "early-state",
+        "flood-control"
+      ],
+      "relatedDynastyIds": [
+        "xia"
+      ]
     },
     {
       "id": "shang-traditional-founding",
@@ -617,7 +997,25 @@ export default {
         "shiji",
         "xiashangzhou"
       ],
-      "caveat": "这是约数，具体年代需要依据不同断代方案理解。"
+      "caveat": "这是约数，具体年代需要依据不同断代方案理解。",
+      "background": "商原本是黄河中下游的重要政治共同体，传统叙事把汤灭夏视为王朝更替的开始。",
+      "process": "汤通过联盟和战争取代夏后氏，商代国家后来以王族、祭祀和青铜礼制维系统治。",
+      "consequence": "商成为中国早期文字和考古资料最丰富的前秦时代王朝之一，王朝更替也逐渐与天命观相连。",
+      "significance": "事件的具体年代仍是断代问题；商代的重要性来自文献、甲骨和考古材料能够相互参照。",
+      "peopleIds": [
+        "tang"
+      ],
+      "placeIds": [
+        "yin"
+      ],
+      "topicIds": [
+        "early-state",
+        "bronze-culture"
+      ],
+      "relatedDynastyIds": [
+        "shang",
+        "xia"
+      ]
     },
     {
       "id": "pan-geng-yin",
@@ -640,7 +1038,24 @@ export default {
         "shiji",
         "xiashangzhou"
       ],
-      "caveat": "事件年代为约数，不同材料之间并非完全一致。"
+      "caveat": "事件年代为约数，不同材料之间并非完全一致。",
+      "background": "商代政治中心曾多次迁移，迁都往往与族群关系、资源、祭祀和统治稳定有关。",
+      "process": "盘庚将政治中心迁至殷，晚商由此进入以安阳殷墟遗存为核心的时期。",
+      "consequence": "殷成为商王政治和宗教活动的中心，留下大量甲骨、青铜器与建筑遗存。",
+      "significance": "迁殷让商代历史从文献名字变成可由考古材料直接研究的国家社会。",
+      "peopleIds": [
+        "wuding"
+      ],
+      "placeIds": [
+        "yin"
+      ],
+      "topicIds": [
+        "bronze-culture",
+        "writing"
+      ],
+      "relatedDynastyIds": [
+        "shang"
+      ]
     },
     {
       "id": "muye",
@@ -663,7 +1078,26 @@ export default {
         "shiji",
         "xiashangzhou"
       ],
-      "caveat": "武王伐纣的绝对年代还有其他研究结论，本页仅注明所采用的主要参考。"
+      "caveat": "武王伐纣的绝对年代还有其他研究结论，本页仅注明所采用的主要参考。",
+      "background": "商末周方国逐渐强盛，商王朝内部政治与对外战争也加剧了紧张关系。",
+      "process": "周武王联合诸侯在牧野击败商军，随后建立西周，并以天命解释政权更替。",
+      "consequence": "西周建立后通过封赏、宗法和礼制整合广阔区域，形成新的贵族政治秩序。",
+      "significance": "牧野之战成为“汤武革命”传统的核心事件之一，但确切年代仍采用特定断代方案。",
+      "peopleIds": [
+        "zhou-wu",
+        "duke-zhou"
+      ],
+      "placeIds": [
+        "fenghao"
+      ],
+      "topicIds": [
+        "feudal-order",
+        "ritual-order"
+      ],
+      "relatedDynastyIds": [
+        "western-zhou",
+        "shang"
+      ]
     },
     {
       "id": "eastward-zhou",
@@ -684,6 +1118,21 @@ export default {
       ],
       "sourceIds": [
         "shiji"
+      ],
+      "background": "西周晚期王室力量削弱，宗周地区政治和军事危机加剧。",
+      "process": "周平王把王室中心东迁至洛邑，此后周王仍为天下共主，但实际权威不断下降。",
+      "consequence": "诸侯列国在竞争中扩张，春秋时期的会盟、战争与制度改革逐渐取代王室主导。",
+      "significance": "东迁不是王朝瞬间灭亡，而是周代政治秩序由王畿中心转向列国体系的关键转折。",
+      "peopleIds": [],
+      "placeIds": [
+        "luoyi"
+      ],
+      "topicIds": [
+        "feudal-order"
+      ],
+      "relatedDynastyIds": [
+        "eastern-zhou",
+        "western-zhou"
       ]
     },
     {
@@ -706,7 +1155,24 @@ export default {
       "sourceIds": [
         "shiji"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "春秋晚期礼制和列国秩序变化，士人开始以教育、游说和著述参与政治。",
+      "process": "孔子出生并成长于鲁国，后世弟子整理其言行，逐渐形成儒家经典传统。",
+      "consequence": "儒学后来进入教育、选官与政治伦理，但先秦孔子与后代制度化儒学并不相同。",
+      "significance": "孔子是理解中国思想传统的重要入口，也要区分当时语境与汉代以来的经典化过程。",
+      "peopleIds": [
+        "confucius"
+      ],
+      "placeIds": [
+        "luoyi"
+      ],
+      "topicIds": [
+        "hundred-schools",
+        "ritual-order"
+      ],
+      "relatedDynastyIds": [
+        "eastern-zhou"
+      ]
     },
     {
       "id": "warring-states-convention",
@@ -728,7 +1194,97 @@ export default {
       "sourceIds": [
         "shiji"
       ],
-      "caveat": "春秋战国分界存在不同分期方案，不能把它理解为一个同时发生的政治事件。"
+      "caveat": "春秋战国分界存在不同分期方案，不能把它理解为一个同时发生的政治事件。",
+      "background": "东周后期列国兼并、变法与战争规模持续扩大，春秋与战国之间没有单一分界事件。",
+      "process": "现代史学常用前475年等节点作为春秋战国的分段便利标识。",
+      "consequence": "新的军制、土地关系和官僚组织在竞争中发展，为秦统一准备了条件。",
+      "significance": "分期是理解变化的工具，不是历史当事人在某一天共同宣布的新时代。",
+      "peopleIds": [],
+      "placeIds": [],
+      "topicIds": [
+        "feudal-order",
+        "hundred-schools"
+      ],
+      "relatedDynastyIds": [
+        "eastern-zhou"
+      ]
+    },
+    {
+      "id": "shang-yang-reforms",
+      "dynastyId": "eastern-zhou",
+      "date": {
+        "year": -356,
+        "month": null,
+        "day": null,
+        "display": "前 356 年",
+        "precision": "year"
+      },
+      "title": "商鞅在秦主持变法",
+      "summary": "秦孝公任用商鞅推行变法，强化编户、军功、土地与国家控制。",
+      "importance": 3,
+      "tags": [
+        "变法",
+        "秦国",
+        "战国"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": "变法是多阶段过程，前356年为常用起始纪年。",
+      "background": "战国列国竞争要求更强财政与军力，秦在制度上寻求后来居上。",
+      "process": "商鞅以军功爵、什伍连坐、重农抑商和县制等措施重组国家与编户关系。",
+      "consequence": "秦国资源动员和行政能力增强，为后续扩张与统一奠定制度基础。",
+      "significance": "商鞅变法说明制度优势可能改变长期竞争格局，也伴随严刑和社会成本。",
+      "peopleIds": [
+        "shang-yang"
+      ],
+      "placeIds": [
+        "xianyang"
+      ],
+      "topicIds": [
+        "legal-system",
+        "central-local"
+      ],
+      "relatedDynastyIds": [
+        "eastern-zhou",
+        "qin"
+      ]
+    },
+    {
+      "id": "changping-battle",
+      "dynastyId": "eastern-zhou",
+      "date": {
+        "year": -260,
+        "month": null,
+        "day": null,
+        "display": "前 260 年",
+        "precision": "year"
+      },
+      "title": "长平之战",
+      "summary": "秦赵在长平爆发大规模战争，赵军遭受重大失败，秦国优势进一步扩大。",
+      "importance": 3,
+      "tags": [
+        "秦赵战争",
+        "战国"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": "战役过程和伤亡数字的史料来源存在后世记述问题。",
+      "background": "秦赵围绕上党与中原优势长期对抗，双方都投入大规模军队。",
+      "process": "秦军利用后勤与指挥优势击败赵军，赵国军力遭受重创。",
+      "consequence": "秦在战国格局中的主导地位增强，六国联合抗秦更加困难。",
+      "significance": "长平体现战争规模、后勤与组织能力如何左右列国竞争的结局。",
+      "peopleIds": [],
+      "placeIds": [],
+      "topicIds": [
+        "military-system",
+        "feudal-order"
+      ],
+      "relatedDynastyIds": [
+        "eastern-zhou",
+        "qin"
+      ]
     },
     {
       "id": "qin-unification",
@@ -751,7 +1307,26 @@ export default {
       "sourceIds": [
         "shiji"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "战国后期秦国凭借变法后的军政组织与资源优势逐步削弱六国。",
+      "process": "秦王政先后灭韩、赵、魏、楚、燕、齐，于前221年完成统一并采用皇帝称号。",
+      "consequence": "秦推行郡县制、统一文字和度量衡，以中央文书行政整合辽阔区域。",
+      "significance": "统一建立了中国帝国政治的基本尺度，但秦的迅速灭亡也暴露高压动员和统治合法性的难题。",
+      "peopleIds": [
+        "qin-shi-huang",
+        "li-si"
+      ],
+      "placeIds": [
+        "xianyang"
+      ],
+      "topicIds": [
+        "county-system",
+        "standardization",
+        "legal-system"
+      ],
+      "relatedDynastyIds": [
+        "qin"
+      ]
     },
     {
       "id": "chen-sheng",
@@ -773,7 +1348,21 @@ export default {
       "sourceIds": [
         "shiji"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "秦末徭役、严刑与战争动员加重社会负担，地方对中央统治的不满积累。",
+      "process": "陈胜、吴广等戍卒因误期起事，反秦力量迅速扩散，六国旧贵族与地方军事实力也相继起兵。",
+      "consequence": "秦中央权威迅速崩解，刘邦、项羽等力量进入争夺天下的阶段。",
+      "significance": "起义常被视为中国历史上第一次大规模农民战争，但它同时也是秦末多股政治力量共同反秦的过程。",
+      "peopleIds": [
+        "chen-sheng"
+      ],
+      "placeIds": [],
+      "topicIds": [
+        "central-local"
+      ],
+      "relatedDynastyIds": [
+        "qin"
+      ]
     },
     {
       "id": "western-han-founded",
@@ -796,7 +1385,25 @@ export default {
         "shiji",
         "hanshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "秦亡后楚汉相争，刘邦以关中为基础整合地方军队和政治联盟。",
+      "process": "刘邦击败项羽并于前202年称帝，建立西汉，定都长安。",
+      "consequence": "汉初在郡县制与诸侯王国之间折中，恢复生产并调整秦制的高压部分。",
+      "significance": "西汉奠定了“汉”作为长期政治共同体的名称，也确立后世帝国在秦制基础上持续修补的路径。",
+      "peopleIds": [
+        "liu-bang"
+      ],
+      "placeIds": [
+        "changan"
+      ],
+      "topicIds": [
+        "county-system",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "western-han",
+        "qin"
+      ]
     },
     {
       "id": "zhang-qian",
@@ -819,7 +1426,26 @@ export default {
         "shiji",
         "hanshu"
       ],
-      "caveat": "出使年份有前 138 年与前 139 年等不同表述，本页采用前 138 年。"
+      "caveat": "出使年份有前 138 年与前 139 年等不同表述，本页采用前 138 年。",
+      "background": "汉武帝时期汉朝需要了解匈奴后方和西域诸国，同时寻求新的外交与军事空间。",
+      "process": "张骞出使西域，经历长期滞留后带回有关中亚、中亚交通和地方政治的信息。",
+      "consequence": "汉朝与西域的联系扩大，商贸、外交和军事活动逐渐形成长期网络。",
+      "significance": "张骞出使是丝绸之路叙事的重要节点，但交通网络并非一次出使后突然形成，而是长期累积的结果。",
+      "peopleIds": [
+        "zhang-qian",
+        "han-wudi"
+      ],
+      "placeIds": [
+        "changan",
+        "dunhuang"
+      ],
+      "topicIds": [
+        "silk-road",
+        "frontier"
+      ],
+      "relatedDynastyIds": [
+        "western-han"
+      ]
     },
     {
       "id": "wang-mang-new",
@@ -841,7 +1467,25 @@ export default {
       "sourceIds": [
         "hanshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "西汉后期外戚势力增长，王莽以儒家理想和权力网络获得禅让合法性。",
+      "process": "王莽于公元9年建立新朝，推行土地、货币、官制和礼制改革。",
+      "consequence": "改革震荡、灾害与战争削弱新朝控制，政权在公元23年覆灭。",
+      "significance": "王莽改制成为评价理想主义改革与执行能力关系的经典案例。",
+      "peopleIds": [
+        "wang-mang"
+      ],
+      "placeIds": [
+        "changan"
+      ],
+      "topicIds": [
+        "fiscal-reform",
+        "legal-system"
+      ],
+      "relatedDynastyIds": [
+        "xin",
+        "western-han"
+      ]
     },
     {
       "id": "eastern-han-founded",
@@ -863,7 +1507,25 @@ export default {
       "sourceIds": [
         "houhanshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "新朝崩溃后，各地豪强和汉室宗族争夺秩序重建的主导权。",
+      "process": "刘秀整合河北与中原力量，于公元25年称帝并逐步统一全国。",
+      "consequence": "东汉把政治中心设在洛阳，恢复汉室并重新分配中央与地方权力。",
+      "significance": "东汉建立延续了汉的政治品牌，也开启外戚、宦官和士大夫长期互动的政治结构。",
+      "peopleIds": [
+        "guangwu"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "central-local",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "eastern-han",
+        "xin"
+      ]
     },
     {
       "id": "paper-improved",
@@ -885,7 +1547,102 @@ export default {
       "sourceIds": [
         "houhanshu"
       ],
-      "caveat": "“改进工艺”与传统叙事中的“发明纸张”不应简单等同。"
+      "caveat": "“改进工艺”与传统叙事中的“发明纸张”不应简单等同。",
+      "background": "东汉文书、教育和行政管理需求增长，书写材料与制作工艺持续演变。",
+      "process": "《后汉书》记载蔡伦改进造纸方法，以树皮、麻头、破布和渔网等材料制造纸张。",
+      "consequence": "纸张逐渐成为廉价书写载体，但普及经历漫长过程，并与其他材料长期并用。",
+      "significance": "这项技术进步扩大知识记录和传播的可能，但“蔡伦发明纸”是过度简化的说法。",
+      "peopleIds": [
+        "cai-lun"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "papermaking",
+        "writing"
+      ],
+      "relatedDynastyIds": [
+        "eastern-han"
+      ]
+    },
+    {
+      "id": "yellow-turban",
+      "dynastyId": "eastern-han",
+      "date": {
+        "year": 184,
+        "month": null,
+        "day": null,
+        "display": "公元 184 年",
+        "precision": "year"
+      },
+      "title": "黄巾起义",
+      "summary": "东汉末年的大规模宗教与社会起义动摇了中央统治，地方军政力量随之扩张。",
+      "importance": 3,
+      "tags": [
+        "起义",
+        "东汉末"
+      ],
+      "sourceIds": [
+        "houhanshu"
+      ],
+      "caveat": "起义并非单一组织在完全同一天起事，地方发展差异很大。",
+      "background": "东汉后期外戚宦官争斗、土地兼并与赋役压力加重，地方社会不满积累。",
+      "process": "太平道等网络组织起事，东汉调动州郡和军队镇压。",
+      "consequence": "中央为平乱扩大地方军权，军阀化趋势与汉室衰微进一步加深。",
+      "significance": "黄巾起义是东汉国家能力衰败与社会矛盾爆发的集中表现。",
+      "peopleIds": [],
+      "placeIds": [],
+      "topicIds": [
+        "central-local",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "eastern-han"
+      ]
+    },
+    {
+      "id": "red-cliffs",
+      "dynastyId": "three-kingdoms",
+      "date": {
+        "year": 208,
+        "month": null,
+        "day": null,
+        "display": "公元 208 年",
+        "precision": "year"
+      },
+      "title": "赤壁之战",
+      "summary": "孙刘联军击败曹操南下军队，阻止北方势力迅速统一长江流域。",
+      "importance": 3,
+      "tags": [
+        "孙刘联军",
+        "长江"
+      ],
+      "sourceIds": [
+        "sanguozhi"
+      ],
+      "caveat": "小说与正史对规模、火攻细节和人物描写差异明显。",
+      "background": "曹操在控制北方后南下荆州，希望继续向江东和长江以南扩张。",
+      "process": "孙权和刘备结盟，利用水战与地理条件击退曹军。",
+      "consequence": "三国鼎立的基本空间格局得到强化，荆州和长江防线成为战略焦点。",
+      "significance": "赤壁既是军事事件，也成为后世文学与政治记忆反复重塑的经典。",
+      "peopleIds": [
+        "cao-cao",
+        "liu-bei",
+        "sun-quan",
+        "zhuge-liang"
+      ],
+      "placeIds": [
+        "jianye"
+      ],
+      "topicIds": [
+        "military-system",
+        "division-integration"
+      ],
+      "relatedDynastyIds": [
+        "three-kingdoms",
+        "eastern-han"
+      ]
     },
     {
       "id": "cao-pi-wei",
@@ -907,7 +1664,25 @@ export default {
       "sourceIds": [
         "sanguozhi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "东汉末年中央权力被军阀与权臣掌握，汉室政治权威名存实亡。",
+      "process": "曹丕接受汉献帝禅让建立魏，刘备、孙权随后相继称帝。",
+      "consequence": "三国政权分别形成，长期战争与联盟关系成为政治主轴。",
+      "significance": "禅让使政权更替具备仪式合法性，也说明汉朝政治符号仍被各方争夺。",
+      "peopleIds": [
+        "cao-cao"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "military-system",
+        "division-integration"
+      ],
+      "relatedDynastyIds": [
+        "three-kingdoms",
+        "eastern-han"
+      ]
     },
     {
       "id": "jin-unifies",
@@ -929,7 +1704,62 @@ export default {
       "sourceIds": [
         "jinshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "曹魏后期司马氏逐步掌握朝政，蜀汉和孙吴则各自维持独立统治。",
+      "process": "司马炎建立西晋后灭蜀、灭吴，于280年完成统一。",
+      "consequence": "短暂统一未能解决宗室权力和士族政治问题，北方很快进入新的动乱。",
+      "significance": "西晋说明征服完成不等于政治整合完成，制度安排决定统一能否持续。",
+      "peopleIds": [
+        "sima-yan"
+      ],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "central-local",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "western-jin",
+        "three-kingdoms"
+      ]
+    },
+    {
+      "id": "eight-princes-revolt",
+      "dynastyId": "western-jin",
+      "date": {
+        "year": 291,
+        "month": null,
+        "day": null,
+        "display": "公元 291 年",
+        "precision": "year"
+      },
+      "title": "八王之乱开始",
+      "summary": "西晋宗室诸王围绕中央权力展开长期内战，国家控制迅速削弱。",
+      "importance": 3,
+      "tags": [
+        "宗王",
+        "内战"
+      ],
+      "sourceIds": [
+        "jinshu"
+      ],
+      "caveat": "“八王”是后世概括，战乱并非八人在同一年同时起兵。",
+      "background": "西晋分封宗王并让部分宗王掌握军政力量，中央继承与权力平衡不稳。",
+      "process": "多名宗王相继卷入洛阳朝政与地方战争，冲突反复持续。",
+      "consequence": "西晋军力和社会秩序遭到严重破坏，北方政局随即发生剧变。",
+      "significance": "八王之乱显示宗室分权可能在中央危机时反噬整个政权。",
+      "peopleIds": [],
+      "placeIds": [
+        "luoyang"
+      ],
+      "topicIds": [
+        "central-local",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "western-jin"
+      ]
     },
     {
       "id": "eastern-jin-founded",
@@ -951,7 +1781,63 @@ export default {
       "sourceIds": [
         "jinshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "西晋末北方政局剧变，晋室宗王与士族向南迁移。",
+      "process": "司马睿在建康称帝，晋室在南方延续。",
+      "consequence": "东晋与北方多个政权并立，士族政治和江南开发成为长期趋势。",
+      "significance": "南渡既是政治逃亡，也是江南社会和文化重组的重要契机。",
+      "peopleIds": [
+        "sima-rui"
+      ],
+      "placeIds": [
+        "jiankang"
+      ],
+      "topicIds": [
+        "migration",
+        "division-integration"
+      ],
+      "relatedDynastyIds": [
+        "eastern-jin",
+        "western-jin"
+      ]
+    },
+    {
+      "id": "feishui-battle",
+      "dynastyId": "eastern-jin",
+      "date": {
+        "year": 383,
+        "month": null,
+        "day": null,
+        "display": "公元 383 年",
+        "precision": "year"
+      },
+      "title": "淝水之战",
+      "summary": "东晋军队击败前秦南下大军，南北政治格局得以延续。",
+      "importance": 3,
+      "tags": [
+        "东晋",
+        "前秦",
+        "南北对峙"
+      ],
+      "sourceIds": [
+        "jinshu"
+      ],
+      "caveat": "兵力与战况细节受后世史书叙事影响。",
+      "background": "前秦统一北方后继续南下，东晋则试图维持长江以南政权。",
+      "process": "东晋军在淝水附近以少胜多击退前秦，前秦随后迅速瓦解。",
+      "consequence": "南北分裂继续，东晋和江南社会获得更长的稳定发展空间。",
+      "significance": "淝水改变了南北统一的时间表，也说明庞大帝国军队的组织和协调同样关键。",
+      "peopleIds": [],
+      "placeIds": [
+        "jiankang"
+      ],
+      "topicIds": [
+        "military-system",
+        "division-integration"
+      ],
+      "relatedDynastyIds": [
+        "eastern-jin"
+      ]
     },
     {
       "id": "liu-song-founded",
@@ -973,7 +1859,66 @@ export default {
       "sourceIds": [
         "songshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "东晋末年门阀政治与军事集团关系变化，刘裕掌握北府军和朝廷权力。",
+      "process": "刘裕代晋建立宋，南朝更替由此开始。",
+      "consequence": "南方进入宋、齐、梁、陈相继更替的时期，北方也持续分裂和整合。",
+      "significance": "刘宋建立标志着南朝政治结构的形成，也显示军功集团对皇权的持续影响。",
+      "peopleIds": [
+        "liu-yu"
+      ],
+      "placeIds": [
+        "jiankang"
+      ],
+      "topicIds": [
+        "military-system",
+        "division-integration"
+      ],
+      "relatedDynastyIds": [
+        "northern-southern",
+        "eastern-jin"
+      ]
+    },
+    {
+      "id": "xiaowen-luoyang",
+      "dynastyId": "northern-southern",
+      "date": {
+        "year": 494,
+        "month": null,
+        "day": null,
+        "display": "公元 494 年",
+        "precision": "year"
+      },
+      "title": "北魏迁都洛阳",
+      "summary": "孝文帝推动迁都和制度改革，加速北魏政治重心向中原转移。",
+      "importance": 3,
+      "tags": [
+        "北魏",
+        "迁都",
+        "制度改革"
+      ],
+      "sourceIds": [
+        "weishu"
+      ],
+      "caveat": "迁都和相关改革经历多年推进，494年是正式迁都节点之一。",
+      "background": "北魏需要加强对中原人口和农业区的治理，同时调整平城旧贵族与中央制度的关系。",
+      "process": "孝文帝将都城由平城迁往洛阳，并推动官制、服饰和姓氏等改革。",
+      "consequence": "北魏政治文化进一步中原化，也激化了部分北方军镇与洛阳中央之间的矛盾。",
+      "significance": "迁都显示国家空间重整与文化政策如何彼此牵连，不能简单理解为单方面同化。",
+      "peopleIds": [
+        "xiaowen"
+      ],
+      "placeIds": [
+        "pingcheng",
+        "luoyang"
+      ],
+      "topicIds": [
+        "migration",
+        "buddhism"
+      ],
+      "relatedDynastyIds": [
+        "northern-southern"
+      ]
     },
     {
       "id": "sui-founded",
@@ -995,7 +1940,25 @@ export default {
       "sourceIds": [
         "suishu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "北周末年中央权力集中于杨坚，北方经过长期整合已具备重新统一的条件。",
+      "process": "杨坚代北周建立隋，随后整顿中枢、地方的行政与法制。",
+      "consequence": "隋朝加强中央控制，为灭陈和统一南北提供制度与军事准备。",
+      "significance": "隋的建立是把北朝制度经验转化为统一帝国架构的关键环节。",
+      "peopleIds": [
+        "sui-wendi"
+      ],
+      "placeIds": [
+        "daxing"
+      ],
+      "topicIds": [
+        "civil-service",
+        "legal-system"
+      ],
+      "relatedDynastyIds": [
+        "sui",
+        "northern-southern"
+      ]
     },
     {
       "id": "sui-unifies",
@@ -1017,7 +1980,67 @@ export default {
       "sourceIds": [
         "suishu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "南北朝长期分裂后，北方统一政权在军力、财政和行政组织上取得优势。",
+      "process": "隋军南下灭陈，于589年结束南北对峙。",
+      "consequence": "统一帝国重新建立，南北交通、制度与人口整合成为下一阶段任务。",
+      "significance": "隋统一为唐代的开放和强盛奠定政治空间，也使中央对江南的控制进一步深化。",
+      "peopleIds": [
+        "sui-wendi"
+      ],
+      "placeIds": [
+        "luoyang",
+        "jiankang"
+      ],
+      "topicIds": [
+        "canal",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "sui",
+        "northern-southern"
+      ]
+    },
+    {
+      "id": "grand-canal",
+      "dynastyId": "sui",
+      "date": {
+        "year": 605,
+        "month": null,
+        "day": null,
+        "display": "公元 605 年",
+        "precision": "year"
+      },
+      "title": "隋朝开凿大运河",
+      "summary": "隋炀帝时期大规模组织运河工程，将北方政治中心与江南经济区连接起来。",
+      "importance": 3,
+      "tags": [
+        "运河",
+        "漕运",
+        "工程"
+      ],
+      "sourceIds": [
+        "suishu"
+      ],
+      "caveat": "运河不是单年在空地上完成的工程，隋代整合和发展了多条既有水道。",
+      "background": "统一后的帝国需要把南方粮食、赋税和物资运往北方政治中心。",
+      "process": "隋廷征发民力开凿和整修通济渠、永济渠等水道，形成跨区域运输网络。",
+      "consequence": "南北交通能力提升，但高额劳役和工程成本也加剧社会负担。",
+      "significance": "大运河成为隋唐以后国家财政、交通和城市体系的重要基础设施。",
+      "peopleIds": [
+        "sui-yangdi"
+      ],
+      "placeIds": [
+        "daxing",
+        "luoyang"
+      ],
+      "topicIds": [
+        "canal",
+        "commerce"
+      ],
+      "relatedDynastyIds": [
+        "sui"
+      ]
     },
     {
       "id": "tang-founded",
@@ -1040,7 +2063,26 @@ export default {
         "jiutangshu",
         "xintangshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "隋末大规模战争与工程负担导致地方控制崩解，各路军事力量争夺天下。",
+      "process": "李渊于618年称帝建立唐，随后逐步统一各地并整合隋代制度资源。",
+      "consequence": "唐朝承接隋制并进一步调整，形成较长期的政治稳定和区域整合。",
+      "significance": "唐代把统一、开放和多民族交流推向新的高度，但建立过程仍伴随长期战争。",
+      "peopleIds": [
+        "tang-gaozu",
+        "tang-taizong"
+      ],
+      "placeIds": [
+        "changan"
+      ],
+      "topicIds": [
+        "legal-system",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "tang",
+        "sui"
+      ]
     },
     {
       "id": "an-lushan",
@@ -1063,7 +2105,65 @@ export default {
         "jiutangshu",
         "xintangshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "唐玄宗后期边镇军事力量增强，中央对节度使的财政和军队控制逐渐失衡。",
+      "process": "安禄山在范阳起兵，战乱持续多年并蔓延多个区域。",
+      "consequence": "唐朝中央与地方关系、人口分布和财政结构发生深刻变化，藩镇势力增强。",
+      "significance": "安史之乱不是唐朝突然灭亡，而是从盛期进入长期调整和分权的历史转折。",
+      "peopleIds": [
+        "tang-xuanzong",
+        "an-lushan"
+      ],
+      "placeIds": [
+        "changan",
+        "luoyang"
+      ],
+      "topicIds": [
+        "military-system",
+        "central-local"
+      ],
+      "relatedDynastyIds": [
+        "tang"
+      ]
+    },
+    {
+      "id": "two-tax-law",
+      "dynastyId": "tang",
+      "date": {
+        "year": 780,
+        "month": null,
+        "day": null,
+        "display": "公元 780 年",
+        "precision": "year"
+      },
+      "title": "唐代推行两税法",
+      "summary": "唐代以两税法调整赋役征收方式，开始以资产、户等与夏秋两次征税组织财政。",
+      "importance": 3,
+      "tags": [
+        "税制",
+        "财政",
+        "杨炎"
+      ],
+      "sourceIds": [
+        "xintangshu",
+        "jiutangshu"
+      ],
+      "caveat": "两税法是长期财政调整的一部分，地方执行差异很大。",
+      "background": "安史之乱后均田制和租庸调体系难以维持，人口流动和土地关系改变。",
+      "process": "朝廷采纳杨炎建议，以资产和户等为征税依据，并合并多种赋役项目。",
+      "consequence": "中央财政获得新的征收基础，但地方征收、货币化和税负分配仍产生新的问题。",
+      "significance": "两税法体现国家从以人丁和土地为主的旧税制向资产和货币财政转变。",
+      "peopleIds": [],
+      "placeIds": [
+        "changan"
+      ],
+      "topicIds": [
+        "fiscal-reform",
+        "commerce"
+      ],
+      "relatedDynastyIds": [
+        "tang"
+      ]
     },
     {
       "id": "tang-ended",
@@ -1086,7 +2186,64 @@ export default {
         "xinwudaishi",
         "jiutangshu"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "晚唐藩镇割据、宦官政治和农民战争持续削弱中央权威。",
+      "process": "朱温控制唐廷后废唐称帝，建立后梁。",
+      "consequence": "北方进入五代更替，南方与河东等地形成多个割据政权。",
+      "significance": "907年成为唐与五代十国之间的通行分界，但地方分裂在唐灭亡前已长期存在。",
+      "peopleIds": [
+        "zhu-wen"
+      ],
+      "placeIds": [
+        "kaifeng"
+      ],
+      "topicIds": [
+        "military-system",
+        "central-local"
+      ],
+      "relatedDynastyIds": [
+        "five-ten-kingdoms",
+        "tang"
+      ]
+    },
+    {
+      "id": "khitan-state",
+      "dynastyId": "liao",
+      "date": {
+        "year": 916,
+        "month": null,
+        "day": null,
+        "display": "公元 916 年",
+        "precision": "year"
+      },
+      "title": "耶律阿保机建立契丹政权",
+      "summary": "阿保机统一契丹主要部族并建立稳定王权，辽逐步成为东北与华北的长期政治力量。",
+      "importance": 3,
+      "tags": [
+        "契丹",
+        "建国"
+      ],
+      "sourceIds": [
+        "liaoshi"
+      ],
+      "caveat": "916年与后来采用“辽”国号的关系需要按具体史料区分。",
+      "background": "契丹诸部在唐末五代的政治真空与区域竞争中逐渐整合。",
+      "process": "阿保机通过军事和政治组织集中权力，建立可继承的王朝机构并扩张影响。",
+      "consequence": "辽成为与五代和北宋并存的重要政权，形成跨草原和汉地的治理模式。",
+      "significance": "辽的建立把北方草原政权纳入同一编年史尺度，是理解多政权中国的关键节点。",
+      "peopleIds": [
+        "abaoji"
+      ],
+      "placeIds": [
+        "liao-shangjing"
+      ],
+      "topicIds": [
+        "frontier",
+        "multi-regime"
+      ],
+      "relatedDynastyIds": [
+        "liao"
+      ]
     },
     {
       "id": "song-founded",
@@ -1108,11 +2265,278 @@ export default {
       "sourceIds": [
         "songshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "五代后期后周政权加强中央军事与财政，但仍未结束北方和南方的分裂。",
+      "process": "赵匡胤发动陈桥兵变建立宋，随后逐步削平南方割据政权。",
+      "consequence": "北宋重建中央集权，并以文官和禁军制度重新组织国家。",
+      "significance": "宋朝建立并未控制全部历史中国区域，辽、西夏等政权同时存在。",
+      "peopleIds": [
+        "zhao-kuangyin"
+      ],
+      "placeIds": [
+        "kaifeng"
+      ],
+      "topicIds": [
+        "civil-service",
+        "central-local",
+        "multi-regime"
+      ],
+      "relatedDynastyIds": [
+        "northern-song",
+        "five-ten-kingdoms"
+      ]
+    },
+    {
+      "id": "chanyuan-treaty",
+      "dynastyId": "northern-song",
+      "date": {
+        "year": 1005,
+        "month": null,
+        "day": null,
+        "display": "公元 1005 年",
+        "precision": "year"
+      },
+      "title": "宋辽订立澶渊之盟",
+      "summary": "北宋与辽结束大规模战争并建立长期和平安排，双方维持边界与外交往来。",
+      "importance": 3,
+      "tags": [
+        "宋辽",
+        "盟约",
+        "外交"
+      ],
+      "sourceIds": [
+        "songshi",
+        "liaoshi"
+      ],
+      "caveat": "谈判发生在1004年，盟约在1005年确认，常以澶渊之盟统一称呼。",
+      "background": "辽军南下深入宋境，北宋内部对迁都、亲征和议和存在分歧。",
+      "process": "宋真宗亲征，双方在澶州一带形成僵持并进行外交谈判。",
+      "consequence": "宋辽获得长期相对和平，边境贸易和外交礼仪逐渐制度化。",
+      "significance": "澶渊之盟说明多政权关系不只由战争决定，长期妥协也能塑造政治秩序。",
+      "peopleIds": [
+        "xiao-chuo"
+      ],
+      "placeIds": [
+        "kaifeng"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "frontier",
+        "commerce"
+      ],
+      "relatedDynastyIds": [
+        "northern-song",
+        "liao"
+      ]
+    },
+    {
+      "id": "western-xia-founded",
+      "dynastyId": "western-xia",
+      "date": {
+        "year": 1038,
+        "month": null,
+        "day": null,
+        "display": "公元 1038 年",
+        "precision": "year"
+      },
+      "title": "李元昊称帝建立西夏",
+      "summary": "党项首领李元昊称帝，建立具有自身文字、礼仪和军政制度的西夏政权。",
+      "importance": 3,
+      "tags": [
+        "党项",
+        "西夏"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "caveat": "西夏建立前的党项政治体已经长期发展，1038年是称帝与国号节点。",
+      "background": "党项政权在宋、辽之间发展，控制河套与河西交通并形成独立政治认同。",
+      "process": "李元昊称帝、创制礼仪和文字，并组织对宋战争与外交。",
+      "consequence": "西夏成为西北长期政权，与宋、辽、金形成复杂并立关系。",
+      "significance": "西夏使十至十三世纪的“中国”历史呈现为多政权共同构成的网络。",
+      "peopleIds": [
+        "li-yuanhao"
+      ],
+      "placeIds": [
+        "xingqing"
+      ],
+      "topicIds": [
+        "frontier",
+        "multi-regime",
+        "writing"
+      ],
+      "relatedDynastyIds": [
+        "western-xia",
+        "northern-song",
+        "liao"
+      ]
+    },
+    {
+      "id": "western-xia-song-war",
+      "dynastyId": "western-xia",
+      "date": {
+        "year": 1040,
+        "month": null,
+        "day": null,
+        "display": "公元 1040 年",
+        "precision": "year"
+      },
+      "title": "宋夏战争加剧",
+      "summary": "西夏与北宋在西北边境爆发连续战争，随后形成长期对峙与贸易关系。",
+      "importance": 2,
+      "tags": [
+        "宋夏",
+        "边地"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "caveat": "宋夏战争延续多年，1040年是重要战事阶段，不是单一战役。",
+      "background": "西夏建国改变宋辽之间的缓冲关系，边界、贸易和军事部署成为争议焦点。",
+      "process": "双方在西北边境多次交战，宋军承受补给和地理压力。",
+      "consequence": "战争与和议交替，边境互市和多边外交逐渐形成。",
+      "significance": "宋夏冲突表明边疆是多条政治、经济与军事关系交织的区域。",
+      "peopleIds": [
+        "li-yuanhao"
+      ],
+      "placeIds": [
+        "xingqing"
+      ],
+      "topicIds": [
+        "frontier",
+        "multi-regime"
+      ],
+      "relatedDynastyIds": [
+        "western-xia",
+        "northern-song"
+      ]
+    },
+    {
+      "id": "wang-anshi-reforms",
+      "dynastyId": "northern-song",
+      "date": {
+        "year": 1069,
+        "month": null,
+        "day": null,
+        "display": "公元 1069 年",
+        "precision": "year"
+      },
+      "title": "王安石推行熙宁变法",
+      "summary": "北宋围绕财政、军事、教育和市场展开大规模改革，引发长期政治争论。",
+      "importance": 3,
+      "tags": [
+        "变法",
+        "财政",
+        "党争"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "caveat": "熙宁变法涉及多项政策和多个阶段，1069年为开始年份。",
+      "background": "北宋财政支出、冗官冗兵和对外压力增加，朝廷寻找增强国家能力的方法。",
+      "process": "王安石推行青苗、免役、市易、保甲等政策，反对者从制度成本和社会影响提出质疑。",
+      "consequence": "改革部分增加财政收入，也加深官僚集团分裂和地方执行差异。",
+      "significance": "熙宁变法展示国家能力、政策执行与政治联盟之间的复杂关系。",
+      "peopleIds": [
+        "wang-anshi",
+        "sima-guang"
+      ],
+      "placeIds": [
+        "kaifeng"
+      ],
+      "topicIds": [
+        "fiscal-reform",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "northern-song"
+      ]
+    },
+    {
+      "id": "jin-founded",
+      "dynastyId": "jin-jurchen",
+      "date": {
+        "year": 1115,
+        "month": null,
+        "day": null,
+        "display": "公元 1115 年",
+        "precision": "year"
+      },
+      "title": "完颜阿骨打建立金",
+      "summary": "女真诸部在阿骨打领导下建立金，迅速改变辽宋北方格局。",
+      "importance": 3,
+      "tags": [
+        "女真",
+        "建国"
+      ],
+      "sourceIds": [
+        "jinshi"
+      ],
+      "caveat": null,
+      "background": "辽对女真诸部的控制与索取引发反抗，女真军事联盟逐渐形成。",
+      "process": "阿骨打称帝建立金，并以猛安谋克组织军队，与辽展开战争。",
+      "consequence": "金取代辽成为北方主导力量，随后与北宋直接冲突。",
+      "significance": "金的兴起说明辽宋体系并非稳定两极，新的边疆力量可以迅速重塑政治地图。",
+      "peopleIds": [
+        "aguda"
+      ],
+      "placeIds": [
+        "huining"
+      ],
+      "topicIds": [
+        "military-system",
+        "multi-regime"
+      ],
+      "relatedDynastyIds": [
+        "jin-jurchen",
+        "liao",
+        "northern-song"
+      ]
+    },
+    {
+      "id": "liao-fall",
+      "dynastyId": "liao",
+      "date": {
+        "year": 1125,
+        "month": null,
+        "day": null,
+        "display": "公元 1125 年",
+        "precision": "year"
+      },
+      "title": "辽朝覆亡",
+      "summary": "金与北宋联合夹击辽，辽天祚帝被俘，辽朝在中原和草原的统治结束。",
+      "importance": 3,
+      "tags": [
+        "辽亡",
+        "宋金"
+      ],
+      "sourceIds": [
+        "liaoshi",
+        "jinshi"
+      ],
+      "caveat": "西辽等后续政权延续契丹政治传统，1125年不等于契丹历史完全终止。",
+      "background": "辽末政治衰败和女真崛起使辽在金军压力下迅速失去控制。",
+      "process": "金军攻占辽重要城市，北宋出兵参与燕云地区争夺。",
+      "consequence": "宋金直接接壤，北宋在战后外交与军事上的弱点暴露。",
+      "significance": "辽的灭亡改变了宋辽长期和平格局，也为靖康之变埋下条件。",
+      "peopleIds": [],
+      "placeIds": [
+        "liao-shangjing",
+        "beijing"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "frontier"
+      ],
+      "relatedDynastyIds": [
+        "liao",
+        "jin-jurchen",
+        "northern-song"
+      ]
     },
     {
       "id": "jingkang",
-      "dynastyId": "southern-song",
+      "dynastyId": "northern-song",
       "date": {
         "year": 1127,
         "month": null,
@@ -1131,7 +2555,73 @@ export default {
         "songshi",
         "jinshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "北宋末年宋金联合灭辽后，宋金关系迅速恶化，北宋军事与财政弱点暴露。",
+      "process": "金军南下攻破东京，宋徽宗、钦宗被俘，北宋中央政权覆亡。",
+      "consequence": "赵构在南方重建宋朝，南宋与金进入长期对峙。",
+      "significance": "靖康之变同时牵动宋、金与北方社会，是十二世纪政治格局重组的关键节点。",
+      "peopleIds": [
+        "song-huizong",
+        "song-qinzong",
+        "song-gaozong"
+      ],
+      "placeIds": [
+        "kaifeng",
+        "linan"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "southern-song",
+        "northern-song",
+        "jin-jurchen"
+      ]
+    },
+    {
+      "id": "shaoxing-treaty",
+      "dynastyId": "southern-song",
+      "date": {
+        "year": 1141,
+        "month": null,
+        "day": null,
+        "display": "公元 1141 年",
+        "precision": "year"
+      },
+      "title": "宋金达成绍兴和议",
+      "summary": "南宋与金形成长期和议安排，南北对峙格局进一步稳定。",
+      "importance": 3,
+      "tags": [
+        "宋金",
+        "和议",
+        "南北"
+      ],
+      "sourceIds": [
+        "songshi",
+        "jinshi"
+      ],
+      "caveat": "谈判与正式确认跨越1141至1142年，不同文献使用年份略有差异。",
+      "background": "宋金战争长期消耗双方，南宋内部主战与主和力量持续争论。",
+      "process": "宋廷与金进行外交交涉，接受边界和称谓安排，并调整北方军事部署。",
+      "consequence": "南宋与金获得较长时期的相对和平，双方边境贸易和人员交流继续。",
+      "significance": "和议是多政权外交的产物，也与南宋政治路线和岳飞等人的命运紧密相关。",
+      "peopleIds": [
+        "yue-fei",
+        "song-gaozong"
+      ],
+      "placeIds": [
+        "linan"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "military-system",
+        "frontier"
+      ],
+      "relatedDynastyIds": [
+        "southern-song",
+        "jin-jurchen"
+      ]
     },
     {
       "id": "mongol-state",
@@ -1153,7 +2643,104 @@ export default {
       "sourceIds": [
         "yuanshi"
       ],
-      "caveat": "大蒙古国与 1271 年建立的元朝并非完全相同的纪年范围。"
+      "caveat": "大蒙古国与 1271 年建立的元朝并非完全相同的纪年范围。",
+      "background": "蒙古高原诸部长期竞争，铁木真通过联盟和战争逐步统一各部。",
+      "process": "1206年铁木真被推举为成吉思汗，大蒙古国建立。",
+      "consequence": "蒙古军事政治组织开始大规模扩张，欧亚交流与征服进入新阶段。",
+      "significance": "大蒙古国不是元朝的同义词；理解元朝必须区分蒙古帝国整体与1271年后的中国王朝。",
+      "peopleIds": [
+        "genghis"
+      ],
+      "placeIds": [],
+      "topicIds": [
+        "exchange",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "yuan"
+      ]
+    },
+    {
+      "id": "western-xia-fall",
+      "dynastyId": "western-xia",
+      "date": {
+        "year": 1227,
+        "month": null,
+        "day": null,
+        "display": "公元 1227 年",
+        "precision": "year"
+      },
+      "title": "蒙古灭西夏",
+      "summary": "蒙古军队长期进攻后灭亡西夏，西北的政治格局发生根本变化。",
+      "importance": 3,
+      "tags": [
+        "蒙古",
+        "西夏灭亡"
+      ],
+      "sourceIds": [
+        "songshi",
+        "yuanshi"
+      ],
+      "caveat": "战争与政权终结经历多年，1227年是西夏灭亡的通行节点。",
+      "background": "蒙古扩张进入河西与河套，西夏在宋、金、蒙古之间反复调整关系。",
+      "process": "蒙古军多次进攻西夏，最终攻破兴庆府并结束西夏王朝统治。",
+      "consequence": "蒙古控制西北交通和农业区，随后进一步南下攻金与宋。",
+      "significance": "西夏灭亡是多政权时代终结的开端，但西夏文字、佛教与地方社会记忆持续存在。",
+      "peopleIds": [],
+      "placeIds": [
+        "xingqing"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "frontier"
+      ],
+      "relatedDynastyIds": [
+        "western-xia",
+        "yuan"
+      ]
+    },
+    {
+      "id": "jin-fall",
+      "dynastyId": "jin-jurchen",
+      "date": {
+        "year": 1234,
+        "month": null,
+        "day": null,
+        "display": "公元 1234 年",
+        "precision": "year"
+      },
+      "title": "蒙古与南宋联军灭金",
+      "summary": "金在蒙古和南宋联合进攻下灭亡，北方政治格局进入蒙古主导阶段。",
+      "importance": 3,
+      "tags": [
+        "金亡",
+        "蒙古",
+        "南宋"
+      ],
+      "sourceIds": [
+        "jinshi",
+        "yuanshi",
+        "songshi"
+      ],
+      "caveat": null,
+      "background": "蒙古南扩使金失去北方大部分控制，南宋希望借联盟削弱长期对手。",
+      "process": "蒙古军与宋军围攻蔡州，金哀宗自尽，金朝灭亡。",
+      "consequence": "南宋暂时摆脱金的对峙，却直接面对更强大的蒙古帝国。",
+      "significance": "金亡显示短期联盟可能改变边境格局，也会制造新的长期安全风险。",
+      "peopleIds": [],
+      "placeIds": [
+        "huining",
+        "beijing"
+      ],
+      "topicIds": [
+        "multi-regime",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "jin-jurchen",
+        "southern-song",
+        "yuan"
+      ]
     },
     {
       "id": "yuan-founded",
@@ -1175,7 +2762,24 @@ export default {
       "sourceIds": [
         "yuanshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "忽必烈在蒙古内部竞争中建立对汉地和北方的主要统治权。",
+      "process": "1271年忽必烈采用“元”为国号，以大都为政治中心，逐步建立王朝行政体系。",
+      "consequence": "元朝把蒙古统治结构与汉地官僚制度结合，并通过行省治理广袤区域。",
+      "significance": "元朝的开始与蒙古帝国历史相连，但其王朝纪年和行政制度有自身边界。",
+      "peopleIds": [
+        "kublai"
+      ],
+      "placeIds": [
+        "dadu"
+      ],
+      "topicIds": [
+        "provincial-government",
+        "exchange"
+      ],
+      "relatedDynastyIds": [
+        "yuan"
+      ]
     },
     {
       "id": "yamen",
@@ -1198,7 +2802,26 @@ export default {
         "songshi",
         "yuanshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "元军持续南下，南宋在军事和财政压力下失去大部分防线。",
+      "process": "1279年元军在崖山击败南宋残余力量，南宋政权结束。",
+      "consequence": "元朝完成对中国主要区域的统一，南宋的政治和文化记忆则在后世延续。",
+      "significance": "崖山之后的“亡国”叙事影响深远，但元朝统治也包含制度继承和多族群治理。",
+      "peopleIds": [
+        "kublai",
+        "wen-tianxiang"
+      ],
+      "placeIds": [
+        "linan"
+      ],
+      "topicIds": [
+        "provincial-government",
+        "multi-regime"
+      ],
+      "relatedDynastyIds": [
+        "yuan",
+        "southern-song"
+      ]
     },
     {
       "id": "ming-founded",
@@ -1220,7 +2843,26 @@ export default {
       "sourceIds": [
         "mingshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "元末灾害、赋役和社会矛盾引发多股起义力量，朱元璋逐步整合江淮军政资源。",
+      "process": "朱元璋于1368年称帝建立明，并攻占元大都，元朝在汉地的统治结束。",
+      "consequence": "明朝重建以皇帝为核心的中央集权，并重新组织户籍、军制和基层控制。",
+      "significance": "明朝的建立是元明政治转型，但不是所有区域和人群在同一年完成秩序更替。",
+      "peopleIds": [
+        "zhu-yuanzhang"
+      ],
+      "placeIds": [
+        "nanjing",
+        "beijing"
+      ],
+      "topicIds": [
+        "central-local",
+        "civil-service"
+      ],
+      "relatedDynastyIds": [
+        "ming",
+        "yuan"
+      ]
     },
     {
       "id": "zheng-he",
@@ -1242,7 +2884,64 @@ export default {
       "sourceIds": [
         "mingshi"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "明初国家拥有强大的造船和财政资源，永乐朝廷也希望通过远航建立外交与贸易联系。",
+      "process": "郑和率船队从中国沿海出发，访问东南亚、南亚和东非等地。",
+      "consequence": "远航扩大明廷对外部世界的知识，并强化朝贡与海上交流网络。",
+      "significance": "郑和航行不是现代殖民扩张，也不能只解释为和平贸易；其目的和影响兼具政治、外交与经济层面。",
+      "peopleIds": [
+        "zheng-he"
+      ],
+      "placeIds": [
+        "quanzhou"
+      ],
+      "topicIds": [
+        "maritime",
+        "commerce"
+      ],
+      "relatedDynastyIds": [
+        "ming"
+      ]
+    },
+    {
+      "id": "single-whip-reform",
+      "dynastyId": "ming",
+      "date": {
+        "year": 1581,
+        "month": null,
+        "day": null,
+        "display": "公元 1581 年",
+        "precision": "year"
+      },
+      "title": "一条鞭法推行",
+      "summary": "明代将多种赋役逐步合并折银征收，白银财政和基层征收方式发生长期变化。",
+      "importance": 2,
+      "tags": [
+        "税制",
+        "白银",
+        "张居正"
+      ],
+      "sourceIds": [
+        "mingshi"
+      ],
+      "caveat": "一条鞭法在地方先有实践，1581年是张居正推动全国推行的关键年份。",
+      "background": "明代中后期赋役名目复杂、土地隐匿和征收成本上升，白银流通扩大。",
+      "process": "地方将多种差役与税项合并，按田亩或丁粮折算白银征收。",
+      "consequence": "财政征收更依赖白银与土地清丈，也带来市场波动和地方执行差异。",
+      "significance": "这条改革连接明代国家财政、全球白银流动与基层社会结构。",
+      "peopleIds": [
+        "zhang-juzheng"
+      ],
+      "placeIds": [
+        "beijing"
+      ],
+      "topicIds": [
+        "fiscal-reform",
+        "commerce"
+      ],
+      "relatedDynastyIds": [
+        "ming"
+      ]
     },
     {
       "id": "qing-proclaimed",
@@ -1264,7 +2963,24 @@ export default {
       "sourceIds": [
         "qingshigao"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "皇太极在东北整合女真和蒙古力量，并改造后金的行政、军事与族群组织。",
+      "process": "1636年皇太极称帝并改国号为大清。",
+      "consequence": "清朝形成更完整的王朝政治架构，为1644年后进入中原做准备。",
+      "significance": "清朝的王朝纪年从1636年开始，但全国统治的建立经历了长期战争与整合。",
+      "peopleIds": [
+        "hong-taiji"
+      ],
+      "placeIds": [
+        "shengjing"
+      ],
+      "topicIds": [
+        "military-system",
+        "frontier"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
     },
     {
       "id": "ming-qing-transition",
@@ -1287,7 +3003,27 @@ export default {
         "mingshi",
         "qingshigao"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "明朝末年财政、灾荒和军事危机交织，李自成等力量攻入北京。",
+      "process": "1644年明朝中央政权崩溃，清军在吴三桂等力量配合下入关并逐步扩大控制。",
+      "consequence": "清朝逐渐取代明朝成为中原王朝，南明与各地抗清力量延续多年。",
+      "significance": "甲申之变是多重政治力量交错的事件，不宜简化为一个王朝自然接替另一个王朝。",
+      "peopleIds": [
+        "li-zicheng",
+        "wu-sangui"
+      ],
+      "placeIds": [
+        "beijing",
+        "shengjing"
+      ],
+      "topicIds": [
+        "frontier",
+        "military-system"
+      ],
+      "relatedDynastyIds": [
+        "qing",
+        "ming"
+      ]
     },
     {
       "id": "opium-war",
@@ -1309,7 +3045,142 @@ export default {
       "sourceIds": [
         "qingshigao"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "英国对华鸦片贸易与清朝禁烟政策冲突，广州及沿海通商制度也长期积累矛盾。",
+      "process": "1840年英国发动战争，清军在沿海和长江下游遭遇失败。",
+      "consequence": "战争后的条约改变关税、通商和司法安排，条约体系开始形成。",
+      "significance": "鸦片战争是晚清外部压力与内部危机的交汇点，但不能用它单独解释整个近代史。",
+      "peopleIds": [
+        "lin-zexu"
+      ],
+      "placeIds": [
+        "beijing"
+      ],
+      "topicIds": [
+        "treaty-system",
+        "modernity"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
+    },
+    {
+      "id": "treaty-of-nanjing",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1842,
+        "month": null,
+        "day": null,
+        "display": "公元 1842 年",
+        "precision": "year"
+      },
+      "title": "中英《南京条约》签订",
+      "summary": "鸦片战争结束后，清朝与英国签订条约，开放通商口岸并调整关税与外交关系。",
+      "importance": 3,
+      "tags": [
+        "条约",
+        "通商口岸",
+        "晚清"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "caveat": "条约体系是多轮战争与外交的长期产物，不能把全部近代变化归结于一份条约。",
+      "background": "清朝在鸦片战争中军事失败，英国要求以条约固定通商与赔偿安排。",
+      "process": "双方在南京附近议和，签订开放口岸、赔款和关税安排等条款。",
+      "consequence": "中国沿海通商和海关系发生重大变化，后续不平等条约不断叠加。",
+      "significance": "《南京条约》成为晚清主权与财政危机的重要标志，也推动对外部世界的重新认识。",
+      "peopleIds": [],
+      "placeIds": [
+        "nanjing",
+        "beijing"
+      ],
+      "topicIds": [
+        "treaty-system",
+        "modernity"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
+    },
+    {
+      "id": "first-sino-japanese-war",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1894,
+        "month": null,
+        "day": null,
+        "display": "公元 1894 年",
+        "precision": "year"
+      },
+      "title": "甲午战争爆发",
+      "summary": "清朝与日本围绕朝鲜爆发战争，北洋海军失败并改变东亚力量格局。",
+      "importance": 3,
+      "tags": [
+        "甲午",
+        "海军",
+        "近代"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "caveat": null,
+      "background": "朝鲜半岛政治危机与中日两国近代化差异，使外交冲突迅速升级为战争。",
+      "process": "双方在陆海多个战场交战，清军和北洋海军遭受重大失败。",
+      "consequence": "战后条约加深清朝财政与主权危机，也刺激新的改革和革命思潮。",
+      "significance": "甲午战争让制度、工业与军事改革的速度和深度成为社会讨论中心。",
+      "peopleIds": [],
+      "placeIds": [
+        "beijing"
+      ],
+      "topicIds": [
+        "treaty-system",
+        "modernity"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
+    },
+    {
+      "id": "xinhai-revolution",
+      "dynastyId": "qing",
+      "date": {
+        "year": 1911,
+        "month": null,
+        "day": null,
+        "display": "公元 1911 年",
+        "precision": "year"
+      },
+      "title": "辛亥革命爆发",
+      "summary": "武昌起义引发多省响应，清朝统治迅速失去地方支持。",
+      "importance": 3,
+      "tags": [
+        "革命",
+        "武昌起义",
+        "共和"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "caveat": "革命由多个组织、地方军政力量和政治诉求共同推动，并非单一集团策划。",
+      "background": "清朝改革未能化解财政、民族和政治参与危机，革命组织与新军力量扩大。",
+      "process": "武昌起义后各省相继宣布独立，清廷与革命方面进入议和。",
+      "consequence": "共和制度成为新的政治方向，清帝退位进入倒计时。",
+      "significance": "辛亥革命是帝制终结的直接政治过程，其社会影响则经历更长时期的展开。",
+      "peopleIds": [
+        "sun-yat-sen"
+      ],
+      "placeIds": [
+        "nanjing",
+        "beijing"
+      ],
+      "topicIds": [
+        "modernity",
+        "central-local"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
     },
     {
       "id": "qing-abdication",
@@ -1331,7 +3202,24 @@ export default {
       "sourceIds": [
         "qingshigao"
       ],
-      "caveat": null
+      "caveat": null,
+      "background": "十九世纪以来条约体系、改革失败、革命运动和地方军政力量持续改变清朝统治基础。",
+      "process": "1911年辛亥革命后，各省独立与南北议政使清廷失去继续统治的条件。",
+      "consequence": "1912年清帝退位，清朝结束，帝制时代随之终结。",
+      "significance": "帝制终结是长期政治、社会和思想变迁的结果，不是单一战役或单一人物的瞬间成就。",
+      "peopleIds": [
+        "puyi"
+      ],
+      "placeIds": [
+        "beijing"
+      ],
+      "topicIds": [
+        "modernity",
+        "treaty-system"
+      ],
+      "relatedDynastyIds": [
+        "qing"
+      ]
     }
   ],
   "sources": [
@@ -1486,6 +3374,2315 @@ export default {
       "kind": "reference",
       "citation": "《夏商周断代工程 1996—2000 年阶段成果报告（简本）》",
       "note": "本版先秦若干年份采用该报告中的常见推定，但这些年代并不是没有任何学术争议的唯一答案。"
+    }
+  ],
+  "people": [
+    {
+      "id": "yu",
+      "name": "禹",
+      "aliases": [
+        "大禹",
+        "夏禹"
+      ],
+      "kind": "ruler",
+      "periodLabel": "传统纪年中的夏代",
+      "summary": "传统叙事把禹与治水和夏代王统联系起来。其历史形象经过长期层累，不能简单等同于单一时代的个人传记。",
+      "dynastyIds": [
+        "xia"
+      ],
+      "eventIds": [
+        "xia-traditional-founding"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji"
+      ]
+    },
+    {
+      "id": "tang",
+      "name": "汤",
+      "aliases": [
+        "商汤",
+        "成汤"
+      ],
+      "kind": "ruler",
+      "periodLabel": "传统纪年中的商代初年",
+      "summary": "汤在传统叙述中推翻夏后氏并建立商。相关故事保存了早期王朝更替与天命观的重要表达。",
+      "dynastyIds": [
+        "shang"
+      ],
+      "eventIds": [
+        "shang-traditional-founding"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji"
+      ]
+    },
+    {
+      "id": "wuding",
+      "name": "武丁",
+      "aliases": [],
+      "kind": "ruler",
+      "periodLabel": "商代中晚期",
+      "summary": "武丁时期的甲骨材料丰富，是理解商王政治、祭祀、战争和占卜活动的重要窗口。",
+      "dynastyIds": [
+        "shang"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "zhou-wu",
+      "name": "周武王",
+      "aliases": [
+        "姬发"
+      ],
+      "kind": "ruler",
+      "periodLabel": "西周初年",
+      "summary": "周武王在牧野击败商军，西周由此建立。其年代和战争细节需要结合断代研究与文献辨析。",
+      "dynastyIds": [
+        "western-zhou"
+      ],
+      "eventIds": [
+        "muye"
+      ],
+      "sourceIds": [
+        "shiji",
+        "xiashangzhou"
+      ]
+    },
+    {
+      "id": "duke-zhou",
+      "name": "周公旦",
+      "aliases": [
+        "周公"
+      ],
+      "kind": "statesman",
+      "periodLabel": "西周初年",
+      "summary": "周公辅政与制礼作乐的传统，深刻塑造了后世关于西周政治秩序和礼制典范的想象。",
+      "dynastyIds": [
+        "western-zhou"
+      ],
+      "eventIds": [
+        "muye"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "confucius",
+      "name": "孔子",
+      "aliases": [
+        "孔丘",
+        "仲尼"
+      ],
+      "kind": "thinker",
+      "periodLabel": "春秋晚期",
+      "summary": "孔子以教育和伦理思想影响后世，其言行由弟子及后学整理。读懂孔子需要区分先秦材料与后代解释。",
+      "dynastyIds": [
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "confucius-born"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "shang-yang",
+      "name": "商鞅",
+      "aliases": [
+        "卫鞅",
+        "公孙鞅"
+      ],
+      "kind": "reformer",
+      "periodLabel": "战国中期",
+      "summary": "商鞅在秦国主持变法，强化国家控制、军功奖励和编户管理，为秦的崛起提供制度基础。",
+      "dynastyIds": [
+        "eastern-zhou",
+        "qin"
+      ],
+      "eventIds": [
+        "shang-yang-reforms"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "qin-shi-huang",
+      "name": "秦始皇",
+      "aliases": [
+        "嬴政",
+        "秦王政"
+      ],
+      "kind": "ruler",
+      "periodLabel": "秦朝",
+      "summary": "秦始皇完成六国兼并后称皇帝，推动郡县制与统一度量衡。其统治与秦朝速亡仍是长期讨论的话题。",
+      "dynastyIds": [
+        "qin"
+      ],
+      "eventIds": [
+        "qin-unification"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "li-si",
+      "name": "李斯",
+      "aliases": [],
+      "kind": "statesman",
+      "periodLabel": "秦朝",
+      "summary": "李斯参与秦朝统一后的制度设计，推动郡县、文字与法令整合，也亲历秦末政治危机。",
+      "dynastyIds": [
+        "qin"
+      ],
+      "eventIds": [
+        "qin-unification"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "liu-bang",
+      "name": "刘邦",
+      "aliases": [
+        "汉高祖"
+      ],
+      "kind": "ruler",
+      "periodLabel": "秦末至西汉初年",
+      "summary": "刘邦在秦末战争中崛起并建立西汉，其政治选择体现郡县制与诸侯王国之间的现实折中。",
+      "dynastyIds": [
+        "western-han"
+      ],
+      "eventIds": [
+        "western-han-founded"
+      ],
+      "sourceIds": [
+        "shiji",
+        "hanshu"
+      ]
+    },
+    {
+      "id": "han-wudi",
+      "name": "汉武帝",
+      "aliases": [
+        "刘彻"
+      ],
+      "kind": "ruler",
+      "periodLabel": "西汉中期",
+      "summary": "汉武帝时期中央集权、儒学教育和对外经营进一步加强，同时财政扩张与长期战争也改变社会负担。",
+      "dynastyIds": [
+        "western-han"
+      ],
+      "eventIds": [
+        "zhang-qian"
+      ],
+      "sourceIds": [
+        "hanshu"
+      ]
+    },
+    {
+      "id": "zhang-qian",
+      "name": "张骞",
+      "aliases": [],
+      "kind": "statesman",
+      "periodLabel": "西汉中期",
+      "summary": "张骞出使西域使汉朝获得更系统的中亚地理与政治信息，其行动被纳入丝绸之路的长期历史叙事。",
+      "dynastyIds": [
+        "western-han"
+      ],
+      "eventIds": [
+        "zhang-qian"
+      ],
+      "sourceIds": [
+        "shiji",
+        "hanshu"
+      ]
+    },
+    {
+      "id": "wang-mang",
+      "name": "王莽",
+      "aliases": [],
+      "kind": "ruler",
+      "periodLabel": "西汉末至新朝",
+      "summary": "王莽以外戚身份掌握权力，后通过禅让建立新朝，并推行土地、货币和官制等改制。",
+      "dynastyIds": [
+        "xin"
+      ],
+      "eventIds": [
+        "wang-mang-new"
+      ],
+      "sourceIds": [
+        "hanshu"
+      ]
+    },
+    {
+      "id": "guangwu",
+      "name": "汉光武帝",
+      "aliases": [
+        "刘秀"
+      ],
+      "kind": "ruler",
+      "periodLabel": "东汉初年",
+      "summary": "刘秀在汉末动乱后重建汉室，调整中央与地方关系，东汉政治由此进入新的阶段。",
+      "dynastyIds": [
+        "eastern-han"
+      ],
+      "eventIds": [
+        "eastern-han-founded"
+      ],
+      "sourceIds": [
+        "houhanshu"
+      ]
+    },
+    {
+      "id": "cai-lun",
+      "name": "蔡伦",
+      "aliases": [],
+      "kind": "technologist",
+      "periodLabel": "东汉",
+      "summary": "《后汉书》记载蔡伦改进造纸方法。纸张的普及是长期技术与社会选择的结果，不能归结为单一人物的瞬间发明。",
+      "dynastyIds": [
+        "eastern-han"
+      ],
+      "eventIds": [
+        "paper-improved"
+      ],
+      "sourceIds": [
+        "houhanshu"
+      ]
+    },
+    {
+      "id": "zhang-heng",
+      "name": "张衡",
+      "aliases": [],
+      "kind": "scientist",
+      "periodLabel": "东汉",
+      "summary": "张衡在天文、机械与文学方面均有影响，其成就应放在东汉国家学术与观测传统中理解。",
+      "dynastyIds": [
+        "eastern-han"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "houhanshu"
+      ]
+    },
+    {
+      "id": "cao-cao",
+      "name": "曹操",
+      "aliases": [
+        "魏武帝",
+        "曹孟德"
+      ],
+      "kind": "ruler",
+      "periodLabel": "东汉末至三国",
+      "summary": "曹操在汉末战争中控制北方，推行屯田并整合军政力量。后世文学形象不能替代正史与政治史中的复杂人物。",
+      "dynastyIds": [
+        "three-kingdoms",
+        "eastern-han"
+      ],
+      "eventIds": [
+        "red-cliffs"
+      ],
+      "sourceIds": [
+        "sanguozhi"
+      ]
+    },
+    {
+      "id": "liu-bei",
+      "name": "刘备",
+      "aliases": [
+        "汉昭烈帝",
+        "刘玄德"
+      ],
+      "kind": "ruler",
+      "periodLabel": "三国",
+      "summary": "刘备以汉室宗亲身份建立蜀汉，其政权叙事强调继承汉代正统。",
+      "dynastyIds": [
+        "three-kingdoms"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "sanguozhi"
+      ]
+    },
+    {
+      "id": "sun-quan",
+      "name": "孙权",
+      "aliases": [
+        "吴大帝"
+      ],
+      "kind": "ruler",
+      "periodLabel": "三国",
+      "summary": "孙权经营江东并建立吴国，其政权依赖长江防务、地方精英与南方资源。",
+      "dynastyIds": [
+        "three-kingdoms"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "sanguozhi"
+      ]
+    },
+    {
+      "id": "zhuge-liang",
+      "name": "诸葛亮",
+      "aliases": [
+        "孔明",
+        "武乡侯"
+      ],
+      "kind": "statesman",
+      "periodLabel": "三国",
+      "summary": "诸葛亮主持蜀汉政务与北伐，后世对其政治能力、军事评价和忠诚形象有持续讨论。",
+      "dynastyIds": [
+        "three-kingdoms"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "sanguozhi"
+      ]
+    },
+    {
+      "id": "sima-yan",
+      "name": "晋武帝",
+      "aliases": [
+        "司马炎"
+      ],
+      "kind": "ruler",
+      "periodLabel": "西晋",
+      "summary": "司马炎代魏建晋并完成灭吴统一，但宗室分封和政治安排也为西晋后期的动乱埋下隐患。",
+      "dynastyIds": [
+        "western-jin"
+      ],
+      "eventIds": [
+        "jin-unifies"
+      ],
+      "sourceIds": [
+        "jinshu"
+      ]
+    },
+    {
+      "id": "wang-xizhi",
+      "name": "王羲之",
+      "aliases": [
+        "王右军"
+      ],
+      "kind": "artist",
+      "periodLabel": "东晋",
+      "summary": "王羲之是东晋士族文化与书法传统的重要人物。现存作品多为后世摹本，阅读时需要区分原作、传本与经典化过程。",
+      "dynastyIds": [
+        "eastern-jin"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "jinshu"
+      ]
+    },
+    {
+      "id": "xiaowen",
+      "name": "北魏孝文帝",
+      "aliases": [
+        "元宏"
+      ],
+      "kind": "ruler",
+      "periodLabel": "南北朝",
+      "summary": "孝文帝推进迁都洛阳及一系列制度改革，其政策加速北方政治和文化整合，也并非没有社会代价。",
+      "dynastyIds": [
+        "northern-southern"
+      ],
+      "eventIds": [
+        "xiaowen-luoyang"
+      ],
+      "sourceIds": [
+        "weishu"
+      ]
+    },
+    {
+      "id": "sui-wendi",
+      "name": "隋文帝",
+      "aliases": [
+        "杨坚"
+      ],
+      "kind": "ruler",
+      "periodLabel": "隋朝",
+      "summary": "杨坚建立隋朝，推动中央官制、地方行政和统一法律建设，为唐代制度奠定基础。",
+      "dynastyIds": [
+        "sui"
+      ],
+      "eventIds": [
+        "sui-founded",
+        "sui-unifies"
+      ],
+      "sourceIds": [
+        "suishu"
+      ]
+    },
+    {
+      "id": "tang-taizong",
+      "name": "唐太宗",
+      "aliases": [
+        "李世民"
+      ],
+      "kind": "ruler",
+      "periodLabel": "唐朝前期",
+      "summary": "李世民参与唐初统一并通过玄武门之变登位。其治国叙事成为后世评价君主政治的重要范本。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [
+        "tang-founded"
+      ],
+      "sourceIds": [
+        "jiutangshu",
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "wu-zetian",
+      "name": "武则天",
+      "aliases": [
+        "武曌",
+        "则天皇后"
+      ],
+      "kind": "ruler",
+      "periodLabel": "唐朝",
+      "summary": "武则天掌握唐朝最高权力并建立武周，其政治实践与后世评价共同反映唐代权力和性别秩序。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "xuanzang",
+      "name": "玄奘",
+      "aliases": [
+        "唐三藏"
+      ],
+      "kind": "thinker",
+      "periodLabel": "唐朝前期",
+      "summary": "玄奘西行求法并参与佛典翻译，其旅行记录是认识七世纪中亚和印度地理的重要资料。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "tang-xuanzong",
+      "name": "唐玄宗",
+      "aliases": [
+        "李隆基"
+      ],
+      "kind": "ruler",
+      "periodLabel": "唐朝中期",
+      "summary": "开元时期的治理与天宝以后的政治变化均与唐玄宗有关，其时代呈现唐代由盛转衰的复杂过程。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [
+        "an-lushan"
+      ],
+      "sourceIds": [
+        "jiutangshu",
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "an-lushan",
+      "name": "安禄山",
+      "aliases": [],
+      "kind": "general",
+      "periodLabel": "唐朝中期",
+      "summary": "安禄山掌握多镇军权后发动叛乱。安史之乱的影响远超个人军事行动，涉及唐代军政和财政结构的长期变化。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [
+        "an-lushan"
+      ],
+      "sourceIds": [
+        "jiutangshu",
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "zhu-wen",
+      "name": "朱温",
+      "aliases": [
+        "朱全忠",
+        "后梁太祖"
+      ],
+      "kind": "ruler",
+      "periodLabel": "唐末至五代",
+      "summary": "朱温由唐末藩镇将领成为后梁建立者，其崛起体现晚唐中央控制崩解和军事集团权力的上升。",
+      "dynastyIds": [
+        "five-ten-kingdoms"
+      ],
+      "eventIds": [
+        "tang-ended"
+      ],
+      "sourceIds": [
+        "xinwudaishi"
+      ]
+    },
+    {
+      "id": "abaoji",
+      "name": "耶律阿保机",
+      "aliases": [
+        "辽太祖"
+      ],
+      "kind": "ruler",
+      "periodLabel": "辽初",
+      "summary": "阿保机整合契丹诸部并建立稳定的政治组织，为辽在东北和华北长期发挥影响奠定基础。",
+      "dynastyIds": [
+        "liao"
+      ],
+      "eventIds": [
+        "khitan-state"
+      ],
+      "sourceIds": [
+        "liaoshi"
+      ]
+    },
+    {
+      "id": "xiao-chuo",
+      "name": "萧绰",
+      "aliases": [
+        "承天后",
+        "萧太后"
+      ],
+      "kind": "ruler",
+      "periodLabel": "辽中前期",
+      "summary": "萧绰在辽廷长期掌握重要权力，并参与辽宋关系的关键决策。她的政治角色应放在辽代皇族与后族结构中理解。",
+      "dynastyIds": [
+        "liao"
+      ],
+      "eventIds": [
+        "chanyuan-treaty"
+      ],
+      "sourceIds": [
+        "liaoshi",
+        "songshi"
+      ]
+    },
+    {
+      "id": "zhao-kuangyin",
+      "name": "宋太祖",
+      "aliases": [
+        "赵匡胤"
+      ],
+      "kind": "ruler",
+      "periodLabel": "北宋初年",
+      "summary": "赵匡胤通过陈桥兵变建立宋朝，并在建国后调整中央与禁军、地方藩镇的关系。",
+      "dynastyIds": [
+        "northern-song"
+      ],
+      "eventIds": [
+        "song-founded"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "wang-anshi",
+      "name": "王安石",
+      "aliases": [
+        "王文公"
+      ],
+      "kind": "reformer",
+      "periodLabel": "北宋中期",
+      "summary": "王安石主持熙宁变法，试图通过财政、军事与教育措施增强国家能力，也引发长期政治争议。",
+      "dynastyIds": [
+        "northern-song"
+      ],
+      "eventIds": [
+        "wang-anshi-reforms"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "sima-guang",
+      "name": "司马光",
+      "aliases": [
+        "司马文正"
+      ],
+      "kind": "statesman",
+      "periodLabel": "北宋",
+      "summary": "司马光既是重要政治人物，也是《资治通鉴》的主要编纂者，其史学写作深刻影响后世历史记忆。",
+      "dynastyIds": [
+        "northern-song"
+      ],
+      "eventIds": [
+        "wang-anshi-reforms"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "li-yuanhao",
+      "name": "李元昊",
+      "aliases": [
+        "夏景宗"
+      ],
+      "kind": "ruler",
+      "periodLabel": "西夏初年",
+      "summary": "李元昊建立西夏帝号并推动党项文字与国家制度建设，使西北政权形成稳定的政治自我表达。",
+      "dynastyIds": [
+        "western-xia"
+      ],
+      "eventIds": [
+        "western-xia-founded"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "yue-fei",
+      "name": "岳飞",
+      "aliases": [
+        "岳武穆"
+      ],
+      "kind": "general",
+      "periodLabel": "南宋初年",
+      "summary": "岳飞是南宋初年的重要将领，其军事生涯与宋金战争紧密相关，后世形象又被忠义叙事不断重塑。",
+      "dynastyIds": [
+        "southern-song"
+      ],
+      "eventIds": [
+        "shaoxing-treaty"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "zhu-xi",
+      "name": "朱熹",
+      "aliases": [
+        "朱子",
+        "晦庵"
+      ],
+      "kind": "thinker",
+      "periodLabel": "南宋",
+      "summary": "朱熹整理并发展理学传统，其经典解释在后世科举与教育中影响深远。",
+      "dynastyIds": [
+        "southern-song"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "wen-tianxiang",
+      "name": "文天祥",
+      "aliases": [
+        "文文山"
+      ],
+      "kind": "statesman",
+      "periodLabel": "南宋末年",
+      "summary": "文天祥参与南宋末年抵抗元军的政治与军事活动，其后世形象成为忠义传统的重要象征。",
+      "dynastyIds": [
+        "southern-song"
+      ],
+      "eventIds": [
+        "yamen"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "aguda",
+      "name": "完颜阿骨打",
+      "aliases": [
+        "金太祖"
+      ],
+      "kind": "ruler",
+      "periodLabel": "金初",
+      "summary": "阿骨打整合女真诸部并建立金，迅速改变北方政治格局，随后辽宋关系也随之重组。",
+      "dynastyIds": [
+        "jin-jurchen"
+      ],
+      "eventIds": [
+        "jin-founded"
+      ],
+      "sourceIds": [
+        "jinshi"
+      ]
+    },
+    {
+      "id": "genghis",
+      "name": "成吉思汗",
+      "aliases": [
+        "铁木真"
+      ],
+      "kind": "ruler",
+      "periodLabel": "大蒙古国",
+      "summary": "铁木真统一蒙古诸部并建立大蒙古国，其后的扩张连接欧亚多个区域，但其帝国结构与元朝不能简单等同。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [
+        "mongol-state"
+      ],
+      "sourceIds": [
+        "yuanshi"
+      ]
+    },
+    {
+      "id": "kublai",
+      "name": "忽必烈",
+      "aliases": [
+        "元世祖"
+      ],
+      "kind": "ruler",
+      "periodLabel": "元朝",
+      "summary": "忽必烈建立元朝并定都大都，推动蒙古统治与汉地行政制度的结合。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [
+        "yuan-founded",
+        "yamen"
+      ],
+      "sourceIds": [
+        "yuanshi"
+      ]
+    },
+    {
+      "id": "guo-shoujing",
+      "name": "郭守敬",
+      "aliases": [],
+      "kind": "scientist",
+      "periodLabel": "元朝",
+      "summary": "郭守敬参与天文测量、历法修订与水利工程，其工作依赖元代国家组织的大规模观测和计算。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "yuanshi"
+      ]
+    },
+    {
+      "id": "zhu-yuanzhang",
+      "name": "朱元璋",
+      "aliases": [
+        "明太祖",
+        "洪武帝"
+      ],
+      "kind": "ruler",
+      "periodLabel": "元末至明初",
+      "summary": "朱元璋从元末起义力量中崛起并建立明朝，随后重建中央集权、户籍和军事制度。",
+      "dynastyIds": [
+        "ming"
+      ],
+      "eventIds": [
+        "ming-founded"
+      ],
+      "sourceIds": [
+        "mingshi"
+      ]
+    },
+    {
+      "id": "zheng-he",
+      "name": "郑和",
+      "aliases": [
+        "马和"
+      ],
+      "kind": "navigator",
+      "periodLabel": "明朝前期",
+      "summary": "郑和受明廷派遣率领远洋船队多次出航，其行动兼具外交、贸易和信息收集功能。",
+      "dynastyIds": [
+        "ming"
+      ],
+      "eventIds": [
+        "zheng-he"
+      ],
+      "sourceIds": [
+        "mingshi"
+      ]
+    },
+    {
+      "id": "zhang-juzheng",
+      "name": "张居正",
+      "aliases": [],
+      "kind": "reformer",
+      "periodLabel": "明朝中后期",
+      "summary": "张居正主持财政与行政改革，推动考成法和清丈等政策，其改革依赖高度集中的政治权力。",
+      "dynastyIds": [
+        "ming"
+      ],
+      "eventIds": [
+        "single-whip-reform"
+      ],
+      "sourceIds": [
+        "mingshi"
+      ]
+    },
+    {
+      "id": "hong-taiji",
+      "name": "皇太极",
+      "aliases": [
+        "清太宗"
+      ],
+      "kind": "ruler",
+      "periodLabel": "后金至清初",
+      "summary": "皇太极整合后金政治与军事组织，并于1636年改国号为大清。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "qing-proclaimed"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "kangxi",
+      "name": "康熙帝",
+      "aliases": [
+        "爱新觉罗·玄烨"
+      ],
+      "kind": "ruler",
+      "periodLabel": "清朝前期",
+      "summary": "康熙时期清朝巩固对中原和边疆多地区的统治，并处理财政、河务、军事与多民族关系等问题。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "lin-zexu",
+      "name": "林则徐",
+      "aliases": [
+        "林文忠"
+      ],
+      "kind": "statesman",
+      "periodLabel": "清朝中后期",
+      "summary": "林则徐主持禁烟并参与鸦片战争前后的对外交涉，其经历折射清廷在条约体系形成时的复杂处境。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "opium-war"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "chen-sheng",
+      "name": "陈胜",
+      "aliases": [
+        "陈涉"
+      ],
+      "kind": "leader",
+      "periodLabel": "秦末",
+      "summary": "陈胜与吴广发动秦末戍卒起义，成为反秦战争扩散的重要起点。",
+      "dynastyIds": [
+        "qin"
+      ],
+      "eventIds": [
+        "chen-sheng"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "sima-rui",
+      "name": "晋元帝",
+      "aliases": [
+        "司马睿"
+      ],
+      "kind": "ruler",
+      "periodLabel": "东晋初年",
+      "summary": "司马睿在建康建立东晋，依靠南渡士族和江南地方力量维持政权。",
+      "dynastyIds": [
+        "eastern-jin"
+      ],
+      "eventIds": [
+        "eastern-jin-founded"
+      ],
+      "sourceIds": [
+        "jinshu"
+      ]
+    },
+    {
+      "id": "liu-yu",
+      "name": "刘裕",
+      "aliases": [
+        "宋武帝"
+      ],
+      "kind": "ruler",
+      "periodLabel": "东晋末至南朝宋",
+      "summary": "刘裕以军功掌握东晋朝政，随后代晋建立刘宋，开启南朝政权序列。",
+      "dynastyIds": [
+        "northern-southern",
+        "eastern-jin"
+      ],
+      "eventIds": [
+        "liu-song-founded"
+      ],
+      "sourceIds": [
+        "songshu"
+      ]
+    },
+    {
+      "id": "sui-yangdi",
+      "name": "隋炀帝",
+      "aliases": [
+        "杨广"
+      ],
+      "kind": "ruler",
+      "periodLabel": "隋朝",
+      "summary": "杨广在位期间推进大运河、东都和对外战争等大规模工程，国家动员与社会负担同时扩大。",
+      "dynastyIds": [
+        "sui"
+      ],
+      "eventIds": [
+        "grand-canal"
+      ],
+      "sourceIds": [
+        "suishu"
+      ]
+    },
+    {
+      "id": "tang-gaozu",
+      "name": "唐高祖",
+      "aliases": [
+        "李渊"
+      ],
+      "kind": "ruler",
+      "periodLabel": "隋末至唐初",
+      "summary": "李渊在隋末战争中建立唐朝，并逐步整合各地军政力量。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [
+        "tang-founded"
+      ],
+      "sourceIds": [
+        "jiutangshu",
+        "xintangshu"
+      ]
+    },
+    {
+      "id": "song-huizong",
+      "name": "宋徽宗",
+      "aliases": [
+        "赵佶"
+      ],
+      "kind": "ruler",
+      "periodLabel": "北宋末年",
+      "summary": "赵佶在位时北宋文化与艺术高度繁荣，但军政和财政危机在宋金战争中集中爆发。",
+      "dynastyIds": [
+        "northern-song"
+      ],
+      "eventIds": [
+        "jingkang"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "song-qinzong",
+      "name": "宋钦宗",
+      "aliases": [
+        "赵桓"
+      ],
+      "kind": "ruler",
+      "periodLabel": "北宋末年",
+      "summary": "赵桓在北宋危机中即位，靖康之变后被金军俘虏，北宋中央政权覆亡。",
+      "dynastyIds": [
+        "northern-song"
+      ],
+      "eventIds": [
+        "jingkang"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "song-gaozong",
+      "name": "宋高宗",
+      "aliases": [
+        "赵构"
+      ],
+      "kind": "ruler",
+      "periodLabel": "南宋初年",
+      "summary": "赵构在北宋覆亡后建立南宋，其政治选择塑造了南宋初年的主战主和争论和宋金关系。",
+      "dynastyIds": [
+        "southern-song"
+      ],
+      "eventIds": [
+        "jingkang",
+        "shaoxing-treaty"
+      ],
+      "sourceIds": [
+        "songshi"
+      ]
+    },
+    {
+      "id": "li-zicheng",
+      "name": "李自成",
+      "aliases": [
+        "闯王"
+      ],
+      "kind": "leader",
+      "periodLabel": "明末",
+      "summary": "李自成领导明末起义军攻入北京，终结明朝中央政权，但未能建立稳定统治。",
+      "dynastyIds": [
+        "ming"
+      ],
+      "eventIds": [
+        "ming-qing-transition"
+      ],
+      "sourceIds": [
+        "mingshi",
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "wu-sangui",
+      "name": "吴三桂",
+      "aliases": [],
+      "kind": "general",
+      "periodLabel": "明末清初",
+      "summary": "吴三桂是明末辽东军事人物，在明清更替中选择与清军合作，其行为评价与具体史料长期存在讨论。",
+      "dynastyIds": [
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "ming-qing-transition"
+      ],
+      "sourceIds": [
+        "mingshi",
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "puyi",
+      "name": "溥仪",
+      "aliases": [
+        "宣统帝"
+      ],
+      "kind": "ruler",
+      "periodLabel": "清末",
+      "summary": "溥仪是清朝最后一位皇帝。其退位结束帝制皇统，但个人经历与二十世纪中国政治变迁远为复杂。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "qing-abdication"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ]
+    },
+    {
+      "id": "sun-yat-sen",
+      "name": "孙中山",
+      "aliases": [
+        "孙文"
+      ],
+      "kind": "leader",
+      "periodLabel": "清末民初",
+      "summary": "孙中山是辛亥革命的重要政治领袖和共和思想的倡导者，其活动跨越多个革命组织与政治阶段。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "xinhai-revolution"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ]
+    }
+  ],
+  "places": [
+    {
+      "id": "yangcheng",
+      "name": "阳城",
+      "modernName": "具体地望有不同说法，常与今河南登封一带相关",
+      "summary": "阳城是传统文献中夏代早期活动的地名之一，具体位置和考古对应仍有讨论。",
+      "dynastyIds": [
+        "xia"
+      ],
+      "eventIds": [
+        "xia-traditional-founding"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji"
+      ],
+      "caveat": "历史地名与今地对应不宜写成唯一结论。"
+    },
+    {
+      "id": "yin",
+      "name": "殷",
+      "modernName": "今河南安阳一带",
+      "summary": "晚商以殷为中心，殷墟出土的甲骨和青铜遗存是认识商代国家的重要材料。",
+      "dynastyIds": [
+        "shang"
+      ],
+      "eventIds": [
+        "pan-geng-yin"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": "迁殷的年代和具体政治过程存在不同研究。"
+    },
+    {
+      "id": "fenghao",
+      "name": "丰镐",
+      "modernName": "今陕西西安附近",
+      "summary": "丰京和镐京共同构成西周王朝的核心都邑区域。",
+      "dynastyIds": [
+        "western-zhou"
+      ],
+      "eventIds": [
+        "muye"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "luoyi",
+      "name": "洛邑",
+      "modernName": "今河南洛阳一带",
+      "summary": "周平王东迁后，洛邑成为东周王室的政治中心，但王室实际控制范围持续变化。",
+      "dynastyIds": [
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "eastward-zhou"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "xianyang",
+      "name": "咸阳",
+      "modernName": "今陕西咸阳一带",
+      "summary": "秦都咸阳是统一帝国行政和宫廷中心，秦亡后城市与政治格局发生重大变化。",
+      "dynastyIds": [
+        "qin",
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "qin-unification",
+        "chen-sheng"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "changan",
+      "name": "长安",
+      "modernName": "今陕西西安",
+      "summary": "长安先后成为西汉和隋唐等时期的重要都城，但不同王朝的城市范围与政治功能并不相同。",
+      "dynastyIds": [
+        "western-han",
+        "xin",
+        "sui",
+        "tang"
+      ],
+      "eventIds": [
+        "western-han-founded",
+        "wang-mang-new",
+        "tang-founded"
+      ],
+      "sourceIds": [
+        "hanshu",
+        "suishu",
+        "xintangshu"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "luoyang",
+      "name": "洛阳",
+      "modernName": "今河南洛阳",
+      "summary": "洛阳在东汉、魏晋、北魏与隋唐等时期承担过不同政治中心的作用，城市功能和都城范围随王朝变化。",
+      "dynastyIds": [
+        "eastern-han",
+        "western-jin",
+        "northern-southern",
+        "sui",
+        "tang"
+      ],
+      "eventIds": [
+        "eastern-han-founded",
+        "jin-unifies",
+        "xiaowen-luoyang"
+      ],
+      "sourceIds": [
+        "houhanshu",
+        "jinshu",
+        "weishu"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "chengdu",
+      "name": "成都",
+      "modernName": "今四川成都",
+      "summary": "成都先后成为蜀汉等政权的重要政治中心，蜀地资源与交通条件支撑区域政权长期存在。",
+      "dynastyIds": [
+        "three-kingdoms"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "sanguozhi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "jianye",
+      "name": "建业",
+      "modernName": "今江苏南京",
+      "summary": "建业是孙吴政权的政治中心，长江防线与江东地方资源构成其战略基础。",
+      "dynastyIds": [
+        "three-kingdoms"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "sanguozhi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "jiankang",
+      "name": "建康",
+      "modernName": "今江苏南京",
+      "summary": "建康是东晋和南朝的重要都城，也是南渡士族政治与江南文化网络的核心城市。",
+      "dynastyIds": [
+        "eastern-jin",
+        "northern-southern"
+      ],
+      "eventIds": [
+        "eastern-jin-founded",
+        "liu-song-founded"
+      ],
+      "sourceIds": [
+        "jinshu",
+        "songshu"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "pingcheng",
+      "name": "平城",
+      "modernName": "今山西大同",
+      "summary": "北魏前期以平城为统治中心，此后政治重心迁往洛阳。",
+      "dynastyIds": [
+        "northern-southern"
+      ],
+      "eventIds": [
+        "xiaowen-luoyang"
+      ],
+      "sourceIds": [
+        "weishu"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "daxing",
+      "name": "大兴",
+      "modernName": "今陕西西安",
+      "summary": "隋朝营建大兴城并以此作为统一帝国的政治中心，唐代在此基础上发展长安城。",
+      "dynastyIds": [
+        "sui"
+      ],
+      "eventIds": [
+        "sui-founded"
+      ],
+      "sourceIds": [
+        "suishu"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "kaifeng",
+      "name": "开封",
+      "modernName": "今河南开封",
+      "summary": "开封是五代部分政权和北宋的都城，北宋时期发展为高度繁荣的政治与商业城市。",
+      "dynastyIds": [
+        "five-ten-kingdoms",
+        "northern-song"
+      ],
+      "eventIds": [
+        "song-founded",
+        "jingkang"
+      ],
+      "sourceIds": [
+        "songshi",
+        "xinwudaishi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "liao-shangjing",
+      "name": "上京临潢府",
+      "modernName": "今内蒙古巴林左旗附近",
+      "summary": "辽上京是契丹国家的重要政治中心，连接草原、东北与汉地交通。",
+      "dynastyIds": [
+        "liao"
+      ],
+      "eventIds": [
+        "khitan-state"
+      ],
+      "sourceIds": [
+        "liaoshi"
+      ],
+      "caveat": "具体城市格局与考古分期仍在研究中。"
+    },
+    {
+      "id": "xingqing",
+      "name": "兴庆府",
+      "modernName": "今宁夏银川",
+      "summary": "兴庆府是西夏的政治中心，连接河套、河西与宋夏边地。",
+      "dynastyIds": [
+        "western-xia"
+      ],
+      "eventIds": [
+        "western-xia-founded",
+        "western-xia-fall"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "huining",
+      "name": "会宁府",
+      "modernName": "今黑龙江哈尔滨阿城一带",
+      "summary": "会宁府是金朝早期政治中心，体现女真政权从东北兴起并扩展至华北的过程。",
+      "dynastyIds": [
+        "jin-jurchen"
+      ],
+      "eventIds": [
+        "jin-founded"
+      ],
+      "sourceIds": [
+        "jinshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "linan",
+      "name": "临安",
+      "modernName": "今浙江杭州",
+      "summary": "临安是南宋实际政治中心，虽然南宋仍以恢复中原为政治叙事的重要部分。",
+      "dynastyIds": [
+        "southern-song"
+      ],
+      "eventIds": [
+        "jingkang",
+        "shaoxing-treaty"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "dadu",
+      "name": "大都",
+      "modernName": "今北京",
+      "summary": "元大都建立在金中都旧地附近，是元朝连接漠北、华北和全国行政网络的核心城市。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [
+        "yuan-founded"
+      ],
+      "sourceIds": [
+        "yuanshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "nanjing",
+      "name": "南京",
+      "modernName": "今江苏南京",
+      "summary": "明初以应天府南京为都，明成祖以后政治中心迁往北京，但南京仍保留完整中央机构。",
+      "dynastyIds": [
+        "ming"
+      ],
+      "eventIds": [
+        "ming-founded"
+      ],
+      "sourceIds": [
+        "mingshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "beijing",
+      "name": "北京",
+      "modernName": "今北京",
+      "summary": "北京先后成为金中都、元大都、明清都城，是晚期帝国政治与礼仪空间的核心。",
+      "dynastyIds": [
+        "jin-jurchen",
+        "yuan",
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "jingkang",
+        "yuan-founded",
+        "ming-qing-transition"
+      ],
+      "sourceIds": [
+        "jinshi",
+        "yuanshi",
+        "mingshi",
+        "qingshigao"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "shengjing",
+      "name": "盛京",
+      "modernName": "今辽宁沈阳",
+      "summary": "盛京是清朝入关前的政治中心，也是满洲制度与宫廷传统的重要空间。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "qing-proclaimed"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "quanzhou",
+      "name": "泉州",
+      "modernName": "今福建泉州",
+      "summary": "泉州是宋元时期海上贸易的重要港口，连接中国沿海与印度洋世界。",
+      "dynastyIds": [
+        "southern-song",
+        "ming"
+      ],
+      "eventIds": [
+        "zheng-he"
+      ],
+      "sourceIds": [
+        "songshi",
+        "mingshi"
+      ],
+      "caveat": null
+    },
+    {
+      "id": "dunhuang",
+      "name": "敦煌",
+      "modernName": "今甘肃敦煌",
+      "summary": "敦煌位于河西走廊交通网络，是汉唐边疆经营、佛教传播和多语文化交流的重要节点。",
+      "dynastyIds": [
+        "western-han",
+        "tang"
+      ],
+      "eventIds": [
+        "zhang-qian"
+      ],
+      "sourceIds": [
+        "hanshu",
+        "xintangshu"
+      ],
+      "caveat": null
+    }
+  ],
+  "topics": [
+    {
+      "id": "early-state",
+      "title": "早期国家的形成",
+      "category": "governance",
+      "summary": "从聚落、部族联盟到王权与官僚组织，早期国家形成没有单一时间点；文献叙事与考古材料需要互相校验。",
+      "dynastyIds": [
+        "xia",
+        "shang"
+      ],
+      "eventIds": [
+        "xia-traditional-founding",
+        "shang-traditional-founding"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji",
+        "xiashangzhou"
+      ],
+      "keywords": [
+        "王权",
+        "聚落",
+        "礼制"
+      ]
+    },
+    {
+      "id": "flood-control",
+      "title": "治水与国家能力",
+      "category": "environment",
+      "summary": "治水传统常被视为王权合法性和国家动员能力的重要来源，但具体工程和夏代历史关系仍未形成唯一解释。",
+      "dynastyIds": [
+        "xia",
+        "sui",
+        "qing"
+      ],
+      "eventIds": [
+        "xia-traditional-founding",
+        "grand-canal"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji"
+      ],
+      "keywords": [
+        "水利",
+        "治河",
+        "工程"
+      ]
+    },
+    {
+      "id": "bronze-culture",
+      "title": "青铜礼器与权力",
+      "category": "culture",
+      "summary": "青铜器承担祭祀、赏赐、身份展示和铭文记录等功能，是理解商周政治文化的重要材料。",
+      "dynastyIds": [
+        "shang",
+        "western-zhou"
+      ],
+      "eventIds": [
+        "pan-geng-yin",
+        "muye"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "keywords": [
+        "青铜器",
+        "礼器",
+        "铭文"
+      ]
+    },
+    {
+      "id": "writing",
+      "title": "文字与记录",
+      "category": "culture",
+      "summary": "从甲骨文、金文到简牍和印刷，文字载体改变国家治理、知识传播和历史记忆的方式。",
+      "dynastyIds": [
+        "shang",
+        "western-zhou",
+        "eastern-han",
+        "liao",
+        "western-xia"
+      ],
+      "eventIds": [
+        "pan-geng-yin",
+        "paper-improved"
+      ],
+      "sourceIds": [
+        "shiji",
+        "houhanshu",
+        "liaoshi"
+      ],
+      "keywords": [
+        "甲骨文",
+        "金文",
+        "印刷"
+      ]
+    },
+    {
+      "id": "feudal-order",
+      "title": "分封与列国秩序",
+      "category": "governance",
+      "summary": "西周分封与宗法关系并非等同现代“封建制”概念；春秋战国诸侯竞争推动新的官僚和军事制度。",
+      "dynastyIds": [
+        "western-zhou",
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "muye",
+        "eastward-zhou",
+        "shang-yang-reforms"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "keywords": [
+        "分封",
+        "宗法",
+        "诸侯"
+      ]
+    },
+    {
+      "id": "ritual-order",
+      "title": "礼制与政治秩序",
+      "category": "culture",
+      "summary": "礼制通过仪式、身份和物质规范塑造政治秩序。后世常把周礼视为理想模型，但其形成和解释经过长期变化。",
+      "dynastyIds": [
+        "western-zhou",
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "muye"
+      ],
+      "sourceIds": [
+        "shangshu",
+        "shiji"
+      ],
+      "keywords": [
+        "周礼",
+        "祭祀",
+        "宗法"
+      ]
+    },
+    {
+      "id": "hundred-schools",
+      "title": "诸子与思想竞争",
+      "category": "culture",
+      "summary": "春秋战国士人围绕政治、伦理、自然与社会提出不同方案，形成后世不断再解释的思想资源。",
+      "dynastyIds": [
+        "eastern-zhou"
+      ],
+      "eventIds": [
+        "confucius-born"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "keywords": [
+        "儒",
+        "道",
+        "墨",
+        "法"
+      ]
+    },
+    {
+      "id": "county-system",
+      "title": "郡县制",
+      "category": "governance",
+      "summary": "郡县制以中央任命和文书考核取代世袭封地，是帝国控制地方的重要制度基础。秦以后仍与封国、羁縻等制度并存。",
+      "dynastyIds": [
+        "qin",
+        "western-han"
+      ],
+      "eventIds": [
+        "qin-unification"
+      ],
+      "sourceIds": [
+        "shiji",
+        "hanshu"
+      ],
+      "keywords": [
+        "郡",
+        "县",
+        "地方行政"
+      ]
+    },
+    {
+      "id": "standardization",
+      "title": "统一标准",
+      "category": "governance",
+      "summary": "统一文字、度量衡和行政尺度降低跨区域治理成本，也体现国家试图塑造共同政治空间的能力。",
+      "dynastyIds": [
+        "qin"
+      ],
+      "eventIds": [
+        "qin-unification"
+      ],
+      "sourceIds": [
+        "shiji"
+      ],
+      "keywords": [
+        "文字",
+        "度量衡",
+        "统一"
+      ]
+    },
+    {
+      "id": "legal-system",
+      "title": "律令与官僚治理",
+      "category": "governance",
+      "summary": "律令制度以成文规则约束官吏和民众，历代会因社会与政治条件不断增补和重编。",
+      "dynastyIds": [
+        "qin",
+        "western-han",
+        "sui",
+        "tang",
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "qin-unification",
+        "sui-founded",
+        "tang-founded"
+      ],
+      "sourceIds": [
+        "shiji",
+        "suishu",
+        "xintangshu"
+      ],
+      "keywords": [
+        "律令",
+        "刑罚",
+        "官僚"
+      ]
+    },
+    {
+      "id": "frontier",
+      "title": "边疆与多政权秩序",
+      "category": "military",
+      "summary": "边疆不是简单边界线，而是交通、贸易、迁徙、军事和多重政治关系的交界地带。",
+      "dynastyIds": [
+        "western-han",
+        "three-kingdoms",
+        "liao",
+        "western-xia",
+        "southern-song",
+        "jin-jurchen",
+        "qing"
+      ],
+      "eventIds": [
+        "zhang-qian",
+        "chanyuan-treaty",
+        "western-xia-song-war",
+        "jin-founded"
+      ],
+      "sourceIds": [
+        "hanshu",
+        "liaoshi",
+        "songshi",
+        "jinshi",
+        "qingshigao"
+      ],
+      "keywords": [
+        "边地",
+        "军政",
+        "互市"
+      ]
+    },
+    {
+      "id": "silk-road",
+      "title": "丝绸之路与跨区域交流",
+      "category": "economy",
+      "summary": "丝绸之路是长期形成并由多段路线组成的交流网络，不只连接中原与西域，也涉及中亚、南亚和草原社会。",
+      "dynastyIds": [
+        "western-han",
+        "tang"
+      ],
+      "eventIds": [
+        "zhang-qian"
+      ],
+      "sourceIds": [
+        "shiji",
+        "hanshu",
+        "xintangshu"
+      ],
+      "keywords": [
+        "西域",
+        "商贸",
+        "交通"
+      ]
+    },
+    {
+      "id": "papermaking",
+      "title": "造纸与知识传播",
+      "category": "technology",
+      "summary": "造纸工艺改进与纸张普及扩大书写和行政传播，纸张逐渐进入教育、宗教与日常文化。",
+      "dynastyIds": [
+        "eastern-han"
+      ],
+      "eventIds": [
+        "paper-improved"
+      ],
+      "sourceIds": [
+        "houhanshu"
+      ],
+      "keywords": [
+        "纸",
+        "书写",
+        "传播"
+      ]
+    },
+    {
+      "id": "astronomy",
+      "title": "天文、历法与时间治理",
+      "category": "technology",
+      "summary": "观测天象和制定历法既是科学活动，也是国家宣示政治合法性和组织农时的重要手段。",
+      "dynastyIds": [
+        "eastern-han",
+        "yuan"
+      ],
+      "eventIds": [],
+      "sourceIds": [
+        "houhanshu",
+        "yuanshi"
+      ],
+      "keywords": [
+        "历法",
+        "观测",
+        "授时"
+      ]
+    },
+    {
+      "id": "central-local",
+      "title": "中央与地方",
+      "category": "governance",
+      "summary": "帝国治理始终在中央集权与地方执行之间寻找平衡，宗室、豪族、藩镇和官僚都可能改变这一关系。",
+      "dynastyIds": [
+        "western-jin",
+        "five-ten-kingdoms",
+        "northern-song",
+        "qing"
+      ],
+      "eventIds": [
+        "eight-princes-revolt",
+        "tang-ended"
+      ],
+      "sourceIds": [
+        "jinshu",
+        "xinwudaishi",
+        "songshi",
+        "qingshigao"
+      ],
+      "keywords": [
+        "中央集权",
+        "藩镇",
+        "地方"
+      ]
+    },
+    {
+      "id": "military-system",
+      "title": "军制与政权能力",
+      "category": "military",
+      "summary": "军队组织、兵源、财政供养与指挥权决定政权对内稳定和对外竞争的能力。",
+      "dynastyIds": [
+        "three-kingdoms",
+        "western-jin",
+        "five-ten-kingdoms",
+        "jin-jurchen"
+      ],
+      "eventIds": [
+        "red-cliffs",
+        "shaoxing-treaty"
+      ],
+      "sourceIds": [
+        "sanguozhi",
+        "jinshu",
+        "xinwudaishi",
+        "jinshi"
+      ],
+      "keywords": [
+        "军制",
+        "兵源",
+        "指挥"
+      ]
+    },
+    {
+      "id": "migration",
+      "title": "迁徙与社会融合",
+      "category": "society",
+      "summary": "战争、政策和经济机会推动人口迁移，迁徙又改变地方社会、族群关系和制度形态。",
+      "dynastyIds": [
+        "eastern-jin",
+        "northern-southern",
+        "jin-jurchen"
+      ],
+      "eventIds": [
+        "eastern-jin-founded",
+        "xiaowen-luoyang"
+      ],
+      "sourceIds": [
+        "jinshu",
+        "weishu",
+        "jinshi"
+      ],
+      "keywords": [
+        "南渡",
+        "移民",
+        "融合"
+      ]
+    },
+    {
+      "id": "buddhism",
+      "title": "佛教的传播与本土化",
+      "category": "culture",
+      "summary": "佛教在南北朝至隋唐时期广泛传播，与王权、寺院经济、城市文化及本土思想持续互动。",
+      "dynastyIds": [
+        "northern-southern",
+        "tang"
+      ],
+      "eventIds": [
+        "xiaowen-luoyang"
+      ],
+      "sourceIds": [
+        "weishu",
+        "xintangshu"
+      ],
+      "keywords": [
+        "寺院",
+        "译经",
+        "宗教"
+      ]
+    },
+    {
+      "id": "canal",
+      "title": "大运河与南北联结",
+      "category": "economy",
+      "summary": "运河把政治中心、粮食产区和军事补给连接起来，也带来高额工程、维护和征役成本。",
+      "dynastyIds": [
+        "sui",
+        "tang",
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "grand-canal"
+      ],
+      "sourceIds": [
+        "suishu",
+        "xintangshu",
+        "mingshi",
+        "qingshigao"
+      ],
+      "keywords": [
+        "漕运",
+        "交通",
+        "水利"
+      ]
+    },
+    {
+      "id": "civil-service",
+      "title": "科举与文官选拔",
+      "category": "governance",
+      "summary": "科举以考试连接教育与官僚选拔，但不同时期的科目、门第限制、录取规模和政治作用变化很大。",
+      "dynastyIds": [
+        "sui",
+        "tang",
+        "western-han",
+        "northern-song",
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "sui-founded",
+        "tang-founded",
+        "wang-anshi-reforms"
+      ],
+      "sourceIds": [
+        "suishu",
+        "xintangshu",
+        "songshi",
+        "mingshi"
+      ],
+      "keywords": [
+        "考试",
+        "文官",
+        "教育"
+      ]
+    },
+    {
+      "id": "commerce",
+      "title": "城市与商业网络",
+      "category": "economy",
+      "summary": "城市市场、远程贸易、货币和交通网络塑造不同时代的日常生活，也影响国家财政。",
+      "dynastyIds": [
+        "tang",
+        "five-ten-kingdoms",
+        "northern-song",
+        "southern-song",
+        "ming"
+      ],
+      "eventIds": [
+        "tang-founded",
+        "song-founded"
+      ],
+      "sourceIds": [
+        "xintangshu",
+        "songshi",
+        "mingshi"
+      ],
+      "keywords": [
+        "市场",
+        "城市",
+        "货币"
+      ]
+    },
+    {
+      "id": "fiscal-reform",
+      "title": "财政改革",
+      "category": "governance",
+      "summary": "税制、户籍和财政征收方式的变化，往往反映国家能力、土地关系和社会结构的变化。",
+      "dynastyIds": [
+        "xin",
+        "northern-song",
+        "ming",
+        "qing"
+      ],
+      "eventIds": [
+        "wang-mang-new",
+        "wang-anshi-reforms",
+        "single-whip-reform"
+      ],
+      "sourceIds": [
+        "hanshu",
+        "songshi",
+        "mingshi",
+        "qingshigao"
+      ],
+      "keywords": [
+        "税制",
+        "户籍",
+        "白银"
+      ]
+    },
+    {
+      "id": "division-integration",
+      "title": "分裂与重新整合",
+      "category": "governance",
+      "summary": "分裂时期常同时孕育制度创新、区域开发和人口流动；统一也不只是军事征服，而是行政与社会的再次连接。",
+      "dynastyIds": [
+        "three-kingdoms",
+        "western-jin",
+        "eastern-jin",
+        "northern-southern"
+      ],
+      "eventIds": [
+        "red-cliffs",
+        "jin-unifies",
+        "feishui-battle",
+        "liu-song-founded"
+      ],
+      "sourceIds": [
+        "sanguozhi",
+        "jinshu",
+        "songshu"
+      ],
+      "keywords": [
+        "分裂",
+        "统一",
+        "区域发展"
+      ]
+    },
+    {
+      "id": "multi-regime",
+      "title": "多政权并立",
+      "category": "military",
+      "summary": "十至十三世纪的中国政治地图包含宋、辽、西夏、金等多个政权，它们通过战争、盟约、贸易和迁徙彼此作用。",
+      "dynastyIds": [
+        "liao",
+        "northern-song",
+        "western-xia",
+        "southern-song",
+        "jin-jurchen"
+      ],
+      "eventIds": [
+        "chanyuan-treaty",
+        "jingkang",
+        "jin-founded"
+      ],
+      "sourceIds": [
+        "liaoshi",
+        "songshi",
+        "jinshi"
+      ],
+      "keywords": [
+        "并立",
+        "盟约",
+        "战争"
+      ]
+    },
+    {
+      "id": "neo-confucianism",
+      "title": "理学与士人文化",
+      "category": "culture",
+      "summary": "宋代理学通过经典解释、书院教育和伦理讨论形成新的知识体系，并在后世获得制度化影响。",
+      "dynastyIds": [
+        "northern-song",
+        "southern-song"
+      ],
+      "eventIds": [
+        "wang-anshi-reforms"
+      ],
+      "sourceIds": [
+        "songshi"
+      ],
+      "keywords": [
+        "理学",
+        "书院",
+        "经学"
+      ]
+    },
+    {
+      "id": "maritime",
+      "title": "海洋贸易",
+      "category": "economy",
+      "summary": "海港、造船、导航和跨海网络使沿海地区深度参与印度洋贸易，也改变国家财政和地方社会。",
+      "dynastyIds": [
+        "southern-song",
+        "yuan",
+        "ming"
+      ],
+      "eventIds": [
+        "zheng-he"
+      ],
+      "sourceIds": [
+        "songshi",
+        "yuanshi",
+        "mingshi"
+      ],
+      "keywords": [
+        "海港",
+        "船队",
+        "朝贡"
+      ]
+    },
+    {
+      "id": "provincial-government",
+      "title": "行省制度",
+      "category": "governance",
+      "summary": "元代行省是中央派出与地方治理结合的大型行政组织，对明清地方体制产生持续影响。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [
+        "yuan-founded"
+      ],
+      "sourceIds": [
+        "yuanshi"
+      ],
+      "keywords": [
+        "行省",
+        "地方",
+        "疆域"
+      ]
+    },
+    {
+      "id": "exchange",
+      "title": "欧亚交流网络",
+      "category": "economy",
+      "summary": "人员、商品、技术和疾病跨区域流动，使元朝及其前后的中国处在更广阔的欧亚联系中。",
+      "dynastyIds": [
+        "yuan"
+      ],
+      "eventIds": [
+        "mongol-state",
+        "yuan-founded"
+      ],
+      "sourceIds": [
+        "yuanshi"
+      ],
+      "keywords": [
+        "欧亚",
+        "旅行",
+        "贸易"
+      ]
+    },
+    {
+      "id": "calligraphy",
+      "title": "书法与士人文化",
+      "category": "culture",
+      "summary": "书法不仅是艺术形式，也连接士人的身份、交往、经典传统和政治表达。",
+      "dynastyIds": [
+        "eastern-jin",
+        "tang",
+        "northern-song"
+      ],
+      "eventIds": [
+        "eastern-jin-founded"
+      ],
+      "sourceIds": [
+        "jinshu",
+        "xintangshu",
+        "songshi"
+      ],
+      "keywords": [
+        "书法",
+        "士族",
+        "艺术"
+      ]
+    },
+    {
+      "id": "treaty-system",
+      "title": "条约体系与晚清变局",
+      "category": "governance",
+      "summary": "十九世纪以后的条约、通商口岸和赔款改变了清朝的财政、主权和对外关系，并推动长期制度调整。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "opium-war",
+        "treaty-of-nanjing",
+        "first-sino-japanese-war"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "keywords": [
+        "条约",
+        "通商",
+        "主权"
+      ]
+    },
+    {
+      "id": "modernity",
+      "title": "近代转型",
+      "category": "society",
+      "summary": "工业、军事、教育、城市与政治思想的变化共同塑造晚清社会，帝制终结不是单一事件造成的瞬间转变。",
+      "dynastyIds": [
+        "qing"
+      ],
+      "eventIds": [
+        "first-sino-japanese-war",
+        "xinhai-revolution",
+        "qing-abdication"
+      ],
+      "sourceIds": [
+        "qingshigao"
+      ],
+      "keywords": [
+        "近代",
+        "改革",
+        "革命"
+      ]
     }
   ]
 };

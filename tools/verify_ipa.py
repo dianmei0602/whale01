@@ -60,6 +60,9 @@ with zipfile.ZipFile(args.ipa) as archive:
     assert decoded_manifest["dynastyCount"] == identity["dynastyCount"], "Dynasty count mismatch"
     assert decoded_manifest["eventCount"] == identity["eventCount"], "Event count mismatch"
     assert decoded_manifest["sourceCount"] == identity["sourceCount"], "Source count mismatch"
+    assert decoded_manifest["personCount"] == identity["personCount"], "Person count mismatch"
+    assert decoded_manifest["placeCount"] == identity["placeCount"], "Place count mismatch"
+    assert decoded_manifest["topicCount"] == identity["topicCount"], "Topic count mismatch"
 
     if (args.public or identity.get("distribution") == "public") and embedded:
         raise SystemExit("Public distribution blocked: embedded long-lived credential detected")

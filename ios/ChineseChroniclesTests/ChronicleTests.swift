@@ -13,8 +13,11 @@ final class ChronicleTests: XCTestCase {
     func testBundledCorpusHasReviewedCoverage() {
         XCTAssertEqual(repository.dataset.schemaVersion, "1.0")
         XCTAssertEqual(repository.dataset.dynasties.count, 23)
-        XCTAssertEqual(repository.dataset.events.count, 34)
+        XCTAssertEqual(repository.dataset.events.count, 57)
         XCTAssertEqual(repository.dataset.sources.count, 19)
+        XCTAssertEqual(repository.dataset.people.count, 61)
+        XCTAssertEqual(repository.dataset.places.count, 23)
+        XCTAssertEqual(repository.dataset.topics.count, 31)
         XCTAssertFalse(repository.dataset.editorialNote.isEmpty)
     }
 
@@ -38,7 +41,33 @@ final class ChronicleTests: XCTestCase {
 
     func testDynastyEventsAreChronological() {
         let events = repository.events(for: "qing")
-        XCTAssertEqual(events.map(\.date.year), [1636, 1644, 1840, 1912])
+        XCTAssertEqual(events.map(\.date.year), [1636, 1644, 1840, 1842, 1894, 1911, 1912])
+    }
+
+    func testSearchFindsPeopleAndPlaces() {
+        XCTAssertTrue(repository.search("赵构").contains { result in
+            if case .person(let person) = result {
+                return person.id == "song-gaozong"
+            }
+            return false
+        })
+
+        XCTAssertTrue(repository.search("今河南洛阳").contains { result in
+            if case .place(let place) = result {
+                return place.id == "luoyang"
+            }
+            return false
+        })
+    }
+
+    func testEveryEventHasContextAndLinks() {
+        for event in repository.dataset.events {
+            XCTAssertFalse(event.background.isEmpty, event.id)
+            XCTAssertFalse(event.process.isEmpty, event.id)
+            XCTAssertFalse(event.consequence.isEmpty, event.id)
+            XCTAssertFalse(event.significance.isEmpty, event.id)
+            XCTAssertFalse(event.topicIDs.isEmpty, event.id)
+        }
     }
 
     func testHistoricalDatesSortWithoutYearZero() {

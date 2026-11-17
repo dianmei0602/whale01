@@ -1,9 +1,12 @@
 {
   "schemaVersion": "1.0",
-  "contentVersion": "2026.11.15-seed1",
-  "reviewedAt": "2026-11-15",
+  "contentVersion": "2026.11.18-0.2.0",
+  "reviewedAt": "2026-11-18",
   "dynastyCount": 23,
-  "eventCount": 34,
+  "eventCount": 57,
   "sourceCount": 19,
-  "chroniclesSHA256": "bb230b5a9d36c7198c1cbbebbac0b3f861eeaee1c251ea6fbfcc97dce11b19a2"
+  "personCount": 61,
+  "placeCount": 23,
+  "topicCount": 31,
+  "chroniclesSHA256": "81706bcdac584c2fbfe7fce866ea88393dfab98422736e010a0ec2a4bc6d9f05"
 }

@@ -64,12 +64,13 @@ struct OverviewView: View {
                 .foregroundStyle(ChronicleTheme.ink.opacity(0.82))
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 0) {
-                stat(value: "\(repository.dataset.dynasties.count)", label: "政权条目")
-                divider
-                stat(value: "\(repository.dataset.events.count)", label: "关键事件")
-                divider
-                stat(value: "\(repository.dataset.sources.count)", label: "文献出处")
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 0) {
+                stat(value: "\(repository.dataset.dynasties.count)", label: "政权")
+                stat(value: "\(repository.dataset.events.count)", label: "事件")
+                stat(value: "\(repository.dataset.people.count)", label: "人物")
+                stat(value: "\(repository.dataset.places.count)", label: "地点")
+                stat(value: "\(repository.dataset.topics.count)", label: "主题")
+                stat(value: "\(repository.dataset.sources.count)", label: "出处")
             }
             .padding(.vertical, 14)
             .background(ChronicleTheme.ink.opacity(0.035), in: RoundedRectangle(cornerRadius: 14))
@@ -82,12 +83,6 @@ struct OverviewView: View {
         .accessibilityIdentifier("overview-hero")
     }
 
-    private var divider: some View {
-        Rectangle()
-            .fill(ChronicleTheme.hairline)
-            .frame(width: 0.7, height: 28)
-    }
-
     private func stat(value: String, label: String) -> some View {
         VStack(spacing: 3) {
             Text(value)
@@ -98,6 +93,7 @@ struct OverviewView: View {
                 .foregroundStyle(ChronicleTheme.secondaryInk)
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 5)
     }
 
     private var eraSection: some View {

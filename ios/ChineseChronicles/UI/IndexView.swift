@@ -120,6 +120,45 @@ struct ChronicleIndexView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("search-event-\(event.id)")
+
+        case .person(let person):
+            NavigationLink {
+                PersonDetailView(repository: repository, person: person)
+            } label: {
+                LinkedEntityRow(
+                    title: person.name,
+                    eyebrow: person.kind.label,
+                    detail: "\(person.periodLabel) · \(person.summary)"
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("search-person-\(person.id)")
+
+        case .place(let place):
+            NavigationLink {
+                PlaceDetailView(repository: repository, place: place)
+            } label: {
+                LinkedEntityRow(
+                    title: place.name,
+                    eyebrow: "地点",
+                    detail: "\(place.modernName) · \(place.summary)"
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("search-place-\(place.id)")
+
+        case .topic(let topic):
+            NavigationLink {
+                TopicDetailView(repository: repository, topic: topic)
+            } label: {
+                LinkedEntityRow(
+                    title: topic.title,
+                    eyebrow: topic.category.label,
+                    detail: topic.summary
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("search-topic-\(topic.id)")
         }
     }
 

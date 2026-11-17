@@ -250,3 +250,42 @@ struct SourceBadge: View {
         }
     }
 }
+
+struct LinkedEntityRow: View {
+    let title: String
+    let eyebrow: String
+    let detail: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 14) {
+            Rectangle()
+                .fill(ChronicleTheme.bronze.opacity(0.45))
+                .frame(width: 2, height: 40)
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(eyebrow)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(ChronicleTheme.cinnabar)
+                Text(title)
+                    .font(ChronicleTheme.section)
+                    .foregroundStyle(ChronicleTheme.ink)
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(ChronicleTheme.secondaryInk)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 8)
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.bold))
+                .foregroundStyle(ChronicleTheme.faintInk)
+                .padding(.top, 18)
+        }
+        .padding(14)
+        .background(ChronicleTheme.card.opacity(0.68), in: RoundedRectangle(cornerRadius: 14))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(ChronicleTheme.hairline.opacity(0.6), lineWidth: 0.7)
+        }
+    }
+}

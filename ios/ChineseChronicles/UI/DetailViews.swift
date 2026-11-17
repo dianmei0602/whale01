@@ -12,6 +12,18 @@ struct DynastyDetailView: View {
         repository.sources(ids: dynasty.sourceIDs)
     }
 
+    private var people: [ChroniclePerson] {
+        repository.people(ids: dynasty.peopleIDs)
+    }
+
+    private var places: [ChroniclePlace] {
+        repository.places(ids: dynasty.placeIDs)
+    }
+
+    private var topics: [ChronicleTopic] {
+        repository.topics(ids: dynasty.topicIDs)
+    }
+
     var body: some View {
         ZStack {
             PaperBackdrop()
@@ -21,6 +33,8 @@ struct DynastyDetailView: View {
                     hero
                     facts
                     narrative
+                    structuralSections
+                    connectionsSection
                     eventsSection
                     sourcesSection
                 }
@@ -118,6 +132,97 @@ struct DynastyDetailView: View {
         }
     }
 
+    private var structuralSections: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            narrativeBlock(title: "权力结构", text: dynasty.structure)
+            narrativeBlock(title: "社会与生活", text: dynasty.society)
+            narrativeBlock(title: "历史影响", text: dynasty.legacy)
+        }
+    }
+
+    private func narrativeBlock(title: String, text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(ChronicleTheme.section)
+                .foregroundStyle(ChronicleTheme.ink)
+            Text(text)
+                .font(.subheadline)
+                .foregroundStyle(ChronicleTheme.secondaryInk)
+                .lineSpacing(5)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.leading, 14)
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .fill(ChronicleTheme.bronze.opacity(0.34))
+                .frame(width: 2)
+        }
+    }
+
+    @ViewBuilder
+    private var connectionsSection: some View {
+        if !people.isEmpty || !places.isEmpty || !topics.isEmpty {
+            VStack(alignment: .leading, spacing: 18) {
+                SectionHeading(eyebrow: "继续探索", title: "人物、地点与制度")
+
+                if !people.isEmpty {
+                    entityGroupTitle("相关人物")
+                    ForEach(people) { person in
+                        NavigationLink {
+                            PersonDetailView(repository: repository, person: person)
+                        } label: {
+                            LinkedEntityRow(
+                                title: person.name,
+                                eyebrow: person.kind.label,
+                                detail: "\(person.periodLabel) · \(person.summary)"
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                if !places.isEmpty {
+                    entityGroupTitle("历史地点")
+                    ForEach(places) { place in
+                        NavigationLink {
+                            PlaceDetailView(repository: repository, place: place)
+                        } label: {
+                            LinkedEntityRow(
+                                title: place.name,
+                                eyebrow: "地点",
+                                detail: "\(place.modernName) · \(place.summary)"
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                if !topics.isEmpty {
+                    entityGroupTitle("制度与文明")
+                    ForEach(topics) { topic in
+                        NavigationLink {
+                            TopicDetailView(repository: repository, topic: topic)
+                        } label: {
+                            LinkedEntityRow(
+                                title: topic.title,
+                                eyebrow: topic.category.label,
+                                detail: topic.summary
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func entityGroupTitle(_ title: String) -> some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(ChronicleTheme.cinnabar)
+            .padding(.top, 4)
+    }
+
     @ViewBuilder
     private var eventsSection: some View {
         if events.isEmpty {
@@ -164,6 +269,18 @@ struct EventDetailView: View {
         repository.sources(ids: event.sourceIDs)
     }
 
+    private var people: [ChroniclePerson] {
+        repository.people(ids: event.peopleIDs)
+    }
+
+    private var places: [ChroniclePlace] {
+        repository.places(ids: event.placeIDs)
+    }
+
+    private var topics: [ChronicleTopic] {
+        repository.topics(ids: event.topicIDs)
+    }
+
     var body: some View {
         ZStack {
             PaperBackdrop()
@@ -172,6 +289,8 @@ struct EventDetailView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     header
                     summaryCard
+                    eventNarrative
+                    connectionsSection
                     if let caveat = event.caveat, !caveat.isEmpty {
                         caveatCard(caveat)
                     }
@@ -243,6 +362,82 @@ struct EventDetailView: View {
         .overlay {
             RoundedRectangle(cornerRadius: 18)
                 .stroke(ChronicleTheme.hairline.opacity(0.72), lineWidth: 0.8)
+        }
+    }
+
+    private var eventNarrative: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            narrativeBlock(title: "背景", text: event.background)
+            narrativeBlock(title: "经过", text: event.process)
+            narrativeBlock(title: "结果", text: event.consequence)
+            narrativeBlock(title: "为什么重要", text: event.significance)
+        }
+    }
+
+    private func narrativeBlock(title: String, text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(ChronicleTheme.section)
+                .foregroundStyle(ChronicleTheme.ink)
+            Text(text)
+                .font(.subheadline)
+                .foregroundStyle(ChronicleTheme.secondaryInk)
+                .lineSpacing(5)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.leading, 14)
+        .overlay(alignment: .leading) {
+            Rectangle()
+                .fill(ChronicleTheme.cinnabar.opacity(0.3))
+                .frame(width: 2)
+        }
+    }
+
+    @ViewBuilder
+    private var connectionsSection: some View {
+        if !people.isEmpty || !places.isEmpty || !topics.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                SectionHeading(eyebrow: "线索", title: "继续查证")
+
+                ForEach(people) { person in
+                    NavigationLink {
+                        PersonDetailView(repository: repository, person: person)
+                    } label: {
+                        LinkedEntityRow(
+                            title: person.name,
+                            eyebrow: person.kind.label,
+                            detail: person.summary
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                ForEach(places) { place in
+                    NavigationLink {
+                        PlaceDetailView(repository: repository, place: place)
+                    } label: {
+                        LinkedEntityRow(
+                            title: place.name,
+                            eyebrow: "地点",
+                            detail: place.modernName
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                ForEach(topics) { topic in
+                    NavigationLink {
+                        TopicDetailView(repository: repository, topic: topic)
+                    } label: {
+                        LinkedEntityRow(
+                            title: topic.title,
+                            eyebrow: topic.category.label,
+                            detail: topic.summary
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
     }
 
