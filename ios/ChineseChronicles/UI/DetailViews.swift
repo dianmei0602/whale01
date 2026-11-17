@@ -265,6 +265,10 @@ struct EventDetailView: View {
         repository.dynasty(id: event.dynastyID)
     }
 
+    private var relatedDynasties: [ChronicleDynasty] {
+        event.relatedDynastyIDs.compactMap { repository.dynasty(id: $0) }
+    }
+
     private var sources: [ChronicleSource] {
         repository.sources(ids: event.sourceIDs)
     }
@@ -289,6 +293,7 @@ struct EventDetailView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     header
                     summaryCard
+                    relatedPolitiesSection
                     eventNarrative
                     connectionsSection
                     if let caveat = event.caveat, !caveat.isEmpty {
@@ -371,6 +376,33 @@ struct EventDetailView: View {
             narrativeBlock(title: "经过", text: event.process)
             narrativeBlock(title: "结果", text: event.consequence)
             narrativeBlock(title: "为什么重要", text: event.significance)
+        }
+    }
+
+    @ViewBuilder
+    private var relatedPolitiesSection: some View {
+        if relatedDynasties.count > 1 {
+            VStack(alignment: .leading, spacing: 9) {
+                Text("相关政权")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ChronicleTheme.cinnabar)
+                ScrollView(.horizontal) {
+                    HStack(spacing: 8) {
+                        ForEach(relatedDynasties) { related in
+                            NavigationLink {
+                                DynastyDetailView(repository: repository, dynasty: related)
+                            } label: {
+                                ChronicleChip(
+                                    text: related.name,
+                                    tint: Color(hex: related.accent)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .scrollIndicators(.hidden)
+            }
         }
     }
 

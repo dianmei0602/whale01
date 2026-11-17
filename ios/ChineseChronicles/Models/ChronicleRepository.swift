@@ -126,13 +126,15 @@ struct ChronicleRepository {
             return searchable.localizedCaseInsensitiveContains(query) ? .dynasty(dynasty) : nil
         }
 
-        let eventResults = dataset.events.compactMap { event -> ChronicleSearchResult? in
-            let searchable = (
-                [event.title, event.summary, event.background, event.process, event.consequence, event.significance, event.date.display]
-                    + event.tags
-            ).joined(separator: " ")
-            return searchable.localizedCaseInsensitiveContains(query) ? .event(event) : nil
-        }
+        let eventResults = dataset.events
+            .sorted { $0.date < $1.date }
+            .compactMap { event -> ChronicleSearchResult? in
+                let searchable = (
+                    [event.title, event.summary, event.background, event.process, event.consequence, event.significance, event.date.display]
+                        + event.tags
+                ).joined(separator: " ")
+                return searchable.localizedCaseInsensitiveContains(query) ? .event(event) : nil
+            }
 
         let peopleResults = dataset.people.compactMap { person -> ChronicleSearchResult? in
             let searchable = ([person.name, person.periodLabel, person.summary] + person.aliases)
@@ -153,7 +155,7 @@ struct ChronicleRepository {
         }
 
         return dynastyResults
-            + eventResults.sorted { $0.id < $1.id }
+            + eventResults
             + peopleResults
             + placeResults
             + topicResults

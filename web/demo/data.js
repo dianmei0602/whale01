@@ -122,6 +122,7 @@ export default {
       "legacy": "商代留下成体系的中国早期文字材料，也让后世关于王朝更替的叙述获得了更早的物质支点。",
       "peopleIds": [
         "tang",
+        "pan-geng",
         "wuding"
       ],
       "placeIds": [
@@ -1044,7 +1045,7 @@ export default {
       "consequence": "殷成为商王政治和宗教活动的中心，留下大量甲骨、青铜器与建筑遗存。",
       "significance": "迁殷让商代历史从文献名字变成可由考古材料直接研究的国家社会。",
       "peopleIds": [
-        "wuding"
+        "pan-geng"
       ],
       "placeIds": [
         "yin"
@@ -3435,6 +3436,23 @@ export default {
       ]
     },
     {
+      "id": "pan-geng",
+      "name": "盘庚",
+      "aliases": [],
+      "kind": "ruler",
+      "periodLabel": "商代中期",
+      "summary": "盘庚在传统记载中主持迁都于殷，晚商政治中心由此稳定下来。迁都过程和具体年代仍需结合文献与考古材料理解。",
+      "dynastyIds": [
+        "shang"
+      ],
+      "eventIds": [
+        "pan-geng-yin"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
       "id": "zhou-wu",
       "name": "周武王",
       "aliases": [
@@ -4524,6 +4542,80 @@ export default {
       ],
       "sourceIds": [
         "qingshigao"
+      ]
+    },
+    {
+      "id": "bai-qi",
+      "name": "白起",
+      "aliases": [
+        "公孙起"
+      ],
+      "kind": "general",
+      "periodLabel": "战国后期",
+      "summary": "白起是秦国重要将领，其军事活动与秦国对赵、楚等国的战争密切相关。长平之战中秦军的具体伤亡数字和扩张过程仍需审慎阅读史料。",
+      "dynastyIds": [
+        "eastern-zhou",
+        "qin"
+      ],
+      "eventIds": [
+        "changping-battle"
+      ],
+      "sourceIds": [
+        "shiji"
+      ]
+    },
+    {
+      "id": "zhang-jiao",
+      "name": "张角",
+      "aliases": [],
+      "kind": "leader",
+      "periodLabel": "东汉末年",
+      "summary": "张角与太平道网络同东汉末年的黄巾起事相连。起义的实际组织、参与群体和地方差异比“单一领袖发动”更为复杂。",
+      "dynastyIds": [
+        "eastern-han"
+      ],
+      "eventIds": [
+        "yellow-turban"
+      ],
+      "sourceIds": [
+        "houhanshu"
+      ]
+    },
+    {
+      "id": "xie-an",
+      "name": "谢安",
+      "aliases": [
+        "谢安石"
+      ],
+      "kind": "statesman",
+      "periodLabel": "东晋",
+      "summary": "谢安在东晋政治和淝水之战前后的决策中扮演重要角色，其经历连接门阀政治、军事组织和江南政权稳定。",
+      "dynastyIds": [
+        "eastern-jin"
+      ],
+      "eventIds": [
+        "feishui-battle"
+      ],
+      "sourceIds": [
+        "jinshu"
+      ]
+    },
+    {
+      "id": "yang-yan",
+      "name": "杨炎",
+      "aliases": [],
+      "kind": "reformer",
+      "periodLabel": "唐朝中期",
+      "summary": "杨炎在唐德宗时期推动两税法，试图以资产和户等重建国家财政。改革方案与实际执行之间存在复杂差异。",
+      "dynastyIds": [
+        "tang"
+      ],
+      "eventIds": [
+        "two-tax-law"
+      ],
+      "sourceIds": [
+        "xintangshu",
+        "jiutangshu"
       ]
     }
   ],

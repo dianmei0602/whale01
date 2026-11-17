@@ -849,6 +849,17 @@ function renderEventDetail(event) {
         ${event.tags.map((tag) => `<span>${escapeHTML(tag)}</span>`).join("")}
       </div>
 
+      ${event.relatedDynastyIds.length > 1 ? `
+        <div class="active-polities">
+          ${event.relatedDynastyIds.map((id) => {
+            const related = dynastiesById.get(id);
+            return related
+              ? `<button type="button" class="polity-token" data-action="open-dynasty" data-id="${escapeHTML(id)}">${escapeHTML(related.name)}</button>`
+              : "";
+          }).join("")}
+        </div>
+      ` : ""}
+
       <div class="detail-separator"></div>
       <p class="detail-body">${escapeHTML(event.summary)}</p>
 

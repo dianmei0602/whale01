@@ -15,7 +15,7 @@ final class ChronicleTests: XCTestCase {
         XCTAssertEqual(repository.dataset.dynasties.count, 23)
         XCTAssertEqual(repository.dataset.events.count, 57)
         XCTAssertEqual(repository.dataset.sources.count, 19)
-        XCTAssertEqual(repository.dataset.people.count, 61)
+        XCTAssertEqual(repository.dataset.people.count, 66)
         XCTAssertEqual(repository.dataset.places.count, 23)
         XCTAssertEqual(repository.dataset.topics.count, 31)
         XCTAssertFalse(repository.dataset.editorialNote.isEmpty)
