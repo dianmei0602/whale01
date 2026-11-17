@@ -78,6 +78,7 @@ Windows 上通过两个 GitHub Actions 工作流验证：
 5. 新增一批资料前先保留已审核快照，再扩充、合并和校验。
 
 详细字段约定见 [docs/DATA_GUIDE.md](docs/DATA_GUIDE.md)。
+具体的内容分层、扩写顺序和编辑标准见 [docs/CONTENT_ENRICHMENT.md](docs/CONTENT_ENRICHMENT.md)。
 
 ## HTML 交互演示
 
