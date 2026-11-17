@@ -32,6 +32,7 @@ tools/
   verify_ipa.py             IPA 身份、内容和密钥检查
   publish_ipa.ps1           下载并核对侧载包
 .github/workflows/          macOS 云编译、完整测试和侧载出包
+web/demo/                   iPhone UI 的可交互 HTML 原型
 ```
 
 ## 资料校验
@@ -77,6 +78,14 @@ Windows 上通过两个 GitHub Actions 工作流验证：
 5. 新增一批资料前先保留已审核快照，再扩充、合并和校验。
 
 详细字段约定见 [docs/DATA_GUIDE.md](docs/DATA_GUIDE.md)。
+
+## HTML 交互演示
+
+```powershell
+python -m http.server 8765 --bind 127.0.0.1
+```
+
+打开 `http://127.0.0.1:8765/web/demo/index.html`。演示包含长河、卷目、并立、索引、朝代详情、事件详情与夜读模式，使用同一份编年史资料。
 
 ## 当前验证边界
 
