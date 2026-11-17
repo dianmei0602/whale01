@@ -16,6 +16,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Inject Xunfei credentials
+        env:
+          XFYUN_APP_ID: ${{ secrets.XFYUN_APP_ID }}
+          XFYUN_API_KEY: ${{ secrets.XFYUN_API_KEY }}
+          XFYUN_API_SECRET: ${{ secrets.XFYUN_API_SECRET }}
+        run: python3 tools/inject_xfyun_credentials.py ios/WhaleAgent/Info.plist
+
       - name: Install XcodeGen
         run: brew install xcodegen
 
@@ -37,8 +44,8 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath build/WhaleAgent.xcarchive \
-            MARKETING_VERSION=0.8.2 \
-            CURRENT_PROJECT_VERSION="142.${{ github.run_attempt }}" \
+            MARKETING_VERSION=0.8.3 \
+            CURRENT_PROJECT_VERSION="143.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -57,7 +64,7 @@ jobs:
           unzip -l WhaleAgent-Sideload.ipa | head -20
 
       - name: Verify candidate identity
-        run: python3 tools/verify_ipa.py ios/build/WhaleAgent-Sideload.ipa --sha "$GITHUB_SHA"
+        run: python3 tools/verify_ipa.py ios/build/WhaleAgent-Sideload.ipa --sha "$GITHUB_SHA" --require-xfyun
 
       - name: Encrypt IPA for public storage
         working-directory: ios
@@ -69,7 +76,7 @@ jobs:
             -in build/WhaleAgent-Sideload.ipa \
             -out build/WhaleAgent-Sideload.ipa.enc \
             -pass "file:$PASS_FILE"
-          openssl rsautl -encrypt -pubin -inkey ../.github/ipa-public.pem -pkcs \
+          openssl rsautl -encrypt -pubin -inkey ../.github/xfyun-ipa-public.pem -pkcs \
             -in "$PASS_FILE" \
             -out build/WhaleAgent-pass.enc
           rm -f "$PASS_FILE"
@@ -84,20 +91,10 @@ jobs:
       - name: Upload encrypted IPA
         uses: actions/upload-artifact@v4
         with:
-          name: WhaleAgent-Sideload-ipa-enc
+          name: WhaleAgent-Xfyun-ipa-enc
           path: |
             ios/build/WhaleAgent-Sideload.ipa.enc
             ios/build/WhaleAgent-pass.enc
-            ios/build/WhaleAgent-Sideload.sha256
-            ios/build/WhaleAgent-Sideload.manifest.json
-
-      - name: Upload direct unsigned IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: WhaleAgent-Sideload-ipa-0.8.2-direct
-          retention-days: 3
-          path: |
-            ios/build/WhaleAgent-Sideload.ipa
             ios/build/WhaleAgent-Sideload.sha256
             ios/build/WhaleAgent-Sideload.manifest.json
 

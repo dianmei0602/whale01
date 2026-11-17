@@ -6,6 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('ipa', type=Path)
 parser.add_argument('--sha', required=True)
 parser.add_argument('--public', action='store_true')
+parser.add_argument('--require-xfyun', action='store_true')
 args = parser.parse_args()
 with zipfile.ZipFile(args.ipa) as archive:
     roots = [n for n in archive.namelist() if n.count('/') == 2 and n.startswith('Payload/') and n.endswith('.app/Info.plist')]
@@ -15,7 +16,10 @@ with zipfile.ZipFile(args.ipa) as archive:
     identity = json.loads(archive.read(app + '/build-identity.json'))
     tools = archive.read(app + '/tools.v1.json')
     present = lambda value: isinstance(value, str) and bool(value.strip()) and not value.startswith('$(')
-    embedded = any(present(info.get(k)) for k in ['DeepSeekAPIKey', 'WhaleAPIToken', 'XfyunAPIKey', 'XfyunAPISecret'])
+    xfyun_keys = ['XFYUN_APP_ID', 'XFYUN_API_KEY', 'XFYUN_API_SECRET']
+    embedded = any(present(info.get(k)) for k in ['DeepSeekAPIKey', 'WhaleAPIToken', *xfyun_keys])
+    if args.require_xfyun and not all(present(info.get(k)) for k in xfyun_keys):
+        raise SystemExit('Xunfei credentials missing from IPA')
     assert identity['gitSHA'] == args.sha, 'IPA source SHA mismatch'
     assert info['CFBundleShortVersionString'] == identity['version'], 'IPA version mismatch'
     assert hashlib.sha256(tools).hexdigest() == identity['toolSHA256'], 'Tool manifest mismatch'
