@@ -18,7 +18,12 @@ const base = JSON.parse(fs.readFileSync(basePath, "utf8"));
 const expansion = JSON.parse(fs.readFileSync(expansionPath, "utf8"));
 
 const dynastyIds = new Set(base.dynasties.map((item) => item.id));
-const sourceIds = new Set(base.sources.map((item) => item.id));
+const baseSourceIds = new Set(base.sources.map((item) => item.id));
+const additionalSources = (expansion.sources ?? []).filter(
+  (item) => !baseSourceIds.has(item.id)
+);
+const allSources = [...base.sources, ...additionalSources];
+const sourceIds = new Set(allSources.map((item) => item.id));
 const baseEventIds = new Set(base.events.map((item) => item.id));
 const newEvents = expansion.events.filter((item) => !baseEventIds.has(item.id));
 const allEventIds = new Set([
@@ -63,11 +68,29 @@ for (const [key, items] of Object.entries(entityGroups)) {
 }
 
 const allEvents = [
-  ...base.events.map((event) => ({
+  ...base.events.map((event) => {
+    const profile = expansion.eventProfiles[event.id] ?? {};
+    return {
+      ...event,
+      ...profile,
+      sourceIds: [
+        ...new Set([
+          ...(event.sourceIds ?? []),
+          ...(profile.sourceIds ?? []),
+          ...(expansion.sourceAdditions?.[event.id] ?? [])
+        ])
+      ]
+    };
+  }),
+  ...newEvents.map((event) => ({
     ...event,
-    ...(expansion.eventProfiles[event.id] ?? {})
-  })),
-  ...newEvents
+    sourceIds: [
+      ...new Set([
+        ...(event.sourceIds ?? []),
+        ...(expansion.sourceAdditions?.[event.id] ?? [])
+      ])
+    ]
+  }))
 ].sort(
   (left, right) =>
     left.date.year - right.date.year ||
@@ -127,6 +150,7 @@ const output = {
   editorialNote: expansion.editorialNote,
   dynasties: allDynasties,
   events: allEvents,
+  sources: allSources,
   people: expansion.people,
   places: expansion.places,
   topics: expansion.topics

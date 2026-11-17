@@ -14,7 +14,7 @@ final class ChronicleTests: XCTestCase {
         XCTAssertEqual(repository.dataset.schemaVersion, "1.0")
         XCTAssertEqual(repository.dataset.dynasties.count, 23)
         XCTAssertEqual(repository.dataset.events.count, 57)
-        XCTAssertEqual(repository.dataset.sources.count, 19)
+        XCTAssertEqual(repository.dataset.sources.count, 25)
         XCTAssertEqual(repository.dataset.people.count, 66)
         XCTAssertEqual(repository.dataset.places.count, 23)
         XCTAssertEqual(repository.dataset.topics.count, 31)
@@ -74,6 +74,7 @@ final class ChronicleTests: XCTestCase {
             XCTAssertFalse(event.consequence.isEmpty, event.id)
             XCTAssertFalse(event.significance.isEmpty, event.id)
             XCTAssertFalse(event.topicIDs.isEmpty, event.id)
+            XCTAssertGreaterThanOrEqual(event.sourceIDs.count, 2, event.id)
         }
     }
 

@@ -634,7 +634,7 @@ function renderSearchResults() {
     container.innerHTML = `
       <div class="empty-state is-search-empty">
         <h2>本机资料中暂无“${escapeHTML(query)}”</h2>
-        <p>当前版本收录 23 个政权条目、57 个事件、61 位人物、23 个地点和 31 个主题。</p>
+        <p>当前版本收录 ${dataset.dynasties.length} 个政权条目、${dataset.events.length} 个事件、${dataset.people.length} 位人物、${dataset.places.length} 个地点和 ${dataset.topics.length} 个主题。</p>
       </div>
     `;
     return;

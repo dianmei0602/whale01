@@ -1460,6 +1460,100 @@
       "keywords": ["近代", "改革", "革命"]
     }
   ],
+  "sources": [
+    {
+      "id": "zuozhuan",
+      "title": "左传",
+      "author": "传统题左丘明，成书与作者问题有讨论",
+      "kind": "primary",
+      "citation": "《左传》相关纪事",
+      "note": "春秋时期的重要叙事文献，可与《史记》等材料互参。"
+    },
+    {
+      "id": "zhanguoce",
+      "title": "战国策",
+      "author": "刘向编订",
+      "kind": "primary",
+      "citation": "《战国策》相关策论与纪事",
+      "note": "保存战国纵横、政治与外交叙事，部分言辞经过文学化整理。"
+    },
+    {
+      "id": "zizhitongjian",
+      "title": "资治通鉴",
+      "author": "司马光等",
+      "kind": "reference",
+      "citation": "《资治通鉴》相关卷",
+      "note": "编年体通史，止于五代；适合核对年代顺序，也需回到其所据原典阅读。"
+    },
+    {
+      "id": "xuzizhitongjianchangbian",
+      "title": "续资治通鉴长编",
+      "author": "李焘",
+      "kind": "reference",
+      "citation": "《续资治通鉴长编》相关卷",
+      "note": "北宋编年史的重要资料汇编，保存大量诏令、奏议和史事。"
+    },
+    {
+      "id": "mingshijishibenmo",
+      "title": "明史纪事本末",
+      "author": "谷应泰等",
+      "kind": "reference",
+      "citation": "《明史纪事本末》相关篇",
+      "note": "以事件为纲的明史参考资料，可与《明史》互参。"
+    },
+    {
+      "id": "qingshilu",
+      "title": "清实录",
+      "author": "清代历朝官修",
+      "kind": "primary",
+      "citation": "清代历朝实录相关卷",
+      "note": "清代官方编年记录，制度与政治信息丰富，也受官方编纂立场影响。"
+    }
+  ],
+  "sourceAdditions": {
+    "eastward-zhou": ["zuozhuan"],
+    "confucius-born": ["zuozhuan"],
+    "warring-states-convention": ["zhanguoce"],
+    "shang-yang-reforms": ["zhanguoce"],
+    "changping-battle": ["zhanguoce"],
+    "qin-unification": ["zizhitongjian"],
+    "chen-sheng": ["zizhitongjian"],
+    "western-han-founded": ["zizhitongjian"],
+    "wang-mang-new": ["zizhitongjian"],
+    "eastern-han-founded": ["zizhitongjian"],
+    "paper-improved": ["zizhitongjian"],
+    "yellow-turban": ["zizhitongjian"],
+    "red-cliffs": ["zizhitongjian"],
+    "cao-pi-wei": ["zizhitongjian"],
+    "jin-unifies": ["zizhitongjian"],
+    "eight-princes-revolt": ["zizhitongjian"],
+    "eastern-jin-founded": ["zizhitongjian"],
+    "feishui-battle": ["zizhitongjian"],
+    "liu-song-founded": ["zizhitongjian"],
+    "xiaowen-luoyang": ["zizhitongjian"],
+    "sui-founded": ["zizhitongjian"],
+    "sui-unifies": ["zizhitongjian"],
+    "grand-canal": ["zizhitongjian"],
+    "khitan-state": ["songshi"],
+    "song-founded": ["xuzizhitongjianchangbian"],
+    "western-xia-founded": ["liaoshi"],
+    "western-xia-song-war": ["xuzizhitongjianchangbian"],
+    "wang-anshi-reforms": ["xuzizhitongjianchangbian"],
+    "jin-founded": ["songshi"],
+    "liao-fall": ["songshi"],
+    "mongol-state": ["songshi"],
+    "yuan-founded": ["songshi"],
+    "ming-founded": ["yuanshi"],
+    "zheng-he": ["mingshijishibenmo"],
+    "single-whip-reform": ["mingshijishibenmo"],
+    "qing-proclaimed": ["qingshilu"],
+    "ming-qing-transition": ["qingshilu"],
+    "opium-war": ["qingshilu"],
+    "treaty-of-nanjing": ["qingshilu"],
+    "first-sino-japanese-war": ["qingshilu"],
+    "xinhai-revolution": ["qingshilu"],
+    "qing-abdication": ["qingshilu"]
+  },
   "eventProfiles": {
     "xia-traditional-founding": {
       "background": "后世文献把禹和夏后氏放在商代之前，形成中国早期王朝更替的叙事。考古材料与传世文献之间的关系仍需分别讨论。",

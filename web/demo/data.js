@@ -1118,7 +1118,8 @@ export default {
         "洛邑"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zuozhuan"
       ],
       "background": "西周晚期王室力量削弱，宗周地区政治和军事危机加剧。",
       "process": "周平王把王室中心东迁至洛邑，此后周王仍为天下共主，但实际权威不断下降。",
@@ -1154,7 +1155,8 @@ export default {
         "春秋"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zuozhuan"
       ],
       "caveat": null,
       "background": "春秋晚期礼制和列国秩序变化，士人开始以教育、游说和著述参与政治。",
@@ -1193,7 +1195,8 @@ export default {
         "战国"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zhanguoce"
       ],
       "caveat": "春秋战国分界存在不同分期方案，不能把它理解为一个同时发生的政治事件。",
       "background": "东周后期列国兼并、变法与战争规模持续扩大，春秋与战国之间没有单一分界事件。",
@@ -1229,7 +1232,8 @@ export default {
         "战国"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zhanguoce"
       ],
       "caveat": "变法是多阶段过程，前356年为常用起始纪年。",
       "background": "战国列国竞争要求更强财政与军力，秦在制度上寻求后来居上。",
@@ -1269,7 +1273,8 @@ export default {
         "战国"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zhanguoce"
       ],
       "caveat": "战役过程和伤亡数字的史料来源存在后世记述问题。",
       "background": "秦赵围绕上党与中原优势长期对抗，双方都投入大规模军队。",
@@ -1306,7 +1311,8 @@ export default {
         "秦始皇"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "战国后期秦国凭借变法后的军政组织与资源优势逐步削弱六国。",
@@ -1347,7 +1353,8 @@ export default {
         "秦末"
       ],
       "sourceIds": [
-        "shiji"
+        "shiji",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "秦末徭役、严刑与战争动员加重社会负担，地方对中央统治的不满积累。",
@@ -1384,7 +1391,8 @@ export default {
       ],
       "sourceIds": [
         "shiji",
-        "hanshu"
+        "hanshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "秦亡后楚汉相争，刘邦以关中为基础整合地方军队和政治联盟。",
@@ -1466,7 +1474,8 @@ export default {
         "改制"
       ],
       "sourceIds": [
-        "hanshu"
+        "hanshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "西汉后期外戚势力增长，王莽以儒家理想和权力网络获得禅让合法性。",
@@ -1506,7 +1515,8 @@ export default {
         "洛阳"
       ],
       "sourceIds": [
-        "houhanshu"
+        "houhanshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "新朝崩溃后，各地豪强和汉室宗族争夺秩序重建的主导权。",
@@ -1546,7 +1556,8 @@ export default {
         "技术"
       ],
       "sourceIds": [
-        "houhanshu"
+        "houhanshu",
+        "zizhitongjian"
       ],
       "caveat": "“改进工艺”与传统叙事中的“发明纸张”不应简单等同。",
       "background": "东汉文书、教育和行政管理需求增长，书写材料与制作工艺持续演变。",
@@ -1585,7 +1596,8 @@ export default {
         "东汉末"
       ],
       "sourceIds": [
-        "houhanshu"
+        "houhanshu",
+        "zizhitongjian"
       ],
       "caveat": "起义并非单一组织在完全同一天起事，地方发展差异很大。",
       "background": "东汉后期外戚宦官争斗、土地兼并与赋役压力加重，地方社会不满积累。",
@@ -1620,7 +1632,8 @@ export default {
         "长江"
       ],
       "sourceIds": [
-        "sanguozhi"
+        "sanguozhi",
+        "zizhitongjian"
       ],
       "caveat": "小说与正史对规模、火攻细节和人物描写差异明显。",
       "background": "曹操在控制北方后南下荆州，希望继续向江东和长江以南扩张。",
@@ -1663,7 +1676,8 @@ export default {
         "禅让"
       ],
       "sourceIds": [
-        "sanguozhi"
+        "sanguozhi",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "东汉末年中央权力被军阀与权臣掌握，汉室政治权威名存实亡。",
@@ -1703,7 +1717,8 @@ export default {
         "灭吴"
       ],
       "sourceIds": [
-        "jinshu"
+        "jinshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "曹魏后期司马氏逐步掌握朝政，蜀汉和孙吴则各自维持独立统治。",
@@ -1743,7 +1758,8 @@ export default {
         "内战"
       ],
       "sourceIds": [
-        "jinshu"
+        "jinshu",
+        "zizhitongjian"
       ],
       "caveat": "“八王”是后世概括，战乱并非八人在同一年同时起兵。",
       "background": "西晋分封宗王并让部分宗王掌握军政力量，中央继承与权力平衡不稳。",
@@ -1780,7 +1796,8 @@ export default {
         "建康"
       ],
       "sourceIds": [
-        "jinshu"
+        "jinshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "西晋末北方政局剧变，晋室宗王与士族向南迁移。",
@@ -1821,7 +1838,8 @@ export default {
         "南北对峙"
       ],
       "sourceIds": [
-        "jinshu"
+        "jinshu",
+        "zizhitongjian"
       ],
       "caveat": "兵力与战况细节受后世史书叙事影响。",
       "background": "前秦统一北方后继续南下，东晋则试图维持长江以南政权。",
@@ -1858,7 +1876,8 @@ export default {
         "刘宋"
       ],
       "sourceIds": [
-        "songshu"
+        "songshu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "东晋末年门阀政治与军事集团关系变化，刘裕掌握北府军和朝廷权力。",
@@ -1899,7 +1918,8 @@ export default {
         "制度改革"
       ],
       "sourceIds": [
-        "weishu"
+        "weishu",
+        "zizhitongjian"
       ],
       "caveat": "迁都和相关改革经历多年推进，494年是正式迁都节点之一。",
       "background": "北魏需要加强对中原人口和农业区的治理，同时调整平城旧贵族与中央制度的关系。",
@@ -1939,7 +1959,8 @@ export default {
         "北周"
       ],
       "sourceIds": [
-        "suishu"
+        "suishu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "北周末年中央权力集中于杨坚，北方经过长期整合已具备重新统一的条件。",
@@ -1979,7 +2000,8 @@ export default {
         "灭陈"
       ],
       "sourceIds": [
-        "suishu"
+        "suishu",
+        "zizhitongjian"
       ],
       "caveat": null,
       "background": "南北朝长期分裂后，北方统一政权在军力、财政和行政组织上取得优势。",
@@ -2021,7 +2043,8 @@ export default {
         "工程"
       ],
       "sourceIds": [
-        "suishu"
+        "suishu",
+        "zizhitongjian"
       ],
       "caveat": "运河不是单年在空地上完成的工程，隋代整合和发展了多条既有水道。",
       "background": "统一后的帝国需要把南方粮食、赋税和物资运往北方政治中心。",
@@ -2225,7 +2248,8 @@ export default {
         "建国"
       ],
       "sourceIds": [
-        "liaoshi"
+        "liaoshi",
+        "songshi"
       ],
       "caveat": "916年与后来采用“辽”国号的关系需要按具体史料区分。",
       "background": "契丹诸部在唐末五代的政治真空与区域竞争中逐渐整合。",
@@ -2264,7 +2288,8 @@ export default {
         "宋初"
       ],
       "sourceIds": [
-        "songshi"
+        "songshi",
+        "xuzizhitongjianchangbian"
       ],
       "caveat": null,
       "background": "五代后期后周政权加强中央军事与财政，但仍未结束北方和南方的分裂。",
@@ -2348,7 +2373,8 @@ export default {
         "西夏"
       ],
       "sourceIds": [
-        "songshi"
+        "songshi",
+        "liaoshi"
       ],
       "caveat": "西夏建立前的党项政治体已经长期发展，1038年是称帝与国号节点。",
       "background": "党项政权在宋、辽之间发展，控制河套与河西交通并形成独立政治认同。",
@@ -2390,7 +2416,8 @@ export default {
         "边地"
       ],
       "sourceIds": [
-        "songshi"
+        "songshi",
+        "xuzizhitongjianchangbian"
       ],
       "caveat": "宋夏战争延续多年，1040年是重要战事阶段，不是单一战役。",
       "background": "西夏建国改变宋辽之间的缓冲关系，边界、贸易和军事部署成为争议焦点。",
@@ -2431,7 +2458,8 @@ export default {
         "党争"
       ],
       "sourceIds": [
-        "songshi"
+        "songshi",
+        "xuzizhitongjianchangbian"
       ],
       "caveat": "熙宁变法涉及多项政策和多个阶段，1069年为开始年份。",
       "background": "北宋财政支出、冗官冗兵和对外压力增加，朝廷寻找增强国家能力的方法。",
@@ -2471,7 +2499,8 @@ export default {
         "建国"
       ],
       "sourceIds": [
-        "jinshi"
+        "jinshi",
+        "songshi"
       ],
       "caveat": null,
       "background": "辽对女真诸部的控制与索取引发反抗，女真军事联盟逐渐形成。",
@@ -2513,7 +2542,8 @@ export default {
       ],
       "sourceIds": [
         "liaoshi",
-        "jinshi"
+        "jinshi",
+        "songshi"
       ],
       "caveat": "西辽等后续政权延续契丹政治传统，1125年不等于契丹历史完全终止。",
       "background": "辽末政治衰败和女真崛起使辽在金军压力下迅速失去控制。",
@@ -2642,7 +2672,8 @@ export default {
         "成吉思汗"
       ],
       "sourceIds": [
-        "yuanshi"
+        "yuanshi",
+        "songshi"
       ],
       "caveat": "大蒙古国与 1271 年建立的元朝并非完全相同的纪年范围。",
       "background": "蒙古高原诸部长期竞争，铁木真通过联盟和战争逐步统一各部。",
@@ -2761,7 +2792,8 @@ export default {
         "国号"
       ],
       "sourceIds": [
-        "yuanshi"
+        "yuanshi",
+        "songshi"
       ],
       "caveat": null,
       "background": "忽必烈在蒙古内部竞争中建立对汉地和北方的主要统治权。",
@@ -2842,7 +2874,8 @@ export default {
         "南京"
       ],
       "sourceIds": [
-        "mingshi"
+        "mingshi",
+        "yuanshi"
       ],
       "caveat": null,
       "background": "元末灾害、赋役和社会矛盾引发多股起义力量，朱元璋逐步整合江淮军政资源。",
@@ -2883,7 +2916,8 @@ export default {
         "朝贡"
       ],
       "sourceIds": [
-        "mingshi"
+        "mingshi",
+        "mingshijishibenmo"
       ],
       "caveat": null,
       "background": "明初国家拥有强大的造船和财政资源，永乐朝廷也希望通过远航建立外交与贸易联系。",
@@ -2923,7 +2957,8 @@ export default {
         "张居正"
       ],
       "sourceIds": [
-        "mingshi"
+        "mingshi",
+        "mingshijishibenmo"
       ],
       "caveat": "一条鞭法在地方先有实践，1581年是张居正推动全国推行的关键年份。",
       "background": "明代中后期赋役名目复杂、土地隐匿和征收成本上升，白银流通扩大。",
@@ -2962,7 +2997,8 @@ export default {
         "盛京"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": null,
       "background": "皇太极在东北整合女真和蒙古力量，并改造后金的行政、军事与族群组织。",
@@ -3002,7 +3038,8 @@ export default {
       ],
       "sourceIds": [
         "mingshi",
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": null,
       "background": "明朝末年财政、灾荒和军事危机交织，李自成等力量攻入北京。",
@@ -3044,7 +3081,8 @@ export default {
         "条约体系"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": null,
       "background": "英国对华鸦片贸易与清朝禁烟政策冲突，广州及沿海通商制度也长期积累矛盾。",
@@ -3084,7 +3122,8 @@ export default {
         "晚清"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": "条约体系是多轮战争与外交的长期产物，不能把全部近代变化归结于一份条约。",
       "background": "清朝在鸦片战争中军事失败，英国要求以条约固定通商与赔偿安排。",
@@ -3123,7 +3162,8 @@ export default {
         "近代"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": null,
       "background": "朝鲜半岛政治危机与中日两国近代化差异，使外交冲突迅速升级为战争。",
@@ -3161,7 +3201,8 @@ export default {
         "共和"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": "革命由多个组织、地方军政力量和政治诉求共同推动，并非单一集团策划。",
       "background": "清朝改革未能化解财政、民族和政治参与危机，革命组织与新军力量扩大。",
@@ -3201,7 +3242,8 @@ export default {
         "帝制终结"
       ],
       "sourceIds": [
-        "qingshigao"
+        "qingshigao",
+        "qingshilu"
       ],
       "caveat": null,
       "background": "十九世纪以来条约体系、改革失败、革命运动和地方军政力量持续改变清朝统治基础。",
@@ -3375,6 +3417,54 @@ export default {
       "kind": "reference",
       "citation": "《夏商周断代工程 1996—2000 年阶段成果报告（简本）》",
       "note": "本版先秦若干年份采用该报告中的常见推定，但这些年代并不是没有任何学术争议的唯一答案。"
+    },
+    {
+      "id": "zuozhuan",
+      "title": "左传",
+      "author": "传统题左丘明，成书与作者问题有讨论",
+      "kind": "primary",
+      "citation": "《左传》相关纪事",
+      "note": "春秋时期的重要叙事文献，可与《史记》等材料互参。"
+    },
+    {
+      "id": "zhanguoce",
+      "title": "战国策",
+      "author": "刘向编订",
+      "kind": "primary",
+      "citation": "《战国策》相关策论与纪事",
+      "note": "保存战国纵横、政治与外交叙事，部分言辞经过文学化整理。"
+    },
+    {
+      "id": "zizhitongjian",
+      "title": "资治通鉴",
+      "author": "司马光等",
+      "kind": "reference",
+      "citation": "《资治通鉴》相关卷",
+      "note": "编年体通史，止于五代；适合核对年代顺序，也需回到其所据原典阅读。"
+    },
+    {
+      "id": "xuzizhitongjianchangbian",
+      "title": "续资治通鉴长编",
+      "author": "李焘",
+      "kind": "reference",
+      "citation": "《续资治通鉴长编》相关卷",
+      "note": "北宋编年史的重要资料汇编，保存大量诏令、奏议和史事。"
+    },
+    {
+      "id": "mingshijishibenmo",
+      "title": "明史纪事本末",
+      "author": "谷应泰等",
+      "kind": "reference",
+      "citation": "《明史纪事本末》相关篇",
+      "note": "以事件为纲的明史参考资料，可与《明史》互参。"
+    },
+    {
+      "id": "qingshilu",
+      "title": "清实录",
+      "author": "清代历朝官修",
+      "kind": "primary",
+      "citation": "清代历朝实录相关卷",
+      "note": "清代官方编年记录，制度与政治信息丰富，也受官方编纂立场影响。"
     }
   ],
   "people": [
