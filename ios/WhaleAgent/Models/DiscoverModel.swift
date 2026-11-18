@@ -80,6 +80,11 @@ final class DiscoverModel: ObservableObject {
     @Published private(set) var marketSource: String = ""
     @Published private(set) var watchlist: [String]
     @Published private(set) var watchFlows: [String: FundFlowPoint] = [:]
+    @Published private(set) var sectorBoard: SectorBoardResponse?
+    @Published private(set) var sectorState: DiscoverLoadState = .idle
+    @Published private(set) var marketNewsItems: [NewsItem] = []
+    @Published private(set) var marketNewsState: DiscoverLoadState = .idle
+    @Published private(set) var marketNewsSource: String = ""
 
     @Published var searchQuery = ""
     @Published private(set) var searchResults: [StockSearchResult] = []
@@ -125,7 +130,7 @@ final class DiscoverModel: ObservableObject {
         if let cacheWarning { return cacheWarning }
         switch channel {
         case .ai, .headline: return newsState.notice
-        case .market: return marketState.notice
+        case .market: return marketState.notice ?? sectorState.notice ?? marketNewsState.notice
         case .game: return (gameSection.board != nil ? rankState : gameSection.steamKind != nil ? steamState : newsState).notice
         case .weibo: return hotState.notice
         case .music: return nil
@@ -147,7 +152,11 @@ final class DiscoverModel: ObservableObject {
     }
 
     var gameNews: [NewsItem] {
-        newsItems
+        newsItems.filter { item in
+            item.displayTitle.unicodeScalars.contains { scalar in
+                (0x4E00...0x9FFF).contains(Int(scalar.value))
+            }
+        }
     }
 
     func selectNewsSection(_ section: String, for channel: DiscoverChannel) async {
@@ -455,6 +464,10 @@ final class DiscoverModel: ObservableObject {
         marketToken = token
         let symbols = watchlist
         if indexes.isEmpty && watchQuotes.isEmpty { marketState = .loading }
+        if sectorBoard == nil && sectorState == .idle { sectorState = .loading }
+        if marketNewsItems.isEmpty && marketNewsState == .idle { marketNewsState = .loading }
+        async let sectorResult = try? marketProvider.sectorBoard(force: force)
+        async let newsResult = try? marketProvider.marketNews(limit: 14, force: force)
         var messages: [String] = []
         do {
             let response = try await marketProvider.indexes(force: force)
@@ -487,11 +500,35 @@ final class DiscoverModel: ObservableObject {
             watchFlows = [:]
             watchUpdatedAt = nil
         }
+        let (sectorResponse, newsResponse) = await (sectorResult, newsResult)
+        guard marketToken == token else { return }
+        if let sectorResponse {
+            sectorBoard = sectorResponse
+            sectorState = sectorResponse.topGainers.isEmpty && sectorResponse.topInflows.isEmpty ? .failed("板块行情暂时为空") : .loaded
+        } else if sectorBoard == nil {
+            sectorState = .failed("板块分析暂时没有取到，稍后下拉重试")
+        } else {
+            sectorState = .stale("板块分析更新失败，保留上次数据")
+        }
+        if let newsResponse {
+            marketNewsItems = newsResponse.items
+            marketNewsSource = newsResponse.source
+            marketNewsState = newsResponse.items.isEmpty ? .failed("市场快讯暂时为空") : .loaded
+        } else if marketNewsItems.isEmpty {
+            marketNewsState = .failed("市场快讯暂时没有取到，稍后下拉重试")
+        } else {
+            marketNewsState = .stale("市场快讯更新失败，保留上次数据")
+        }
         guard marketToken == token else { return }
         let dates = [indexesUpdatedAt, symbols.isEmpty ? nil : watchUpdatedAt].compactMap { $0 }.compactMap(DiscoverFormat.date)
         marketUpdatedAt = dates.min().map(ToolDate.iso)
+        let hasMarketContent = !indexes.isEmpty
+            || !watchQuotes.isEmpty
+            || !(sectorBoard?.topGainers.isEmpty ?? true)
+            || !(sectorBoard?.topInflows.isEmpty ?? true)
+            || !marketNewsItems.isEmpty
         if !messages.isEmpty {
-            marketState = indexes.isEmpty && watchQuotes.isEmpty ? .failed(messages.joined(separator: "；")) : .partial(messages.joined(separator: "；"))
+            marketState = hasMarketContent ? .partial(messages.joined(separator: "；")) : .failed(messages.joined(separator: "；"))
         } else { marketState = .loaded }
     }
 
@@ -613,7 +650,11 @@ final class DiscoverModel: ObservableObject {
     }
 
     private func newsDiskKey(_ channel: DiscoverChannel) -> String {
-        channel == .ai ? "news-ai-topics-v4" : "news-\(channel.rawValue)"
+        switch channel {
+        case .ai: return "news-ai-topics-v4"
+        case .game: return "news-game-cn-v1"
+        default: return "news-\(channel.rawValue)"
+        }
     }
 
     private func hotDiskKey(_ board: HotBoard) -> String {
@@ -667,6 +708,9 @@ final class StockDetailModel: ObservableObject {
     @Published private(set) var fundFlowSource: String = ""
     @Published private(set) var profile: StockProfile?
     @Published private(set) var profileState: DiscoverLoadState = .idle
+    @Published private(set) var relatedNews: [NewsItem] = []
+    @Published private(set) var relatedNewsState: DiscoverLoadState = .idle
+    @Published private(set) var newsIsStockSpecific = false
     @Published private(set) var updatedAt: String?
     @Published private(set) var source: String = ""
 
@@ -680,6 +724,7 @@ final class StockDetailModel: ObservableObject {
         if chartState == .idle { chartState = .loading }
         if fundFlowState == .idle { fundFlowState = .loading }
         if profileState == .idle { profileState = .loading }
+        if relatedNews.isEmpty && relatedNewsState == .idle { relatedNewsState = .loading }
         do {
             let response = try await client.quotes(symbols: [quote.symbol])
             if let next = response.quotes.first {
@@ -696,7 +741,9 @@ final class StockDetailModel: ObservableObject {
         async let klineResult = try? client.kline(symbol: quote.symbol, days: 160)
         async let flowResult = try? client.fundFlow(symbol: quote.symbol, days: 6)
         async let profileResult = try? client.stockProfile(symbol: quote.symbol)
-        let (intradayResponse, klineResponse, flowResponse, profileResponse) = await (intradayResult, klineResult, flowResult, profileResult)
+        async let newsResult = try? client.marketNews(limit: 40)
+        let (intradayResponse, klineResponse, flowResponse, profileResponse, newsResponse) =
+            await (intradayResult, klineResult, flowResult, profileResult, newsResult)
         if let intradayResponse {
             intraday = intradayResponse.points
         }
@@ -716,6 +763,23 @@ final class StockDetailModel: ObservableObject {
             profileState = .loaded
         } else {
             profileState = .failed("证券资料暂时没有取到，稍后下拉重试")
+        }
+        if let newsResponse {
+            let stockName = current.name
+            let stockCode = current.code
+            let matches = newsResponse.items.filter { item in
+                item.displayTitle.localizedCaseInsensitiveContains(stockName)
+                    || item.displaySummary.localizedCaseInsensitiveContains(stockName)
+                    || item.displayTitle.contains(stockCode)
+                    || item.displaySummary.contains(stockCode)
+            }
+            newsIsStockSpecific = !matches.isEmpty
+            relatedNews = Array((matches.isEmpty ? newsResponse.items : matches).prefix(8))
+            relatedNewsState = relatedNews.isEmpty ? .failed("暂时没有相关新闻") : .loaded
+        } else if relatedNews.isEmpty {
+            relatedNewsState = .failed("新闻暂时没有取到，稍后下拉重试")
+        } else {
+            relatedNewsState = .stale("新闻更新失败，保留上次内容")
         }
     }
 }

@@ -131,7 +131,7 @@ final class VoiceInputController: ObservableObject {
         isRecording = false
         let token = sessionId
         finalTimeout = Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            try? await Task.sleep(nanoseconds: 7_000_000_000)
             guard !Task.isCancelled, let self, self.sessionId == token, self.isFinalizing else { return }
             self.errorText = "没有收到最终识别结果，已保留草稿；请检查后手动提交。"
             self.cancel()

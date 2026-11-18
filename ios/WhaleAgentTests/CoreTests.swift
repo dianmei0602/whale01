@@ -229,6 +229,32 @@ final class CoreTests: XCTestCase {
         XCTAssertEqual(business["rdn"] as? String, "3")
     }
 
+    @MainActor
+    func testXfyunASRRequestsDynamicCorrectionAndLongerEndpointSilence() throws {
+        let payload = XfyunASRClient.configurationPayload(appId: "app-id")
+        let business = try XCTUnwrap(payload["business"] as? [String: Any])
+        XCTAssertEqual(business["dwa"] as? String, "wpgs")
+        XCTAssertEqual(business["rlang"] as? String, "zh-cn")
+        XCTAssertEqual(business["vad_eos"] as? Int, 4000)
+        XCTAssertEqual(business["ptt"] as? Int, 1)
+    }
+
+    func testLegacyTaskRecordWithoutSourceMessageStillDecodes() throws {
+        let data = Data("""
+        {
+          "id": "turn-old",
+          "goal": "旧记录",
+          "conversationId": "conversation",
+          "status": "completed",
+          "createdAt": 0,
+          "updatedAt": 1
+        }
+        """.utf8)
+        let record = try JSONDecoder().decode(TaskRecord.self, from: data)
+        XCTAssertNil(record.sourceMessageId)
+        XCTAssertEqual(record.goal, "旧记录")
+    }
+
     func testResultDetailSeparatesReadsFromWrites() {
         let emptyRange = JSONValue.object([
             "count": .number(0),

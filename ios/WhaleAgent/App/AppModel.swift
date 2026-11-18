@@ -92,6 +92,7 @@ final class AppModel: ObservableObject {
 
     @Published private(set) var recentActions: [OperationRecord] = []
     @Published private(set) var taskRecords: [TaskRecord] = []
+    @Published private(set) var requestedMessageId: String?
     @Published private(set) var memories: [MemoryPreference] = []
     @Published private(set) var upcomingEvents: [CalendarEventPreview] = []
     @Published private(set) var isDashboardLoading = false
@@ -139,6 +140,7 @@ final class AppModel: ObservableObject {
     private var speechInterruptObserver: AnyCancellable?
     private var speakReplyForActiveTurn = false
     private var currentGoal: String?
+    private var currentSourceMessageId: String?
     private var networkRequest: Task<AgentTurnResponse, Error>?
     private var stoppedReply = false
     private var lastFailedInput: String?
@@ -204,6 +206,14 @@ final class AppModel: ObservableObject {
 
     func reloadTaskRecords() async {
         taskRecords = await TaskRecordStore.shared.list()
+    }
+
+    func requestMessageFocus(_ messageId: String?) {
+        requestedMessageId = messageId
+    }
+
+    func consumeMessageFocus() {
+        requestedMessageId = nil
     }
 
     func reloadMemories() {
@@ -451,10 +461,13 @@ final class AppModel: ObservableObject {
         errorText = nil
         presentedConfirmation = nil
         currentGoal = displayText ?? text
+        currentSourceMessageId = nil
         stoppedReply = false
         lastFailedInput = nil
         activityText = "正在拆解目标并寻找可行方法"
-        appendMessage(ChatMessage(role: .user, text: displayText ?? text))
+        let userMessage = ChatMessage(role: .user, text: displayText ?? text)
+        currentSourceMessageId = userMessage.id.uuidString
+        appendMessage(userMessage)
         onAccepted?()
 
         if !backendOnline || backendExecutionMode == "unknown" {
@@ -731,6 +744,8 @@ final class AppModel: ObservableObject {
         presentedConfirmation = nil
         errorText = nil
         currentGoal = nil
+        currentSourceMessageId = nil
+        requestedMessageId = nil
         lastFailedInput = nil
         composerContextID = UUID().uuidString
         UserDefaults.standard.set(composerContextID, forKey: "whale.composer.context")
@@ -1098,6 +1113,7 @@ final class AppModel: ObservableObject {
             id: response.turnId,
             goal: goal,
             conversationId: response.conversationId,
+            sourceMessageId: currentSourceMessageId ?? existing?.sourceMessageId,
             status: response.status,
             reply: response.reply ?? existing?.reply,
             createdAt: existing?.createdAt ?? Date(),
@@ -1118,6 +1134,7 @@ final class AppModel: ObservableObject {
                 id: turnId,
                 goal: goal,
                 conversationId: conversationId ?? existing?.conversationId ?? "",
+                sourceMessageId: currentSourceMessageId ?? existing?.sourceMessageId,
                 status: "failed",
                 reply: message,
                 createdAt: existing?.createdAt ?? Date(),

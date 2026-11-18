@@ -70,12 +70,14 @@ final class DirectContentClient: @unchecked Sendable {
         Feed(id: "mydrivers-auto", name: "快科技 · 汽车", url: "https://rss.mydrivers.com/rss.aspx?Tid=1", channels: ["headline"], section: "auto", requireAIKeyword: false, matchPattern: "(汽车|车型|比亚迪|特斯拉|新能源车|电动车|自动驾驶|智驾|小米汽车|问界|理想汽车|蔚来|小鹏|吉利|长安|奇瑞|奥迪|宝马|奔驰|丰田|大众|本田|日产|极氪|零跑|岚图|阿维塔|五菱|长城|哈弗|领克|红旗|SUV|轿车|MPV|座舱|充电桩|换电|续航|试驾|车机)", excludePattern: "(Switch|任天堂|PlayStation|PS5|Xbox|Steam Deck|掌机|扩展坞|显卡|笔记本|平板|耳机|手机壳|键盘|鼠标|路由器)"),
         Feed(id: "gnews-top", name: "Google 头条", url: "https://news.google.com/rss?hl=zh-CN&gl=CN&ceid=CN:zh-Hans", channels: ["headline"], section: "top", requireAIKeyword: false),
 
-        // 游戏：国内外媒体分开，Steam 榜单走商店公开接口
+        // 游戏：统一显示国内中文媒体。海外 RSS 标题和摘要无法保证中文可读性，
+        // 因此不再混入 IGN / GameSpot。Steam 榜单仍走商店中国区公开接口。
         Feed(id: "youxiputao", name: "游戏葡萄", url: "https://www.youxituoluo.com/feed", channels: ["game"], section: "cn", requireAIKeyword: false),
         Feed(id: "youxichaguan", name: "游戏茶馆", url: "https://www.youxichaguan.com/feed", channels: ["game"], section: "cn", requireAIKeyword: false),
         Feed(id: "chuapp", name: "触乐", url: "https://www.chuapp.com/feed", channels: ["game"], section: "cn", requireAIKeyword: false),
-        Feed(id: "ign", name: "IGN", url: "https://feeds.ign.com/ign/all", channels: ["game"], section: "global", requireAIKeyword: false),
-        Feed(id: "gamespot", name: "GameSpot", url: "https://www.gamespot.com/feeds/news", channels: ["game"], section: "global", requireAIKeyword: false)
+        Feed(id: "yystv", name: "游研社", url: "https://www.yystv.cn/rss/feed", channels: ["game"], section: "cn", requireAIKeyword: false),
+        Feed(id: "ithome-game", name: "IT之家 · 游戏", url: "https://www.ithome.com/rss/", channels: ["game"], section: "cn", requireAIKeyword: false, matchPattern: "(游戏|玩家|电竞|主机|掌机|PlayStation|Xbox|Switch|Steam|手游|任天堂)"),
+        Feed(id: "mydrivers-game", name: "快科技 · 游戏", url: "https://rss.mydrivers.com/rss.aspx?Tid=1", channels: ["game"], section: "cn", requireAIKeyword: false, matchPattern: "(游戏|玩家|电竞|主机|掌机|PlayStation|Xbox|Switch|Steam|手游|任天堂)")
     ]
 
     private static let aiPattern = "(?:^|[^a-z])(ai|a\\.i\\.|agi|agent|llm|gpt|chatgpt|claude|gemini|deepseek|openai|anthropic|nvidia|transformer|diffusion|multimodal|大模型|人工智能|机器学习|深度学习|神经网络|智能体|生成式|多模态|算力|芯片)(?:$|[^a-z])"
@@ -136,7 +138,7 @@ final class DirectContentClient: @unchecked Sendable {
             throw DirectContentError.notFound(detail)
         }
 
-        let coverage = section == "all" ? (channel == .ai ? ["game-ai", "coding", "gametech", "vendor", "tech"] : channel == .headline ? ["domestic", "world", "military", "tech", "auto"] : ["cn", "global"]) : []
+        let coverage = section == "all" ? (channel == .ai ? ["game-ai", "coding", "gametech", "vendor", "tech"] : channel == .headline ? ["domestic", "world", "military", "tech", "auto"] : ["cn"]) : []
         let rankedItems = NewsSelection.select(items, limit: safeLimit, topics: coverage)
 
         let unique = rankedItems
@@ -732,6 +734,90 @@ final class DirectContentClient: @unchecked Sendable {
         return result
     }
 
+    func sectorBoard() async throws -> SectorBoardResponse {
+        async let gainers = fetchSectorList(sortField: "f3")
+        async let inflows = fetchSectorList(sortField: "f62")
+        let (topGainers, topInflows) = try await (gainers, inflows)
+        guard !topGainers.isEmpty || !topInflows.isEmpty else {
+            throw DirectContentError.notFound("东方财富没有返回板块行情")
+        }
+        return SectorBoardResponse(
+            updatedAt: Self.isoNow(),
+            source: "东方财富公开板块行情与资金流",
+            topGainers: topGainers,
+            topInflows: topInflows
+        )
+    }
+
+    func marketNews(limit: Int = 12) async throws -> MarketNewsResponse {
+        let safeLimit = min(max(limit, 1), 30)
+        let urlString = "https://np-weblist.eastmoney.com/comm/web/getFastNewsList?client=web&biz=web_724&fastColumn=102&sortEnd=&pageSize=\(safeLimit)&req_trace=whale"
+        guard let url = URL(string: urlString) else {
+            throw DirectContentError.decode("市场快讯地址无效")
+        }
+        let json = try await fetchJSON(url, referer: "https://kuaixun.eastmoney.com/")
+        guard let root = json as? [String: Any],
+              let data = root["data"] as? [String: Any],
+              let rows = data["fastNewsList"] as? [[String: Any]] else {
+            throw DirectContentError.notFound("东方财富没有返回市场快讯")
+        }
+        let items = rows.enumerated().compactMap { index, row -> NewsItem? in
+            let id = Self.text(row["code"])
+            let title = Self.text(row["title"])
+            guard !id.isEmpty, !title.isEmpty else { return nil }
+            let summary = Self.text(row["summary"])
+            let published = Self.isoFromChinaTime(Self.text(row["showTime"]))
+            return NewsItem(
+                id: "market-\(id)",
+                title: title,
+                summary: summary,
+                source: "东方财富快讯",
+                link: "https://finance.eastmoney.com/a/\(id).html",
+                publishedAt: published,
+                channel: DiscoverChannel.market.rawValue,
+                rank: index + 1,
+                section: "market",
+                topics: ["market"],
+                fetchedAt: Self.isoNow()
+            )
+        }
+        guard !items.isEmpty else {
+            throw DirectContentError.notFound("市场快讯暂时没有可展示的条目")
+        }
+        return MarketNewsResponse(
+            updatedAt: items.first?.publishedAt ?? Self.isoNow(),
+            source: "东方财富公开快讯",
+            items: items
+        )
+    }
+
+    private func fetchSectorList(sortField: String) async throws -> [SectorQuote] {
+        let fields = "f12,f14,f2,f3,f62,f66"
+        let urlString = "https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=16&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&fid=\(sortField)&fs=m:90+t:2&fields=\(fields)"
+        guard let url = URL(string: urlString) else {
+            throw DirectContentError.decode("板块行情地址无效")
+        }
+        let json = try await fetchJSON(url, referer: "https://quote.eastmoney.com/")
+        guard let root = json as? [String: Any],
+              let data = root["data"] as? [String: Any],
+              let rows = data["diff"] as? [[String: Any]] else {
+            throw DirectContentError.notFound("东方财富没有返回板块行情")
+        }
+        return rows.compactMap { row in
+            let code = Self.text(row["f12"])
+            let name = Self.text(row["f14"])
+            guard !code.isEmpty, !name.isEmpty else { return nil }
+            return SectorQuote(
+                code: code,
+                name: name,
+                price: Self.number(row["f2"]),
+                changePercent: Self.number(row["f3"]),
+                mainNet: Self.number(row["f62"]),
+                superLargeNet: Self.number(row["f66"])
+            )
+        }
+    }
+
     func stockProfile(symbol input: String) async throws -> StockProfile {
         guard let symbol = Self.normalizeSymbol(input) else {
             throw DirectContentError.decode("无法识别股票代码 \(input)")
@@ -1025,6 +1111,15 @@ final class DirectContentClient: @unchecked Sendable {
         guard digits.count == 14 else { return nil }
         let chars = Array(digits)
         return "\(String(chars[0...3]))-\(String(chars[4...5]))-\(String(chars[6...7]))T\(String(chars[8...9])):\(String(chars[10...11])):\(String(chars[12...13]))+08:00"
+    }
+
+    private static func isoFromChinaTime(_ value: String) -> String? {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        guard let date = formatter.date(from: value) else { return nil }
+        return ToolDate.iso(date)
     }
 
     static func normalizeSymbol(_ input: String) -> MarketSymbol? {

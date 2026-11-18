@@ -402,6 +402,12 @@ struct MessageRow: View {
             } label: {
                 Label("复制文字", systemImage: "doc.on.doc")
             }
+            if message.role == .assistant {
+                Button(action: onToggleSpeech) {
+                    Label(isSpeaking ? "停止朗读" : "朗读这条回复",
+                          systemImage: isSpeaking ? "stop.circle" : "speaker.wave.2")
+                }
+            }
         }
     }
 

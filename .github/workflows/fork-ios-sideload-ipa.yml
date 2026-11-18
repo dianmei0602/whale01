@@ -48,6 +48,19 @@ jobs:
         working-directory: ios
         run: xcodegen generate
 
+      - name: Run iOS unit tests
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project WhaleAgent.xcodeproj \
+            -scheme WhaleAgent \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            CODE_SIGNING_ALLOWED=NO \
+            test | tee unit-tests.log
+
       - name: Archive without signing
         working-directory: ios
         run: |

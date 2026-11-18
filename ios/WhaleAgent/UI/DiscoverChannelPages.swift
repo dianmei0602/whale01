@@ -194,7 +194,12 @@ struct MarketChannelPage: View {
     private var marketOverview: some View {
         if model.marketState == .loading && model.indexes.isEmpty && model.watchQuotes.isEmpty {
             NewsSkeleton()
-        } else if case .failed(let message) = model.marketState, model.indexes.isEmpty && model.watchQuotes.isEmpty {
+        } else if case .failed(let message) = model.marketState,
+                  model.indexes.isEmpty,
+                  model.watchQuotes.isEmpty,
+                  (model.sectorBoard?.topGainers.isEmpty ?? true),
+                  (model.sectorBoard?.topInflows.isEmpty ?? true),
+                  model.marketNewsItems.isEmpty {
             DiscoverErrorState(message: message) {
                 Task { await model.loadMarket(force: true) }
             }
@@ -258,8 +263,110 @@ struct MarketChannelPage: View {
                 }
             }
 
+            sectorOverview
+            marketNewsOverview
             MarketDisclaimer(source: model.marketSource, updatedAt: model.marketUpdatedAt)
         }
+    }
+
+    @ViewBuilder
+    private var sectorOverview: some View {
+        if model.sectorState == .loading && model.sectorBoard == nil {
+            DiscoverSectionTitle(title: "板块分析", subtitle: "行情与主力资金加载中")
+            RoundedRectangle(cornerRadius: 17, style: .continuous)
+                .fill(WhaleTheme.soft)
+                .frame(height: 112)
+                .redacted(reason: .placeholder)
+        } else if let board = model.sectorBoard, !board.topGainers.isEmpty {
+            DiscoverSectionTitle(title: "板块分析", subtitle: "领涨板块 · 主力净流入 · 东方财富公开数据")
+            VStack(alignment: .leading, spacing: 10) {
+                Text(sectorSummary(board))
+                    .whaleFont(size: 14, weight: .medium)
+                    .foregroundStyle(WhaleTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(alignment: .top, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text("涨幅居前")
+                            .whaleFont(size: 13, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.muted)
+                        ForEach(Array(board.topGainers.prefix(4))) { sector in
+                            sectorRow(sector)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text("主力净流入")
+                            .whaleFont(size: 13, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.muted)
+                        ForEach(Array(board.topInflows.prefix(4))) { sector in
+                            sectorRow(sector, showsFlow: true)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                Text("只呈现公开行情与资金数据，不从单日涨跌推断买卖建议。")
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted.opacity(0.84))
+            }
+            .padding(14)
+            .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
+            }
+        } else if case .failed(let message) = model.sectorState {
+            Text(message)
+                .whaleFont(size: 13)
+                .foregroundStyle(WhaleTheme.muted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 6)
+        }
+    }
+
+    @ViewBuilder
+    private var marketNewsOverview: some View {
+        DiscoverSectionTitle(title: "市场快讯", subtitle: model.marketNewsSource.isEmpty ? "实时财经动态" : model.marketNewsSource)
+        if model.marketNewsState == .loading && model.marketNewsItems.isEmpty {
+            NewsSkeleton()
+        } else if case .failed(let message) = model.marketNewsState, model.marketNewsItems.isEmpty {
+            Text(message)
+                .whaleFont(size: 13)
+                .foregroundStyle(WhaleTheme.muted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 6)
+        } else {
+            ForEach(model.marketNewsItems.prefix(8)) { item in
+                NavigationLink(value: DiscoverRoute.news(item)) {
+                    NewsRowCard(item: item)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func sectorRow(_ sector: SectorQuote, showsFlow: Bool = false) -> some View {
+        HStack(spacing: 6) {
+            Text(sector.name)
+                .whaleFont(size: 13, weight: .medium)
+                .foregroundStyle(WhaleTheme.ink)
+                .lineLimit(1)
+            Spacer(minLength: 4)
+            if showsFlow {
+                Text(DiscoverFormat.signedCompactAmount(sector.mainNet))
+                    .foregroundStyle(sector.isInflow ? WhaleTheme.danger : WhaleTheme.success)
+            } else {
+                Text(DiscoverFormat.percent(sector.changePercent))
+                    .foregroundStyle(sector.isUp ? WhaleTheme.danger : WhaleTheme.success)
+            }
+        }
+        .whaleFont(size: 13, design: .rounded)
+        .monospacedDigit()
+    }
+
+    private func sectorSummary(_ board: SectorBoardResponse) -> String {
+        let gainers = board.topGainers.prefix(3).map(\.name).joined(separator: "、")
+        let inflow = board.topInflows.first.map { "\($0.name) \(DiscoverFormat.signedCompactAmount($0.mainNet))" } ?? "暂无"
+        return "领涨集中在 \(gainers)；主力净流入靠前的是 \(inflow)。"
     }
 }
 
@@ -364,7 +471,7 @@ struct GameChannelPage: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 11) {
                 newsBody
-                NewsSourceFooter(model: model, extra: "游戏频道来自游戏媒体公开 RSS，不是微信公众号。")
+                NewsSourceFooter(model: model, extra: "游戏频道仅聚合国内中文游戏媒体公开 RSS，不混入海外英文源。")
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 30)

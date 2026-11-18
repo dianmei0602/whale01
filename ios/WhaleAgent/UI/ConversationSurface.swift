@@ -68,6 +68,22 @@ struct ConversationSurface: View {
                 .onChange(of: viewport.size.height) { _, _ in
                     if followState.nearBottom { pinToBottom(proxy, animated: false) }
                 }
+                .onChange(of: model.requestedMessageId) { _, messageId in
+                    guard let messageId, let id = UUID(uuidString: messageId) else { return }
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.24)) {
+                        proxy.scrollTo(id, anchor: .center)
+                    }
+                    model.consumeMessageFocus()
+                }
+                .task(id: model.requestedMessageId) {
+                    guard let messageId = model.requestedMessageId,
+                          let id = UUID(uuidString: messageId) else { return }
+                    try? await Task.sleep(nanoseconds: 120_000_000)
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.24)) {
+                        proxy.scrollTo(id, anchor: .center)
+                    }
+                    model.consumeMessageFocus()
+                }
                 .overlay(alignment: .bottomTrailing) {
                     if followState.unread > 0 {
                         Button {

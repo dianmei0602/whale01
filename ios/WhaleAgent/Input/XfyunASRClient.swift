@@ -21,6 +21,7 @@ final class XfyunASRClient {
     private struct XFResult: Decodable {
         let sn: Int?
         let pgs: String?
+        let rg: [Int]?
         let ws: [XFWord]?
     }
 
@@ -118,22 +119,7 @@ final class XfyunASRClient {
     }
 
     private func sendConfigFrame() {
-        let payload: [String: Any] = [
-            "common": ["app_id": config.appId],
-            "business": [
-                "language": "zh_cn",
-                "domain": "iat",
-                "accent": "mandarin",
-                "vad_eos": 3000
-            ],
-            "data": [
-                "status": 0,
-                "format": "audio/L16;rate=16000",
-                "encoding": "raw",
-                "audio": ""
-            ]
-        ]
-        send(payload)
+        send(Self.configurationPayload(appId: config.appId))
     }
 
     private func sendDataFrame(status: Int, audio: String) {
@@ -212,8 +198,14 @@ final class XfyunASRClient {
         let chunk = (result.ws ?? [])
             .compactMap { $0.cw?.compactMap { $0.w }.joined() }
             .joined()
-        if result.pgs == "rpl" {
-            for key in segments.keys where key >= sn {
+
+        // iFlytek WPGS marks a revised range with pgs=rpl and rg=[start,end].
+        // Only that range may be replaced. Earlier versions removed every
+        // segment after sn, which could erase text the speaker had just said.
+        if result.pgs == "rpl", let range = result.rg, range.count >= 2 {
+            let lower = min(range[0], range[1])
+            let upper = max(range[0], range[1])
+            for key in segments.keys where (lower...upper).contains(key) {
                 segments.removeValue(forKey: key)
             }
         }
@@ -293,6 +285,28 @@ final class XfyunASRClient {
         formatter.timeZone = TimeZone(identifier: "GMT")
         formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
         return formatter.string(from: date)
+    }
+
+    static func configurationPayload(appId: String) -> [String: Any] {
+        [
+            "common": ["app_id": appId],
+            "business": [
+                "language": "zh_cn",
+                "domain": "iat",
+                "accent": "mandarin",
+                "rlang": "zh-cn",
+                "vad_eos": 4000,
+                "dwa": "wpgs",
+                "ptt": 1,
+                "nunum": 0
+            ],
+            "data": [
+                "status": 0,
+                "format": "audio/L16;rate=16000",
+                "encoding": "raw",
+                "audio": ""
+            ]
+        ]
     }
 
     nonisolated private static func copy(_ buffer: AVAudioPCMBuffer) -> AVAudioPCMBuffer? {

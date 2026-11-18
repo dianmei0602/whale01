@@ -32,6 +32,7 @@ struct TaskRecord: Codable, Identifiable, Equatable, Sendable {
     let id: String
     var goal: String
     var conversationId: String
+    var sourceMessageId: String? = nil
     var status: String
     var reply: String?
     let createdAt: Date

@@ -24,7 +24,19 @@ struct RootView: View {
         .preferredColorScheme(colorScheme)
         .dynamicTypeSize(preferredTextSize)
         .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
-        .sheet(isPresented: $showRecords) { RecordsView(model: model, showsClose: true, onClose: { showRecords = false }) }
+        .sheet(isPresented: $showRecords) {
+            RecordsView(
+                model: model,
+                onOpenTask: { task in
+                    guard let messageId = task.sourceMessageId else { return }
+                    showRecords = false
+                    page = .conversation
+                    model.requestMessageFocus(messageId)
+                },
+                showsClose: true,
+                onClose: { showRecords = false }
+            )
+        }
         .sheet(isPresented: $showSettings) {
             SettingsView(model: model, isDetailOpen: $settingsDetailOpen, onBackToChat: { showSettings = false })
                 .presentationDragIndicator(.visible)

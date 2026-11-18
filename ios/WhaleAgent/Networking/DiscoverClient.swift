@@ -113,6 +113,14 @@ final class DiscoverClient {
         await DirectContentClient.shared.todayFundFlows(symbols: symbols)
     }
 
+    func sectorBoard(force: Bool) async throws -> SectorBoardResponse {
+        try await DirectContentClient.shared.sectorBoard()
+    }
+
+    func marketNews(limit: Int = 12, force: Bool = false) async throws -> MarketNewsResponse {
+        try await DirectContentClient.shared.marketNews(limit: limit)
+    }
+
     func quotes(symbols: [String], force: Bool = false) async throws -> MarketQuoteResponse {
         guard !symbols.isEmpty else {
             return MarketQuoteResponse(updatedAt: "", delayedMinutes: nil, source: "", quotes: [], errors: [])

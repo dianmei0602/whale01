@@ -36,6 +36,7 @@ struct StockDetailView: View {
                         profileCard
                         statsCard
                         fundFlowCard
+                        relatedNewsCard
                         actionCard
                         MarketDisclaimer(source: model.source.isEmpty ? (quote.source ?? "") : model.source, updatedAt: model.updatedAt ?? quote.timestamp)
                     }
@@ -545,6 +546,51 @@ struct StockDetailView: View {
                 }
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    @ViewBuilder
+    private var relatedNewsCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(model.newsIsStockSpecific ? "相关新闻" : "市场快讯")
+                    .whaleFont(size: 15, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer()
+                Text(model.newsIsStockSpecific ? "与 \(quote.name) 相关" : "暂未匹配到个股新闻")
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+
+            switch model.relatedNewsState {
+            case .loading, .idle:
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(WhaleTheme.soft)
+                    .frame(height: 96)
+                    .redacted(reason: .placeholder)
+            case .failed(let message):
+                Text(message)
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
+            case .loaded, .cached, .stale, .partial:
+                ForEach(Array(model.relatedNews.prefix(5))) { item in
+                    NavigationLink(value: DiscoverRoute.news(item)) {
+                        NewsRowCard(item: item)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            Text("新闻来自东方财富公开快讯；没有个股匹配时展示最新市场动态，不把无关消息当成公司利好。")
+                .whaleFont(size: 13)
+                .foregroundStyle(WhaleTheme.muted.opacity(0.84))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(15)
+        .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
         }
     }
 }

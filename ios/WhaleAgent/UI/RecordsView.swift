@@ -3,6 +3,7 @@ import SwiftUI
 struct RecordsView: View {
     @ObservedObject var model: AppModel
     var onBackToChat: () -> Void = {}
+    var onOpenTask: (TaskRecord) -> Void = { _ in }
     var showsClose: Bool = false
     var onClose: () -> Void = {}
     @State private var filter = "all"
@@ -156,31 +157,40 @@ struct RecordsView: View {
     }
 
     private func taskCard(_ task: TaskRecord) -> some View {
-        VStack(alignment: .leading, spacing: 7) {
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.triangle.branch")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.accent)
-                Text(task.goal)
-                    .whaleFont(size: 15, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.ink)
-                    .lineLimit(2)
-                Spacer()
-
-            }
-            HStack(spacing: 8) {
-                Text(task.updatedAt.formatted(date: .abbreviated, time: .shortened))
-                if let reply = task.reply, !reply.isEmpty {
-                    Text("·")
-                    Text(reply)
-                        .lineLimit(1)
+        Button {
+            onOpenTask(task)
+        } label: {
+            VStack(alignment: .leading, spacing: 7) {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.triangle.branch")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                    Text(task.goal)
+                        .whaleFont(size: 15, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.muted.opacity(0.55))
                 }
+                HStack(spacing: 8) {
+                    Text(task.updatedAt.formatted(date: .abbreviated, time: .shortened))
+                    if let reply = task.reply, !reply.isEmpty {
+                        Text("·")
+                        Text(reply)
+                            .lineLimit(1)
+                    }
+                }
+                .whaleFont(size: 13)
+                .foregroundStyle(WhaleTheme.muted)
             }
-            .whaleFont(size: 13)
-            .foregroundStyle(WhaleTheme.muted)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .whaleCard(padding: 15)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .whaleCard(padding: 15)
+        .buttonStyle(.plain)
+        .accessibilityHint(task.sourceMessageId == nil ? "这条旧记录没有可跳转的原消息" : "跳转到对话中的原始位置")
     }
 
     private var header: some View {

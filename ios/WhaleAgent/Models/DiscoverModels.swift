@@ -653,6 +653,32 @@ struct StockProfile: Decodable, Hashable {
     let roe: Double?
 }
 
+struct SectorBoardResponse: Decodable {
+    let updatedAt: String
+    let source: String
+    let topGainers: [SectorQuote]
+    let topInflows: [SectorQuote]
+}
+
+struct SectorQuote: Decodable, Identifiable, Hashable {
+    let code: String
+    let name: String
+    let price: Double?
+    let changePercent: Double?
+    let mainNet: Double?
+    let superLargeNet: Double?
+
+    var id: String { code }
+    var isUp: Bool { (changePercent ?? 0) > 0 }
+    var isInflow: Bool { (mainNet ?? 0) >= 0 }
+}
+
+struct MarketNewsResponse: Decodable {
+    let updatedAt: String
+    let source: String
+    let items: [NewsItem]
+}
+
 struct IntradayResponse: Decodable {
     let symbol: String
     let code: String
