@@ -336,6 +336,12 @@ struct MessageRow: View {
                         .foregroundStyle(WhaleTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)
+                        .onLongPressGesture(minimumDuration: 0.65) {
+                            onToggleSpeech()
+                        }
+                        .accessibilityAction(named: isSpeaking ? "停止朗读" : "朗读这条回复") {
+                            onToggleSpeech()
+                        }
                     HStack(alignment: .bottom, spacing: 10) {
                         if let detail = message.detail, !detail.isEmpty {
                             Text(detail)
