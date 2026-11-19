@@ -9,6 +9,12 @@ on:
         options: [all, ui]
         default: all
   workflow_call:
+    inputs:
+      scope:
+        description: Run all native tests or UI tests only
+        type: string
+        required: false
+        default: all
 
 permissions:
   contents: read
