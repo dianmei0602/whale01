@@ -344,8 +344,8 @@ struct SettingsView: View {
                 .foregroundStyle(WhaleTheme.muted)
 
             HStack(spacing: 9) {
-                appearanceOption("炭黑", "深色", mode: "dark", swatch: .dark)
-                appearanceOption("海盐", "浅色", mode: "light", swatch: .light)
+                appearanceOption("日间", "浅色", mode: "light", swatch: .light)
+                appearanceOption("夜间", "深色", mode: "dark", swatch: .dark)
                 appearanceOption("自动", "跟随系统", mode: "system", swatch: .auto)
             }
 
