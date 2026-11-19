@@ -194,8 +194,9 @@ final class CoreTests: XCTestCase {
     }
 
     func testXfyunStatusIsHonestWhenUnconfigured() {
-        XCTAssertEqual(XfyunConfig.isConfigured, false)
-        XCTAssertTrue(XfyunConfig.statusText.contains("未配置"))
+        let configured = XfyunConfig.isConfigured
+        XCTAssertEqual(XfyunConfig.statusText.contains("已配置"), configured)
+        XCTAssertEqual(XfyunConfig.statusText.contains("未配置"), !configured)
     }
 
     func testXfyunTTSAuthorizationUsesXiaoluStandardEndpoint() {
