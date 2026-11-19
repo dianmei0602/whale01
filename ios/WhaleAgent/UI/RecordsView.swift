@@ -3,10 +3,11 @@ import SwiftUI
 struct RecordsView: View {
     @ObservedObject var model: AppModel
     var onBackToChat: () -> Void = {}
-    var onOpenTask: (TaskRecord) -> Void = { _ in }
+    var onOpenTask: (TaskRecord) -> Bool = { _ in false }
     var showsClose: Bool = false
     var onClose: () -> Void = {}
     @State private var filter = "all"
+    @State private var navigationNotice: String?
 
     private struct DayGroup: Identifiable {
         let day: Date
@@ -153,12 +154,20 @@ struct RecordsView: View {
             ForEach(model.taskRecords.prefix(8)) { task in
                 taskCard(task)
             }
+            if let navigationNotice {
+                Label(navigationNotice, systemImage: "exclamationmark.bubble")
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(11)
+                    .background(WhaleTheme.soft.opacity(0.72), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
         }
     }
 
     private func taskCard(_ task: TaskRecord) -> some View {
         Button {
-            onOpenTask(task)
+            navigationNotice = onOpenTask(task) ? nil : "这条记录的原对话已被清空，无法定位到原消息。"
         } label: {
             VStack(alignment: .leading, spacing: 7) {
                 HStack(spacing: 8) {
@@ -190,7 +199,7 @@ struct RecordsView: View {
             .whaleCard(padding: 15)
         }
         .buttonStyle(.plain)
-        .accessibilityHint(task.sourceMessageId == nil ? "这条旧记录没有可跳转的原消息" : "跳转到对话中的原始位置")
+        .accessibilityHint("跳转到对话中的原始位置；旧记录会按任务文字自动匹配")
     }
 
     private var header: some View {

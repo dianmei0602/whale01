@@ -28,10 +28,10 @@ struct RootView: View {
             RecordsView(
                 model: model,
                 onOpenTask: { task in
-                    guard let messageId = task.sourceMessageId else { return }
+                    guard model.requestMessageFocus(for: task) else { return false }
                     showRecords = false
                     page = .conversation
-                    model.requestMessageFocus(messageId)
+                    return true
                 },
                 showsClose: true,
                 onClose: { showRecords = false }

@@ -50,6 +50,19 @@ final class InteractionHabitsTests: XCTestCase {
         XCTAssertEqual(state.unread, 0)
         XCTAssertTrue(state.receive())
     }
+    @MainActor
+    func testLegacyTaskRecordFallsBackToMatchingUserMessage() {
+        let user = ChatMessage(role: .user, text: "讯飞语音接入了吗")
+        let record = TaskRecord(
+            id: "turn-old",
+            goal: "讯飞语音接入了吗",
+            conversationId: "conversation",
+            status: "completed",
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+        XCTAssertEqual(AppModel.messageId(for: record, messages: [user]), user.id.uuidString)
+    }
     func testLegacySettingsTabRestoresToAssistantAndDiscoverRemainsSelectable() {
         XCTAssertEqual(NavigationHabits.restoredTab("settings"), .conversation)
         XCTAssertEqual(NavigationHabits.restoredTab("records"), .records)

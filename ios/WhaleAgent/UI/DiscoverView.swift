@@ -93,7 +93,7 @@ struct DiscoverView: View {
                         if let model = models[selection] {
                             switch route {
                             case .news(let item):
-                                NewsDetailView(item: item, channel: selection)
+                                NewsDetailView(item: item, channel: selection, appModel: appModel)
                             case .stock(let quote):
                                 StockDetailView(quote: quote, discover: model)
                             case .search(let result):

@@ -70,19 +70,12 @@ struct ConversationSurface: View {
                 }
                 .onChange(of: model.requestedMessageId) { _, messageId in
                     guard let messageId, let id = UUID(uuidString: messageId) else { return }
-                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.24)) {
-                        proxy.scrollTo(id, anchor: .center)
-                    }
-                    model.consumeMessageFocus()
+                    focus(messageId: id, proxy: proxy)
                 }
                 .task(id: model.requestedMessageId) {
                     guard let messageId = model.requestedMessageId,
                           let id = UUID(uuidString: messageId) else { return }
-                    try? await Task.sleep(nanoseconds: 120_000_000)
-                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.24)) {
-                        proxy.scrollTo(id, anchor: .center)
-                    }
-                    model.consumeMessageFocus()
+                    focus(messageId: id, proxy: proxy, delayed: true)
                 }
                 .overlay(alignment: .bottomTrailing) {
                     if followState.unread > 0 {
@@ -124,6 +117,25 @@ struct ConversationSurface: View {
         let scroll = { proxy.scrollTo(Self.bottomAnchor, anchor: .bottom) }
         if animated && !reduceMotion {
             withAnimation(.easeOut(duration: 0.22), scroll)
+        } else {
+            scroll()
+        }
+    }
+
+    private func focus(messageId: UUID, proxy: ScrollViewProxy, delayed: Bool = false) {
+        let scroll = {
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.24)) {
+                proxy.scrollTo(messageId, anchor: .center)
+            }
+        }
+        if delayed {
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 180_000_000)
+                scroll()
+                try? await Task.sleep(nanoseconds: 160_000_000)
+                proxy.scrollTo(messageId, anchor: .center)
+                model.consumeMessageFocus()
+            }
         } else {
             scroll()
         }

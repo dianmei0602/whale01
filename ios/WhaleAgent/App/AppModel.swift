@@ -116,6 +116,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var composerContextID = UserDefaults.standard.string(forKey: "whale.composer.context") ?? UUID().uuidString
     @Published private(set) var canStopReply = false
     @Published private(set) var speakingMessageId: String?
+    @Published private(set) var speakingContentId: String?
     @Published var voiceReplyEnabled: Bool
 
     let permissions = PermissionCenter()
@@ -173,6 +174,7 @@ final class AppModel: ObservableObject {
             self?.isSpeakingReply = speaking
             if !speaking {
                 self?.speakingMessageId = nil
+                self?.speakingContentId = nil
             }
         }
         speechInterruptObserver = NotificationCenter.default.publisher(for: .whaleInterruptSpeech)
@@ -196,8 +198,21 @@ final class AppModel: ObservableObject {
             speech.stop()
             return
         }
+        speakingContentId = nil
         speakingMessageId = message.id.uuidString
         speech.speak(message.text)
+    }
+
+    func toggleContentSpeech(text: String, contentId: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if speech.isSpeaking, speakingContentId == contentId {
+            speech.stop()
+            return
+        }
+        speakingMessageId = nil
+        speakingContentId = contentId
+        speech.speak(trimmed)
     }
 
     func reloadRecentActions() async {
@@ -208,12 +223,29 @@ final class AppModel: ObservableObject {
         taskRecords = await TaskRecordStore.shared.list()
     }
 
-    func requestMessageFocus(_ messageId: String?) {
+    @discardableResult
+    func requestMessageFocus(for record: TaskRecord) -> Bool {
+        guard let messageId = Self.messageId(for: record, messages: messages) else {
+            return false
+        }
         requestedMessageId = messageId
+        return true
     }
 
     func consumeMessageFocus() {
         requestedMessageId = nil
+    }
+
+    static func messageId(for record: TaskRecord, messages: [ChatMessage]) -> String? {
+        if let source = record.sourceMessageId,
+           messages.contains(where: { $0.id.uuidString == source }) {
+            return source
+        }
+        let goal = record.goal.trimmingCharacters(in: .whitespacesAndNewlines)
+        return messages.last {
+            $0.role == .user
+                && $0.text.trimmingCharacters(in: .whitespacesAndNewlines) == goal
+        }?.id.uuidString
     }
 
     func reloadMemories() {

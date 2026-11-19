@@ -1,10 +1,13 @@
 import SwiftUI
+import UIKit
 
 struct NewsDetailView: View {
     let item: NewsItem
     let channel: DiscoverChannel
+    @ObservedObject var appModel: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var safari: SafariTarget?
+    @State private var copyNotice: String?
 
     var body: some View {
         ZStack {
@@ -18,7 +21,17 @@ struct NewsDetailView: View {
                             .whaleFont(size: 25, weight: .bold, design: .rounded)
                             .foregroundStyle(WhaleTheme.ink)
                             .fixedSize(horizontal: false, vertical: true)
-                            .textSelection(.enabled)
+                            .contentShape(Rectangle())
+                            .onTapGesture { speak(item.displayTitle, id: titleId) }
+                            .onLongPressGesture(minimumDuration: 0.55) {
+                                copy(item.displayTitle, label: "标题")
+                            }
+                        Label(
+                            isReading(titleId) ? "正在朗读，再点一次停止" : "轻点朗读 · 长按复制",
+                            systemImage: isReading(titleId) ? "speaker.wave.2.fill" : "speaker.wave.2"
+                        )
+                        .whaleFont(size: 13, weight: .medium)
+                        .foregroundStyle(isReading(titleId) ? WhaleTheme.accent : WhaleTheme.muted)
                         summaryCard
                         sourceButton
                         copyrightNote
@@ -33,6 +46,20 @@ struct NewsDetailView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .background(SwipeBackEnabler().frame(width: 1, height: 1))
+        .overlay(alignment: .bottom) {
+            if let copyNotice {
+                Label(copyNotice, systemImage: "doc.on.doc.fill")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.ink)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(WhaleTheme.card.opacity(0.96), in: Capsule())
+                    .overlay(Capsule().strokeBorder(WhaleTheme.line, lineWidth: 0.8))
+                    .shadow(color: .black.opacity(0.09), radius: 12, y: 5)
+                    .padding(.bottom, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
         .sheet(item: $safari) { target in
             InAppSafari(url: target.url)
                 .ignoresSafeArea()
@@ -129,7 +156,6 @@ struct NewsDetailView: View {
                 .foregroundStyle(WhaleTheme.ink.opacity(0.9))
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
             Text("基于来源摘要整理，不替代原文。")
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted)
@@ -138,6 +164,11 @@ struct NewsDetailView: View {
         .padding(16)
         .background(WhaleTheme.card.opacity(0.78), in: RoundedRectangle(cornerRadius: 19, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 19, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8) }
+        .contentShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .onTapGesture { speak(summaryText, id: summaryId) }
+        .onLongPressGesture(minimumDuration: 0.55) {
+            copy(summaryText, label: "摘要")
+        }
     }
 
     private var sourceButton: some View {
@@ -166,5 +197,35 @@ struct NewsDetailView: View {
             .whaleFont(size: 13)
             .foregroundStyle(WhaleTheme.muted)
             .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var titleId: String { "news-title-\(item.id)" }
+    private var summaryId: String { "news-summary-\(item.id)" }
+    private var summaryText: String {
+        item.displaySummary.isEmpty ? item.displayTitle : item.displaySummary
+    }
+
+    private func isReading(_ id: String) -> Bool {
+        appModel.speech.isSpeaking && appModel.speakingContentId == id
+    }
+
+    private func speak(_ text: String, id: String) {
+        let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return }
+        appModel.toggleContentSpeech(text: value, contentId: id)
+    }
+
+    private func copy(_ text: String, label: String) {
+        let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return }
+        UIPasteboard.general.string = value
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        let message = "已复制\(label)"
+        withAnimation(.easeOut(duration: 0.16)) { copyNotice = message }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_400_000_000)
+            guard copyNotice == message else { return }
+            withAnimation(.easeIn(duration: 0.16)) { copyNotice = nil }
+        }
     }
 }
