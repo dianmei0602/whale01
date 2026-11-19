@@ -9,14 +9,32 @@ import UIKit
 struct ConversationSurface: View {
     @ObservedObject var model: AppModel
     let bottomInset: CGFloat
+    var onReturnToRecords: (() -> Void)? = nil
     @State private var followState = ConversationFollowState()
     @State private var userScrolling = false
+    @State private var todoCandidate: MessageTodoCandidate?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 0) {
             if !model.backendOnline || model.errorText != nil {
                 connectionBanner
+            }
+            if model.highlightedMessageId != nil, let onReturnToRecords {
+                HStack(spacing: 8) {
+                    Image(systemName: "scope")
+                        .foregroundStyle(WhaleTheme.accent)
+                    Text("已定位到原消息")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Spacer()
+                    Button("返回记录", action: onReturnToRecords)
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 42)
+                .background(WhaleTheme.accentSoft.opacity(0.72))
             }
             conversation
         }
@@ -33,7 +51,11 @@ struct ConversationSurface: View {
                         ForEach(model.messages) { message in
                             MessageRow(message: message,
                                 isSpeaking: model.isSpeakingReply && model.speakingMessageId == message.id.uuidString,
-                                onToggleSpeech: { model.toggleSpeech(for: message) }).id(message.id)
+                                isHighlighted: model.highlightedMessageId == message.id.uuidString,
+                                onToggleSpeech: { model.toggleSpeech(for: message) },
+                                onCreateTodo: message.role == .assistant
+                                    ? { todoCandidate = MessageTodoCandidate(text: $0, messageID: message.id.uuidString) }
+                                    : nil).id(message.id)
                         }
                         ForEach(model.pending) { item in
                             PendingActionCard(item: item, isBusy: model.isBusy) {
@@ -42,6 +64,7 @@ struct ConversationSurface: View {
                             }.id(item.id)
                         }
                         AssistantActivityView(model: model)
+                        InteractionReceiptCard(model: model)
                         Color.clear.frame(height: 20 + bottomInset).id(Self.bottomAnchor)
                             .background(GeometryReader { geometry in
                                 Color.clear.preference(key: ConversationBottomKey.self, value: geometry.frame(in: .named("conversation-viewport")).maxY)
@@ -89,6 +112,9 @@ struct ConversationSurface: View {
                     }
                 }
             }
+        }
+        .sheet(item: $todoCandidate) { candidate in
+            TodoFromMessageSheet(candidate: candidate, model: model)
         }
     }
 
@@ -177,6 +203,12 @@ struct ConversationSurface: View {
             for: nil
         )
     }
+}
+
+struct MessageTodoCandidate: Identifiable {
+    let text: String
+    let messageID: String
+    var id: String { messageID }
 }
 
 private struct ConversationBottomKey: PreferenceKey {

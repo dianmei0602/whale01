@@ -91,6 +91,7 @@ struct TodoView: View {
     @StateObject private var voice = VoiceInputController()
 
     @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
+    @AppStorage("whale.todo.board") private var board: TodoBoard = .today
     @State private var items: [TodoReminder] = []
     @AppStorage("whale.draft.todo") private var draft = ""
     @State private var isLoading = false
@@ -104,6 +105,9 @@ struct TodoView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let drafts = ComposerDraftStore()
     @State private var pendingDeletion: TodoReminder?
+    @State private var quickPreview: TodoQuickPreview?
+    @State private var detailItem: TodoReminder?
+    @State private var scheduleItem: TodoReminder?
     @FocusState private var composerFocused: Bool
 
     private var reminderStatus: String { model.permissionsSnapshot["reminder"] ?? "unknown" }
@@ -118,11 +122,24 @@ struct TodoView: View {
     }
     private var completedItems: [TodoReminder] { items.filter(\.completed) }
     private var visibleItems: [TodoReminder] {
-        switch filter {
-        case .pending: return pendingItems
-        case .inProgress: return inProgressItems
-        case .completed: return completedItems
+        if board == .projects {
+            return items
+                .filter { !$0.completed && $0.projectName != nil }
+                .sorted { left, right in
+                    let lhs = left.projectName ?? ""
+                    let rhs = right.projectName ?? ""
+                    if lhs != rhs { return lhs.localizedStandardCompare(rhs) == .orderedAscending }
+                    return (left.dueAt ?? .distantFuture) < (right.dueAt ?? .distantFuture)
+                }
         }
+        return items.filter { board.includes($0) }
+    }
+
+    private var projectGroups: [(String, [TodoReminder])] {
+        let grouped = Dictionary(grouping: visibleItems) { $0.projectName ?? "未分组" }
+        return grouped
+            .map { ($0.key, $0.value) }
+            .sorted { $0.0.localizedStandardCompare($1.0) == .orderedAscending }
     }
 
     var body: some View {
@@ -145,8 +162,7 @@ struct TodoView: View {
                             header
                                 .id("todo-top")
                             if reminderStatus != "granted" { permissionCard }
-                            statsCard
-                            filterBar
+                            boardBar
                             content
                             if let errorText { errorBanner(errorText) }
                             hint
@@ -164,6 +180,9 @@ struct TodoView: View {
                         onNext: { stepFilter(1) }
                     )
                     .onChange(of: filter) { _, _ in
+                        withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("todo-top", anchor: .top) }
+                    }
+                    .onChange(of: board) { _, _ in
                         withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("todo-top", anchor: .top) }
                     }
                 }
@@ -190,6 +209,22 @@ struct TodoView: View {
                     let item = try await model.createTodoReminder(title: title, dueAt: due)
                     draft = ""; upsert(item); undoAction = item.deduplicated ? nil : .added(item)
                     showToast(item.deduplicated ? "已有相同提醒" : "已添加 · " + title, undo: !item.deduplicated)
+                }
+            }
+            .sheet(item: $detailItem) { item in
+                TodoDetailSheet(item: item, model: model) { updated in
+                    if let updated { upsert(updated) } else { removeLocal(item.id) }
+                    Task { await reload(silent: true) }
+                }
+            }
+            .sheet(item: $scheduleItem) { item in
+                TodoScheduleSheet(item: item, model: model) { updated in
+                    if let updated {
+                        upsert(updated)
+                        board = .planned
+                        showToast("已安排 · \(dueText(updated.dueAt ?? Date()))", undo: false)
+                    }
+                    Task { await reload(silent: true) }
                 }
             }
             .onChange(of: scenePhase) { _, phase in
@@ -223,7 +258,7 @@ struct TodoView: View {
                 Text("待办")
                     .whaleFont(size: 24, weight: .bold, design: .rounded)
                     .foregroundStyle(WhaleTheme.ink)
-                Text("新增、完成，随手就能记好")
+                Text("收件箱、今天、计划和项目，各自有位置")
                     .whaleFont(size: 13)
                     .foregroundStyle(WhaleTheme.muted)
             }
@@ -293,6 +328,47 @@ struct TodoView: View {
             filterButton(.completed, count: completedItems.count)
             Spacer(minLength: 0)
         }
+    }
+
+    private var boardBar: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 7) {
+                ForEach(TodoBoard.allCases) { value in
+                    let count = value == .projects
+                        ? Set(items.filter { !$0.completed && $0.projectName != nil }.compactMap(\.projectName)).count
+                        : items.filter { value.includes($0) }.count
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.18)) { board = value }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: value.icon)
+                                .whaleFont(size: 12, weight: .semibold)
+                            Text(value.title)
+                            Text(count == 0 ? "" : "\(count)")
+                                .whaleFont(size: 10, weight: .bold)
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 2)
+                                .background(
+                                    (board == value ? WhaleTheme.onAccent : WhaleTheme.muted).opacity(0.14),
+                                    in: Capsule()
+                                )
+                        }
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(board == value ? WhaleTheme.onAccent : WhaleTheme.ink)
+                        .padding(.horizontal, 12)
+                        .frame(minHeight: 38)
+                        .background {
+                            Capsule().fill(board == value ? WhaleTheme.accent : WhaleTheme.card.opacity(0.82))
+                        }
+                        .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(board == value ? .isSelected : [])
+                }
+            }
+        }
+        .scrollIndicators(.hidden)
+        .accessibilityIdentifier("todo-board-bar")
     }
 
     private var statsCard: some View {
@@ -390,6 +466,26 @@ struct TodoView: View {
             .padding(.vertical, 40)
         } else if visibleItems.isEmpty {
             emptyState
+        } else if board == .projects {
+            LazyVStack(alignment: .leading, spacing: 13) {
+                ForEach(projectGroups, id: \.0) { group in
+                    VStack(alignment: .leading, spacing: 7) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "square.stack.3d.up.fill")
+                                .foregroundStyle(WhaleTheme.accent)
+                            Text(group.0)
+                                .whaleFont(size: 14, weight: .bold)
+                                .foregroundStyle(WhaleTheme.ink)
+                            Text("\(group.1.count)")
+                                .whaleFont(size: 11, weight: .semibold)
+                                .foregroundStyle(WhaleTheme.muted)
+                        }
+                        ForEach(group.1) { item in
+                            row(item)
+                        }
+                    }
+                }
+            }
         } else {
             LazyVStack(spacing: 9) {
                 ForEach(visibleItems) { item in
@@ -416,26 +512,19 @@ struct TodoView: View {
     }
 
     private var emptyIcon: String {
-        switch filter {
-        case .pending: return "checkmark.circle"
-        case .inProgress: return "clock.badge.checkmark"
-        case .completed: return "archivebox"
-        }
+        board.icon
     }
 
     private var emptyTitle: String {
-        switch filter {
-        case .pending: return "还没有待办"
-        case .inProgress: return "没有进行中的事项"
-        case .completed: return "还没有已完成事项"
-        }
+        board == .inbox ? "收件箱已清空" : board == .today ? "今天没有待办" : board == .planned ? "还没有计划好的事项" : "还没有项目"
     }
 
     private var emptyHint: String {
-        switch filter {
-        case .pending: return "在下面写一句，直接加到系统提醒事项。"
-        case .inProgress: return "今天到期或已逾期的未完成事项会出现在这里。"
-        case .completed: return "勾掉的事会出现在这里，可以再恢复。"
+        switch board {
+        case .inbox: return "没有日期的任务会先放进这里。"
+        case .today: return "今天到期或逾期的任务会出现在这里。"
+        case .planned: return "写清日期和时间，任务会进入计划。"
+        case .projects: return "录入时写「#项目名」即可归入项目。"
         }
     }
 
@@ -469,6 +558,8 @@ struct TodoView: View {
                     .strikethrough(item.completed, color: WhaleTheme.muted)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
+                    .contentShape(Rectangle())
+                    .onTapGesture { detailItem = item }
 
                 HStack(spacing: 7) {
                     if let due = item.dueAt {
@@ -486,6 +577,25 @@ struct TodoView: View {
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(WhaleTheme.soft, in: Capsule())
+                    if let project = item.projectName {
+                        Label(project, systemImage: "square.stack.3d.up")
+                            .whaleFont(size: 11, weight: .medium)
+                            .foregroundStyle(WhaleTheme.accent)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(WhaleTheme.accentSoft, in: Capsule())
+                    }
+                    if let minutes = item.estimatedMinutes {
+                        Label("\(minutes) 分钟", systemImage: "timer")
+                            .whaleFont(size: 11, weight: .medium)
+                            .foregroundStyle(WhaleTheme.muted)
+                    }
+                    if item.priority == 1 {
+                        Image(systemName: "exclamationmark.2")
+                            .whaleFont(size: 11, weight: .bold)
+                            .foregroundStyle(WhaleTheme.warm)
+                            .accessibilityLabel("高优先级")
+                    }
                     if let notes = item.notes, !notes.isEmpty {
                         Image(systemName: "note.text")
                             .whaleFont(size: 13)
@@ -502,6 +612,12 @@ struct TodoView: View {
                     Button("恢复为待办", systemImage: "arrow.uturn.backward") { toggle(item) }
                 } else {
                     Button("标记完成", systemImage: "checkmark.circle") { toggle(item) }
+                }
+                Button("智能排期 / 改期", systemImage: "calendar.badge.clock") {
+                    scheduleItem = item
+                }
+                Button("移入收件箱", systemImage: "tray.and.arrow.down") {
+                    rescheduleToInbox(item)
                 }
                 Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
             } label: {
@@ -523,12 +639,33 @@ struct TodoView: View {
                 .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
         )
         .contextMenu {
+            Button("打开详情", systemImage: "info.circle") { detailItem = item }
+            Button("智能排期", systemImage: "calendar.badge.clock") { scheduleItem = item }
+            Button("移入收件箱", systemImage: "tray.and.arrow.down") { rescheduleToInbox(item) }
             Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
         }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 28)
+                .onEnded { value in
+                    let dx = value.translation.width
+                    let dy = value.translation.height
+                    guard abs(dx) > 82, abs(dy) < 52, abs(dx) > abs(dy) * 1.45 else { return }
+                    composerFocused = false
+                    if dx > 0 {
+                        toggle(item)
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    } else {
+                        scheduleItem = item
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    }
+                }
+        )
+        .accessibilityAction(named: item.completed ? "恢复" : "完成") { toggle(item) }
+        .accessibilityAction(named: "智能排期") { scheduleItem = item }
     }
 
     private var hint: some View {
-        Text("直接写内容新增，或点麦克风说一句；输入「完成 买菜」勾掉，「删除 买菜」移除。")
+        Text("直接说或写一句；右滑完成，左滑改期。录入「#项目名」和「预计30分钟」会自动归组。")
             .whaleFont(size: 13)
             .foregroundStyle(WhaleTheme.muted.opacity(0.85))
             .fixedSize(horizontal: false, vertical: true)
@@ -556,6 +693,9 @@ struct TodoView: View {
             }
             if voice.isRecording {
                 voiceStrip
+            }
+            if let quickPreview {
+                quickPreviewCard(quickPreview)
             }
             HStack(spacing: 8) {
                 Button {
@@ -602,7 +742,7 @@ struct TodoView: View {
                 .buttonStyle(.plain)
                 .disabled(isSubmitting || draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .opacity(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.45 : 1)
-                .accessibilityLabel("提交待办")
+                .accessibilityLabel(quickPreview == nil ? "解析待办" : "更新待办预览")
             }
             .padding(.leading, 13)
             .padding(.trailing, 7)
@@ -613,7 +753,7 @@ struct TodoView: View {
                     .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
             )
 
-            Text("点击提交后保存；语音识别后可先检查内容")
+            Text(quickPreview == nil ? "先解析，再确认写入系统提醒" : "核对项目、时间和预计时长后再添加")
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted.opacity(0.75))
         }
@@ -621,6 +761,59 @@ struct TodoView: View {
         .padding(.top, 9)
         .padding(.bottom, 8)
         .background(WhaleTheme.chrome)
+    }
+
+    private func quickPreviewCard(_ preview: TodoQuickPreview) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 7) {
+                Image(systemName: "wand.and.stars")
+                    .foregroundStyle(WhaleTheme.accent)
+                Text("待办预览")
+                    .whaleFont(size: 13, weight: .bold)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer()
+                Text("写入前确认")
+                    .whaleFont(size: 11, weight: .medium)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+            Text(preview.title)
+                .whaleFont(size: 15, weight: .semibold)
+                .foregroundStyle(WhaleTheme.ink)
+            HStack(spacing: 7) {
+                Label(preview.dueText, systemImage: "calendar")
+                Label(preview.project ?? "无项目", systemImage: "square.stack.3d.up")
+                Label(preview.estimatedMinutes.map { "\($0) 分钟" } ?? "时长未定", systemImage: "timer")
+            }
+            .whaleFont(size: 11, weight: .medium)
+            .foregroundStyle(WhaleTheme.muted)
+            HStack(spacing: 8) {
+                Button("取消") {
+                    quickPreview = nil
+                    composerFocused = true
+                }
+                .whaleFont(size: 13, weight: .semibold)
+                .foregroundStyle(WhaleTheme.muted)
+                Spacer()
+                Button {
+                    Task { await confirmQuickPreview(preview) }
+                } label: {
+                    Label("确认添加", systemImage: "checkmark.circle.fill")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.onAccent)
+                        .padding(.horizontal, 13)
+                        .frame(minHeight: 36)
+                        .background(WhaleTheme.auroraGradient, in: Capsule())
+                }
+                .buttonStyle(.plain)
+                .disabled(isSubmitting)
+            }
+        }
+        .padding(12)
+        .background(WhaleTheme.card.opacity(0.94), in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 15, style: .continuous)
+                .strokeBorder(WhaleTheme.accent.opacity(0.22), lineWidth: 0.8)
+        }
     }
 
     private var voiceStrip: some View {
@@ -663,40 +856,74 @@ struct TodoView: View {
         guard !raw.isEmpty, !isSubmitting else { return }
         errorText = nil
         undoAction = nil
-        isSubmitting = true
-
-        Task {
-            do {
-                if let command = TodoQuickCommand.parse(raw) {
+        if let command = TodoQuickCommand.parse(raw) {
+            isSubmitting = true
+            Task {
+                do {
                     let message = try await run(command)
                     draft = ""
                     await reload(silent: true)
                     showToast(message, undo: undoAction != nil)
-                } else {
-                    let parsed = TodoQuickParser.parseAdd(raw)
-                    if let message = parsed.validationError {
-                        throw ToolExecutionError(code: "needs_clarification", message: message)
-                    }
-                    let title = parsed.title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !title.isEmpty else {
-                        throw ToolExecutionError(code: "empty_reminder", message: "写点具体内容再添加。")
-                    }
-                    let item = try await model.createTodoReminder(title: title, dueAt: parsed.dueAt)
-                    draft = ""
-                    filter = .pending
-                    upsert(item)
-                    undoAction = item.deduplicated ? nil : .added(item)
-                    await reload(silent: true)
-                    if let dueAt = parsed.dueAt {
-                        showToast(item.deduplicated ? "已有相同提醒" : "已添加 · \(dueText(dueAt))", undo: !item.deduplicated)
-                    } else {
-                        showToast(item.deduplicated ? "已有相同提醒" : "已添加 · \(item.title)", undo: !item.deduplicated)
-                    }
+                } catch {
+                    errorText = error.localizedDescription
                 }
+                isSubmitting = false
+            }
+            return
+        }
+
+        let parsed = TodoQuickParser.parsePreview(raw)
+        if let rawPreview = TodoQuickParser.parseAdd(raw).validationError {
+            errorText = rawPreview
+            return
+        }
+        guard !parsed.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            errorText = "写点具体内容再添加。"
+            return
+        }
+        quickPreview = parsed
+        composerFocused = false
+    }
+
+    private func confirmQuickPreview(_ preview: TodoQuickPreview) async {
+        guard !isSubmitting else { return }
+        isSubmitting = true
+        defer { isSubmitting = false }
+        do {
+            let item = try await model.createTodoReminder(
+                title: preview.title,
+                dueAt: preview.dueAt,
+                project: preview.project,
+                estimatedMinutes: preview.estimatedMinutes
+            )
+            quickPreview = nil
+            draft = ""
+            board = preview.dueAt == nil ? .inbox : Calendar.current.isDateInToday(preview.dueAt!) ? .today : .planned
+            upsert(item)
+            undoAction = item.deduplicated ? nil : .added(item)
+            await reload(silent: true)
+            showToast(
+                item.deduplicated ? "已有相同提醒" : "已添加 · \(dueText(item.dueAt ?? Date()))",
+                undo: !item.deduplicated
+            )
+        } catch {
+            errorText = error.localizedDescription
+        }
+    }
+
+    private func rescheduleToInbox(_ item: TodoReminder) {
+        guard !busyIds.contains(item.id) else { return }
+        busyIds.insert(item.id)
+        Task {
+            defer { busyIds.remove(item.id) }
+            do {
+                let updated = try await model.rescheduleTodoReminder(item, dueAt: nil)
+                upsert(updated)
+                board = .inbox
+                showToast("已移入收件箱 · \(item.title)")
             } catch {
                 errorText = error.localizedDescription
             }
-            isSubmitting = false
         }
     }
 

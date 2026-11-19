@@ -58,10 +58,22 @@ struct AssistantActivityView: View {
                         .foregroundStyle(WhaleTheme.ink)
                     Spacer(minLength: 0)
                     if model.canStopReply {
-                        Button("停止") { model.stopReply() }
-                            .whaleFont(size: 13, weight: .medium)
-                            .foregroundStyle(WhaleTheme.muted)
-                            .whaleTouchTarget()
+                        Menu {
+                            Button("停止整轮等待", systemImage: "stop.circle", role: .destructive) {
+                                model.stopReply()
+                            }
+                            if let pending = model.pending.first {
+                                Button("跳过当前操作", systemImage: "forward.end.circle") {
+                                    Task { await model.skip(pending) }
+                                }
+                            }
+                        } label: {
+                            Label("处理中", systemImage: "ellipsis.circle")
+                                .whaleFont(size: 13, weight: .medium)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .whaleTouchTarget()
+                        }
+                        .accessibilityLabel("停止或跳过当前步骤")
                     }
                 }
 
@@ -70,6 +82,13 @@ struct AssistantActivityView: View {
                     .foregroundStyle(WhaleTheme.muted)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
+
+                Label(
+                    "意图预览 → 执行 → 结果回执",
+                    systemImage: "checklist.checked"
+                )
+                .whaleFont(size: 12, weight: .medium)
+                .foregroundStyle(WhaleTheme.muted.opacity(0.82))
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
@@ -82,6 +101,53 @@ struct AssistantActivityView: View {
                     .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
             }
             .accessibilityElement(children: .contain)
+        }
+    }
+}
+
+struct InteractionReceiptCard: View {
+    @ObservedObject var model: AppModel
+
+    private var receipt: AgentOperationReceipt? {
+        guard let value = model.operationReceipts.first else { return nil }
+        guard Date().timeIntervalSince(value.createdAt) < 15 * 60 else { return nil }
+        guard [.completed, .failed, .cancelled].contains(value.phase) else { return nil }
+        return value
+    }
+
+    var body: some View {
+        if let receipt {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: receipt.status == "success" ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    .whaleFont(size: 16, weight: .semibold)
+                    .foregroundStyle(receipt.status == "success" ? WhaleTheme.success : WhaleTheme.warm)
+                    .padding(.top, 1)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 7) {
+                        Text("操作回执")
+                            .whaleFont(size: 12, weight: .bold)
+                            .foregroundStyle(WhaleTheme.accent)
+                        Text(receipt.createdAt.formatted(date: .omitted, time: .shortened))
+                            .whaleFont(size: 12)
+                            .foregroundStyle(WhaleTheme.muted)
+                    }
+                    Text(receipt.title)
+                        .whaleFont(size: 14, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Text(receipt.detail)
+                        .whaleFont(size: 13)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(13)
+            .background(WhaleTheme.card.opacity(0.82), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
+            }
+            .accessibilityElement(children: .combine)
         }
     }
 }

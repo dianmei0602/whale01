@@ -69,6 +69,7 @@ struct DiscoverSectionTitle: View {
 
 struct NewsFeatureCard: View {
     let item: NewsItem
+    @ObservedObject private var library = DiscoverReadingLibrary.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -127,11 +128,22 @@ struct NewsFeatureCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8) }
         .whaleSoftElevation()
+        .contextMenu {
+            Button(library.isSaved(item) ? "取消收藏" : "收藏稍后读", systemImage: library.isSaved(item) ? "bookmark.slash" : "bookmark") {
+                library.toggleSaved(item)
+            }
+            if let topic = item.topics?.first ?? item.section {
+                Button("减少「\(topic)」类内容", systemImage: "hand.thumbsdown") {
+                    library.mute(topic: topic)
+                }
+            }
+        }
     }
 }
 
 struct NewsRowCard: View {
     let item: NewsItem
+    @ObservedObject private var library = DiscoverReadingLibrary.shared
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -169,6 +181,16 @@ struct NewsRowCard: View {
         .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
         .whaleSoftElevation()
+        .contextMenu {
+            Button(library.isSaved(item) ? "取消收藏" : "收藏稍后读", systemImage: library.isSaved(item) ? "bookmark.slash" : "bookmark") {
+                library.toggleSaved(item)
+            }
+            if let topic = item.topics?.first ?? item.section {
+                Button("减少「\(topic)」类内容", systemImage: "hand.thumbsdown") {
+                    library.mute(topic: topic)
+                }
+            }
+        }
     }
 
     private var channelIcon: String {
@@ -176,6 +198,56 @@ struct NewsRowCard: View {
         case "ai": return "sparkles"
         case "game": return "gamecontroller.fill"
         default: return "newspaper.fill"
+        }
+    }
+}
+
+struct NewsTopicStrip: View {
+    let clusters: [NewsTopicCluster]
+    let selection: String?
+    let onSelect: (String?) -> Void
+
+    var body: some View {
+        if !clusters.isEmpty {
+            ScrollView(.horizontal) {
+                HStack(spacing: 7) {
+                    Button {
+                        onSelect(nil)
+                    } label: {
+                        Text("全部")
+                            .whaleFont(size: 12, weight: .semibold)
+                            .whaleRaisedPill(selected: selection == nil)
+                    }
+                    .buttonStyle(.plain)
+
+                    ForEach(clusters) { cluster in
+                        Button {
+                            onSelect(selection == cluster.id ? nil : cluster.id)
+                        } label: {
+                            HStack(spacing: 5) {
+                                Text(cluster.title)
+                                Text("\(cluster.count)")
+                                    .whaleFont(size: 10, weight: .bold)
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        (selection == cluster.id ? WhaleTheme.onAccent : WhaleTheme.muted)
+                                            .opacity(0.14),
+                                        in: Capsule()
+                                    )
+                            }
+                            .whaleFont(size: 12, weight: .semibold)
+                            .whaleRaisedPill(selected: selection == cluster.id)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(cluster.title)，\(cluster.count) 条相关资讯")
+                        .accessibilityAddTraits(selection == cluster.id ? .isSelected : [])
+                    }
+                }
+                .padding(.vertical, 1)
+            }
+            .scrollIndicators(.hidden)
+            .accessibilityIdentifier("discover-topic-strip")
         }
     }
 }

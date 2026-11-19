@@ -21,6 +21,13 @@ struct ConversationComposerBar: View {
     @State private var finishingVoice = false
     @State private var draftContext: String?
     @State private var voicePrefix = ""
+    @State private var voiceAnalysis: VoiceDraftAnalysis?
+    @State private var voiceStartedAt: Date?
+    @State private var voiceLocked = false
+    @State private var longPressToken: UUID?
+    @State private var longPressArmed = false
+    @State private var correctingCorrection: VoiceCorrection?
+    @State private var correctionIntended = ""
     @Environment(\.scenePhase) private var scenePhase
     private let drafts = ComposerDraftStore()
 
@@ -34,6 +41,9 @@ struct ConversationComposerBar: View {
             }
             if voice.isRecording {
                 voiceStrip
+            }
+            if !voice.isRecording, let voiceAnalysis {
+                voiceDraftPreview(voiceAnalysis)
             }
             composer
             if model.isBusy && !draft.isEmpty {
@@ -64,6 +74,30 @@ struct ConversationComposerBar: View {
         .onChange(of: voice.transcript) { _, text in
             guard !text.isEmpty else { return }
             draft = voicePrefix.isEmpty ? text : voicePrefix + "\n" + text
+        }
+        .onChange(of: voice.isRecording) { wasRecording, isRecording in
+            if isRecording {
+                voiceStartedAt = Date()
+                voiceLocked = false
+                model.setVoiceInteractionPhase(recording: true)
+            } else if wasRecording {
+                model.setVoiceInteractionPhase(recording: false)
+            }
+        }
+        .onChange(of: voice.finalResult) { _, result in
+            guard let result, voice.errorText == nil else { return }
+            let raw = voicePrefix.isEmpty ? result.text : voicePrefix + "\n" + result.text
+            let analysis = VoiceDraftAnalyzer.analyze(
+                raw,
+                engine: voice.engineName,
+                elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
+                confidence: voice.confidence
+            )
+            voiceAnalysis = analysis
+            draft = analysis.correctedText
+            voicePrefix = ""
+            model.setVoiceInteractionPhase(recording: false, editable: true)
+            focused = true
         }
         .onChange(of: focused) { _, value in
             externalFocused = value
@@ -99,6 +133,18 @@ struct ConversationComposerBar: View {
             if let context = draftContext { drafts.save(draft, context: context) }
             externalFocused = false
             voice.cancel()
+        }
+        .alert("修正识别词", isPresented: Binding(
+            get: { correctingCorrection != nil },
+            set: { if !$0 { correctingCorrection = nil } }
+        )) {
+            TextField("以后识别成", text: $correctionIntended)
+            Button("取消", role: .cancel) { correctingCorrection = nil }
+            Button("记住修正") { saveVoiceCorrection() }
+        } message: {
+            if let correction = correctingCorrection {
+                Text("原听写：\(correction.original)。修正会保存到本机个人词库，只在语音草稿中替换。")
+            }
         }
     }
 
@@ -144,6 +190,7 @@ struct ConversationComposerBar: View {
                 .accessibilityIdentifier("assistant-composer")
 
             if focused {
+                micButton
                 Button {
                     focused = false
                 } label: {
@@ -156,21 +203,7 @@ struct ConversationComposerBar: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("收起键盘")
             } else {
-                Button {
-                    focused = false
-                    if !voice.isRecording { voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    Task { await voice.toggle() }
-                } label: {
-                    Image(systemName: voice.isRecording ? "waveform" : "mic")
-                        .whaleFont(size: 19, weight: .medium)
-                        .foregroundStyle(voice.isRecording ? WhaleTheme.danger : WhaleTheme.ink)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(model.isBusy || voice.isFinalizing || finishingVoice)
-                .opacity(model.isBusy ? 0.4 : 1)
-                .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音输入")
+                micButton
             }
 
             Button(action: submit) {
@@ -198,6 +231,51 @@ struct ConversationComposerBar: View {
                 .shadow(color: .black.opacity(0.06), radius: 8, y: 3)
         }
         .animation(.easeInOut(duration: 0.16), value: focused)
+    }
+
+    private var micButton: some View {
+        Button {
+            focused = false
+            if !voice.isRecording {
+                voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+                voiceAnalysis = nil
+            }
+            Task { await voice.toggle() }
+        } label: {
+            Image(systemName: voice.isRecording ? "waveform" : "mic")
+                .whaleFont(size: 19, weight: .medium)
+                .foregroundStyle(voice.isRecording ? WhaleTheme.danger : WhaleTheme.ink)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(model.isBusy || voice.isFinalizing || finishingVoice)
+        .opacity(model.isBusy ? 0.4 : 1)
+        .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音输入")
+        .accessibilityHint("轻点开始，按住说话；录音中上滑锁定，左滑取消")
+        .onLongPressGesture(minimumDuration: .infinity, maximumDistance: 48, pressing: { pressing in
+            if pressing {
+                guard !voice.isRecording else { return }
+                let token = UUID()
+                longPressToken = token
+                longPressArmed = false
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 380_000_000)
+                    guard !Task.isCancelled, longPressToken == token else { return }
+                    longPressArmed = true
+                    voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+                    voiceAnalysis = nil
+                    focused = false
+                    await voice.start()
+                }
+            } else {
+                longPressToken = nil
+                if longPressArmed {
+                    longPressArmed = false
+                    if voice.isRecording { voice.stop() }
+                }
+            }
+        }, perform: {})
     }
 
     private func notice(_ text: String) -> some View {
@@ -241,6 +319,123 @@ struct ConversationComposerBar: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .strokeBorder(WhaleTheme.danger.opacity(0.24), lineWidth: 0.7)
         }
+        .overlay(alignment: .bottomLeading) {
+            Text(voiceLocked ? "已锁定 · 轻点麦克风结束" : "上滑锁定 · 左滑取消")
+                .whaleFont(size: 11, weight: .medium)
+                .foregroundStyle(WhaleTheme.muted)
+                .padding(.leading, 29)
+                .padding(.bottom, 2)
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 14)
+                .onEnded { value in
+                    if value.translation.width < -56 {
+                        voice.cancel()
+                        voiceAnalysis = nil
+                        draft = voicePrefix.isEmpty ? "" : voicePrefix
+                        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                    } else if value.translation.height < -48 {
+                        voiceLocked = true
+                        UISelectionFeedbackGenerator().selectionChanged()
+                    }
+                }
+        )
+    }
+
+    private func voiceDraftPreview(_ analysis: VoiceDraftAnalysis) -> some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(spacing: 7) {
+                Image(systemName: "waveform.badge.checkmark")
+                    .foregroundStyle(WhaleTheme.accent)
+                Text("语音草稿")
+                    .whaleFont(size: 13, weight: .bold)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer()
+                Text("先检查，再发送")
+                    .whaleFont(size: 11, weight: .medium)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+
+            HStack(spacing: 6) {
+                ForEach(analysis.diagnostics) { diagnostic in
+                    Label(diagnostic.value, systemImage: icon(for: diagnostic.id))
+                        .whaleFont(size: 11, weight: .medium)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 4)
+                        .background(WhaleTheme.soft, in: Capsule())
+                }
+                Spacer(minLength: 0)
+            }
+
+            if !analysis.corrections.isEmpty {
+                VStack(alignment: .leading, spacing: 5) {
+                    ForEach(analysis.corrections) { correction in
+                        Button {
+                            correctingCorrection = correction
+                            correctionIntended = correction.replacement
+                        } label: {
+                            HStack(spacing: 5) {
+                            Image(systemName: "text.badge.checkmark")
+                                .foregroundStyle(WhaleTheme.accent)
+                            Text("\(correction.original) → \(correction.replacement)")
+                                .whaleFont(size: 12, weight: .medium)
+                                .foregroundStyle(WhaleTheme.ink)
+                            Text(correction.reason)
+                                .whaleFont(size: 11)
+                                .foregroundStyle(WhaleTheme.muted)
+                                Spacer(minLength: 0)
+                                Image(systemName: "pencil")
+                                    .foregroundStyle(WhaleTheme.accent)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("修正 \(correction.original)，当前识别为 \(correction.replacement)")
+                    }
+                }
+                .padding(8)
+                .background(WhaleTheme.accentSoft.opacity(0.7), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            }
+
+            if analysis.intents.count > 1 {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("识别到 \(analysis.intents.count) 个意图")
+                        .whaleFont(size: 12, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.muted)
+                    ForEach(Array(analysis.intents.enumerated()), id: \.offset) { index, intent in
+                        Text("\(index + 1). \(intent)")
+                            .whaleFont(size: 12)
+                            .foregroundStyle(WhaleTheme.ink)
+                            .lineLimit(2)
+                    }
+                }
+            }
+
+            HStack(spacing: 14) {
+                Button("继续编辑") { focused = true }
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.accent)
+                Spacer()
+                Button {
+                    submit()
+                } label: {
+                    Label("发送", systemImage: "arrow.up.circle.fill")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.onAccent)
+                        .padding(.horizontal, 13)
+                        .frame(minHeight: 36)
+                        .background(WhaleTheme.auroraGradient, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(12)
+        .background(WhaleTheme.card.opacity(0.92), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .strokeBorder(WhaleTheme.accent.opacity(0.22), lineWidth: 0.8)
+        }
+        .accessibilityElement(children: .contain)
     }
 
     private func submit() {
@@ -256,10 +451,17 @@ struct ConversationComposerBar: View {
                 }
                 focused = false
                 let composed = voicePrefix.isEmpty ? final : voicePrefix + "\n" + final
-                draft = composed
+                let analysis = VoiceDraftAnalyzer.analyze(
+                    composed,
+                    engine: voice.engineName,
+                    elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
+                    confidence: voice.confidence
+                )
+                voiceAnalysis = analysis
+                draft = analysis.correctedText
                 voicePrefix = ""
+                model.setVoiceInteractionPhase(recording: false, editable: true)
                 finishingVoice = false
-                await sendDraft(composed, original: composed, context: draftContext)
             }
         } else {
             let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -272,6 +474,8 @@ struct ConversationComposerBar: View {
     }
 
     private func sendDraft(_ text: String, original: String, context: String?) async {
+        model.setVoiceInteractionPhase(recording: false)
+        voiceAnalysis = nil
         await model.send(text: text, onAccepted: {
             // Clear only after the message is accepted into persistent history.
             // Preflight rejection and newer edits must keep their draft intact.
@@ -279,6 +483,35 @@ struct ConversationComposerBar: View {
             draft = ""
             if let context { drafts.save("", context: context) }
         })
+    }
+
+    private func icon(for diagnosticID: String) -> String {
+        switch diagnosticID {
+        case "engine": return "waveform"
+        case "elapsed": return "timer"
+        case "intents": return "list.number"
+        case "confidence": return "waveform.badge.magnifyingglass"
+        default: return "textformat.size"
+        }
+    }
+
+    private func saveVoiceCorrection() {
+        guard let correction = correctingCorrection,
+              let analysis = voiceAnalysis else { return }
+        PersonalLanguageStore.shared.set(
+            spoken: correction.original,
+            intended: correctionIntended
+        )
+        let updated = VoiceDraftAnalyzer.analyze(
+            analysis.rawText,
+            engine: voice.engineName,
+            elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
+            confidence: voice.confidence
+        )
+        voiceAnalysis = updated
+        draft = updated.correctedText
+        correctingCorrection = nil
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     private func ingestPhoto() async {

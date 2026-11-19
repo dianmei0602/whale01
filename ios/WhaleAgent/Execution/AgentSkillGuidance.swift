@@ -3,7 +3,7 @@ import Foundation
 enum AgentSkillGuidance {
     static func rules(for skills: [AgentSkill]) -> String {
         let selected = skills.isEmpty ? [.general] : skills
-        return selected.map { skill in
+        let legacy = selected.map { skill in
             switch skill {
             case .general:
                 return "通用：稳定知识可直接回答；需要当前数据、外部核实或操作设备时使用工具。"
@@ -39,5 +39,7 @@ enum AgentSkillGuidance {
                 return "娱乐：推荐应解释选择理由，明确基于已读取的真实资料或用户偏好，不编造榜单、价格和库存。"
             }
         }.joined(separator: "\n")
+        let manifest = AgentSkillManifestStore.guidance(for: selected)
+        return manifest.isEmpty ? legacy : legacy + "\n" + manifest
     }
 }

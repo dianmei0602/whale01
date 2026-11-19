@@ -296,7 +296,9 @@ struct ChatView: View {
 struct MessageRow: View {
     let message: ChatMessage
     var isSpeaking: Bool = false
+    var isHighlighted: Bool = false
     var onToggleSpeech: () -> Void = {}
+    var onCreateTodo: ((String) -> Void)? = nil
 
     var body: some View {
         Group {
@@ -402,6 +404,15 @@ struct MessageRow: View {
                 }
             }
         }
+        .overlay {
+            if isHighlighted {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(WhaleTheme.accent, lineWidth: 2)
+                    .padding(-5)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isHighlighted)
         .contextMenu {
             Button {
                 UIPasteboard.general.string = message.text
@@ -412,6 +423,13 @@ struct MessageRow: View {
                 Button(action: onToggleSpeech) {
                     Label(isSpeaking ? "停止朗读" : "朗读这条回复",
                           systemImage: isSpeaking ? "stop.circle" : "speaker.wave.2")
+                }
+                if let onCreateTodo {
+                    Button {
+                        onCreateTodo(message.text)
+                    } label: {
+                        Label("转为待办", systemImage: "checklist")
+                    }
                 }
             }
         }

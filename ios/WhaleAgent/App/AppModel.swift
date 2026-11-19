@@ -117,6 +117,9 @@ final class AppModel: ObservableObject {
     @Published private(set) var canStopReply = false
     @Published private(set) var speakingMessageId: String?
     @Published private(set) var speakingContentId: String?
+    @Published private(set) var interactionPhase: AgentInteractionPhase = .idle
+    @Published private(set) var operationReceipts: [AgentOperationReceipt] = []
+    @Published private(set) var highlightedMessageId: String?
     @Published var voiceReplyEnabled: Bool
 
     let permissions = PermissionCenter()
@@ -160,6 +163,7 @@ final class AppModel: ObservableObject {
         router = NativeToolRouter(permissions: permissions)
         messages = ChatHistoryStore.load()
         memories = MemoryStore.shared.list()
+        operationReceipts = AgentInteractionJournal.shared.list()
         permissionsSnapshot = permissions.snapshot()
         UserDefaults.standard.set(composerContextID, forKey: "whale.composer.context")
         composerObserver = NotificationCenter.default.publisher(for: .whaleComposerFinished)
@@ -219,6 +223,20 @@ final class AppModel: ObservableObject {
         recentActions = await OperationLedger.shared.listActions()
     }
 
+    func reloadOperationReceipts() {
+        operationReceipts = AgentInteractionJournal.shared.list()
+    }
+
+    func setVoiceInteractionPhase(recording: Bool, editable: Bool = false) {
+        if recording {
+            interactionPhase = .listening
+        } else if editable {
+            interactionPhase = .editable
+        } else if interactionPhase == .listening || interactionPhase == .editable {
+            interactionPhase = .idle
+        }
+    }
+
     func reloadTaskRecords() async {
         taskRecords = await TaskRecordStore.shared.list()
     }
@@ -233,7 +251,19 @@ final class AppModel: ObservableObject {
     }
 
     func consumeMessageFocus() {
+        let messageId = requestedMessageId
         requestedMessageId = nil
+        guard let messageId else { return }
+        settleMessageFocus(messageId)
+    }
+
+    func settleMessageFocus(_ messageId: String) {
+        highlightedMessageId = messageId
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 3_500_000_000)
+            guard self?.highlightedMessageId == messageId else { return }
+            self?.highlightedMessageId = nil
+        }
     }
 
     static func messageId(for record: TaskRecord, messages: [ChatMessage]) -> String? {
@@ -464,8 +494,14 @@ final class AppModel: ObservableObject {
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, !isBusy else { return }
         isBusy = true
+        interactionPhase = .understanding
         activityText = "正在核对任务状态"
-        defer { isBusy = false }
+        defer {
+            isBusy = false
+            if interactionPhase == .understanding || interactionPhase == .executing {
+                interactionPhase = .idle
+            }
+        }
         if agentMode == "cloud" {
             if !backendOnline || backendExecutionMode == "unknown" {
                 await health()
@@ -542,6 +578,18 @@ final class AppModel: ObservableObject {
         networkRequest?.cancel()
         canStopReply = false
         speech.stop()
+        interactionPhase = .cancelled
+        appendReceipt(
+            AgentOperationReceipt(
+                id: UUID().uuidString,
+                title: "已停止等待",
+                detail: "对话和草稿已保留；系统里已经完成的操作不会撤销。",
+                status: "cancelled",
+                phase: .cancelled,
+                tool: nil,
+                createdAt: Date()
+            )
+        )
     }
 
     private func requestAgent(_ operation: @escaping @Sendable () async throws -> AgentTurnResponse) async throws -> AgentTurnResponse {
@@ -778,6 +826,8 @@ final class AppModel: ObservableObject {
         currentGoal = nil
         currentSourceMessageId = nil
         requestedMessageId = nil
+        highlightedMessageId = nil
+        interactionPhase = .idle
         lastFailedInput = nil
         composerContextID = UUID().uuidString
         UserDefaults.standard.set(composerContextID, forKey: "whale.composer.context")
@@ -892,7 +942,12 @@ final class AppModel: ObservableObject {
         return rows.compactMap(TodoReminder.init(json:))
     }
 
-    func createTodoReminder(title: String, dueAt: Date?) async throws -> TodoReminder {
+    func createTodoReminder(
+        title: String,
+        dueAt: Date?,
+        project: String? = nil,
+        estimatedMinutes: Int? = nil
+    ) async throws -> TodoReminder {
         let cleanedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !cleanedTitle.isEmpty else {
             throw ToolExecutionError(code: "empty_reminder", message: "写点具体内容再添加。")
@@ -910,6 +965,15 @@ final class AppModel: ObservableObject {
         guard let item = TodoReminder(json: data) else {
             throw ToolExecutionError(code: "reminder_decode_failed", message: "提醒已写入，但返回内容无法读取，请下拉刷新确认。")
         }
+        TodoMetadataStore.shared.set(
+            TodoMetadata(
+                project: project?.trimmingCharacters(in: .whitespacesAndNewlines),
+                priority: 2,
+                estimatedMinutes: estimatedMinutes,
+                source: "local"
+            ),
+            for: item.id
+        )
         return item
     }
 
@@ -923,6 +987,29 @@ final class AppModel: ObservableObject {
 
     func deleteTodoReminder(_ item: TodoReminder) async throws {
         _ = try await router.deleteReminder(recordId: item.id)
+        TodoMetadataStore.shared.remove(item.id)
+    }
+
+    func rescheduleTodoReminder(_ item: TodoReminder, dueAt: Date?) async throws -> TodoReminder {
+        let data = try await router.updateReminder(
+            recordId: item.id,
+            dueAt: dueAt,
+            clearDueAt: dueAt == nil
+        )
+        guard let updated = TodoReminder(json: data) else {
+            throw ToolExecutionError(code: "reminder_decode_failed", message: "时间已更新，但返回内容无法读取，请下拉刷新确认。")
+        }
+        return updated
+    }
+
+    func updateTodoMetadata(_ item: TodoReminder, project: String? = nil, priority: Int? = nil) {
+        var metadata = TodoMetadataStore.shared.metadata(for: item.id)
+        if let project {
+            let cleaned = project.trimmingCharacters(in: .whitespacesAndNewlines)
+            metadata.project = cleaned.isEmpty ? nil : cleaned
+        }
+        if let priority { metadata.priority = min(3, max(1, priority)) }
+        TodoMetadataStore.shared.set(metadata, for: item.id)
     }
 
     func requestMusicAccess() async {
@@ -1108,23 +1195,29 @@ final class AppModel: ObservableObject {
         persistActiveTurn()
         switch response.status {
         case "awaiting_tool_results":
+            interactionPhase = .executing
             pending = response.pending
             results = [:]
             autoStarted = []
             await startAutomaticTools()
         case "awaiting_confirmation":
+            interactionPhase = .awaitingConfirmation
             pending = response.pending
             results = [:]
             autoStarted = []
             await startAutomaticTools()
             presentNextConfirmation()
         case "completed", "completed_with_limits", "failed", "cancelled", "superseded":
+            interactionPhase = response.status == "failed"
+                ? .failed
+                : response.status == "cancelled" ? .cancelled : .completed
             pending = []
             results = [:]
             autoStarted = []
             presentedConfirmation = nil
             clearActiveTurn()
         case "interrupted":
+            interactionPhase = .cancelled
             pending = []
             results = [:]
             autoStarted = []
@@ -1192,6 +1285,7 @@ final class AppModel: ObservableObject {
 
     private func executeAndCollect(_ item: PendingTool) async {
         guard results[item.toolCallId] == nil else { return }
+        interactionPhase = .executing
         isExecutingTool = true
         executingToolName = item.tool
         let startedAt = Date()
@@ -1212,6 +1306,22 @@ final class AppModel: ObservableObject {
         }
         let links = ToolResultLinks.extract(tool: item.tool, data: result.data)
         let weather = item.tool == "get_weather" ? WeatherDaySummary.list(from: result.data) : []
+        appendReceipt(
+            AgentOperationReceipt(
+                id: item.operationId + "-" + result.status,
+                title: ToolPresentation.resultTitle(tool: item.tool, status: result.status),
+                detail: ToolPresentation.resultDetail(
+                    tool: item.tool,
+                    status: result.status,
+                    data: result.data,
+                    error: result.error
+                ),
+                status: result.status,
+                phase: result.status == "success" ? .completed : .failed,
+                tool: item.tool,
+                createdAt: Date()
+            )
+        )
         appendMessage(
             ChatMessage(
                 role: .tool,
@@ -1294,6 +1404,7 @@ final class AppModel: ObservableObject {
 
     private func fail(_ error: Error) {
         speakReplyForActiveTurn = false
+        interactionPhase = .failed
         let message: String
         if case AgentClientError.http(401, _) = error {
             message = "云后端拒绝请求，请检查开发设置中的云后端地址与构建令牌。"
@@ -1310,6 +1421,17 @@ final class AppModel: ObservableObject {
         }
         errorText = message
         appendMessage(ChatMessage(role: .assistant, text: "本轮没有完成：\(message)"))
+        appendReceipt(
+            AgentOperationReceipt(
+                id: UUID().uuidString,
+                title: "本轮没有完成",
+                detail: message,
+                status: "failed",
+                phase: .failed,
+                tool: nil,
+                createdAt: Date()
+            )
+        )
         Task { await markActiveTaskFailed(message) }
         backendOnline = agentMode == "cloud" ? false : LocalAgentConfig.isConfigured
     }
@@ -1344,6 +1466,11 @@ final class AppModel: ObservableObject {
 
     private var defersToDevice: Bool {
         backendExecutionMode == "ios" || backendExecutionMode == "device"
+    }
+
+    private func appendReceipt(_ receipt: AgentOperationReceipt) {
+        AgentInteractionJournal.shared.append(receipt)
+        reloadOperationReceipts()
     }
 
     private static func migrateDirectModeIfNeeded() {

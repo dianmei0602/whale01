@@ -9,10 +9,13 @@ import SwiftUI
 @MainActor
 final class HomeDigestModel: ObservableObject {
     @Published private(set) var lines: [DiscoverChannel: [String]] = [:]
+    @Published private(set) var insight: HomeDigestInsight?
 
     private let models: [DiscoverChannel: DiscoverModel]
     private var cancellables = Set<AnyCancellable>()
     private var lastPrime: Date = .distantPast
+    private var briefingTask: Task<Void, Never>?
+    private var briefingSignature = ""
 
     init(models: [DiscoverChannel: DiscoverModel]? = nil) {
         let resolved = models ?? DiscoverChannelStore.shared.models
@@ -43,6 +46,11 @@ final class HomeDigestModel: ObservableObject {
         }
     }
 
+    func hideInsight() {
+        briefingTask?.cancel()
+        insight = nil
+    }
+
     private func rebuild() {
         var next: [DiscoverChannel: [String]] = [:]
         if let items = models[.ai]?.newsItems, !items.isEmpty {
@@ -62,6 +70,40 @@ final class HomeDigestModel: ObservableObject {
             next[.weibo] = Self.hotLines(items)
         }
         lines = next
+        scheduleBriefing(from: next)
+    }
+
+    private func scheduleBriefing(from values: [DiscoverChannel: [String]]) {
+        let signals = DiscoverChannel.allCases.flatMap { channel in
+            (values[channel] ?? []).prefix(2).map { "\(channel.title)：\($0)" }
+        }
+        let signature = signals.joined(separator: "|")
+        guard !signals.isEmpty, signature != briefingSignature else { return }
+        briefingSignature = signature
+        briefingTask?.cancel()
+        briefingTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 650_000_000)
+            guard !Task.isCancelled, let self else { return }
+            let generated = await HomeDigestModel.makeInsight(signals: signals)
+            guard !Task.isCancelled else { return }
+            self.insight = generated
+        }
+    }
+
+    private static func makeInsight(signals: [String]) async -> HomeDigestInsight {
+        if let summary = await AgentReasoningClient().briefing(signals: signals) {
+            return HomeDigestInsight(
+                summary: summary,
+                sourceLabel: "DeepSeek · 基于已取得来源",
+                usedModel: true
+            )
+        }
+        let first = signals.first ?? "暂时没有取到新的来源"
+        return HomeDigestInsight(
+            summary: String(first.prefix(72)),
+            sourceLabel: "本地摘要 · 未调用模型",
+            usedModel: false
+        )
     }
 
     static func newsLines(_ items: [NewsItem], limit: Int = 4) -> [String] {
@@ -92,6 +134,12 @@ final class HomeDigestModel: ObservableObject {
         if name.contains("科创") { return "科创50" }
         return name.replacingOccurrences(of: "指数", with: "")
     }
+}
+
+struct HomeDigestInsight: Equatable {
+    let summary: String
+    let sourceLabel: String
+    let usedModel: Bool
 }
 
 /// One-line ticker: the newest summary slides in from below while the previous

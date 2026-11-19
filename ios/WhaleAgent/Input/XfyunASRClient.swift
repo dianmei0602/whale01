@@ -31,6 +31,7 @@ final class XfyunASRClient {
 
     private struct XFCandidate: Decodable {
         let w: String?
+        let sc: Double?
     }
 
     private let config: XfyunConfig
@@ -39,12 +40,14 @@ final class XfyunASRClient {
     private var socket: URLSessionWebSocketTask?
     private var converter: AVAudioConverter?
     private var segments: [Int: String] = [:]
+    private var confidenceScores: [Int: [Double]] = [:]
     private var audioLease: UUID?
     private var isRunning = false
     private var stopping = false
     private var stopTimeout: Task<Void, Never>?
 
     var onPartial: ((String) -> Void)?
+    var onConfidence: ((Double) -> Void)?
     var onFinal: ((String) -> Void)?
     var onError: ((String) -> Void)?
 
@@ -57,9 +60,16 @@ final class XfyunASRClient {
         segments.keys.sorted().compactMap { segments[$0] }.joined()
     }
 
+    private var currentConfidence: Double? {
+        let values = confidenceScores.keys.sorted().flatMap { confidenceScores[$0] ?? [] }
+        guard !values.isEmpty else { return nil }
+        return values.reduce(0, +) / Double(values.count)
+    }
+
     func start() throws {
         guard !isRunning else { return }
         segments = [:]
+        confidenceScores = []
         stopping = false
 
         audioLease = try AudioSessionCoordinator.shared.acquire(.recording) { [weak self] in
@@ -186,6 +196,9 @@ final class XfyunASRClient {
         if let result = response.data?.result {
             apply(result)
             onPartial?(currentText)
+            if let confidence = currentConfidence {
+                onConfidence?(confidence)
+            }
         }
 
         if response.data?.status == 2 {
@@ -210,6 +223,12 @@ final class XfyunASRClient {
             }
         }
         segments[sn] = chunk
+        if let scores = result.ws?.compactMap({ word in
+            word.cw?.first?.sc
+        }), !scores.isEmpty {
+            confidenceScores.removeValue(forKey: sn)
+            confidenceScores[sn] = scores
+        }
     }
 
     private func finish(final: Bool) {

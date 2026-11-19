@@ -17,6 +17,7 @@ final class VoiceInputController: ObservableObject {
 
     @Published private(set) var isRecording = false
     @Published private(set) var transcript = ""
+    @Published private(set) var confidence: Double?
     @Published private(set) var errorText: String?
     @Published private(set) var permission: PermissionState = .unknown
     struct FinalResult: Equatable { let sessionId: UUID; let text: String }
@@ -51,6 +52,7 @@ final class VoiceInputController: ObservableObject {
         NotificationCenter.default.post(name: .whaleInterruptSpeech, object: nil)
         errorText = nil
         transcript = ""
+        confidence = nil
         finalResult = nil
 
         if XfyunConfig.isConfigured {
@@ -182,6 +184,7 @@ final class VoiceInputController: ObservableObject {
     func reset() {
         cancel()
         transcript = ""
+        confidence = nil
         errorText = nil
         finalResult = nil
     }
@@ -204,6 +207,10 @@ final class VoiceInputController: ObservableObject {
         client.onPartial = { [weak self] text in
             guard self?.sessionId == token else { return }
             self?.transcript = text
+        }
+        client.onConfidence = { [weak self] value in
+            guard self?.sessionId == token else { return }
+            self?.confidence = value
         }
         client.onFinal = { [weak self] text in
             guard let self, self.sessionId == token else { return }
@@ -228,6 +235,10 @@ final class VoiceInputController: ObservableObject {
         if let result {
             let text = result.bestTranscription.formattedString
             if !text.isEmpty { transcript = text }
+            let scores = result.bestTranscription.segments.map(\.confidence)
+            if !scores.isEmpty {
+                confidence = Double(scores.reduce(0, +)) / Double(scores.count)
+            }
             if result.isFinal { complete(text); return }
         }
         if let error {

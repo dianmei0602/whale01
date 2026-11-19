@@ -21,6 +21,7 @@ struct WhaleHomeCanvas: View {
     @State private var weatherFetchedAt: Date?
     @AppStorage("whale.home.showQuote") private var showQuote = true
     @State private var quoteExpanded = false
+    @State private var briefingExpanded = false
     @State private var showWeatherDetail = false
     @State private var homeTodos: [TodoReminder] = []
     @StateObject private var digest = HomeDigestModel()
@@ -41,6 +42,8 @@ struct WhaleHomeCanvas: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 if showQuote { dailyQuote }
+                assistantCommandCenter
+                insightCard
                 todayCard
                 categoryGrid
             }.frame(maxWidth: .infinity, alignment: .leading)
@@ -61,6 +64,137 @@ struct WhaleHomeCanvas: View {
                         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { showWeatherDetail = false } } }
                 }
             }
+    }
+
+    private var assistantCommandCenter: some View {
+        let items = AssistantCommandPlanner.items(
+            now: Date(),
+            events: model.upcomingEvents,
+            todos: homeTodos,
+            records: model.taskRecords,
+            pendingConfirmation: model.presentedConfirmation
+        )
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("今天，鲸鱼接住了这些")
+                    .whaleFont(size: 17, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer()
+                Text(model.interactionPhase.title)
+                    .whaleFont(size: 11, weight: .semibold)
+                    .foregroundStyle(model.interactionPhase.isActive ? WhaleTheme.accent : WhaleTheme.muted)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(WhaleTheme.accentSoft, in: Capsule())
+            }
+            ForEach(items) { item in
+                Button {
+                    switch item.kind {
+                    case .next: onOpenTodo()
+                    case .needsYou, .resume: onOpenRecords()
+                    }
+                } label: {
+                    HStack(alignment: .top, spacing: 11) {
+                        Image(systemName: commandIcon(item.kind))
+                            .whaleFont(size: 15, weight: .semibold)
+                            .foregroundStyle(item.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+                            .frame(width: 30, height: 30)
+                            .background(
+                                (item.isWarning ? WhaleTheme.warm : WhaleTheme.accent).opacity(0.10),
+                                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            )
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(commandLabel(item.kind))
+                                .whaleFont(size: 11, weight: .bold)
+                                .foregroundStyle(WhaleTheme.muted)
+                            Text(item.title)
+                                .whaleFont(size: 14, weight: .semibold)
+                                .foregroundStyle(WhaleTheme.ink)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                            Text(item.detail)
+                                .whaleFont(size: 12)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .lineLimit(2)
+                                .multilineTextAlignment(.leading)
+                        }
+                        Spacer(minLength: 3)
+                        Image(systemName: "chevron.right")
+                            .whaleFont(size: 12, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.muted.opacity(0.6))
+                            .padding(.top, 5)
+                    }
+                    .contentShape(Rectangle())
+                    .padding(.vertical, 7)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(commandLabel(item.kind))，\(item.title)，\(item.detail)")
+                if item.id != items.last?.id {
+                    Divider().overlay(WhaleTheme.line.opacity(0.55))
+                }
+            }
+        }
+        .whaleCard(padding: 15)
+        .accessibilityIdentifier("home-command-center")
+    }
+
+    @ViewBuilder
+    private var insightCard: some View {
+        if let insight = digest.insight {
+            Button {
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) {
+                    briefingExpanded.toggle()
+                }
+            } label: {
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(spacing: 7) {
+                        Image(systemName: insight.usedModel ? "sparkles" : "text.line.first.and.arrowtriangle.forward")
+                            .foregroundStyle(WhaleTheme.accent)
+                        Text("今日判断")
+                            .whaleFont(size: 13, weight: .bold)
+                            .foregroundStyle(WhaleTheme.ink)
+                        Spacer()
+                        Text(insight.sourceLabel)
+                            .whaleFont(size: 10, weight: .medium)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .lineLimit(1)
+                    }
+                    Text(insight.summary)
+                        .whaleFont(size: 15, weight: .medium)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineSpacing(3)
+                        .lineLimit(briefingExpanded || textSize.isAccessibilitySize ? nil : 2)
+                        .multilineTextAlignment(.leading)
+                    Text("只综合本次已取得的标题与摘要，不补充外部事实")
+                        .whaleFont(size: 11)
+                        .foregroundStyle(WhaleTheme.muted.opacity(0.82))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .whaleCard(padding: 14)
+            }
+            .buttonStyle(.whalePress)
+            .contextMenu {
+                Button("隐藏今日判断", systemImage: "eye.slash") {
+                    digest.hideInsight()
+                }
+            }
+        }
+    }
+
+    private func commandIcon(_ kind: AssistantCommandItem.Kind) -> String {
+        switch kind {
+        case .next: return "arrow.right.circle"
+        case .needsYou: return "hand.raised"
+        case .resume: return "arrow.uturn.forward.circle"
+        }
+    }
+
+    private func commandLabel(_ kind: AssistantCommandItem.Kind) -> String {
+        switch kind {
+        case .next: return "接下来"
+        case .needsYou: return "需要你"
+        case .resume: return "继续"
+        }
     }
 
     private var categoryGrid: some View {

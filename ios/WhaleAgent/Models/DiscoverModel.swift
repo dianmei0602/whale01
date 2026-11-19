@@ -141,6 +141,7 @@ final class DiscoverModel: ObservableObject {
         newsItems.filter { item in
             // 旧缓存可能残留英文标题或只有标题的条目，展示层再兜底一次。
             guard item.displaySummary.count >= 10 else { return false }
+            guard item.topicIDs.isDisjoint(with: DiscoverReadingLibrary.shared.mutedTopics) else { return false }
             return item.displayTitle.unicodeScalars.contains { scalar in
                 (0x4E00...0x9FFF).contains(Int(scalar.value))
             }
@@ -148,12 +149,15 @@ final class DiscoverModel: ObservableObject {
     }
 
     var headlineNews: [NewsItem] {
-        newsItems
+        newsItems.filter {
+            $0.topicIDs.isDisjoint(with: DiscoverReadingLibrary.shared.mutedTopics)
+        }
     }
 
     var gameNews: [NewsItem] {
         newsItems.filter { item in
-            item.displayTitle.unicodeScalars.contains { scalar in
+            guard item.topicIDs.isDisjoint(with: DiscoverReadingLibrary.shared.mutedTopics) else { return false }
+            return item.displayTitle.unicodeScalars.contains { scalar in
                 (0x4E00...0x9FFF).contains(Int(scalar.value))
             }
         }

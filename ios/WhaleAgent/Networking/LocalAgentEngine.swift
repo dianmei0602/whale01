@@ -655,6 +655,11 @@ actor LocalAgentEngine: AgentTransport {
         let memoryText = MemoryStore.shared.snapshotText(matching: requestText)
         let episodicMemory = AgentMemoryStore.shared.snapshotText(matching: requestText)
         let planText = analysis?.promptText ?? "本轮没有单独规划；先理解问题，再决定直接回答或使用工具。"
+        let languageHints = PersonalLanguageStore.shared.terms()
+            .sorted { $0.key < $1.key }
+            .prefix(30)
+            .map { "- 用户可能把“\($0.key)”指为“\($0.value)”" }
+            .joined(separator: "\n")
 
         return """
         \(baseline)
@@ -671,6 +676,8 @@ actor LocalAgentEngine: AgentTransport {
 
         ## 本轮理解与建议计划
         \(planText)
+        - 一句语音里可能有多个连贯意图；按依赖执行，不要只处理最后一个动词。
+        - 听写纠错只用于理解，不能未经用户确认就改写成长期偏好。
 
         ## 当前相关技能规则
         \(skills)
@@ -685,6 +692,10 @@ actor LocalAgentEngine: AgentTransport {
 
         ## 当前授权状态
         \(permissionText.isEmpty ? "尚未读取" : permissionText)
+
+        ## 本机语音词库
+        \(languageHints.isEmpty ? "暂无个人词条" : languageHints)
+        - 词条只帮助理解用户当前请求，不代表长期操作授权。
 
         ## 用户明确保存的偏好
         \(memoryText)

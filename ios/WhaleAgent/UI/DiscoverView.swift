@@ -8,7 +8,9 @@ struct DiscoverView: View {
     @State private var path = NavigationPath()
     @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
+    @ObservedObject private var library = DiscoverReadingLibrary.shared
     @GestureState private var channelDrag: CGFloat = 0
+    @State private var showLibrary = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
@@ -107,6 +109,9 @@ struct DiscoverView: View {
                 }
             }
         }
+        .sheet(isPresented: $showLibrary) {
+            DiscoverLibraryView(library: library)
+        }
     }
 
     /// Swiping inside a channel steps to the neighbouring channel; past the
@@ -129,10 +134,7 @@ struct DiscoverView: View {
         let all = DiscoverChannel.allCases
         guard let index = all.firstIndex(of: selection) else { return }
         let next = index + delta
-        guard all.indices.contains(next) else {
-            onSwitchTab(delta > 0 ? .records : .conversation)
-            return
-        }
+        guard all.indices.contains(next) else { return }
         slideFrom = delta > 0 ? .trailing : .leading
         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) { selection = all[next] }
     }
@@ -143,6 +145,13 @@ struct DiscoverView: View {
             Text(selection.title).font(.subheadline).foregroundStyle(WhaleTheme.muted)
                 .accessibilityIdentifier("discover-current-channel")
             Spacer(minLength: 0)
+            Button { showLibrary = true } label: {
+                Image(systemName: library.saved.isEmpty ? "bookmark" : "bookmark.fill")
+                    .whaleTouchTarget()
+            }
+            .foregroundStyle(WhaleTheme.accent)
+            .accessibilityLabel("收藏与稍后读")
+            .accessibilityIdentifier("discover-library")
             Button(action: onSettings) { Image(systemName: "gearshape").whaleTouchTarget() }
                 .foregroundStyle(WhaleTheme.accent).accessibilityLabel("设置")
                 .accessibilityIdentifier("discover-settings")

@@ -375,12 +375,20 @@ final class NativeToolRouter {
         )
     }
 
-    func updateReminder(recordId: String, completed: Bool) async throws -> JSONValue {
-        try await eventKit.updateReminder(arguments: [
+    func updateReminder(
+        recordId: String,
+        completed: Bool? = nil,
+        dueAt: Date? = nil,
+        clearDueAt: Bool = false
+    ) async throws -> JSONValue {
+        var arguments: [String: JSONValue] = [
             "recordId": .string(recordId),
-            "completed": .bool(completed),
             "timezone": .string(TimeZone.current.identifier)
-        ])
+        ]
+        if let completed { arguments["completed"] = .bool(completed) }
+        if let dueAt { arguments["dueAt"] = .string(ToolDate.iso(dueAt)) }
+        if clearDueAt { arguments["clearDueAt"] = .bool(true) }
+        return try await eventKit.updateReminder(arguments: arguments)
     }
 
     func deleteReminder(recordId: String) async throws -> JSONValue {

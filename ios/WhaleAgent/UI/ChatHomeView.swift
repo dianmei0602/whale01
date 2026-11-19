@@ -39,7 +39,8 @@ struct ConversationTabView: View {
                 } else {
                     ConversationSurface(
                         model: model,
-                        bottomInset: bottomInset
+                        bottomInset: bottomInset,
+                        onReturnToRecords: onOpenRecords
                     )
                     .transition(.opacity)
                     .overlay(alignment: .leading) {

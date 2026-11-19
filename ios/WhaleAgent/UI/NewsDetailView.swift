@@ -5,8 +5,12 @@ struct NewsDetailView: View {
     let item: NewsItem
     let channel: DiscoverChannel
     @ObservedObject var appModel: AppModel
+    @ObservedObject private var library = DiscoverReadingLibrary.shared
     @Environment(\.dismiss) private var dismiss
     @State private var safari: SafariTarget?
+    @State private var chineseGuide: String?
+    @State private var guideError: String?
+    @State private var isLoadingGuide = false
 
     var body: some View {
         ZStack {
@@ -36,6 +40,14 @@ struct NewsDetailView: View {
                         .whaleFont(size: 13, weight: .medium)
                         .foregroundStyle(isReading(titleId) ? WhaleTheme.accent : WhaleTheme.muted)
                         summaryCard
+                        readingActions
+                        if let chineseGuide {
+                            guideCard(chineseGuide)
+                        } else if let guideError {
+                            Label(guideError, systemImage: "exclamationmark.triangle")
+                                .whaleFont(size: 13)
+                                .foregroundStyle(WhaleTheme.warm)
+                        }
                         sourceButton
                         copyrightNote
                     }
@@ -53,6 +65,7 @@ struct NewsDetailView: View {
             InAppSafari(url: target.url)
                 .ignoresSafeArea()
         }
+        .onAppear { library.markRead(item) }
     }
 
     private var topBar: some View {
@@ -70,6 +83,17 @@ struct NewsDetailView: View {
                 .whaleFont(size: 13, weight: .semibold)
                 .foregroundStyle(WhaleTheme.muted)
             Spacer()
+            Button {
+                library.toggleSaved(item)
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            } label: {
+                Image(systemName: library.isSaved(item) ? "bookmark.fill" : "bookmark")
+                    .whaleFont(size: 14, weight: .semibold)
+                    .foregroundStyle(library.isSaved(item) ? WhaleTheme.accent : WhaleTheme.ink)
+                    .whaleGlassCircle(size: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(library.isSaved(item) ? "取消收藏" : "收藏并稍后读")
             if let url = item.url {
                 ShareLink(item: url) {
                     Image(systemName: "square.and.arrow.up")
@@ -184,6 +208,79 @@ struct NewsDetailView: View {
         }
         .buttonStyle(.plain)
         .disabled(item.url == nil)
+    }
+
+    private var readingActions: some View {
+        HStack(spacing: 10) {
+            Button {
+                library.toggleSaved(item)
+            } label: {
+                Label(library.isSaved(item) ? "已收藏" : "收藏稍后读", systemImage: library.isSaved(item) ? "bookmark.fill" : "bookmark")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(library.isSaved(item) ? WhaleTheme.accent : WhaleTheme.ink)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                Task { await loadChineseGuide() }
+            } label: {
+                HStack(spacing: 5) {
+                    if isLoadingGuide {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Image(systemName: chineseGuide == nil ? "character.book.closed" : "arrow.clockwise")
+                    }
+                    Text(chineseGuide == nil ? "中文导读" : "重新导读")
+                }
+                .whaleFont(size: 13, weight: .semibold)
+                .foregroundStyle(WhaleTheme.onAccent)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoadingGuide)
+        }
+    }
+
+    private func guideCard(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("中文导读", systemImage: "sparkles")
+                .whaleFont(size: 13, weight: .bold)
+                .foregroundStyle(WhaleTheme.accent)
+            Text(text)
+                .whaleFont(size: 16)
+                .foregroundStyle(WhaleTheme.ink)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("按需生成 · 只解释现有标题与摘要 · 可回到原文核对")
+                .whaleFont(size: 11)
+                .foregroundStyle(WhaleTheme.muted)
+        }
+        .padding(15)
+        .background(WhaleTheme.accentSoft.opacity(0.62), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(WhaleTheme.accent.opacity(0.18), lineWidth: 0.8)
+        }
+    }
+
+    private func loadChineseGuide() async {
+        guard !isLoadingGuide else { return }
+        isLoadingGuide = true
+        guideError = nil
+        defer { isLoadingGuide = false }
+        if let text = await AgentReasoningClient().chineseGuide(
+            title: item.displayTitle,
+            summary: item.displaySummary
+        ) {
+            chineseGuide = text
+        } else {
+            guideError = LocalAgentConfig.isConfigured
+                ? "这次没有生成导读，请稍后重试或阅读原文。"
+                : "需要先在设置里保存 DeepSeek 密钥，才能生成中文导读。"
+        }
     }
 
     private var copyrightNote: some View {

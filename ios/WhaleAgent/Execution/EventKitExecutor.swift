@@ -142,6 +142,9 @@ final class EventKitExecutor {
             components.timeZone = ToolDate.zone(timezone)
             reminder.dueDateComponents = components
             reminder.alarms = [EKAlarm(absoluteDate: dueDate)]
+        } else if arguments.optionalBool("clearDueAt") == true {
+            reminder.dueDateComponents = nil
+            reminder.alarms = []
         }
         if let completed = arguments.optionalBool("completed") {
             reminder.isCompleted = completed

@@ -41,12 +41,17 @@ struct DiscoverChannelPage: View {
 
 struct AIChannelPage: View {
     @ObservedObject var model: DiscoverModel
+    @State private var selectedTopic: String?
 
     var body: some View {
         VStack(spacing: 0) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 12) {
                         VStack(alignment: .leading, spacing: 12) {
+                            NewsTopicStrip(
+                                clusters: NewsTopicClusterer.clusters(model.aiNews),
+                                selection: selectedTopic
+                            ) { selectedTopic = $0 }
                             newsHero
                             moreNews
                         }
@@ -74,7 +79,7 @@ struct AIChannelPage: View {
             DiscoverErrorState(message: message) {
                 Task { await model.loadNews(channel: .ai, force: true) }
             }
-        } else if let feature = model.aiNews.first {
+        } else if let feature = displayedNews.first {
             NavigationLink(value: DiscoverRoute.news(feature)) {
                 NewsFeatureCard(item: feature)
             }
@@ -90,14 +95,23 @@ struct AIChannelPage: View {
 
     @ViewBuilder
     private var moreNews: some View {
-        if model.aiNews.count > 1 {
-            ForEach(Array(model.aiNews.dropFirst())) { item in
+        if displayedNews.count > 1 {
+            ForEach(Array(displayedNews.dropFirst())) { item in
                 NavigationLink(value: DiscoverRoute.news(item)) {
                     NewsRowCard(item: item)
                 }
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    private var displayedNews: [NewsItem] {
+        guard let selectedTopic,
+              let cluster = NewsTopicClusterer.clusters(model.aiNews).first(where: { $0.id == selectedTopic }) else {
+            return model.aiNews
+        }
+        let ids = Set(cluster.itemIDs)
+        return model.aiNews.filter { ids.contains($0.id) }
     }
 }
 
@@ -631,32 +645,37 @@ struct MusicChannelPage: View {
 
 struct HeadlineChannelPage: View {
     @ObservedObject var model: DiscoverModel
+    @State private var selectedTopic: String?
 
     var body: some View {
         VStack(spacing: 0) {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 11) {
                         VStack(alignment: .leading, spacing: 11) {
+                            NewsTopicStrip(
+                                clusters: NewsTopicClusterer.clusters(model.headlineNews),
+                                selection: selectedTopic
+                            ) { selectedTopic = $0 }
                             if model.newsState == .loading && model.newsItems.isEmpty {
                                 NewsSkeleton()
                             } else if case .failed(let message) = model.newsState, model.newsItems.isEmpty {
                                 DiscoverErrorState(message: message) {
                                     Task { await model.loadNews(channel: .headline, force: true) }
                                 }
-                            } else if model.headlineNews.isEmpty {
+                            } else if displayedNews.isEmpty {
                                 Text("暂时没有新的资讯，下拉刷新试试。")
                                     .whaleFont(size: 13)
                                     .foregroundStyle(WhaleTheme.muted)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.vertical, 14)
                             } else {
-                                if let feature = model.headlineNews.first {
+                                if let feature = displayedNews.first {
                                     NavigationLink(value: DiscoverRoute.news(feature)) {
                                         NewsFeatureCard(item: feature)
                                     }
                                     .buttonStyle(.plain)
                                 }
-                                ForEach(Array(model.headlineNews.dropFirst())) { item in
+                                ForEach(Array(displayedNews.dropFirst())) { item in
                                     NavigationLink(value: DiscoverRoute.news(item)) {
                                         NewsRowCard(item: item)
                                     }
@@ -678,6 +697,15 @@ struct HeadlineChannelPage: View {
                 .refreshable { await model.refresh() }
                 .task { await model.loadInitial() }
         }
+    }
+
+    private var displayedNews: [NewsItem] {
+        guard let selectedTopic,
+              let cluster = NewsTopicClusterer.clusters(model.headlineNews).first(where: { $0.id == selectedTopic }) else {
+            return model.headlineNews
+        }
+        let ids = Set(cluster.itemIDs)
+        return model.headlineNews.filter { ids.contains($0.id) }
     }
 }
 
