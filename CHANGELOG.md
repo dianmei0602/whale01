@@ -24,6 +24,16 @@
 - [2.0 执行规格](docs/plans/whale-2.0-execution-plan.md)
 - [2.0 开发日志](docs/logs/2026-11-20-v2.0.0-interaction.md)
 
+### 构建与验证
+
+- 版本：`2.0.0 (200.1)`
+- 构建源码：`27e50f91d28dd3e52cca003d986e23437b1f47d2`
+- 完整回归：[44563962757](https://github.com/dianmei0602/whale01/actions/runs/44563962757)
+- 侧载构建：[44574958514](https://github.com/dianmei0602/whale01/actions/runs/44574958514)
+- 86 项单元测试通过，模拟器导航与草稿交互测试通过。
+- IPA SHA256：`47f2dd9c4fb8fa986713edc04ba8b87ed91def16fa997750f92ff19dbafecc39`
+- IPA 包含讯飞凭据，只允许个人侧载，不允许公开分发。
+
 ## 0.8.3 — 2026-11-19
 
 最终构建：[GitHub Actions 44433404761](https://github.com/dianmei0602/whale01/actions/runs/44433404761)

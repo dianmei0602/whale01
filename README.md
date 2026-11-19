@@ -5,9 +5,10 @@
 ## 当前阶段
 
 - 最新版本：`2.0.0 (200.x)`
-- 当前源码：`f4a862f`
+- 构建源码：`27e50f9`
 - 完整回归：[86 项单元测试与模拟器交互测试通过](https://github.com/dianmei0602/whale01/actions/runs/44563962757)
-- 当前阶段：2.0 侧载 IPA 构建与真机验收
+- 侧载构建：[2.0.0 加密 IPA 构建通过](https://github.com/dianmei0602/whale01/actions/runs/44574958514)
+- 当前阶段：2.0 真机验收
 
 ## 从这里开始
 
@@ -35,13 +36,13 @@
 
 ## 安装包
 
-含讯飞凭据的 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
+含讯飞凭据的 2.0.0 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
 
-`D:\AI_work\AI_codex\代号鲸鱼001\代号鲸鱼001_2026-11-14\代号鲸鱼001\安装文件\WhaleAgent-Sideload-0.8.3-XFYUN.ipa`
+`D:\AI_work\AI_codex\代号鲸鱼001\代号鲸鱼001_2026-11-14\代号鲸鱼001\安装文件\WhaleAgent-Sideload-2.0.0-XFYUN.ipa`
 
 当前 SHA256：
 
-`f65ffb134d8c849c176f6f6f8f760a2b9d833c0b30c7b14579eba10fc504f318`
+`47f2dd9c4fb8fa986713edc04ba8b87ed91def16fa997750f92ff19dbafecc39`
 
 ## 产品边界
 
