@@ -94,11 +94,16 @@ jobs:
           if-no-files-found: warn
 
   interaction:
-    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.scope == 'interaction' || inputs.scope == 'ui') }}
-    name: Manually requested ${{ inputs.scope == 'ui' && 'UI' || 'full' }} regression
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'interaction' }}
+    name: Manually requested full regression
+    uses: ./.github/workflows/ios-ui-tests.yml
+
+  ui:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'ui' }}
+    name: Manually requested UI regression
     uses: ./.github/workflows/ios-ui-tests.yml
     with:
-      scope: ${{ inputs.scope == 'ui' && 'ui' || 'all' }}
+      scope: ui
 
   palette:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'palette' }}
