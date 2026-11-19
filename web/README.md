@@ -115,3 +115,15 @@ $env:HOST = "127.0.0.1"; node serve.mjs
 ## GitHub Pages
 
 仓库根目录的 `index.html` 会跳转到 `web/`。在仓库 Settings → Pages 选择 `Deploy from a branch`、分支 `main`、目录 `/ (root)`，即可用 `https://<用户名>.github.io/<仓库名>/` 访问。
+
+## 工程复盘
+
+`engineering-review/index.html` 是阶段交接用的静态复盘页，包含：
+
+- 0.8.3 构建证据与开发时间线；
+- 单 Agent、四层执行链路和 12 组 Skill；
+- 真实原生界面截图；
+- 本轮经验、已知边界和仓库目录索引。
+
+Pages 部署后访问 `/engineering-review/`。页面的源码检查与 1440／768／390 三档浏览器检查记录见
+`../docs/logs/2026-11-19-engineering-review.md`。

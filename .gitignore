@@ -1,5 +1,6 @@
 backend/data/
 node_modules/
+.taste-skill/
 .env
 backend/.env
 *.log
