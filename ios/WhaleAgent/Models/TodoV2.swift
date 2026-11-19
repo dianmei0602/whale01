@@ -29,7 +29,7 @@ enum TodoBoard: String, CaseIterable, Identifiable {
     func includes(_ item: TodoReminder, now: Date = Date(), calendar: Calendar = .current) -> Bool {
         guard !item.completed else { return false }
         guard let due = item.dueAt else { return self == .inbox }
-        if calendar.isDateInToday(due) || due < now { return self == .today }
+        if calendar.isDate(due, inSameDayAs: now) || due < now { return self == .today }
         return self == .planned
     }
 }

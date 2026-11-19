@@ -131,7 +131,7 @@ enum TodoQuickParser {
             return TimeMatch(hour: hour, minute: minute, tokens: [nsText.substring(with: match.range)])
         }
 
-        let pattern = "(凌晨|上午|早上|中午|下午|傍晚|晚上|夜里)?\\s*(?<![0-9零一二两三四五六七八九十])([0-9]{1,2}|[零一二两三四五六七八九十]{1,3})\\s*[点时](半|[0-9零一二两三四五六七八九十]{1,3}\\s*分|[一二三123]\\s*刻)?整?"
+        let pattern = "(凌晨|上午|早上|中午|下午|傍晚|晚上|夜里)?\\s*(?<![0-9零一二两三四五六七八九十])([0-9]{1,2}|[零一二两三四五六七八九十]{1,3})\\s*[点时](半|[0-9零一二两三四五六七八九十]{1,3}\\s*分|[一二三123]\\s*刻)?(?:\\s*整(?!理))?"
         guard let regex = try? NSRegularExpression(pattern: pattern),
               let match = regex.firstMatch(in: text, range: fullRange) else { return nil }
 

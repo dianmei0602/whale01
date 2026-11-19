@@ -220,6 +220,7 @@ final class XfyunASRClient {
             let upper = max(range[0], range[1])
             for key in segments.keys where (lower...upper).contains(key) {
                 segments.removeValue(forKey: key)
+                confidenceScores.removeValue(forKey: key)
             }
         }
         segments[sn] = chunk
