@@ -140,7 +140,7 @@ final class InteractionUITests: XCTestCase {
             app.launchEnvironment["WHALE_DEMO_HOME"] = "1"
             app.launchEnvironment["WHALE_DEMO_PALETTE"] = palette
             app.launch()
-            XCTAssertTrue(app.otherElements["home-command-center"].waitForExistence(timeout: 10))
+            XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 30))
             attach("home-palette-" + palette)
             app.terminate()
         }
@@ -148,7 +148,7 @@ final class InteractionUITests: XCTestCase {
 
     func testAppearancePaletteChoicePersistsAcrossRelaunch() {
         let app = launch()
-        app.buttons["设置"].tap()
+        app.buttons["assistant-settings"].tap()
         let gilded = app.buttons["appearance-palette-gilded"]
         if !gilded.waitForExistence(timeout: 5) {
             app.scrollViews.firstMatch.swipeUp()
@@ -161,7 +161,8 @@ final class InteractionUITests: XCTestCase {
         let relaunched = XCUIApplication()
         relaunched.launchEnvironment["WHALE_DEMO_HOME"] = "1"
         relaunched.launch()
-        relaunched.buttons["设置"].tap()
+        XCTAssertTrue(relaunched.buttons["assistant-settings"].waitForExistence(timeout: 30))
+        relaunched.buttons["assistant-settings"].tap()
         let restored = relaunched.buttons["appearance-palette-gilded"]
         if !restored.waitForExistence(timeout: 5) {
             relaunched.scrollViews.firstMatch.swipeUp()

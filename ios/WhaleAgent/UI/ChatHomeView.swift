@@ -105,6 +105,7 @@ struct ConversationTabView: View {
             .accessibilityLabel("对话与记录")
             Button(action: onOpenSettings) { Image(systemName: "gearshape").whaleTouchTarget() }
                 .accessibilityLabel("设置")
+                .accessibilityIdentifier("assistant-settings")
         }.foregroundStyle(WhaleTheme.accent).padding(.horizontal, 16).padding(.vertical, 4)
             .background(WhaleChromeBackground())
     }

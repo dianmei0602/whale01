@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Quick compilation, palette screenshots, or full interaction regression
+        description: Quick compile, palette screenshots, UI-only regression, or full regression
         type: choice
-        options: [quick, palette, interaction]
+        options: [quick, palette, ui, interaction]
         default: quick
   push:
     paths:
@@ -94,9 +94,11 @@ jobs:
           if-no-files-found: warn
 
   interaction:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'interaction' }}
-    name: Manually requested full regression
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.scope == 'interaction' || inputs.scope == 'ui') }}
+    name: Manually requested ${{ inputs.scope == 'ui' && 'UI' || 'full' }} regression
     uses: ./.github/workflows/ios-ui-tests.yml
+    with:
+      scope: ${{ inputs.scope == 'ui' && 'ui' || 'all' }}
 
   palette:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'palette' }}
