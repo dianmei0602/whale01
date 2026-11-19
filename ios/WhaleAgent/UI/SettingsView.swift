@@ -138,6 +138,7 @@ struct SettingsView: View {
     var onBackToChat: () -> Void = {}
 
     @AppStorage("whale.appearance") private var appearance = "system"
+    @AppStorage(WhalePaletteStyle.storageKey) private var paletteRaw = WhalePaletteStyle.seaSalt.rawValue
     @AppStorage("whale.profile.nickname") private var profileNickname = ""
     @AppStorage("whale.profile.bio") private var profileBio = ""
     @State private var showProfileEditor = false
@@ -335,13 +336,28 @@ struct SettingsView: View {
     // MARK: - Appearance
 
     private var appearanceSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SettingsChrome.header("外观", trailing: "跟随当日光线")
+        VStack(alignment: .leading, spacing: 12) {
+            SettingsChrome.header("外观", trailing: "明暗与配色独立")
+
+            Text("明暗模式")
+                .whaleFont(size: 13, weight: .semibold)
+                .foregroundStyle(WhaleTheme.muted)
 
             HStack(spacing: 9) {
                 appearanceOption("炭黑", "深色", mode: "dark", swatch: .dark)
                 appearanceOption("海盐", "浅色", mode: "light", swatch: .light)
                 appearanceOption("自动", "跟随系统", mode: "system", swatch: .auto)
+            }
+
+            Text("配色主题")
+                .whaleFont(size: 13, weight: .semibold)
+                .foregroundStyle(WhaleTheme.muted)
+                .padding(.top, 4)
+
+            VStack(spacing: 8) {
+                ForEach(WhalePaletteStyle.allCases) { palette in
+                    paletteOption(palette)
+                }
             }
         }
     }
@@ -393,6 +409,59 @@ struct SettingsView: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
+    private func paletteOption(_ palette: WhalePaletteStyle) -> some View {
+        let selected = selectedPalette == palette
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                paletteRaw = palette.rawValue
+            }
+            UISelectionFeedbackGenerator().selectionChanged()
+        } label: {
+            HStack(spacing: 13) {
+                HStack(spacing: 0) {
+                    ForEach(Array(palette.previewColors.enumerated()), id: \.offset) { _, color in
+                        color.frame(maxWidth: .infinity)
+                    }
+                }
+                .frame(width: 112, height: 42)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.16), lineWidth: 0.7)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(palette.title)
+                        .whaleFont(size: 15, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Text(palette.subtitle)
+                        .whaleFont(size: 12)
+                        .foregroundStyle(WhaleTheme.muted)
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .whaleFont(size: 18, weight: .semibold)
+                    .foregroundStyle(selected ? WhaleTheme.accent : WhaleTheme.muted.opacity(0.55))
+            }
+            .padding(.horizontal, 12)
+            .frame(minHeight: 62)
+            .background(WhaleTheme.card)
+            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .strokeBorder(selected ? WhaleTheme.accent : WhaleTheme.line, lineWidth: selected ? 1.5 : 0.8)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(palette.title)配色")
+        .accessibilityHint("切换整个 App 的配色，明暗模式保持不变")
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityIdentifier("appearance-palette-\(palette.rawValue)")
+    }
+
     @ViewBuilder
     private func swatchPreview(_ swatch: AppearanceSwatch) -> some View {
         ZStack {
@@ -414,6 +483,10 @@ struct SettingsView: View {
                 Capsule().fill(WhaleTheme.muted.opacity(0.22)).frame(width: 18, height: 3)
             }
         }
+    }
+
+    private var selectedPalette: WhalePaletteStyle {
+        WhalePaletteStyle(rawValue: paletteRaw) ?? .seaSalt
     }
 }
 

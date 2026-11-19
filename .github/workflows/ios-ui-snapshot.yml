@@ -43,8 +43,8 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
-            MARKETING_VERSION=2.0.0 \
-            CURRENT_PROJECT_VERSION="200.${{ github.run_attempt }}" \
+            MARKETING_VERSION=2.0.1 \
+            CURRENT_PROJECT_VERSION="201.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -126,6 +126,12 @@ jobs:
             sleep 5
             xcrun simctl io "$DEVICE_ID" screenshot snapshots/sea-salt-home-large-text.png
             xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            for palette in nightSea gilded; do
+              SIMCTL_CHILD_WHALE_DEMO_HOME=1 SIMCTL_CHILD_WHALE_DEMO_PALETTE="$palette" xcrun simctl launch "$DEVICE_ID" com.whale01.agent
+              sleep 5
+              xcrun simctl io "$DEVICE_ID" screenshot "snapshots/home-${palette}.png"
+              xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            done
             exit 0
           fi
           SIMCTL_CHILD_WHALE_DEMO_DISCOVER=1 xcrun simctl launch "$DEVICE_ID" com.whale01.agent

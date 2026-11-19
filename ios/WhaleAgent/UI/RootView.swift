@@ -14,6 +14,7 @@ struct RootView: View {
     @State private var composerFocused = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
+    @AppStorage(WhalePaletteStyle.storageKey) private var paletteRaw = WhalePaletteStyle.seaSalt.rawValue
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
 
@@ -21,6 +22,7 @@ struct RootView: View {
         pager
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
         .tint(WhaleTheme.accent)
+        .environment(\.whalePaletteStyle, selectedPalette)
         .preferredColorScheme(colorScheme)
         .dynamicTypeSize(preferredTextSize)
         .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
@@ -46,6 +48,10 @@ struct RootView: View {
             let environment = ProcessInfo.processInfo.environment
             if let raw = environment["WHALE_DEMO_INITIAL_CHANNEL"], let channel = DiscoverChannel(rawValue: raw) { discoverChannel = channel }
             if environment["WHALE_DEMO_HOME"] == "1" || environment["WHALE_DEMO_WEATHER"] == "1" { page = .conversation }
+            if let raw = environment["WHALE_DEMO_PALETTE"],
+               let palette = WhalePaletteStyle(rawValue: raw) {
+                paletteRaw = palette.rawValue
+            }
             if environment["WHALE_DEMO_TODO"] == "1" { page = .records }
             if environment["WHALE_DEMO_HUB"] == "1" { page = .discover }
             if environment["WHALE_DEMO_SETTINGS"] == "1" { showSettings = true }
@@ -154,6 +160,9 @@ struct RootView: View {
     }
     private var colorScheme: ColorScheme? {
         appearance == "light" ? .light : appearance == "dark" ? .dark : nil
+    }
+    private var selectedPalette: WhalePaletteStyle {
+        WhalePaletteStyle(rawValue: paletteRaw) ?? .seaSalt
     }
     private var preferredTextSize: DynamicTypeSize {
 #if DEBUG

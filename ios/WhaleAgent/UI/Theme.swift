@@ -20,99 +20,81 @@ extension Color {
 }
 
 enum WhaleTheme {
-    // Sea-salt blue: a calm, neutral assistant surface with one blue accent.
-    // Semantic green and red remain reserved for real status.
-    static let accent = Color(light: 0x246F95, dark: 0x72BBDA)
-    static let accentDeep = Color(light: 0x1C5C7B, dark: 0x5EA6C6)
-    static let accentSoft = Color(light: 0xDCEFF6, dark: 0x203A47)
-    static let moon = Color(light: 0x5F83A1, dark: 0x9BB9CA)
-    static let coral = Color(light: 0xA75F36, dark: 0xE0A471)
-    static let ink = Color(light: 0x17262E, dark: 0xF1F6F8)
-    static let muted = Color(light: 0x596C76, dark: 0xB4C1C7)
-    static let background = Color(light: 0xF3F7F9, dark: 0x101619)
-    static let card = Color(light: 0xFFFFFF, dark: 0x182126)
-    static let cardSolid = Color(light: 0xE8F0F5, dark: 0x202D33)
-    static let soft = Color(light: 0xE8F0F5, dark: 0x202D33)
-    static let line = Color(light: 0xD6E2E8, dark: 0x34464D)
-    static let field = Color(light: 0xF8FAFB, dark: 0x182126)
-    static let chrome = Color(light: 0xFBFCFD, dark: 0x141D21)
-    static let onAccent = Color(light: 0xF7FCFD, dark: 0x10232C)
-    static let buttonInk = Color(light: 0xF7FCFD, dark: 0x10232C)
-    static let glassStroke = Color(light: 0xD6E2E8, dark: 0x34464D)
-    static let warm = Color(light: 0x96602C, dark: 0xE0AC6C)
-    static let success = Color(light: 0x247B50, dark: 0x63C99B)
-    static let danger = Color(light: 0xB8444C, dark: 0xEF858C)
+    static var accent: Color { WhalePaletteResolver.color(.accent) }
+    static var accentDeep: Color { WhalePaletteResolver.color(.accentDeep) }
+    static var accentSoft: Color { WhalePaletteResolver.color(.accentSoft) }
+    static var moon: Color { WhalePaletteResolver.color(.moon) }
+    static var coral: Color { WhalePaletteResolver.color(.coral) }
+    static var ink: Color { WhalePaletteResolver.color(.ink) }
+    static var muted: Color { WhalePaletteResolver.color(.muted) }
+    static var background: Color { WhalePaletteResolver.color(.background) }
+    static var card: Color { WhalePaletteResolver.color(.card) }
+    static var cardSolid: Color { WhalePaletteResolver.color(.cardSolid) }
+    static var soft: Color { WhalePaletteResolver.color(.soft) }
+    static var line: Color { WhalePaletteResolver.color(.line) }
+    static var field: Color { WhalePaletteResolver.color(.field) }
+    static var chrome: Color { WhalePaletteResolver.color(.chrome) }
+    static var onAccent: Color { WhalePaletteResolver.color(.onAccent) }
+    static var buttonInk: Color { WhalePaletteResolver.color(.buttonInk) }
+    static var glassStroke: Color { WhalePaletteResolver.color(.glassStroke) }
+    static var warm: Color { WhalePaletteResolver.color(.warm) }
+    static var success: Color { WhalePaletteResolver.color(.success) }
+    static var danger: Color { WhalePaletteResolver.color(.danger) }
 
-    static let categoryBlue = Color(light: 0xE1F0F6, dark: 0x17343F)
-    static let categorySteel = Color(light: 0xE4EBF3, dark: 0x1C2D3B)
-    static let categorySand = Color(light: 0xF4EADB, dark: 0x352A1D)
-    static let categoryRose = Color(light: 0xF4E6EA, dark: 0x35232A)
-    static let categoryMist = Color(light: 0xE7EEF1, dark: 0x223138)
-    static let categoryStraw = Color(light: 0xF1ECE1, dark: 0x302B20)
-    static let categoryBlueInk = Color(light: 0x145B74, dark: 0xA5D9E9)
-    static let categorySteelInk = Color(light: 0x365A76, dark: 0xADD0E4)
-    static let categorySandInk = Color(light: 0x80531F, dark: 0xE5BE83)
-    static let categoryRoseInk = Color(light: 0x814959, dark: 0xE3A9BA)
-    static let categoryMistInk = Color(light: 0x3F5D6A, dark: 0xBAD2DC)
-    static let categoryStrawInk = Color(light: 0x725C2D, dark: 0xD9C88F)
+    static var categoryBlue: Color { WhalePaletteResolver.color(.categoryBlue) }
+    static var categorySteel: Color { WhalePaletteResolver.color(.categorySteel) }
+    static var categorySand: Color { WhalePaletteResolver.color(.categorySand) }
+    static var categoryRose: Color { WhalePaletteResolver.color(.categoryRose) }
+    static var categoryMist: Color { WhalePaletteResolver.color(.categoryMist) }
+    static var categoryStraw: Color { WhalePaletteResolver.color(.categoryStraw) }
+    static var categoryBlueInk: Color { WhalePaletteResolver.color(.categoryBlueInk) }
+    static var categorySteelInk: Color { WhalePaletteResolver.color(.categorySteelInk) }
+    static var categorySandInk: Color { WhalePaletteResolver.color(.categorySandInk) }
+    static var categoryRoseInk: Color { WhalePaletteResolver.color(.categoryRoseInk) }
+    static var categoryMistInk: Color { WhalePaletteResolver.color(.categoryMistInk) }
+    static var categoryStrawInk: Color { WhalePaletteResolver.color(.categoryStrawInk) }
 
     static let cardRadius: CGFloat = 16
     static let controlRadius: CGFloat = 12
     static let pagePadding: CGFloat = 16
 
-    static let pageGradient = LinearGradient(
-        colors: [background, background, background],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var pageGradient: LinearGradient {
+        LinearGradient(colors: [background, background, background], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let heroGradient = LinearGradient(
-        colors: [accent, accent],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var heroGradient: LinearGradient {
+        LinearGradient(colors: [accent, accent], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let auroraGradient = LinearGradient(
-        colors: [accent, accent],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var auroraGradient: LinearGradient {
+        LinearGradient(colors: [accent, accent], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let gameGradient = LinearGradient(
-        colors: [categorySandInk, categorySandInk],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var gameGradient: LinearGradient {
+        LinearGradient(colors: [categorySandInk, categorySandInk], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let musicGradient = LinearGradient(
-        colors: [categoryRoseInk, categoryRoseInk],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var musicGradient: LinearGradient {
+        LinearGradient(colors: [categoryRoseInk, categoryRoseInk], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let headlineGradient = LinearGradient(
-        colors: [categoryMistInk, categoryMistInk],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var headlineGradient: LinearGradient {
+        LinearGradient(colors: [categoryMistInk, categoryMistInk], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let weiboGradient = LinearGradient(
-        colors: [Color(light: 0x8A5551, dark: 0xA56E69), Color(light: 0x8A5551, dark: 0xA56E69)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var weiboGradient: LinearGradient {
+        LinearGradient(colors: [categoryRoseInk, categoryRoseInk], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let composerSendGradient = LinearGradient(
-        colors: [accent, accent],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var composerSendGradient: LinearGradient {
+        LinearGradient(colors: [accent, accent], startPoint: .topLeading, endPoint: .bottomTrailing)
+    }
 
-    static let rose = categoryRoseInk
-    static let blueSoft = accentSoft
-    static let amberSoft = categorySand
-    static let roseSoft = categoryRose
-    static let bubble = card
+    static var rose: Color { categoryRoseInk }
+    static var blueSoft: Color { accentSoft }
+    static var amberSoft: Color { categorySand }
+    static var roseSoft: Color { categoryRose }
+    static var bubble: Color { card }
 }
 
 extension View {

@@ -21,6 +21,31 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertTrue(manifest.definition(for: .general)?.tools.isEmpty == true)
     }
 
+    func testNightSeaPaletteUsesReferenceColorsAcrossBothModes() {
+        let light = WhalePaletteResolver.lightValues(.nightSea)
+        XCTAssertEqual(light[.accent], 0x0E4258)
+        XCTAssertEqual(light[.danger], 0x992E34)
+        XCTAssertEqual(light[.background], 0xF9F6E5)
+
+        let dark = WhalePaletteResolver.darkValues(.nightSea)
+        XCTAssertEqual(dark[.background], 0x090C0E)
+        XCTAssertEqual(dark[.ink], 0xF9F6E5)
+        XCTAssertEqual(dark[.danger], 0xEF858C)
+    }
+
+    func testGildedPaletteKeepsGoldBrownAndJadeDistinct() {
+        let light = WhalePaletteResolver.lightValues(.gilded)
+        XCTAssertEqual(light[.accent], 0x0D4D76)
+        XCTAssertEqual(light[.accentSoft], 0xFBDC92)
+        XCTAssertEqual(light[.coral], 0x944523)
+
+        let dark = WhalePaletteResolver.darkValues(.gilded)
+        XCTAssertEqual(dark[.background], 0x090807)
+        XCTAssertEqual(dark[.ink], 0xFBDC92)
+        XCTAssertEqual(dark[.accent], 0xFBDC92)
+        XCTAssertEqual(dark[.accentDeep], 0x4F91B8)
+    }
+
     func testVoiceCorrectionUsesOnlyExplainableTermsAndKeepsIntentOrder() {
         let analysis = VoiceDraftAnalyzer.analyze(
             "deepseek 帮我看看明天安排，然后提醒我取快递",

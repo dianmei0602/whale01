@@ -91,8 +91,8 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath build/WhaleAgent.xcarchive \
-            MARKETING_VERSION=2.0.0 \
-            CURRENT_PROJECT_VERSION="200.${{ github.run_attempt }}" \
+            MARKETING_VERSION=2.0.1 \
+            CURRENT_PROJECT_VERSION="201.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
