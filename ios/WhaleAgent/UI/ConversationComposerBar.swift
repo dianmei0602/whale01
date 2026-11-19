@@ -32,6 +32,10 @@ struct ConversationComposerBar: View {
     private let drafts = ComposerDraftStore()
 
     var body: some View {
+        lifecycleBehaviors(interactionBehaviors(content))
+    }
+
+    private var content: some View {
         VStack(spacing: 7) {
             if let voiceError = voice.errorText {
                 notice(voiceError)
@@ -55,6 +59,10 @@ struct ConversationComposerBar: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .background(WhaleChromeBackground())
+    }
+
+    private func interactionBehaviors<Content: View>(_ content: Content) -> some View {
+        content
         .photosPicker(
             isPresented: $showPhotoPicker,
             selection: $photoItem,
@@ -85,30 +93,27 @@ struct ConversationComposerBar: View {
             }
         }
         .onChange(of: voice.finalResult) { _, result in
-            guard let result, voice.errorText == nil else { return }
-            let raw = voicePrefix.isEmpty ? result.text : voicePrefix + "\n" + result.text
-            let analysis = VoiceDraftAnalyzer.analyze(
-                raw,
-                engine: voice.engineName,
-                elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
-                confidence: voice.confidence
-            )
-            voiceAnalysis = analysis
-            draft = analysis.correctedText
-            voicePrefix = ""
-            model.setVoiceInteractionPhase(recording: false, editable: true)
-            focused = true
+            handleFinalVoiceResult(result)
         }
         .onChange(of: focused) { _, value in
             externalFocused = value
         }
-        .onChange(of: voice.isRecording) { wasRecording, isRecording in
-            guard wasRecording, !isRecording else { return }
-            guard voice.errorText == nil else { return }
-            if !voice.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                focused = true
+        .alert("修正识别词", isPresented: Binding(
+            get: { correctingCorrection != nil },
+            set: { if !$0 { correctingCorrection = nil } }
+        )) {
+            TextField("以后识别成", text: $correctionIntended)
+            Button("取消", role: .cancel) { correctingCorrection = nil }
+            Button("记住修正") { saveVoiceCorrection() }
+        } message: {
+            if let correction = correctingCorrection {
+                Text("原听写：\(correction.original)。修正会保存到本机个人词库，只在语音草稿中替换。")
             }
         }
+    }
+
+    private func lifecycleBehaviors<Content: View>(_ content: Content) -> some View {
+        content
         .task {
             if draftContext == nil { draftContext = model.composerContextID; draft = drafts.load(context: model.composerContextID) }
         }
@@ -133,18 +138,6 @@ struct ConversationComposerBar: View {
             if let context = draftContext { drafts.save(draft, context: context) }
             externalFocused = false
             voice.cancel()
-        }
-        .alert("修正识别词", isPresented: Binding(
-            get: { correctingCorrection != nil },
-            set: { if !$0 { correctingCorrection = nil } }
-        )) {
-            TextField("以后识别成", text: $correctionIntended)
-            Button("取消", role: .cancel) { correctingCorrection = nil }
-            Button("记住修正") { saveVoiceCorrection() }
-        } message: {
-            if let correction = correctingCorrection {
-                Text("原听写：\(correction.original)。修正会保存到本机个人词库，只在语音草稿中替换。")
-            }
         }
     }
 
@@ -276,6 +269,22 @@ struct ConversationComposerBar: View {
                 }
             }
         }, perform: {})
+    }
+
+    private func handleFinalVoiceResult(_ result: VoiceInputController.FinalResult?) {
+        guard let result, voice.errorText == nil else { return }
+        let raw = voicePrefix.isEmpty ? result.text : voicePrefix + "\n" + result.text
+        let analysis = VoiceDraftAnalyzer.analyze(
+            raw,
+            engine: voice.engineName,
+            elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
+            confidence: voice.confidence
+        )
+        voiceAnalysis = analysis
+        draft = analysis.correctedText
+        voicePrefix = ""
+        model.setVoiceInteractionPhase(recording: false, editable: true)
+        focused = true
     }
 
     private func notice(_ text: String) -> some View {
