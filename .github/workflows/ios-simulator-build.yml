@@ -138,7 +138,7 @@ jobs:
           xcrun simctl bootstatus "$DEVICE_ID" -b
           xcrun simctl install "$DEVICE_ID" ios/build/Build/Products/Debug-iphonesimulator/WhaleAgent.app
           mkdir -p palette-snapshots
-          for palette in nightSea gilded; do
+          for palette in gilded nightSea; do
             SIMCTL_CHILD_WHALE_DEMO_HOME=1 \
             SIMCTL_CHILD_WHALE_DEMO_PALETTE="$palette" \
               xcrun simctl launch "$DEVICE_ID" com.whale01.agent
@@ -152,6 +152,11 @@ jobs:
             xcrun simctl io "$DEVICE_ID" screenshot "palette-snapshots/appearance-${palette}.png"
             xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
           done
+          xcrun simctl spawn "$DEVICE_ID" log show --last 12m --style compact \
+            --predicate 'process == "WhaleAgent" OR eventMessage CONTAINS "WhaleAgent"' \
+            > palette-snapshots/simulator-WhaleAgent.log || true
+          find "$HOME/Library/Logs/DiagnosticReports" -maxdepth 1 -name 'WhaleAgent*' -mmin -15 \
+            -exec cp {} palette-snapshots/ \; || true
       - name: Upload palette screenshots
         if: always()
         uses: actions/upload-artifact@v4
