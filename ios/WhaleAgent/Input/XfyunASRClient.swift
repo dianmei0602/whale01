@@ -69,7 +69,7 @@ final class XfyunASRClient {
     func start() throws {
         guard !isRunning else { return }
         segments = [:]
-        confidenceScores = []
+        confidenceScores = [:]
         stopping = false
 
         audioLease = try AudioSessionCoordinator.shared.acquire(.recording) { [weak self] in
