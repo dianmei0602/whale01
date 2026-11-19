@@ -12,6 +12,10 @@ on:
         description: Verified unsigned IPA artifact for repackage mode
         required: true
         default: "14170511404"
+      run_tests:
+        description: Run unit tests again before archiving
+        type: boolean
+        default: true
 
 permissions:
   actions: read
@@ -58,6 +62,7 @@ jobs:
           xcrun simctl bootstatus "$DEVICE_ID" -b
 
       - name: Run iOS unit tests
+        if: ${{ inputs.run_tests }}
         working-directory: ios
         run: |
           set -o pipefail
