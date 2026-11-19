@@ -7,7 +7,6 @@ struct NewsDetailView: View {
     @ObservedObject var appModel: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var safari: SafariTarget?
-    @State private var copyNotice: String?
 
     var body: some View {
         ZStack {
@@ -22,9 +21,13 @@ struct NewsDetailView: View {
                             .foregroundStyle(WhaleTheme.ink)
                             .fixedSize(horizontal: false, vertical: true)
                             .contentShape(Rectangle())
-                            .onTapGesture { speak(item.displayTitle, id: titleId) }
-                            .onLongPressGesture(minimumDuration: 0.55) {
-                                copy(item.displayTitle, label: "标题")
+                            .overlay {
+                                LocationPressReader(
+                                    onTap: { speak(item.displayTitle, id: titleId) },
+                                    onLongPress: { point in
+                                        copy(item.displayTitle, label: "标题", at: point)
+                                    }
+                                )
                             }
                         Label(
                             isReading(titleId) ? "正在朗读，再点一次停止" : "轻点朗读 · 长按复制",
@@ -46,20 +49,6 @@ struct NewsDetailView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .background(SwipeBackEnabler().frame(width: 1, height: 1))
-        .overlay(alignment: .bottom) {
-            if let copyNotice {
-                Label(copyNotice, systemImage: "doc.on.doc.fill")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.ink)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(WhaleTheme.card.opacity(0.96), in: Capsule())
-                    .overlay(Capsule().strokeBorder(WhaleTheme.line, lineWidth: 0.8))
-                    .shadow(color: .black.opacity(0.09), radius: 12, y: 5)
-                    .padding(.bottom, 24)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-        }
         .sheet(item: $safari) { target in
             InAppSafari(url: target.url)
                 .ignoresSafeArea()
@@ -165,9 +154,14 @@ struct NewsDetailView: View {
         .background(WhaleTheme.card.opacity(0.78), in: RoundedRectangle(cornerRadius: 19, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 19, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8) }
         .contentShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .onTapGesture { speak(summaryText, id: summaryId) }
-        .onLongPressGesture(minimumDuration: 0.55) {
-            copy(summaryText, label: "摘要")
+        .overlay {
+            LocationPressReader(
+                onTap: { speak(summaryText, id: summaryId) },
+                onLongPress: { point in
+                    copy(summaryText, label: "摘要", at: point)
+                }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
         }
     }
 
@@ -215,17 +209,11 @@ struct NewsDetailView: View {
         appModel.toggleContentSpeech(text: value, contentId: id)
     }
 
-    private func copy(_ text: String, label: String) {
+    private func copy(_ text: String, label: String, at point: CGPoint) {
         let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !value.isEmpty else { return }
         UIPasteboard.general.string = value
         UINotificationFeedbackGenerator().notificationOccurred(.success)
-        let message = "已复制\(label)"
-        withAnimation(.easeOut(duration: 0.16)) { copyNotice = message }
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_400_000_000)
-            guard copyNotice == message else { return }
-            withAnimation(.easeIn(duration: 0.16)) { copyNotice = nil }
-        }
+        PressToastPresenter.show("已复制\(label)", at: point)
     }
 }
