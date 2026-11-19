@@ -46,6 +46,25 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(dark[.accentDeep], 0x4F91B8)
     }
 
+    func testAppearancePalettesKeepKeyTextAboveAccessibilityContrast() {
+        let checks: [(String, WhalePaletteStyle, WhalePaletteToken, WhalePaletteToken)] = [
+            ("night ink", .nightSea, .ink, .background),
+            ("night muted", .nightSea, .muted, .background),
+            ("night button", .nightSea, .onAccent, .accent),
+            ("gilded ink", .gilded, .ink, .background),
+            ("gilded muted", .gilded, .muted, .background),
+            ("gilded jade", .gilded, .accent, .background),
+            ("gilded dark gold", .gilded, .ink, .background)
+        ]
+        for (name, style, foreground, background) in checks {
+            let values = name.hasPrefix("gilded dark")
+                ? WhalePaletteResolver.darkValues(style)
+                : WhalePaletteResolver.lightValues(style)
+            let ratio = contrast(values[foreground]!, values[background]!)
+            XCTAssertGreaterThanOrEqual(ratio, 4.5, name)
+        }
+    }
+
     func testVoiceCorrectionUsesOnlyExplainableTermsAndKeepsIntentOrder() {
         let analysis = VoiceDraftAnalyzer.analyze(
             "deepseek 帮我看看明天安排，然后提醒我取快递",
@@ -163,5 +182,19 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertTrue(candidates.allSatisfy { candidate in
             candidate.end <= event.startAt || candidate.start >= event.endAt
         })
+    }
+
+    private func contrast(_ foreground: UInt32, _ background: UInt32) -> Double {
+        let lighter = max(luminance(foreground), luminance(background))
+        let darker = min(luminance(foreground), luminance(background))
+        return (lighter + 0.05) / (darker + 0.05)
+    }
+
+    private func luminance(_ value: UInt32) -> Double {
+        func channel(_ shift: UInt32) -> Double {
+            let raw = Double((value >> shift) & 0xFF) / 255
+            return raw <= 0.04045 ? raw / 12.92 : pow((raw + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * channel(16) + 0.7152 * channel(8) + 0.0722 * channel(0)
     }
 }

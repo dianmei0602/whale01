@@ -10,6 +10,7 @@
 | [CHANGELOG](../CHANGELOG.md) | 版本级变更摘要 |
 | [2.0 执行规格](plans/whale-2.0-execution-plan.md) | 能力 2.0 与交互 2.0 的实施边界 |
 | [2.0 开发日志](logs/2026-11-20-v2.0.0-interaction.md) | 本轮能力、交互、验证与已知边界 |
+| [2.0.1 外观配色](logs/2026-11-20-v2.0.1-appearance-palettes.md) | 夜海、鎏金色值、语义映射与对比度 |
 | [0.8.3 开发日志](logs/2026-11-19-v0.8.3-handoff.md) | 本轮实现、证据、经验与边界 |
 | [工程复盘页验收记录](logs/2026-11-19-engineering-review.md) | HTML 页面方向、设计调整与浏览器检查 |
 | [工程复盘 HTML](../web/engineering-review/index.html) | 可视化开发历程、Agent 与 Skill |
