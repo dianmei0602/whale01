@@ -4,12 +4,12 @@
 
 ## 当前阶段
 
-- 最新版本：`2.0.1 (201.1)`
-- 构建源码：`7d89143`
-- 单元测试：[89 项全部通过](https://github.com/dianmei0602/whale01/actions/runs/44593279528)
-- 配色截图：[夜海与鎏金已生成并检查](https://github.com/dianmei0602/whale01/actions/runs/44591142186)
-- 侧载构建：[2.0.1 加密 IPA 构建通过](https://github.com/dianmei0602/whale01/actions/runs/44602124950)
-- 当前阶段：2.0.1 真机验收
+- 最新版本：`2.0.2 (202.1)`
+- 构建源码：`739ab63`
+- 单元测试：[93 项全部通过](https://github.com/dianmei0602/whale01/actions/runs/44660433594)
+- 配色与交互截图：[主任务、上下文、操作预览、深色主题已检查](https://github.com/dianmei0602/whale01/actions/runs/44662844837)
+- 侧载构建：[2.0.2 加密 IPA 构建通过](https://github.com/dianmei0602/whale01/actions/runs/44760136304)
+- 当前阶段：2.0.2 真机验收
 
 ## 从这里开始
 
@@ -19,6 +19,7 @@
 | [2.0 执行规格](docs/plans/whale-2.0-execution-plan.md) | 能力 2.0、交互状态机和分阶段交付门槛 |
 | [2.0 开发日志](docs/logs/2026-11-20-v2.0.0-interaction.md) | 本轮语音、助手、发现、待办与已知边界 |
 | [2.0.1 外观配色](docs/logs/2026-11-20-v2.0.1-appearance-palettes.md) | 夜海、鎏金配色、对比度与截图证据 |
+| [2.0.2 上下文与预览](docs/logs/2026-11-20-v2.0.2-context-preview.md) | 当前任务、首页主任务、统一操作预览和深色调整 |
 | [开发日志](docs/logs/2026-11-19-v0.8.3-handoff.md) | 查看 0.8.3 的完整变更、测试与已知边界 |
 | [文件与目录索引](docs/README.md) | 按产品、设计、工程、质量、证据归类仓库内容 |
 | [变更记录](CHANGELOG.md) | 查看版本级变化 |
@@ -38,13 +39,13 @@
 
 ## 安装包
 
-含讯飞凭据的 2.0.1 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
+含讯飞凭据的 2.0.2 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
 
-`D:\AI_work\AI_codex\代号鲸鱼001\代号鲸鱼001_2026-11-14\代号鲸鱼001\安装文件\WhaleAgent-Sideload-2.0.1-XFYUN.ipa`
+`E:\AI_work\AI_codex\代号鲸鱼001\代号鲸鱼001_2026-11-14\代号鲸鱼001\安装文件\WhaleAgent-Sideload-2.0.2-XFYUN.ipa`
 
 当前 SHA256：
 
-`c7cec4fbcf1f5ff3309b48b523059ce06df03d48b16a4778d89983104f1814ce`
+`a6713cae827fa6038415f592cc5adaab5ceb95d53ca25b6b86c298dd8b85bf35`
 
 ## 产品边界
 
