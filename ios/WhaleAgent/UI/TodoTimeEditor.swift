@@ -11,6 +11,21 @@ struct TodoTimeEditor: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    OperationPreviewCard(
+                        .todo(
+                            TodoQuickPreview(
+                                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+                                dueAt: due,
+                                project: nil,
+                                estimatedMinutes: nil,
+                                originalText: original
+                            )
+                        )
+                    ) { EmptyView() }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
                 Section("待办内容") { TextField("内容", text: $title, axis: .vertical).lineLimit(1...4) }
                 Section("由你选择具体时间") {
                     DatePicker("提醒时间", selection: $due, in: Date()..., displayedComponents: [.date, .hourAndMinute])

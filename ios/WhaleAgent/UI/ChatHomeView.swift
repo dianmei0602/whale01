@@ -23,6 +23,16 @@ struct ConversationTabView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            if let context = model.workingContext {
+                WorkingContextBar(
+                    context: context,
+                    onOpen: {
+                        enterConversation()
+                        _ = model.focusWorkingContextMessage()
+                    },
+                    onDismiss: model.clearWorkingContext
+                )
+            }
 
             ZStack {
                 if showingStarter {

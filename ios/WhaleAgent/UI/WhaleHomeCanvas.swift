@@ -41,10 +41,10 @@ struct WhaleHomeCanvas: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                if showQuote { dailyQuote }
                 assistantCommandCenter
-                insightCard
                 todayCard
+                insightCard
+                if showQuote { dailyQuote }
                 categoryGrid
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, WhaleTheme.pagePadding).padding(.top, 12).padding(.bottom, 24)
@@ -74,10 +74,29 @@ struct WhaleHomeCanvas: View {
             records: model.taskRecords,
             pendingConfirmation: model.presentedConfirmation
         )
-        return VStack(alignment: .leading, spacing: 10) {
+        let contextItem = activeContextCommand
+        let actionable = ([contextItem].compactMap { $0 } + items.filter(\.isActionable))
+        let primary = actionable.first(where: \.isWarning)
+            ?? contextItem
+            ?? actionable.first(where: { $0.kind == .next })
+            ?? actionable.first
+            ?? AssistantCommandItem(
+                id: "start",
+                kind: .resume,
+                title: "告诉鲸鱼现在要做什么",
+                detail: "可以直接说一句话，先拆目标，再给你预览和结果",
+                isWarning: false,
+                isActionable: false
+            )
+        let secondary = actionable
+            .filter { $0.id != primary.id && !$0.isWarning }
+            .prefix(2)
+            .map { $0 }
+
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("今天，鲸鱼接住了这些")
-                    .whaleFont(size: 17, weight: .bold, design: .rounded)
+                Text("现在")
+                    .whaleFont(size: 18, weight: .bold, design: .rounded)
                     .foregroundStyle(WhaleTheme.ink)
                 Spacer()
                 Text(model.interactionPhase.title)
@@ -87,55 +106,124 @@ struct WhaleHomeCanvas: View {
                     .padding(.vertical, 4)
                     .background(WhaleTheme.accentSoft, in: Capsule())
             }
-            ForEach(items) { item in
-                Button {
-                    switch item.kind {
-                    case .next: onOpenTodo()
-                    case .needsYou, .resume: onOpenRecords()
-                    }
-                } label: {
-                    HStack(alignment: .top, spacing: 11) {
-                        Image(systemName: commandIcon(item.kind))
+
+            Button {
+                open(command: primary)
+            } label: {
+                VStack(alignment: .leading, spacing: 9) {
+                    HStack(spacing: 8) {
+                        Image(systemName: commandIcon(primary.kind))
                             .whaleFont(size: 15, weight: .semibold)
-                            .foregroundStyle(item.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
-                            .frame(width: 30, height: 30)
-                            .background(
-                                (item.isWarning ? WhaleTheme.warm : WhaleTheme.accent).opacity(0.10),
-                                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            )
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(commandLabel(item.kind))
-                                .whaleFont(size: 11, weight: .bold)
-                                .foregroundStyle(WhaleTheme.muted)
-                            Text(item.title)
-                                .whaleFont(size: 14, weight: .semibold)
-                                .foregroundStyle(WhaleTheme.ink)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.leading)
-                            Text(item.detail)
-                                .whaleFont(size: 12)
-                                .foregroundStyle(WhaleTheme.muted)
-                                .lineLimit(2)
-                                .multilineTextAlignment(.leading)
-                        }
-                        Spacer(minLength: 3)
-                        Image(systemName: "chevron.right")
-                            .whaleFont(size: 12, weight: .semibold)
-                            .foregroundStyle(WhaleTheme.muted.opacity(0.6))
-                            .padding(.top, 5)
+                        Text(commandLabel(primary.kind))
+                            .whaleFont(size: 12, weight: .bold)
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                            .whaleFont(size: 13, weight: .bold)
                     }
-                    .contentShape(Rectangle())
-                    .padding(.vertical, 7)
+                    .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+
+                    Text(primary.title)
+                        .whaleFont(size: 21, weight: .bold, design: .rounded)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+
+                    Text(primary.detail)
+                        .whaleFont(size: 13)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+
+                    Text(primaryActionTitle(primary))
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.onAccent)
+                        .padding(.horizontal, 13)
+                        .frame(minHeight: 36)
+                        .background(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent, in: Capsule())
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(commandLabel(item.kind))，\(item.title)，\(item.detail)")
-                if item.id != items.last?.id {
-                    Divider().overlay(WhaleTheme.line.opacity(0.55))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(15)
+                .background(
+                    primary.isWarning ? WhaleTheme.warm.opacity(0.09) : WhaleTheme.accentSoft.opacity(0.72),
+                    in: RoundedRectangle(cornerRadius: 17, style: .continuous)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
+            }
+            .buttonStyle(.whalePress)
+            .accessibilityLabel("\(commandLabel(primary.kind))，\(primary.title)，\(primary.detail)")
+            .accessibilityIdentifier("home-primary-task")
+
+            if !secondary.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(secondary) { item in
+                        Button {
+                            open(command: item)
+                        } label: {
+                            HStack(spacing: 9) {
+                                Image(systemName: commandIcon(item.kind))
+                                    .foregroundStyle(WhaleTheme.accent)
+                                    .frame(width: 22)
+                                Text(item.title)
+                                    .whaleFont(size: 13, weight: .semibold)
+                                    .foregroundStyle(WhaleTheme.ink)
+                                    .lineLimit(1)
+                                Spacer(minLength: 6)
+                                Text(commandLabel(item.kind))
+                                    .whaleFont(size: 11)
+                                    .foregroundStyle(WhaleTheme.muted)
+                                Image(systemName: "chevron.right")
+                                    .whaleFont(size: 11, weight: .semibold)
+                                    .foregroundStyle(WhaleTheme.muted.opacity(0.6))
+                            }
+                            .frame(minHeight: 40)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        if item.id != secondary.last?.id {
+                            Divider().overlay(WhaleTheme.line.opacity(0.55))
+                        }
+                    }
                 }
+                .padding(.horizontal, 12)
+                .background(WhaleTheme.card.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
         }
-        .whaleCard(padding: 15)
         .accessibilityIdentifier("home-command-center")
+    }
+
+    private var activeContextCommand: AssistantCommandItem? {
+        guard let context = model.workingContext,
+              [.executing, .awaitingConfirmation, .failed, .cancelled].contains(context.status) else {
+            return nil
+        }
+        return AssistantCommandItem(
+            id: "working-context",
+            kind: .resume,
+            title: context.goal,
+            detail: context.summary,
+            isWarning: context.needsAttention,
+            isActionable: true
+        )
+    }
+
+    private func open(command: AssistantCommandItem) {
+        switch command.kind {
+        case .next:
+            onOpenTodo()
+        case .needsYou:
+            onOpenRecords()
+        case .resume:
+            if command.id == "working-context" { _ = model.focusWorkingContextMessage() }
+            onOpenConversation()
+        }
+    }
+
+    private func primaryActionTitle(_ item: AssistantCommandItem) -> String {
+        switch item.kind {
+        case .next: return "查看安排"
+        case .needsYou: return "现在处理"
+        case .resume: return "继续这件事"
+        }
     }
 
     @ViewBuilder

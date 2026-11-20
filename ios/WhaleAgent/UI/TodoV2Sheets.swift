@@ -313,6 +313,11 @@ struct TodoFromMessageSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    OperationPreviewCard(operationPreview) { EmptyView() }
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                }
                 Section("预览") {
                     TextField("待办标题", text: $title, axis: .vertical)
                         .lineLimit(2...5)
@@ -384,5 +389,17 @@ struct TodoFromMessageSheet: View {
         } catch {
             errorText = error.localizedDescription
         }
+    }
+
+    private var operationPreview: OperationPreview {
+        OperationPreview.todo(
+            TodoQuickPreview(
+                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+                dueAt: dueAt,
+                project: project.trimmingCharacters(in: .whitespacesAndNewlines),
+                estimatedMinutes: estimatedMinutes,
+                originalText: candidate.text
+            )
+        )
     }
 }

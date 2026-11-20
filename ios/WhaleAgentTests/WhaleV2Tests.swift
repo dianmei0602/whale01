@@ -28,7 +28,7 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(light[.background], 0xF9F6E5)
 
         let dark = WhalePaletteResolver.darkValues(.nightSea)
-        XCTAssertEqual(dark[.background], 0x090C0E)
+        XCTAssertEqual(dark[.background], 0x181B1C)
         XCTAssertEqual(dark[.ink], 0xF9F6E5)
         XCTAssertEqual(dark[.danger], 0xEF858C)
     }
@@ -40,10 +40,10 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(light[.coral], 0x944523)
 
         let dark = WhalePaletteResolver.darkValues(.gilded)
-        XCTAssertEqual(dark[.background], 0x090807)
+        XCTAssertEqual(dark[.background], 0x211D17)
         XCTAssertEqual(dark[.ink], 0xFBDC92)
         XCTAssertEqual(dark[.accent], 0xFBDC92)
-        XCTAssertEqual(dark[.accentDeep], 0x4F91B8)
+        XCTAssertEqual(dark[.accentDeep], 0x69A9CE)
     }
 
     func testAppearancePalettesKeepKeyTextAboveAccessibilityContrast() {
@@ -63,6 +63,87 @@ final class WhaleV2Tests: XCTestCase {
             let ratio = contrast(values[foreground]!, values[background]!)
             XCTAssertGreaterThanOrEqual(ratio, 4.5, name)
         }
+    }
+
+    func testWorkingContextPersistsAndExpiresWithoutLeakingOldTasks() {
+        let suite = "whale.working.context.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = AgentWorkingContextStore(defaults: defaults)
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        store.save(
+            AgentWorkingContext(
+                goal: "整理周报",
+                status: .awaitingConfirmation,
+                summary: "等待确认创建日程",
+                sourceMessageId: "message-1",
+                updatedAt: now
+            )
+        )
+        XCTAssertEqual(store.load(now: now.addingTimeInterval(60))?.goal, "整理周报")
+        XCTAssertNil(store.load(now: now.addingTimeInterval(25 * 60 * 60)))
+        XCTAssertNil(store.load(now: now.addingTimeInterval(26 * 60 * 60)))
+    }
+
+    func testSharedOperationPreviewShowsEveryTodoDecision() {
+        let preview = OperationPreview.todo(
+            TodoQuickPreview(
+                title: "整理周报",
+                dueAt: Date(timeIntervalSince1970: 1_800_000_000),
+                project: "工作",
+                estimatedMinutes: 45,
+                originalText: "明天下午三点整理周报 #工作 预计45分钟"
+            )
+        )
+        XCTAssertEqual(preview.kind, .create)
+        XCTAssertEqual(preview.title, "新建待办")
+        XCTAssertEqual(Set(preview.rows.map(\.label)), ["时间", "项目", "预计"])
+        XCTAssertEqual(preview.confirmLabel, "确认添加")
+    }
+
+    func testPendingToolPreviewUsesTheSameOperationContract() {
+        let pending = PendingTool(
+            tool: "create_reminder",
+            toolCallId: "call-preview",
+            operationId: "operation-preview",
+            arguments: [
+                "title": .string("取快递"),
+                "dueAt": .string("2026-11-20T15:00:00+08:00")
+            ],
+            requiresConfirmation: true
+        )
+        let preview = OperationPreview.pending(pending)
+        XCTAssertEqual(preview.kind, .create)
+        XCTAssertEqual(preview.title, "创建提醒")
+        XCTAssertTrue(preview.rows.contains { $0.label == "内容" && $0.value == "取快递" })
+        XCTAssertFalse(preview.note.isEmpty)
+    }
+
+    func testHomePlannerDoesNotPromoteEmptyStates() {
+        let empty = AssistantCommandPlanner.items(
+            now: Date(),
+            events: [],
+            todos: [],
+            records: [],
+            pendingConfirmation: nil
+        )
+        XCTAssertTrue(empty.allSatisfy { !$0.isActionable })
+
+        let pending = PendingTool(
+            tool: "create_reminder",
+            toolCallId: "call-1",
+            operationId: "op-1",
+            arguments: ["title": .string("取快递")],
+            requiresConfirmation: true
+        )
+        let actionable = AssistantCommandPlanner.items(
+            now: Date(),
+            events: [],
+            todos: [],
+            records: [],
+            pendingConfirmation: pending
+        )
+        XCTAssertTrue(actionable.contains { $0.kind == .needsYou && $0.isActionable && $0.isWarning })
     }
 
     func testVoiceCorrectionUsesOnlyExplainableTermsAndKeepsIntentOrder() {

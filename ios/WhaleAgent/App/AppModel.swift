@@ -120,6 +120,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var interactionPhase: AgentInteractionPhase = .idle
     @Published private(set) var operationReceipts: [AgentOperationReceipt] = []
     @Published private(set) var highlightedMessageId: String?
+    @Published private(set) var workingContext: AgentWorkingContext?
     @Published var voiceReplyEnabled: Bool
 
     let permissions = PermissionCenter()
@@ -164,6 +165,7 @@ final class AppModel: ObservableObject {
         messages = ChatHistoryStore.load()
         memories = MemoryStore.shared.list()
         operationReceipts = AgentInteractionJournal.shared.list()
+        workingContext = AgentWorkingContextStore.shared.load()
         permissionsSnapshot = permissions.snapshot()
         UserDefaults.standard.set(composerContextID, forKey: "whale.composer.context")
         composerObserver = NotificationCenter.default.publisher(for: .whaleComposerFinished)
@@ -235,6 +237,21 @@ final class AppModel: ObservableObject {
         } else if interactionPhase == .listening || interactionPhase == .editable {
             interactionPhase = .idle
         }
+    }
+
+    func clearWorkingContext() {
+        workingContext = nil
+        AgentWorkingContextStore.shared.clear()
+    }
+
+    @discardableResult
+    func focusWorkingContextMessage() -> Bool {
+        guard let source = workingContext?.sourceMessageId,
+              messages.contains(where: { $0.id.uuidString == source }) else {
+            return false
+        }
+        requestedMessageId = source
+        return true
     }
 
     func reloadTaskRecords() async {
@@ -535,6 +552,12 @@ final class AppModel: ObservableObject {
         activityText = "正在拆解目标并寻找可行方法"
         let userMessage = ChatMessage(role: .user, text: displayText ?? text)
         currentSourceMessageId = userMessage.id.uuidString
+        updateWorkingContext(
+            goal: displayText ?? text,
+            status: .understanding,
+            summary: "正在理解目标并规划下一步",
+            sourceMessageId: currentSourceMessageId
+        )
         appendMessage(userMessage)
         onAccepted?()
 
@@ -579,6 +602,14 @@ final class AppModel: ObservableObject {
         canStopReply = false
         speech.stop()
         interactionPhase = .cancelled
+        if let workingContext {
+            updateWorkingContext(
+                goal: workingContext.goal,
+                status: .cancelled,
+                summary: "已停止等待，可以稍后继续",
+                sourceMessageId: workingContext.sourceMessageId
+            )
+        }
         appendReceipt(
             AgentOperationReceipt(
                 id: UUID().uuidString,
@@ -828,6 +859,7 @@ final class AppModel: ObservableObject {
         requestedMessageId = nil
         highlightedMessageId = nil
         interactionPhase = .idle
+        clearWorkingContext()
         lastFailedInput = nil
         composerContextID = UUID().uuidString
         UserDefaults.standard.set(composerContextID, forKey: "whale.composer.context")
@@ -1226,6 +1258,31 @@ final class AppModel: ObservableObject {
         default:
             pending = response.pending
         }
+        if let goal = currentGoal?.trimmingCharacters(in: .whitespacesAndNewlines), !goal.isEmpty {
+            let summary: String
+            switch response.status {
+            case "awaiting_confirmation":
+                summary = pending.first.map { "等待你确认：\(ToolPresentation.title($0.tool))" } ?? "等待你确认下一步"
+            case "awaiting_tool_results":
+                summary = "正在执行已规划的本机操作"
+            case "completed":
+                summary = response.reply?.firstLine ?? "本轮已完成"
+            case "completed_with_limits":
+                summary = response.reply?.firstLine ?? "已完成，但有部分结果需要核对"
+            case "failed":
+                summary = response.reply?.firstLine ?? "本轮没有完成"
+            case "cancelled":
+                summary = "已取消，可以继续或重新开始"
+            default:
+                summary = "任务状态已更新"
+            }
+            updateWorkingContext(
+                goal: goal,
+                status: interactionPhase,
+                summary: summary,
+                sourceMessageId: currentSourceMessageId ?? workingContext?.sourceMessageId
+            )
+        }
         await updateTaskRecord(response)
         refreshPermissions()
     }
@@ -1420,6 +1477,14 @@ final class AppModel: ObservableObject {
             message = friendlyFailureMessage(error)
         }
         errorText = message
+        if let goal = currentGoal?.trimmingCharacters(in: .whitespacesAndNewlines), !goal.isEmpty {
+            updateWorkingContext(
+                goal: goal,
+                status: .failed,
+                summary: message,
+                sourceMessageId: currentSourceMessageId
+            )
+        }
         appendMessage(ChatMessage(role: .assistant, text: "本轮没有完成：\(message)"))
         appendReceipt(
             AgentOperationReceipt(
@@ -1471,6 +1536,23 @@ final class AppModel: ObservableObject {
     private func appendReceipt(_ receipt: AgentOperationReceipt) {
         AgentInteractionJournal.shared.append(receipt)
         reloadOperationReceipts()
+    }
+
+    private func updateWorkingContext(
+        goal: String,
+        status: AgentInteractionPhase,
+        summary: String,
+        sourceMessageId: String?
+    ) {
+        let context = AgentWorkingContext(
+            goal: goal,
+            status: status,
+            summary: summary,
+            sourceMessageId: sourceMessageId,
+            updatedAt: Date()
+        )
+        workingContext = context
+        AgentWorkingContextStore.shared.save(context)
     }
 
     private static func migrateDirectModeIfNeeded() {

@@ -59,8 +59,7 @@ struct ConversationSurface: View {
                         }
                         ForEach(model.pending) { item in
                             PendingActionCard(item: item, isBusy: model.isBusy) {
-                                if item.tool == "create_reminder" { Task { await model.confirm(item) } }
-                                else { model.presentedConfirmation = item }
+                                model.presentedConfirmation = item
                             }.id(item.id)
                         }
                         AssistantActivityView(model: model)

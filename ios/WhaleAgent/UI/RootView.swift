@@ -241,69 +241,66 @@ private struct ConfirmationSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    HStack(spacing: 14) {
-                        WhaleIconTile(systemName: ToolPresentation.icon(item.tool), size: 50)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(ToolPresentation.title(item.tool))
-                                .font(.headline)
-                                .foregroundStyle(WhaleTheme.ink)
-                            Text("执行前确认")
-                                .font(.caption)
-                                .foregroundStyle(WhaleTheme.muted)
+                    OperationPreviewCard(.pending(item)) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            if checkingPreview {
+                                HStack(spacing: 8) {
+                                    ProgressView().controlSize(.small)
+                                    Text("正在核对系统数据…")
+                                        .whaleFont(size: 12)
+                                        .foregroundStyle(WhaleTheme.muted)
+                                }
+                            }
+                            if let preview = calendarPreview {
+                                Label(
+                                    preview.detail,
+                                    systemImage: preview.conflictCount > 0
+                                        ? "exclamationmark.calendar"
+                                        : "calendar.badge.checkmark"
+                                )
+                                .font(.subheadline)
+                                .foregroundStyle(preview.conflictCount > 0 ? WhaleTheme.warm : WhaleTheme.muted)
+                            }
+                            if let previewError {
+                                Text(previewError)
+                                    .font(.footnote)
+                                    .foregroundStyle(WhaleTheme.danger)
+                                Button("重新核对") { Task { await loadPreview() } }
+                            }
+                            if let error = model.errorText, !error.isEmpty {
+                                Label(error, systemImage: "exclamationmark.triangle")
+                                    .font(.footnote)
+                                    .foregroundStyle(WhaleTheme.danger)
+                            }
+
+                            Button {
+                                Task { await model.confirm(item, calendarFingerprint: calendarPreview?.fingerprint) }
+                            } label: {
+                                Text(ToolPresentation.confirmationAction(
+                                    item.tool,
+                                    conflictCount: calendarPreview?.conflictCount ?? 0
+                                ))
+                                .whalePrimaryButton()
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(model.isBusy || checkingPreview || previewError != nil)
+
+                            Button(role: .destructive) {
+                                Task { await model.skip(item) }
+                            } label: {
+                                Text("取消，不执行")
+                                    .whaleFont(size: 14, weight: .medium)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(minHeight: 40)
+                            }
+                            .disabled(model.isBusy)
                         }
                     }
-
-                    Text(ToolPresentation.detail(for: item))
-                        .whaleFont(size: 17, weight: .medium)
-                        .foregroundStyle(WhaleTheme.ink)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .whaleCard()
-
-                    if checkingPreview {
-                        ProgressView("正在核对操作信息…")
-                    }
-                    if let preview = calendarPreview {
-                        Label(preview.detail, systemImage: preview.conflictCount > 0 ? "exclamationmark.calendar" : "calendar.badge.checkmark")
-                            .font(.subheadline).foregroundStyle(WhaleTheme.muted)
-                    }
-                    if let previewError {
-                        Text(previewError).font(.footnote).foregroundStyle(WhaleTheme.danger)
-                        Button("重新核对") { Task { await loadPreview() } }
-                    }
-
-                    Label(ToolPresentation.confirmationNote(item.tool), systemImage: "checkmark.shield")
-                        .font(.subheadline)
-                        .foregroundStyle(WhaleTheme.muted)
-
-                    if let error = model.errorText, !error.isEmpty {
-                        Label(error, systemImage: "exclamationmark.triangle")
-                            .font(.footnote)
-                            .foregroundStyle(WhaleTheme.danger)
-                    }
-
-                    Button {
-                        Task { await model.confirm(item, calendarFingerprint: calendarPreview?.fingerprint) }
-                    } label: {
-                        Text(ToolPresentation.confirmationAction(item.tool, conflictCount: calendarPreview?.conflictCount ?? 0)).whalePrimaryButton()
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(model.isBusy || checkingPreview || previewError != nil)
-                    .padding(.top, 8)
-
-                    Button(role: .destructive) {
-                        Task { await model.skip(item) }
-                    } label: {
-                        Text("跳过本次，不执行")
-                            .whaleFont(size: 15)
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: 44)
-                    }
-                    .disabled(model.isBusy)
                 }
                 .padding(20)
             }
             .background(WhaleBackdrop())
-            .navigationTitle("确认操作")
+            .navigationTitle("操作预览")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

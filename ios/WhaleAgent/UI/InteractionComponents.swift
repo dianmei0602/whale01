@@ -152,6 +152,182 @@ struct InteractionReceiptCard: View {
     }
 }
 
+struct WorkingContextBar: View {
+    let context: AgentWorkingContext
+    let onOpen: () -> Void
+    let onDismiss: () -> Void
+
+    private var tint: Color {
+        context.needsAttention ? WhaleTheme.warm : WhaleTheme.accent
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(action: onOpen) {
+                HStack(spacing: 10) {
+                    Image(systemName: context.needsAttention ? "hand.raised.fill" : "scope")
+                        .whaleFont(size: 15, weight: .semibold)
+                        .foregroundStyle(tint)
+                        .frame(width: 34, height: 34)
+                        .background(tint.opacity(0.11), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text("当前任务")
+                                .whaleFont(size: 11, weight: .bold)
+                                .foregroundStyle(tint)
+                            Text(context.status.title)
+                                .whaleFont(size: 11, weight: .medium)
+                                .foregroundStyle(WhaleTheme.muted)
+                        }
+                        Text(context.goal)
+                            .whaleFont(size: 14, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.ink)
+                            .lineLimit(1)
+                        Text(context.summary)
+                            .whaleFont(size: 12)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .lineLimit(1)
+                    }
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.right")
+                        .whaleFont(size: 12, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.muted.opacity(0.7))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("当前任务，\(context.goal)，\(context.status.title)")
+            .accessibilityHint("回到原对话")
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .whaleFont(size: 12, weight: .bold)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .frame(width: 34, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("结束当前任务上下文")
+        }
+        .padding(.leading, 12)
+        .padding(.trailing, 4)
+        .padding(.vertical, 7)
+        .background(WhaleTheme.card.opacity(0.92), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(tint.opacity(0.22), lineWidth: 0.8)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 5)
+        .accessibilityIdentifier("working-context")
+    }
+}
+
+struct OperationPreviewCard<Actions: View>: View {
+    let preview: OperationPreview
+    private let actions: Actions
+
+    init(_ preview: OperationPreview, @ViewBuilder actions: () -> Actions) {
+        self.preview = preview
+        self.actions = actions()
+    }
+
+    private var tint: Color {
+        switch preview.kind {
+        case .delete: return WhaleTheme.danger
+        case .external: return WhaleTheme.warm
+        case .create, .update, .save: return WhaleTheme.accent
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top, spacing: 11) {
+                Image(systemName: icon)
+                    .whaleFont(size: 17, weight: .semibold)
+                    .foregroundStyle(tint)
+                    .frame(width: 38, height: 38)
+                    .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 7) {
+                        Text(preview.actionLabel)
+                            .whaleFont(size: 11, weight: .bold)
+                            .foregroundStyle(tint)
+                        Text("执行前预览")
+                            .whaleFont(size: 11)
+                            .foregroundStyle(WhaleTheme.muted)
+                    }
+                    Text(preview.title)
+                        .whaleFont(size: 18, weight: .bold, design: .rounded)
+                        .foregroundStyle(WhaleTheme.ink)
+                }
+                Spacer(minLength: 0)
+            }
+
+            Text(preview.summary)
+                .whaleFont(size: 15, weight: .medium)
+                .foregroundStyle(WhaleTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !preview.rows.isEmpty {
+                VStack(spacing: 0) {
+                    ForEach(preview.rows) { row in
+                        HStack(alignment: .top, spacing: 9) {
+                            Image(systemName: row.icon)
+                                .whaleFont(size: 12, weight: .semibold)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .frame(width: 18)
+                            Text(row.label)
+                                .whaleFont(size: 12, weight: .medium)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .frame(width: 42, alignment: .leading)
+                            Text(row.value)
+                                .whaleFont(size: 13, weight: .semibold)
+                                .foregroundStyle(WhaleTheme.ink)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.vertical, 8)
+                        if row.id != preview.rows.last?.id {
+                            Divider().overlay(WhaleTheme.line.opacity(0.55))
+                        }
+                    }
+                }
+                .padding(.horizontal, 11)
+                .background(WhaleTheme.soft.opacity(0.52), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+
+            Label(preview.note, systemImage: "checkmark.shield")
+                .whaleFont(size: 12)
+                .foregroundStyle(WhaleTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            actions
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(tint.opacity(0.20), lineWidth: 0.8)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("operation-preview")
+    }
+
+    private var icon: String {
+        switch preview.kind {
+        case .create: return "plus.circle.fill"
+        case .update: return "arrow.triangle.2.circlepath"
+        case .delete: return "trash.fill"
+        case .external: return "arrow.up.forward.app.fill"
+        case .save: return "square.and.arrow.down.fill"
+        }
+    }
+}
+
 struct DiscoverHubView: View {
     @ObservedObject var model: AppModel
     let onOpen: (DiscoverChannel) -> Void

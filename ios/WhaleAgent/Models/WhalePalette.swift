@@ -151,16 +151,16 @@ enum WhalePaletteResolver {
     ]
 
     private static let seaSaltDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0x72BBDA, .accentDeep: 0x5EA6C6, .accentSoft: 0x203A47,
-        .moon: 0x9BB9CA, .coral: 0xE0A471, .ink: 0xF1F6F8,
-        .muted: 0xB4C1C7, .background: 0x101619, .card: 0x182126,
-        .cardSolid: 0x202D33, .soft: 0x202D33, .line: 0x34464D,
-        .field: 0x182126, .chrome: 0x141D21, .onAccent: 0x10232C,
-        .buttonInk: 0x10232C, .glassStroke: 0x34464D, .warm: 0xE0AC6C,
+        .accent: 0x83C7E4, .accentDeep: 0x69B4D4, .accentSoft: 0x2A414B,
+        .moon: 0xA8C4D2, .coral: 0xE7AF80, .ink: 0xF4F8FA,
+        .muted: 0xC2CED3, .background: 0x171F23, .card: 0x202A2F,
+        .cardSolid: 0x29353B, .soft: 0x29353B, .line: 0x3D4E55,
+        .field: 0x1F292E, .chrome: 0x1A2226, .onAccent: 0x10232C,
+        .buttonInk: 0x10232C, .glassStroke: 0x3D4E55, .warm: 0xE7B979,
         .success: 0x63C99B, .danger: 0xEF858C,
-        .categoryBlue: 0x17343F, .categorySteel: 0x1C2D3B,
-        .categorySand: 0x352A1D, .categoryRose: 0x35232A,
-        .categoryMist: 0x223138, .categoryStraw: 0x302B20,
+        .categoryBlue: 0x203944, .categorySteel: 0x263640,
+        .categorySand: 0x403326, .categoryRose: 0x402D34,
+        .categoryMist: 0x2A393F, .categoryStraw: 0x3A3327,
         .categoryBlueInk: 0xA5D9E9, .categorySteelInk: 0xADD0E4,
         .categorySandInk: 0xE5BE83, .categoryRoseInk: 0xE3A9BA,
         .categoryMistInk: 0xBAD2DC, .categoryStrawInk: 0xD9C88F
@@ -183,16 +183,16 @@ enum WhalePaletteResolver {
     ]
 
     private static let nightSeaDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0x7CB7C9, .accentDeep: 0xE49391, .accentSoft: 0x26363B,
-        .moon: 0xA2B5B8, .coral: 0xE38B8D, .ink: 0xF9F6E5,
-        .muted: 0xC1C7C2, .background: 0x090C0E, .card: 0x111719,
-        .cardSolid: 0x192126, .soft: 0x192126, .line: 0x303A3D,
-        .field: 0x111719, .chrome: 0x0D1113, .onAccent: 0x0A2029,
-        .buttonInk: 0x0A2029, .glassStroke: 0x303A3D, .warm: 0xE6B468,
+        .accent: 0x8DC8D8, .accentDeep: 0xE99B99, .accentSoft: 0x2C3D42,
+        .moon: 0xAFC1C3, .coral: 0xEB999A, .ink: 0xFFF8E7,
+        .muted: 0xD0D5D0, .background: 0x181B1C, .card: 0x23282A,
+        .cardSolid: 0x2B3235, .soft: 0x2B3235, .line: 0x424C4E,
+        .field: 0x22282A, .chrome: 0x1D2224, .onAccent: 0x0D2932,
+        .buttonInk: 0x0D2932, .glassStroke: 0x424C4E, .warm: 0xEBC47D,
         .success: 0x65C698, .danger: 0xEF858C,
-        .categoryBlue: 0x132D37, .categorySteel: 0x19272C,
-        .categorySand: 0x2E281F, .categoryRose: 0x332123,
-        .categoryMist: 0x202B2E, .categoryStraw: 0x2B271E,
+        .categoryBlue: 0x213A43, .categorySteel: 0x293438,
+        .categorySand: 0x3B3327, .categoryRose: 0x402B2D,
+        .categoryMist: 0x2C3739, .categoryStraw: 0x393227,
         .categoryBlueInk: 0xA7D2DE, .categorySteelInk: 0xB8CDD0,
         .categorySandInk: 0xE8C894, .categoryRoseInk: 0xE9A9AA,
         .categoryMistInk: 0xC7D6D6, .categoryStrawInk: 0xDCCB9A
@@ -215,16 +215,16 @@ enum WhalePaletteResolver {
     ]
 
     private static let gildedDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0xFBDC92, .accentDeep: 0x4F91B8, .accentSoft: 0x3A2F1A,
-        .moon: 0x83A9B9, .coral: 0xD16E57, .ink: 0xFBDC92,
-        .muted: 0xCFC7B6, .background: 0x090807, .card: 0x15120D,
-        .cardSolid: 0x201B13, .soft: 0x201B13, .line: 0x423827,
-        .field: 0x15120D, .chrome: 0x0D0C09, .onAccent: 0x1B1305,
-        .buttonInk: 0x1B1305, .glassStroke: 0x423827, .warm: 0xE6B05B,
+        .accent: 0xFFE29A, .accentDeep: 0x69A9CE, .accentSoft: 0x45391F,
+        .moon: 0x9BC2D0, .coral: 0xE2836B, .ink: 0xFFF0C9,
+        .muted: 0xD9D0BF, .background: 0x211D17, .card: 0x2B271F,
+        .cardSolid: 0x352F24, .soft: 0x352F24, .line: 0x514735,
+        .field: 0x2A261E, .chrome: 0x262117, .onAccent: 0x241A07,
+        .buttonInk: 0x241A07, .glassStroke: 0x514735, .warm: 0xEDBD6D,
         .success: 0x71C99B, .danger: 0xE07E6A,
-        .categoryBlue: 0x112D3D, .categorySteel: 0x1D292D,
-        .categorySand: 0x332916, .categoryRose: 0x35221C,
-        .categoryMist: 0x282820, .categoryStraw: 0x302712,
+        .categoryBlue: 0x243947, .categorySteel: 0x303A3D,
+        .categorySand: 0x44371F, .categoryRose: 0x433027,
+        .categoryMist: 0x37372C, .categoryStraw: 0x40351D,
         .categoryBlueInk: 0x8FC9E6, .categorySteelInk: 0xB5D1DA,
         .categorySandInk: 0xFBDC92, .categoryRoseInk: 0xE6A18D,
         .categoryMistInk: 0xD2D7C5, .categoryStrawInk: 0xEFD58C

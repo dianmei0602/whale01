@@ -1,5 +1,14 @@
 import Foundation
 
+extension String {
+    var firstLine: String {
+        split(whereSeparator: \.isNewline)
+            .first
+            .map(String.init)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? self
+    }
+}
+
 enum AgentInteractionPhase: String, Codable, CaseIterable, Equatable {
     case idle
     case listening
@@ -42,6 +51,186 @@ struct AgentOperationReceipt: Identifiable, Codable, Equatable {
     var canUndo: Bool {
         ["create_reminder", "update_reminder", "create_calendar_event", "update_calendar_event"].contains(tool)
             && status == "success"
+    }
+}
+
+struct AgentWorkingContext: Codable, Equatable {
+    let goal: String
+    let status: AgentInteractionPhase
+    var summary: String
+    var sourceMessageId: String?
+    var updatedAt: Date
+
+    var needsAttention: Bool {
+        status == .awaitingConfirmation || status == .failed
+    }
+
+    var canContinue: Bool {
+        [.executing, .awaitingConfirmation, .failed, .cancelled, .completed].contains(status)
+    }
+}
+
+final class AgentWorkingContextStore {
+    static let shared = AgentWorkingContextStore()
+    private let storageKey = "whale.working.context.v2"
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    func load(now: Date = Date()) -> AgentWorkingContext? {
+        guard let data = defaults.data(forKey: storageKey),
+              let context = try? JSONDecoder().decode(AgentWorkingContext.self, from: data),
+              now.timeIntervalSince(context.updatedAt) < 24 * 60 * 60 else {
+            clear()
+            return nil
+        }
+        return context
+    }
+
+    func save(_ context: AgentWorkingContext) {
+        guard let data = try? JSONEncoder().encode(context) else { return }
+        defaults.set(data, forKey: storageKey)
+    }
+
+    func clear() {
+        defaults.removeObject(forKey: storageKey)
+    }
+}
+
+struct OperationPreviewRow: Identifiable, Equatable {
+    let id: String
+    let label: String
+    let value: String
+    let icon: String
+}
+
+struct OperationPreview: Equatable {
+    enum Kind: String, Equatable {
+        case create
+        case update
+        case delete
+        case external
+        case save
+    }
+
+    let kind: Kind
+    let title: String
+    let summary: String
+    let rows: [OperationPreviewRow]
+    let note: String
+    let confirmLabel: String
+
+    var actionLabel: String {
+        switch kind {
+        case .create: return "将创建"
+        case .update: return "将修改"
+        case .delete: return "将删除"
+        case .external: return "将交接"
+        case .save: return "将保存"
+        }
+    }
+
+    static func pending(_ item: PendingTool) -> OperationPreview {
+        let args = item.arguments
+        let detail = ToolPresentation.detail(for: item)
+        let row: (String, String?, String) -> OperationPreviewRow? = { id, value, icon in
+            guard let value, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return nil
+            }
+            return OperationPreviewRow(id: id, label: id, value: value, icon: icon)
+        }
+
+        let rows: [OperationPreviewRow]
+        let kind: Kind
+        switch item.tool {
+        case "create_reminder":
+            kind = .create
+            rows = [
+                row("内容", args.optionalString("title"), "text.alignleft"),
+                row("时间", ToolPresentation.formatDateTime(args.optionalString("dueAt")), "clock"),
+                row("列表", args.optionalString("listName"), "list.bullet")
+            ].compactMap { $0 }
+        case "update_reminder":
+            kind = .update
+            rows = [
+                row("任务", args.optionalString("title") ?? args.optionalString("recordId"), "checklist"),
+                row("新时间", ToolPresentation.formatDateTime(args.optionalString("dueAt")), "clock.arrow.circlepath"),
+                row("状态", args.optionalBool("completed") == true ? "完成" : nil, "checkmark.circle"),
+                row("新标题", args.optionalString("newTitle"), "pencil")
+            ].compactMap { $0 }
+        case "delete_reminder":
+            kind = .delete
+            rows = [
+                row("待办", args.optionalString("title") ?? args.optionalString("recordId"), "checklist"),
+                row("影响", "从系统提醒事项中移除", "trash")
+            ].compactMap { $0 }
+        case "create_calendar_event":
+            kind = .create
+            rows = [
+                row("日程", args.optionalString("title"), "calendar"),
+                row("开始", ToolPresentation.formatDateTime(args.optionalString("startAt")), "clock"),
+                row("结束", ToolPresentation.formatDateTime(args.optionalString("endAt")), "clock.badge.checkmark")
+            ].compactMap { $0 }
+        case "update_calendar_event":
+            kind = .update
+            rows = [
+                row("日程", args.optionalString("title") ?? args.optionalString("eventId"), "calendar"),
+                row("新开始", ToolPresentation.formatDateTime(args.optionalString("startAt")), "clock.arrow.circlepath"),
+                row("新结束", ToolPresentation.formatDateTime(args.optionalString("endAt")), "clock.badge.checkmark")
+            ].compactMap { $0 }
+        case "delete_calendar_event":
+            kind = .delete
+            rows = [
+                row("日程", args.optionalString("title") ?? args.optionalString("eventId"), "calendar"),
+                row("影响", "从系统日历中移除", "trash")
+            ].compactMap { $0 }
+        case "set_memory":
+            kind = .save
+            rows = [
+                row("偏好", args.optionalString("key"), "brain.head.profile"),
+                row("内容", args.optionalString("value"), "text.alignleft")
+            ].compactMap { $0 }
+        case "delete_memory":
+            kind = .delete
+            rows = [row("偏好", args.optionalString("key") ?? args.optionalString("id"), "brain.head.profile")].compactMap { $0 }
+        case "open_navigation", "prepare_message", "open_netease_music":
+            kind = .external
+            rows = [row("操作", detail, ToolPresentation.icon(item.tool))].compactMap { $0 }
+        default:
+            kind = .update
+            rows = [row("操作", detail, ToolPresentation.icon(item.tool))].compactMap { $0 }
+        }
+
+        return OperationPreview(
+            kind: kind,
+            title: ToolPresentation.title(item.tool),
+            summary: detail,
+            rows: rows,
+            note: ToolPresentation.confirmationNote(item.tool),
+            confirmLabel: ToolPresentation.confirmationAction(item.tool)
+        )
+    }
+
+    static func todo(_ preview: TodoQuickPreview) -> OperationPreview {
+        OperationPreview(
+            kind: .create,
+            title: "新建待办",
+            summary: preview.title,
+            rows: [
+                OperationPreviewRow(id: "due", label: "时间", value: preview.dueText, icon: "calendar"),
+                OperationPreviewRow(
+                    id: "project",
+                    label: "项目",
+                    value: preview.project?.isEmpty == false ? (preview.project ?? "未分组") : "未分组",
+                    icon: "square.stack.3d.up"
+                ),
+                OperationPreviewRow(id: "duration", label: "预计", value: preview.estimatedMinutes.map { "\($0) 分钟" } ?? "未设置", icon: "timer")
+            ],
+            note: "确认后写入系统提醒事项；可在完成后 8 秒内撤销。",
+            confirmLabel: "确认添加"
+        )
     }
 }
 
@@ -92,6 +281,7 @@ struct AssistantCommandItem: Identifiable, Equatable {
     let title: String
     let detail: String
     let isWarning: Bool
+    let isActionable: Bool
 }
 
 enum AssistantCommandPlanner {
@@ -160,21 +350,24 @@ enum AssistantCommandPlanner {
                 kind: .next,
                 title: nextTitle,
                 detail: nextDetail,
-                isWarning: false
+                isWarning: false,
+                isActionable: nextEvent != nil || nextTodo != nil
             ),
             AssistantCommandItem(
                 id: "needs-you",
                 kind: .needsYou,
                 title: needsTitle,
                 detail: needsDetail,
-                isWarning: warning
+                isWarning: warning,
+                isActionable: warning
             ),
             AssistantCommandItem(
                 id: "resume",
                 kind: .resume,
                 title: latest?.goal ?? "开始第一轮任务",
                 detail: latest.map { $0.updatedAt.formatted(.relative(presentation: .named)) } ?? "任务记录会从这里继续",
-                isWarning: false
+                isWarning: false,
+                isActionable: latest != nil
             )
         ]
     }

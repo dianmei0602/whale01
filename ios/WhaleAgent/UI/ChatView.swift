@@ -790,45 +790,17 @@ struct PendingActionCard: View {
     let onReview: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 13) {
-            HStack(spacing: 11) {
-                Image(systemName: ToolPresentation.icon(item.tool))
-                    .whaleFont(size: 17, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.accent)
-                    .frame(width: 38, height: 38)
-                    .background(WhaleTheme.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(ToolPresentation.title(item.tool))
-                        .font(.subheadline.weight(.semibold))
-                    Text("执行前需要你的确认")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Text("待确认")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.orange.opacity(0.12), in: Capsule())
-            }
-
-            Text(ToolPresentation.detail(for: item))
-                .font(.subheadline)
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
+        OperationPreviewCard(.pending(item)) {
             Button(action: onReview) {
-                Text(item.tool == "create_reminder" ? "添加提醒" : "查看操作信息")
-                    .font(.subheadline.weight(.semibold))
+                Label("查看并确认", systemImage: "checkmark.shield")
+                    .whaleFont(size: 14, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.onAccent)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 11)
+                    .frame(minHeight: 42)
+                    .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
             }
-            .buttonStyle(.borderedProminent)
-            .tint(WhaleTheme.accent)
+            .buttonStyle(.plain)
             .disabled(isBusy)
         }
-        .whaleCard()
     }
 }

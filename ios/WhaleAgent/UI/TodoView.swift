@@ -764,28 +764,7 @@ struct TodoView: View {
     }
 
     private func quickPreviewCard(_ preview: TodoQuickPreview) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 7) {
-                Image(systemName: "wand.and.stars")
-                    .foregroundStyle(WhaleTheme.accent)
-                Text("待办预览")
-                    .whaleFont(size: 13, weight: .bold)
-                    .foregroundStyle(WhaleTheme.ink)
-                Spacer()
-                Text("写入前确认")
-                    .whaleFont(size: 11, weight: .medium)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-            Text(preview.title)
-                .whaleFont(size: 15, weight: .semibold)
-                .foregroundStyle(WhaleTheme.ink)
-            HStack(spacing: 7) {
-                Label(preview.dueText, systemImage: "calendar")
-                Label(preview.project ?? "无项目", systemImage: "square.stack.3d.up")
-                Label(preview.estimatedMinutes.map { "\($0) 分钟" } ?? "时长未定", systemImage: "timer")
-            }
-            .whaleFont(size: 11, weight: .medium)
-            .foregroundStyle(WhaleTheme.muted)
+        OperationPreviewCard(.todo(preview)) {
             HStack(spacing: 8) {
                 Button("取消") {
                     quickPreview = nil
@@ -802,17 +781,11 @@ struct TodoView: View {
                         .foregroundStyle(WhaleTheme.onAccent)
                         .padding(.horizontal, 13)
                         .frame(minHeight: 36)
-                        .background(WhaleTheme.auroraGradient, in: Capsule())
+                        .background(WhaleTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .disabled(isSubmitting)
             }
-        }
-        .padding(12)
-        .background(WhaleTheme.card.opacity(0.94), in: RoundedRectangle(cornerRadius: 15, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 15, style: .continuous)
-                .strokeBorder(WhaleTheme.accent.opacity(0.22), lineWidth: 0.8)
         }
     }
 
