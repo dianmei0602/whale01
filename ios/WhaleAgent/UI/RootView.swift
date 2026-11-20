@@ -57,13 +57,13 @@ struct RootView: View {
             }
             if environment["WHALE_DEMO_PREVIEW"] == "1" {
                 model.presentedConfirmation = PendingTool(
-                    tool: "create_calendar_event",
+                    tool: "create_reminder",
                     toolCallId: "demo-preview",
                     operationId: "demo-preview-operation",
                     arguments: [
-                        "title": .string("整理周报"),
-                        "startAt": .string(ToolDate.iso(Date().addingTimeInterval(86_400))),
-                        "endAt": .string(ToolDate.iso(Date().addingTimeInterval(86_400 + 3_600)))
+                        "title": .string("给周报安排时间"),
+                        "dueAt": .string(ToolDate.iso(Date().addingTimeInterval(86_400))),
+                        "notes": .string("演示统一操作预览")
                     ],
                     requiresConfirmation: true
                 )

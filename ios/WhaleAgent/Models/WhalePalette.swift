@@ -151,12 +151,12 @@ enum WhalePaletteResolver {
     ]
 
     private static let seaSaltDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0x83C7E4, .accentDeep: 0x69B4D4, .accentSoft: 0x2A414B,
+        .accent: 0x8DCFE9, .accentDeep: 0x6FBBDA, .accentSoft: 0x344D57,
         .moon: 0xA8C4D2, .coral: 0xE7AF80, .ink: 0xF4F8FA,
-        .muted: 0xC2CED3, .background: 0x171F23, .card: 0x202A2F,
-        .cardSolid: 0x29353B, .soft: 0x29353B, .line: 0x3D4E55,
-        .field: 0x1F292E, .chrome: 0x1A2226, .onAccent: 0x10232C,
-        .buttonInk: 0x10232C, .glassStroke: 0x3D4E55, .warm: 0xE7B979,
+        .muted: 0xC8D3D7, .background: 0x1F292E, .card: 0x2B373D,
+        .cardSolid: 0x354248, .soft: 0x354248, .line: 0x495B63,
+        .field: 0x2A353A, .chrome: 0x242E33, .onAccent: 0x10232C,
+        .buttonInk: 0x10232C, .glassStroke: 0x495B63, .warm: 0xE7B979,
         .success: 0x63C99B, .danger: 0xEF858C,
         .categoryBlue: 0x203944, .categorySteel: 0x263640,
         .categorySand: 0x403326, .categoryRose: 0x402D34,
@@ -183,12 +183,12 @@ enum WhalePaletteResolver {
     ]
 
     private static let nightSeaDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0x8DC8D8, .accentDeep: 0xE99B99, .accentSoft: 0x2C3D42,
+        .accent: 0x97D0DF, .accentDeep: 0xEFA6A3, .accentSoft: 0x374A4F,
         .moon: 0xAFC1C3, .coral: 0xEB999A, .ink: 0xFFF8E7,
-        .muted: 0xD0D5D0, .background: 0x181B1C, .card: 0x23282A,
-        .cardSolid: 0x2B3235, .soft: 0x2B3235, .line: 0x424C4E,
-        .field: 0x22282A, .chrome: 0x1D2224, .onAccent: 0x0D2932,
-        .buttonInk: 0x0D2932, .glassStroke: 0x424C4E, .warm: 0xEBC47D,
+        .muted: 0xD5DAD5, .background: 0x22292B, .card: 0x2D3436,
+        .cardSolid: 0x364043, .soft: 0x364043, .line: 0x4C5658,
+        .field: 0x2C3436, .chrome: 0x282F31, .onAccent: 0x0D2932,
+        .buttonInk: 0x0D2932, .glassStroke: 0x4C5658, .warm: 0xEBC47D,
         .success: 0x65C698, .danger: 0xEF858C,
         .categoryBlue: 0x213A43, .categorySteel: 0x293438,
         .categorySand: 0x3B3327, .categoryRose: 0x402B2D,
@@ -215,12 +215,12 @@ enum WhalePaletteResolver {
     ]
 
     private static let gildedDark: [WhalePaletteToken: UInt32] = [
-        .accent: 0xFFE29A, .accentDeep: 0x69A9CE, .accentSoft: 0x45391F,
+        .accent: 0xFFE4A1, .accentDeep: 0x72B4DA, .accentSoft: 0x4F4226,
         .moon: 0x9BC2D0, .coral: 0xE2836B, .ink: 0xFFF0C9,
-        .muted: 0xD9D0BF, .background: 0x211D17, .card: 0x2B271F,
-        .cardSolid: 0x352F24, .soft: 0x352F24, .line: 0x514735,
-        .field: 0x2A261E, .chrome: 0x262117, .onAccent: 0x241A07,
-        .buttonInk: 0x241A07, .glassStroke: 0x514735, .warm: 0xEDBD6D,
+        .muted: 0xDED6C6, .background: 0x2A241B, .card: 0x352F25,
+        .cardSolid: 0x40392C, .soft: 0x40392C, .line: 0x5C503B,
+        .field: 0x342E24, .chrome: 0x2F291F, .onAccent: 0x241A07,
+        .buttonInk: 0x241A07, .glassStroke: 0x5C503B, .warm: 0xEDBD6D,
         .success: 0x71C99B, .danger: 0xE07E6A,
         .categoryBlue: 0x243947, .categorySteel: 0x303A3D,
         .categorySand: 0x44371F, .categoryRose: 0x433027,

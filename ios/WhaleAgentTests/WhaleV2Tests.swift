@@ -28,7 +28,7 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(light[.background], 0xF9F6E5)
 
         let dark = WhalePaletteResolver.darkValues(.nightSea)
-        XCTAssertEqual(dark[.background], 0x181B1C)
+        XCTAssertEqual(dark[.background], 0x22292B)
         XCTAssertEqual(dark[.ink], 0xF9F6E5)
         XCTAssertEqual(dark[.danger], 0xEF858C)
     }
@@ -40,10 +40,10 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(light[.coral], 0x944523)
 
         let dark = WhalePaletteResolver.darkValues(.gilded)
-        XCTAssertEqual(dark[.background], 0x211D17)
+        XCTAssertEqual(dark[.background], 0x2A241B)
         XCTAssertEqual(dark[.ink], 0xFBDC92)
         XCTAssertEqual(dark[.accent], 0xFBDC92)
-        XCTAssertEqual(dark[.accentDeep], 0x69A9CE)
+        XCTAssertEqual(dark[.accentDeep], 0x72B4DA)
     }
 
     func testAppearancePalettesKeepKeyTextAboveAccessibilityContrast() {
