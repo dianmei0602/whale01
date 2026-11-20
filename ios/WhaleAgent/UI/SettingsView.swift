@@ -352,10 +352,17 @@ struct SettingsView: View {
                 appearanceOption("自动", "跟随系统", mode: "system", swatch: .auto)
             }
 
-            Text("配色主题")
-                .whaleFont(size: 13, weight: .semibold)
-                .foregroundStyle(WhaleTheme.muted)
-                .padding(.top, 4)
+            HStack(alignment: .firstTextBaseline) {
+                Text("配色主题")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.muted)
+                Spacer()
+                Text("当前 \(selectedPalette.title)")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.accent)
+                    .accessibilityIdentifier("appearance-current")
+            }
+            .padding(.top, 4)
 
             Text("预览会随日间或夜间显示实际页面色、卡片色、操作色和提示色。")
                 .whaleFont(size: 12)

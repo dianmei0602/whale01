@@ -179,6 +179,10 @@ final class InteractionUITests: XCTestCase {
         let app = launch()
         app.buttons["assistant-settings"].tap()
 
+        let paletteNames = ["seaSalt": "海盐", "nightSea": "夜海", "gilded": "鎏金"]
+        let current = app.staticTexts["appearance-current"]
+        XCTAssertTrue(current.waitForExistence(timeout: 5))
+
         for palette in ["seaSalt", "nightSea", "gilded"] {
             let option = app.buttons["appearance-palette-" + palette]
             if !option.waitForExistence(timeout: 5) {
@@ -187,9 +191,13 @@ final class InteractionUITests: XCTestCase {
             XCTAssertTrue(option.waitForExistence(timeout: 5))
             option.tap()
             XCTAssertTrue(option.isSelected)
+            let expected = "当前 " + (paletteNames[palette] ?? "")
+            let updated = NSPredicate(format: "label == %@", expected)
+            expectation(for: updated, evaluatedWith: current)
+            waitForExpectations(timeout: 5)
             // Screenshot capture can otherwise read the previous compositor
             // frame even though the accessibility selected state has updated.
-            Thread.sleep(forTimeInterval: 1.2)
+            Thread.sleep(forTimeInterval: 2)
             attach("appearance-live-" + palette)
         }
 
