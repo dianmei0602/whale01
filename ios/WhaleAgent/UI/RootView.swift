@@ -43,7 +43,12 @@ struct RootView: View {
             )
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView(model: model, isDetailOpen: $settingsDetailOpen, onBackToChat: { showSettings = false })
+            SettingsView(
+                model: model,
+                appearanceStore: appearanceStore,
+                isDetailOpen: $settingsDetailOpen,
+                onBackToChat: { showSettings = false }
+            )
                 .presentationDragIndicator(.visible)
         }
         .task {

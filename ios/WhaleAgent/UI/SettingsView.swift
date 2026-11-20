@@ -134,10 +134,10 @@ fileprivate enum PermissionCatalog {
 
 struct SettingsView: View {
     @ObservedObject var model: AppModel
+    @ObservedObject var appearanceStore: WhaleAppearanceStore
     @Binding var isDetailOpen: Bool
     var onBackToChat: () -> Void = {}
 
-    @EnvironmentObject private var appearanceStore: WhaleAppearanceStore
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("whale.appearance") private var appearance = "system"
     @AppStorage("whale.profile.nickname") private var profileNickname = ""
