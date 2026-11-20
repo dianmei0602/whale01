@@ -5,6 +5,7 @@ import UIKit
 @MainActor
 struct RootView: View {
     @StateObject private var model = AppModel()
+    @StateObject private var appearanceStore = WhaleAppearanceStore()
     @StateObject private var keyboard = KeyboardObserver()
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var showRecords = false
@@ -14,16 +15,17 @@ struct RootView: View {
     @State private var composerFocused = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
-    @AppStorage(WhalePaletteStyle.storageKey) private var paletteRaw = WhalePaletteStyle.seaSalt.rawValue
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
 
     var body: some View {
         pager
+        .id(appearanceStore.palette.rawValue)
         .background(WhaleTheme.background.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
         .tint(WhaleTheme.accent)
         .environment(\.whalePaletteStyle, selectedPalette)
+        .environmentObject(appearanceStore)
         .preferredColorScheme(colorScheme)
         .dynamicTypeSize(preferredTextSize)
         .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
@@ -45,13 +47,16 @@ struct RootView: View {
                 .presentationDragIndicator(.visible)
         }
         .task {
+            WhaleSystemChrome.apply(selectedPalette)
+        }
+        .task {
 #if DEBUG
             let environment = ProcessInfo.processInfo.environment
             if let raw = environment["WHALE_DEMO_INITIAL_CHANNEL"], let channel = DiscoverChannel(rawValue: raw) { discoverChannel = channel }
             if environment["WHALE_DEMO_HOME"] == "1" || environment["WHALE_DEMO_WEATHER"] == "1" { page = .conversation }
             if let raw = environment["WHALE_DEMO_PALETTE"],
                let palette = WhalePaletteStyle(rawValue: raw) {
-                paletteRaw = palette.rawValue
+                appearanceStore.select(palette)
             }
             if environment["WHALE_DEMO_CONTEXT"] == "1" {
                 model.seedDemoWorkingContext()
@@ -94,6 +99,9 @@ struct RootView: View {
             composerFocused = false
             UISelectionFeedbackGenerator().selectionChanged()
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        .onChange(of: appearanceStore.palette) { _, palette in
+            WhaleSystemChrome.apply(palette)
         }
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenChat)) { _ in
             showRecords = false; showSettings = false; page = .conversation
@@ -179,7 +187,7 @@ struct RootView: View {
         appearance == "light" ? .light : appearance == "dark" ? .dark : nil
     }
     private var selectedPalette: WhalePaletteStyle {
-        WhalePaletteStyle(rawValue: paletteRaw) ?? .seaSalt
+        appearanceStore.palette
     }
     private var preferredTextSize: DynamicTypeSize {
 #if DEBUG

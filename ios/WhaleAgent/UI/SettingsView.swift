@@ -137,8 +137,9 @@ struct SettingsView: View {
     @Binding var isDetailOpen: Bool
     var onBackToChat: () -> Void = {}
 
+    @EnvironmentObject private var appearanceStore: WhaleAppearanceStore
+    @Environment(\.colorScheme) private var colorScheme
     @AppStorage("whale.appearance") private var appearance = "system"
-    @AppStorage(WhalePaletteStyle.storageKey) private var paletteRaw = WhalePaletteStyle.seaSalt.rawValue
     @AppStorage("whale.profile.nickname") private var profileNickname = ""
     @AppStorage("whale.profile.bio") private var profileBio = ""
     @State private var showProfileEditor = false
@@ -155,6 +156,7 @@ struct SettingsView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)
             }
+            .background(WhaleBackdrop())
             .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .onTapGesture { hideKeyboard() }
@@ -354,6 +356,11 @@ struct SettingsView: View {
                 .foregroundStyle(WhaleTheme.muted)
                 .padding(.top, 4)
 
+            Text("预览会随日间或夜间显示实际页面色、卡片色、操作色和提示色。")
+                .whaleFont(size: 12)
+                .foregroundStyle(WhaleTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+
             VStack(spacing: 8) {
                 ForEach(WhalePaletteStyle.allCases) { palette in
                     paletteOption(palette)
@@ -413,22 +420,15 @@ struct SettingsView: View {
         let selected = selectedPalette == palette
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
-                paletteRaw = palette.rawValue
+                appearanceStore.select(palette)
             }
             UISelectionFeedbackGenerator().selectionChanged()
         } label: {
             HStack(spacing: 13) {
-                HStack(spacing: 0) {
-                    ForEach(Array(palette.previewColors.enumerated()), id: \.offset) { _, color in
-                        color.frame(maxWidth: .infinity)
-                    }
-                }
-                .frame(width: 112, height: 42)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.16), lineWidth: 0.7)
-                }
+                WhalePaletteInterfacePreview(
+                    palette: palette,
+                    isDark: colorScheme == .dark
+                )
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(palette.title)
@@ -437,6 +437,8 @@ struct SettingsView: View {
                     Text(palette.subtitle)
                         .whaleFont(size: 12)
                         .foregroundStyle(WhaleTheme.muted)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer(minLength: 8)
@@ -446,7 +448,8 @@ struct SettingsView: View {
                     .foregroundStyle(selected ? WhaleTheme.accent : WhaleTheme.muted.opacity(0.55))
             }
             .padding(.horizontal, 12)
-            .frame(minHeight: 62)
+            .padding(.vertical, 8)
+            .frame(minHeight: 78)
             .background(WhaleTheme.card)
             .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
             .overlay {
@@ -457,6 +460,7 @@ struct SettingsView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(palette.title)配色")
+        .accessibilityValue(palette.roleSummary)
         .accessibilityHint("切换整个 App 的配色，明暗模式保持不变")
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier("appearance-palette-\(palette.rawValue)")
@@ -464,29 +468,91 @@ struct SettingsView: View {
 
     @ViewBuilder
     private func swatchPreview(_ swatch: AppearanceSwatch) -> some View {
-        ZStack {
-            switch swatch {
-            case .dark:
-                Color(light: 0x182126, dark: 0x182126)
-            case .light:
-                Color(light: 0xF3F7F9, dark: 0xF3F7F9)
-            case .auto:
-                HStack(spacing: 0) {
-                    Color(light: 0x182126, dark: 0x182126)
-                    Color(light: 0xF3F7F9, dark: 0xF3F7F9)
-                }
+        switch swatch {
+        case .dark:
+            appearanceSwatchFace(selectedPalette.previewValues(isDark: true))
+        case .light:
+            appearanceSwatchFace(selectedPalette.previewValues(isDark: false))
+        case .auto:
+            HStack(spacing: 0) {
+                appearanceSwatchFace(selectedPalette.previewValues(isDark: true))
+                appearanceSwatchFace(selectedPalette.previewValues(isDark: false))
             }
+        }
+    }
 
+    private func appearanceSwatchFace(_ preview: WhalePalettePreviewValues) -> some View {
+        ZStack {
+            Color(hex: preview.background)
             VStack(spacing: 4) {
-                Capsule().fill(WhaleTheme.accent.opacity(0.8)).frame(width: 24, height: 3)
-                Capsule().fill(WhaleTheme.muted.opacity(0.35)).frame(width: 34, height: 3)
-                Capsule().fill(WhaleTheme.muted.opacity(0.22)).frame(width: 18, height: 3)
+                Capsule().fill(Color(hex: preview.accent).opacity(0.9)).frame(width: 24, height: 3)
+                Capsule().fill(Color(hex: preview.ink).opacity(0.38)).frame(width: 34, height: 3)
+                Capsule().fill(Color(hex: preview.ink).opacity(0.22)).frame(width: 18, height: 3)
             }
         }
     }
 
     private var selectedPalette: WhalePaletteStyle {
-        WhalePaletteStyle(rawValue: paletteRaw) ?? .seaSalt
+        appearanceStore.palette
+    }
+}
+
+private struct WhalePaletteInterfacePreview: View {
+    let palette: WhalePaletteStyle
+    let isDark: Bool
+
+    private var preview: WhalePalettePreviewValues {
+        palette.previewValues(isDark: isDark)
+    }
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(hex: preview.background))
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 5) {
+                    Capsule()
+                        .fill(Color(hex: preview.ink))
+                        .frame(width: 34, height: 4)
+                    Spacer(minLength: 4)
+                    Capsule()
+                        .fill(Color(hex: preview.accent))
+                        .frame(width: 22, height: 7)
+                }
+
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color(hex: preview.card))
+                    .overlay(alignment: .leading) {
+                        HStack(spacing: 5) {
+                            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                .fill(Color(hex: preview.accent))
+                                .frame(width: 18, height: 5)
+                            Circle()
+                                .fill(Color(hex: preview.notice))
+                                .frame(width: 6, height: 6)
+                            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                .fill(Color(hex: preview.ink).opacity(0.34))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 4)
+                                .padding(.trailing, 9)
+                        }
+                        .padding(.horizontal, 8)
+                    }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(Color(hex: preview.ink).opacity(0.10), lineWidth: 0.7)
+                    }
+                    .frame(height: 29)
+            }
+            .padding(8)
+        }
+        .frame(width: 118, height: 62)
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color(hex: preview.ink).opacity(0.12), lineWidth: 0.7)
+        }
+        .accessibilityHidden(true)
     }
 }
 
@@ -1225,10 +1291,13 @@ struct DeveloperSettingsView: View {
             Section("说明") {
                 Text("本机直连模式把 DeepSeek 密钥编译进安装包，只适合个人设备；云后端模式把密钥留在服务器。切换后会自动重新检查。")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(WhaleTheme.muted)
             }
         }
         .scrollDismissesKeyboard(.interactively)
+        .scrollContentBackground(.hidden)
+        .background(WhaleBackdrop())
+        .tint(WhaleTheme.accent)
         .navigationTitle("开发设置")
         .navigationBarTitleDisplayMode(.inline)
     }

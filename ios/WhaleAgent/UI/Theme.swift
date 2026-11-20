@@ -1,21 +1,29 @@
 import SwiftUI
+import UIKit
 
-private extension UIColor {
-    convenience init(rgb: UInt32) {
-        self.init(
-            red: CGFloat((rgb >> 16) & 0xFF) / 255,
-            green: CGFloat((rgb >> 8) & 0xFF) / 255,
-            blue: CGFloat(rgb & 0xFF) / 255,
-            alpha: 1
-        )
-    }
-}
+@MainActor
+enum WhaleSystemChrome {
+    static func apply(_ palette: WhalePaletteStyle) {
+        let chrome = UIColor(WhalePaletteResolver.color(.chrome, style: palette))
+        let line = UIColor(WhalePaletteResolver.color(.line, style: palette))
+        let ink = UIColor(WhalePaletteResolver.color(.ink, style: palette))
 
-extension Color {
-    init(light: UInt32, dark: UInt32) {
-        self.init(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark ? UIColor(rgb: dark) : UIColor(rgb: light)
-        })
+        let tab = UITabBarAppearance()
+        tab.configureWithOpaqueBackground()
+        tab.backgroundColor = chrome
+        tab.shadowColor = line
+        UITabBar.appearance().standardAppearance = tab
+        UITabBar.appearance().scrollEdgeAppearance = tab
+
+        let navigation = UINavigationBarAppearance()
+        navigation.configureWithOpaqueBackground()
+        navigation.backgroundColor = chrome
+        navigation.shadowColor = line
+        navigation.titleTextAttributes = [.foregroundColor: ink]
+        navigation.largeTitleTextAttributes = [.foregroundColor: ink]
+        UINavigationBar.appearance().standardAppearance = navigation
+        UINavigationBar.appearance().compactAppearance = navigation
+        UINavigationBar.appearance().scrollEdgeAppearance = navigation
     }
 }
 
@@ -164,7 +172,7 @@ extension DiscoverChannel {
         case .game: return WhaleTheme.categorySandInk
         case .music: return WhaleTheme.categoryRoseInk
         case .headline: return WhaleTheme.categoryMistInk
-        case .weibo: return Color(light: 0x7E4B47, dark: 0xE0B0AA)
+        case .weibo: return WhaleTheme.categoryRoseInk
         }
     }
     var homeCardBackground: Color {

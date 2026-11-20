@@ -175,4 +175,24 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(restored.isSelected)
     }
 
+    func testEveryAppearancePaletteUpdatesInPlace() {
+        let app = launch()
+        app.buttons["assistant-settings"].tap()
+
+        for palette in ["seaSalt", "nightSea", "gilded"] {
+            let option = app.buttons["appearance-palette-" + palette]
+            if !option.waitForExistence(timeout: 5) {
+                app.scrollViews.firstMatch.swipeUp()
+            }
+            XCTAssertTrue(option.waitForExistence(timeout: 5))
+            option.tap()
+            XCTAssertTrue(option.isSelected)
+            attach("appearance-live-" + palette)
+        }
+
+        app.buttons["关闭设置"].tap()
+        XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
+        attach("home-live-gilded")
+    }
+
 }

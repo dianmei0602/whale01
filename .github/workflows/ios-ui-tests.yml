@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Run all native and UI tests, or retry UI tests only
+        description: Run all native and UI tests, UI tests, or the appearance switch regression
         type: choice
-        options: [all, ui]
+        options: [all, ui, appearance]
         default: all
   workflow_call:
     inputs:
@@ -47,7 +47,7 @@ jobs:
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
       - name: Run native unit tests
-        if: ${{ inputs.scope != 'ui' }}
+        if: ${{ inputs.scope != 'ui' && inputs.scope != 'appearance' }}
         working-directory: ios
         run: |
           set -o pipefail
@@ -71,6 +71,10 @@ jobs:
         working-directory: ios
         run: |
           set -o pipefail
+          TEST_FILTER=()
+          if [ "${{ inputs.scope }}" = "appearance" ]; then
+            TEST_FILTER=(-only-testing:WhaleAgentUITests/InteractionUITests/testEveryAppearancePaletteUpdatesInPlace)
+          fi
           # Simulator UI tests flake when the simulator render server crashes
           # (Launch/terminate timeouts), so a failed test gets one automatic
           # retry instead of failing the whole regression on infrastructure noise.
@@ -78,6 +82,7 @@ jobs:
             -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO \
             -test-timeouts-enabled YES -maximum-test-execution-time-allowance 90 \
             -test-iterations 2 -retry-tests-on-failure \
+            "${TEST_FILTER[@]}" \
             -derivedDataPath build -resultBundlePath build/InteractionResults.xcresult \
             CODE_SIGNING_ALLOWED=NO test | tee interaction-test.log
       - name: Export interaction screenshots

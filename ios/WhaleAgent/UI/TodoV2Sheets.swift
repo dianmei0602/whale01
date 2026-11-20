@@ -64,7 +64,7 @@ struct TodoDetailSheet: View {
                                             .font(.body.weight(.semibold))
                                         Text("到 \(candidate.end.formatted(date: .omitted, time: .shortened))")
                                             .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(WhaleTheme.muted)
                                     }
                                     Spacer()
                                     Image(systemName: "arrow.right.circle")
@@ -73,7 +73,7 @@ struct TodoDetailSheet: View {
                         }
                     } else {
                         Text("当前在收件箱，可先设置时间。")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(WhaleTheme.muted)
                     }
                     Button("智能排期") { Task { await loadCandidates() } }
                     Button("移入收件箱") { Task { await moveToInbox() } }
@@ -96,6 +96,9 @@ struct TodoDetailSheet: View {
                         .disabled(isBusy)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(WhaleBackdrop())
+            .tint(WhaleTheme.accent)
             .navigationTitle("待办详情")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -194,7 +197,7 @@ struct TodoScheduleSheet: View {
                             .font(.headline)
                         Text("读取真实日历后给出候选空档；点选后才写入提醒时间。")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(WhaleTheme.muted)
                     }
                     .padding(.vertical, 4)
                 }
@@ -207,7 +210,7 @@ struct TodoScheduleSheet: View {
                         }
                     } else if candidates.isEmpty {
                         Text(errorText ?? "今天没有找到合适空档。")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(WhaleTheme.muted)
                     } else {
                         ForEach(candidates) { candidate in
                             Button {
@@ -221,7 +224,7 @@ struct TodoScheduleSheet: View {
                                             .font(.body.weight(.semibold))
                                         Text("至 \(candidate.end.formatted(date: .omitted, time: .shortened))")
                                             .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                            .foregroundStyle(WhaleTheme.muted)
                                     }
                                     Spacer()
                                     Image(systemName: "checkmark.circle")
@@ -241,6 +244,9 @@ struct TodoScheduleSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(WhaleBackdrop())
+            .tint(WhaleTheme.accent)
             .navigationTitle("智能排期")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -342,7 +348,7 @@ struct TodoFromMessageSheet: View {
                 Section {
                     Text("确认后才会写入系统提醒事项。原回答不会被修改。")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(WhaleTheme.muted)
                 }
                 if let errorText {
                     Section {
@@ -351,6 +357,9 @@ struct TodoFromMessageSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(WhaleBackdrop())
+            .tint(WhaleTheme.accent)
             .navigationTitle("转为待办")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

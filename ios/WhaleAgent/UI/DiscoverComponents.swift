@@ -842,7 +842,7 @@ struct WeiboHotRowCard: View {
         HStack(alignment: .top, spacing: 11) {
             Text("\(item.rank)")
                 .whaleFont(size: 13, weight: .heavy, design: .rounded)
-                .foregroundStyle(item.rank <= 3 ? Color.white : WhaleTheme.muted)
+                .foregroundStyle(item.rank <= 3 ? WhaleTheme.onAccent : WhaleTheme.muted)
                 .frame(width: 27, height: 27)
                 .background(
                     Circle().fill(item.rank <= 3 ? WhaleTheme.danger : WhaleTheme.soft.opacity(0.7))
@@ -866,7 +866,7 @@ struct WeiboHotRowCard: View {
                     if !item.tag.isEmpty {
                         Text(item.tag)
                             .whaleFont(size: 13, weight: .bold)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(WhaleTheme.onAccent)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(WhaleTheme.danger, in: Capsule())

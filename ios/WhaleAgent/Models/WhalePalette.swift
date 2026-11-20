@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import UIKit
 
@@ -20,42 +21,67 @@ enum WhalePaletteStyle: String, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .seaSalt: return "蓝 · 暖棕"
-        case .nightSea: return "夜海 · 沙漠红"
-        case .gilded: return "亮金 · 碧城"
+        case .seaSalt: return "雾蓝操作 · 暖棕提示"
+        case .nightSea: return "夜海蓝操作 · 沙漠红提示"
+        case .gilded: return "碧城操作 · 亮金层次"
         }
     }
 
-    var previewColors: [Color] {
+    var roleSummary: String {
         switch self {
-        case .seaSalt:
-            return [
-                Color(hex: 0x246F95),
-                Color(hex: 0xDCEFF6),
-                Color(hex: 0xA75F36),
-                Color(hex: 0xF3F7F9)
-            ]
-        case .nightSea:
-            return [
-                Color(hex: 0x0E4258),
-                Color(hex: 0x992E34),
-                Color(hex: 0xF9F6E5),
-                Color(hex: 0x17100F)
-            ]
-        case .gilded:
-            return [
-                Color(hex: 0xFBDC92),
-                Color(hex: 0x944523),
-                Color(hex: 0x0D4D76),
-                Color(hex: 0x0A0907)
-            ]
+        case .seaSalt: return "海盐：页面采用雾白和海蓝，暖棕只用于提醒与需要注意的状态。"
+        case .nightSea: return "夜海：月苍白作为页面底色，夜海蓝承担操作，沙漠红标记提醒。"
+        case .gilded: return "鎏金：碧城承担主要操作，亮金建立层级，棕红标记提醒；夜间自动改用亮金前景。"
         }
+    }
+
+    func previewValues(isDark: Bool) -> WhalePalettePreviewValues {
+        let values = isDark
+            ? WhalePaletteResolver.darkValues(self)
+            : WhalePaletteResolver.lightValues(self)
+        return WhalePalettePreviewValues(
+            background: values[.background]!,
+            card: values[.card]!,
+            accent: values[.accent]!,
+            notice: values[.danger]!,
+            ink: values[.ink]!
+        )
     }
 
     static var current: WhalePaletteStyle {
         WhalePaletteStyle(
             rawValue: UserDefaults.standard.string(forKey: storageKey) ?? ""
         ) ?? .seaSalt
+    }
+}
+
+struct WhalePalettePreviewValues: Equatable {
+    let background: UInt32
+    let card: UInt32
+    let accent: UInt32
+    let notice: UInt32
+    let ink: UInt32
+}
+
+/// Owns the selected palette so every appearance surface observes the same
+/// value. Reading UserDefaults inside the colour provider alone is not a
+/// SwiftUI dependency and can leave already-rendered controls on the old tone.
+@MainActor
+final class WhaleAppearanceStore: ObservableObject {
+    @Published private(set) var palette: WhalePaletteStyle
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        palette = WhalePaletteStyle(
+            rawValue: defaults.string(forKey: WhalePaletteStyle.storageKey) ?? ""
+        ) ?? .seaSalt
+    }
+
+    func select(_ palette: WhalePaletteStyle) {
+        guard palette != self.palette else { return }
+        defaults.set(palette.rawValue, forKey: WhalePaletteStyle.storageKey)
+        self.palette = palette
     }
 }
 
@@ -106,9 +132,11 @@ enum WhalePaletteToken: CaseIterable {
 }
 
 enum WhalePaletteResolver {
-    static func color(_ token: WhalePaletteToken) -> Color {
+    static func color(
+        _ token: WhalePaletteToken,
+        style: WhalePaletteStyle = .current
+    ) -> Color {
         Color(uiColor: UIColor { traits in
-            let style = WhalePaletteStyle.current
             let values = traits.userInterfaceStyle == .dark
                 ? darkValues(style)
                 : lightValues(style)

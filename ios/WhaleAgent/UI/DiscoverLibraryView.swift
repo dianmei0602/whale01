@@ -40,11 +40,12 @@ struct DiscoverLibraryView: View {
                                         }
                                     }
                                     .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(WhaleTheme.muted)
                                 }
                                 .padding(.vertical, 3)
                             }
                             .buttonStyle(.plain)
+                            .listRowBackground(WhaleTheme.card)
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     remove(article)
@@ -54,8 +55,11 @@ struct DiscoverLibraryView: View {
                             }
                         }
                     }
+                    .scrollContentBackground(.hidden)
+                    .background(WhaleBackdrop())
                 }
             }
+            .tint(WhaleTheme.accent)
             .navigationTitle("收藏与稍后读")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

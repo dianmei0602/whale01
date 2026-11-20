@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Quick compile, palette screenshots, UI-only regression, or full regression
+        description: Quick compile, palette screenshots, appearance switching, UI-only regression, or full regression
         type: choice
-        options: [quick, palette, ui, interaction]
+        options: [quick, palette, appearance, ui, interaction]
         default: quick
   push:
     paths:
@@ -77,8 +77,8 @@ jobs:
               -sdk iphonesimulator \
               -destination 'generic/platform=iOS Simulator' \
               -derivedDataPath build \
-              MARKETING_VERSION=2.0.2 \
-              CURRENT_PROJECT_VERSION="202.${{ github.run_attempt }}" \
+              MARKETING_VERSION=2.0.3 \
+              CURRENT_PROJECT_VERSION="203.${{ github.run_attempt }}" \
               CODE_SIGNING_ALLOWED=NO \
               CODE_SIGNING_REQUIRED=NO \
               CODE_SIGN_IDENTITY="" \
@@ -105,6 +105,13 @@ jobs:
     with:
       scope: ui
 
+  appearance:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'appearance' }}
+    name: Appearance switching regression
+    uses: ./.github/workflows/ios-ui-tests.yml
+    with:
+      scope: appearance
+
   palette:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'palette' }}
     name: Capture Night Sea and Gilded appearance
@@ -130,8 +137,8 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
-            MARKETING_VERSION=2.0.2 \
-            CURRENT_PROJECT_VERSION="202.${{ github.run_attempt }}" \
+            MARKETING_VERSION=2.0.3 \
+            CURRENT_PROJECT_VERSION="203.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \

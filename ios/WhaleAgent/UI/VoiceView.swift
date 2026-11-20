@@ -151,7 +151,7 @@ struct VoiceView: View {
             } label: {
                 Image(systemName: primaryIcon)
                     .whaleFont(size: 24, weight: .semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(WhaleTheme.buttonInk)
                     .frame(width: 68, height: 68)
                     .background(voice.isRecording ? WhaleTheme.accent : WhaleTheme.accentDeep, in: Circle())
                     .shadow(color: WhaleTheme.accent.opacity(0.25), radius: 14, y: 7)

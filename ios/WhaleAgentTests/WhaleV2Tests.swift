@@ -46,6 +46,45 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(dark[.accentDeep], 0x72B4DA)
     }
 
+    func testAppearancePreviewsUseTheColorsActuallyRendered() {
+        for palette in WhalePaletteStyle.allCases {
+            let light = palette.previewValues(isDark: false)
+            let lightTokens = WhalePaletteResolver.lightValues(palette)
+            XCTAssertEqual(light.background, lightTokens[.background])
+            XCTAssertEqual(light.card, lightTokens[.card])
+            XCTAssertEqual(light.accent, lightTokens[.accent])
+            XCTAssertEqual(light.notice, lightTokens[.danger])
+            XCTAssertEqual(light.ink, lightTokens[.ink])
+
+            let dark = palette.previewValues(isDark: true)
+            let darkTokens = WhalePaletteResolver.darkValues(palette)
+            XCTAssertEqual(dark.background, darkTokens[.background])
+            XCTAssertEqual(dark.card, darkTokens[.card])
+            XCTAssertEqual(dark.accent, darkTokens[.accent])
+            XCTAssertEqual(dark.notice, darkTokens[.danger])
+            XCTAssertEqual(dark.ink, darkTokens[.ink])
+        }
+    }
+
+    @MainActor
+    func testAppearanceStorePublishesAndPersistsTheSelectedPalette() {
+        let suite = "whale.appearance.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let store = WhaleAppearanceStore(defaults: defaults)
+        XCTAssertEqual(store.palette, .seaSalt)
+        store.select(.nightSea)
+        XCTAssertEqual(store.palette, .nightSea)
+        XCTAssertEqual(
+            defaults.string(forKey: WhalePaletteStyle.storageKey),
+            WhalePaletteStyle.nightSea.rawValue
+        )
+
+        let restored = WhaleAppearanceStore(defaults: defaults)
+        XCTAssertEqual(restored.palette, .nightSea)
+    }
+
     func testAppearancePalettesKeepKeyTextAboveAccessibilityContrast() {
         let checks: [(String, WhalePaletteStyle, WhalePaletteToken, WhalePaletteToken)] = [
             ("night ink", .nightSea, .ink, .background),

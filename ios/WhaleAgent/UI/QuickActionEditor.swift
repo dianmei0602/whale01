@@ -26,7 +26,11 @@ struct QuickActionEditor: View {
                     ForEach(actions) { action in Label(action.title, systemImage: action.icon) }
                         .onMove { offsets, target in actions.move(fromOffsets: offsets, toOffset: target); InteractionPreferences.setQuickActions(actions) }
                 }
-            }.environment(\.editMode, .constant(.active))
+            }
+            .scrollContentBackground(.hidden)
+            .background(WhaleBackdrop())
+            .tint(WhaleTheme.accent)
+            .environment(\.editMode, .constant(.active))
                 .navigationTitle("常用操作").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
         }

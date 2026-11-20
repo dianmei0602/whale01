@@ -42,7 +42,11 @@ struct TodoTimeEditor: View {
                     }
                 } label: { if saving { ProgressView() } else { Text("添加提醒") } }
                     .disabled(saving || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }.navigationTitle("补充提醒时间").navigationBarTitleDisplayMode(.inline)
+            }
+            .scrollContentBackground(.hidden)
+            .background(WhaleBackdrop())
+            .tint(WhaleTheme.accent)
+            .navigationTitle("补充提醒时间").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() }.disabled(saving) } }
         }.onAppear { title = original }
     }

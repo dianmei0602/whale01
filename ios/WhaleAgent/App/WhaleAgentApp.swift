@@ -5,12 +5,7 @@ import UIKit
 @MainActor
 struct WhaleAgentApp: App {
     init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(WhaleTheme.chrome)
-        appearance.shadowColor = UIColor(WhaleTheme.glassStroke)
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        WhaleSystemChrome.apply(WhalePaletteStyle.current)
     }
 
     var body: some Scene {

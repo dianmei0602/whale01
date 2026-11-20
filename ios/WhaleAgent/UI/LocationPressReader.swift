@@ -65,16 +65,18 @@ enum PressToastPresenter {
         let label = UILabel()
         label.text = text
         label.font = .preferredFont(forTextStyle: .footnote)
-        label.textColor = .label
+        label.textColor = UIColor(WhaleTheme.ink)
         label.textAlignment = .center
         label.sizeToFit()
 
         let width = label.bounds.width + 26
         let height = max(label.bounds.height + 18, 38)
         let container = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        container.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.96)
+        container.backgroundColor = UIColor(WhaleTheme.card)
         container.layer.cornerRadius = height / 2
-        container.layer.shadowColor = UIColor.black.cgColor
+        container.layer.borderColor = UIColor(WhaleTheme.line).cgColor
+        container.layer.borderWidth = 0.7
+        container.layer.shadowColor = UIColor(WhaleTheme.ink).cgColor
         container.layer.shadowOpacity = 0.16
         container.layer.shadowRadius = 10
         container.layer.shadowOffset = CGSize(width: 0, height: 4)
