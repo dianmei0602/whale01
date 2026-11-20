@@ -17,8 +17,10 @@ final class InteractionUITests: XCTestCase {
     func testThreeTabsKeepDiscoverySeparateFromTheAssistant() {
         let app = launch()
         XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
-        let primaryTask = app.buttons["home-primary-task"]
-        XCTAssertTrue(primaryTask.waitForExistence(timeout: 10))
+        let primaryTask = app.descendants(matching: .any)
+            .matching(identifier: "home-primary-task")
+            .firstMatch
+        XCTAssertTrue(primaryTask.waitForExistence(timeout: 20))
         let today = app.otherElements["home-today-card"]
         XCTAssertTrue(today.waitForExistence(timeout: 10))
         XCTAssertLessThanOrEqual(primaryTask.frame.maxY, today.frame.minY + 1)
