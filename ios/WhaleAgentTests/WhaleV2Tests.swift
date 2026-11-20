@@ -29,7 +29,7 @@ final class WhaleV2Tests: XCTestCase {
 
         let dark = WhalePaletteResolver.darkValues(.nightSea)
         XCTAssertEqual(dark[.background], 0x22292B)
-        XCTAssertEqual(dark[.ink], 0xF9F6E5)
+        XCTAssertEqual(dark[.ink], 0xFFF8E7)
         XCTAssertEqual(dark[.danger], 0xEF858C)
     }
 
@@ -41,8 +41,8 @@ final class WhaleV2Tests: XCTestCase {
 
         let dark = WhalePaletteResolver.darkValues(.gilded)
         XCTAssertEqual(dark[.background], 0x2A241B)
-        XCTAssertEqual(dark[.ink], 0xFBDC92)
-        XCTAssertEqual(dark[.accent], 0xFBDC92)
+        XCTAssertEqual(dark[.ink], 0xFFF0C9)
+        XCTAssertEqual(dark[.accent], 0xFFE4A1)
         XCTAssertEqual(dark[.accentDeep], 0x72B4DA)
     }
 
