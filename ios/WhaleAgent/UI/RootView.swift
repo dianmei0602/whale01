@@ -20,6 +20,7 @@ struct RootView: View {
 
     var body: some View {
         pager
+        .background(WhaleTheme.background.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
         .tint(WhaleTheme.accent)
         .environment(\.whalePaletteStyle, selectedPalette)

@@ -196,10 +196,23 @@ struct WhaleHomeCanvas: View {
               [.executing, .awaitingConfirmation, .failed, .cancelled].contains(context.status) else {
             return nil
         }
+        let title: String
+        switch context.status {
+        case .awaitingConfirmation:
+            title = "确认「\(context.goal)」的下一步"
+        case .failed:
+            title = "继续处理「\(context.goal)」"
+        case .executing:
+            title = "查看「\(context.goal)」进度"
+        case .cancelled:
+            title = "恢复「\(context.goal)」"
+        default:
+            title = context.goal
+        }
         return AssistantCommandItem(
             id: "working-context",
-            kind: .resume,
-            title: context.goal,
+            kind: context.needsAttention ? .needsYou : .resume,
+            title: title,
             detail: context.summary,
             isWarning: context.needsAttention,
             isActionable: true
@@ -207,13 +220,17 @@ struct WhaleHomeCanvas: View {
     }
 
     private func open(command: AssistantCommandItem) {
+        if command.id == "working-context" {
+            _ = model.focusWorkingContextMessage()
+            onOpenConversation()
+            return
+        }
         switch command.kind {
         case .next:
             onOpenTodo()
         case .needsYou:
             onOpenRecords()
         case .resume:
-            if command.id == "working-context" { _ = model.focusWorkingContextMessage() }
             onOpenConversation()
         }
     }
