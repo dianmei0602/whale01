@@ -72,15 +72,20 @@ jobs:
         run: |
           set -o pipefail
           TEST_FILTER=()
+          TEST_ALLOWANCE=90
           if [ "${{ inputs.scope }}" = "appearance" ]; then
             TEST_FILTER=(-only-testing:WhaleAgentUITests/InteractionUITests/testEveryAppearancePaletteUpdatesInPlace)
+            # The focused test launches once, switches three themes with
+            # screenshots, closes Settings and captures the updated home
+            # screen. GitHub's first-run simulator is slower than 2 minutes.
+            TEST_ALLOWANCE=240
           fi
           # Simulator UI tests flake when the simulator render server crashes
           # (Launch/terminate timeouts), so a failed test gets one automatic
           # retry instead of failing the whole regression on infrastructure noise.
           xcodebuild -project WhaleAgent.xcodeproj -scheme WhaleAgentInteractions \
             -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO \
-            -test-timeouts-enabled YES -maximum-test-execution-time-allowance 90 \
+            -test-timeouts-enabled YES -maximum-test-execution-time-allowance "$TEST_ALLOWANCE" \
             -test-iterations 2 -retry-tests-on-failure \
             "${TEST_FILTER[@]}" \
             -derivedDataPath build -resultBundlePath build/InteractionResults.xcresult \
