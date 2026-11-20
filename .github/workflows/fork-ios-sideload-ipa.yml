@@ -53,6 +53,7 @@ jobs:
         run: xcodegen generate
 
       - name: Boot iPhone simulator
+        if: ${{ inputs.run_tests }}
         run: |
           set -euo pipefail
           DEVICE_ID=$(xcrun simctl list devices available -j | /usr/bin/python3 -c 'import json,sys; c=[x for rt in json.load(sys.stdin)["devices"].values() for x in rt if x["name"].startswith("iPhone")]; c.sort(key=lambda x: x["name"] != "iPhone 16 Pro"); print(c[0]["udid"] if c else "")')
