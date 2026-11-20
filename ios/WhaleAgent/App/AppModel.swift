@@ -244,6 +244,17 @@ final class AppModel: ObservableObject {
         AgentWorkingContextStore.shared.clear()
     }
 
+    #if DEBUG
+    func seedDemoWorkingContext() {
+        updateWorkingContext(
+            goal: "给周报安排时间",
+            status: .awaitingConfirmation,
+            summary: "明天 15:00 合适，等待你确认日程",
+            sourceMessageId: nil
+        )
+    }
+    #endif
+
     @discardableResult
     func focusWorkingContextMessage() -> Bool {
         guard let source = workingContext?.sourceMessageId,

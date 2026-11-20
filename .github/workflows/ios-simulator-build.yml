@@ -148,6 +148,7 @@ jobs:
           for palette in gilded nightSea; do
             SIMCTL_CHILD_WHALE_DEMO_HOME=1 \
             SIMCTL_CHILD_WHALE_DEMO_PALETTE="$palette" \
+            SIMCTL_CHILD_WHALE_DEMO_CONTEXT=1 \
               xcrun simctl launch "$DEVICE_ID" com.whale01.agent
             sleep 6
             xcrun simctl io "$DEVICE_ID" screenshot "palette-snapshots/home-${palette}.png"
@@ -158,6 +159,22 @@ jobs:
             sleep 4
             xcrun simctl io "$DEVICE_ID" screenshot "palette-snapshots/appearance-${palette}.png"
             xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            SIMCTL_CHILD_WHALE_DEMO_HOME=1 \
+            SIMCTL_CHILD_WHALE_DEMO_PALETTE="$palette" \
+            SIMCTL_CHILD_WHALE_DEMO_PREVIEW=1 \
+              xcrun simctl launch "$DEVICE_ID" com.whale01.agent
+            sleep 5
+            xcrun simctl io "$DEVICE_ID" screenshot "palette-snapshots/preview-${palette}.png"
+            xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            xcrun simctl ui "$DEVICE_ID" appearance dark
+            SIMCTL_CHILD_WHALE_DEMO_HOME=1 \
+            SIMCTL_CHILD_WHALE_DEMO_PALETTE="$palette" \
+            SIMCTL_CHILD_WHALE_DEMO_CONTEXT=1 \
+              xcrun simctl launch "$DEVICE_ID" com.whale01.agent
+            sleep 6
+            xcrun simctl io "$DEVICE_ID" screenshot "palette-snapshots/home-${palette}-dark.png"
+            xcrun simctl terminate "$DEVICE_ID" com.whale01.agent || true
+            xcrun simctl ui "$DEVICE_ID" appearance light
           done
           xcrun simctl spawn "$DEVICE_ID" log show --last 12m --style compact \
             --predicate 'process == "WhaleAgent" OR eventMessage CONTAINS "WhaleAgent"' \

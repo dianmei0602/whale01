@@ -52,6 +52,22 @@ struct RootView: View {
                let palette = WhalePaletteStyle(rawValue: raw) {
                 paletteRaw = palette.rawValue
             }
+            if environment["WHALE_DEMO_CONTEXT"] == "1" {
+                model.seedDemoWorkingContext()
+            }
+            if environment["WHALE_DEMO_PREVIEW"] == "1" {
+                model.presentedConfirmation = PendingTool(
+                    tool: "create_calendar_event",
+                    toolCallId: "demo-preview",
+                    operationId: "demo-preview-operation",
+                    arguments: [
+                        "title": .string("整理周报"),
+                        "startAt": .string(ToolDate.iso(Date().addingTimeInterval(86_400))),
+                        "endAt": .string(ToolDate.iso(Date().addingTimeInterval(86_400 + 3_600)))
+                    ],
+                    requiresConfirmation: true
+                )
+            }
             if environment["WHALE_DEMO_TODO"] == "1" { page = .records }
             if environment["WHALE_DEMO_HUB"] == "1" { page = .discover }
             if environment["WHALE_DEMO_SETTINGS"] == "1" { showSettings = true }
