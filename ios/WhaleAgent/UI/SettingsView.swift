@@ -169,6 +169,7 @@ struct SettingsView: View {
                 model.reloadMemories()
             }
         }
+        .id(appearanceStore.palette.rawValue)
     }
 
     private func hideKeyboard() {

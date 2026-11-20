@@ -187,6 +187,9 @@ final class InteractionUITests: XCTestCase {
             XCTAssertTrue(option.waitForExistence(timeout: 5))
             option.tap()
             XCTAssertTrue(option.isSelected)
+            // Screenshot capture can otherwise read the previous compositor
+            // frame even though the accessibility selected state has updated.
+            Thread.sleep(forTimeInterval: 1.2)
             attach("appearance-live-" + palette)
         }
 
