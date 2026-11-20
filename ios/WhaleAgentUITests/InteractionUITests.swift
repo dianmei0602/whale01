@@ -100,7 +100,9 @@ final class InteractionUITests: XCTestCase {
         tab(app, "conversation").tap()
         let homeScroll = app.scrollViews.firstMatch
         for channel in ["ai", "market", "game", "music", "headline", "weibo"] {
-            if !app.buttons["home-channel-" + channel].exists { homeScroll.swipeUp() }
+            for _ in 0..<4 where !app.buttons["home-channel-" + channel].exists {
+                homeScroll.swipeUp()
+            }
             XCTAssertTrue(app.buttons["home-channel-" + channel].exists)
         }
         for _ in 0..<3 {
