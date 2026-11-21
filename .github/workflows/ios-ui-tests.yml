@@ -20,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: whale-ui-tests-${{ github.ref }}
+  group: whale-ui-tests-${{ inputs.scope || 'all' }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
