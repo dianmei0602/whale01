@@ -42,7 +42,7 @@ final class HomeShortcutLayoutStore: ObservableObject {
         persist()
     }
 
-    func showAll() {
+    func restoreAll() {
         hidden.removeAll()
         persist()
     }

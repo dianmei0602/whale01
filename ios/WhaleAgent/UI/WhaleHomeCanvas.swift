@@ -346,7 +346,7 @@ struct WhaleHomeCanvas: View {
             if shortcutLayout.visibleChannels.isEmpty {
                 Button {
                     withAnimation(.snappy(duration: 0.24)) {
-                        shortcutLayout.showAll()
+                        shortcutLayout.restoreAll()
                     }
                 } label: {
                     Label("恢复 6 个常用入口", systemImage: "rectangle.grid.3x2.fill")
@@ -365,7 +365,7 @@ struct WhaleHomeCanvas: View {
                     Spacer()
                     Button("全部恢复") {
                         withAnimation(.snappy(duration: 0.24)) {
-                            shortcutLayout.showAll()
+                            shortcutLayout.restoreAll()
                         }
                     }
                     .whaleFont(size: 12, weight: .semibold)
