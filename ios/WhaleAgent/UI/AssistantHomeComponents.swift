@@ -115,14 +115,19 @@ struct AssistantShortcutTile: View {
                 .strokeBorder(channel.entryInk.opacity(0.09), lineWidth: 0.7)
         }
         .contentShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .onTapGesture {
-            guard !editing else { return }
-            onOpen()
-        }
-        .onLongPressGesture(minimumDuration: 0.55) {
-            guard !editing else { return }
-            onBeginEdit()
-        }
+        .gesture(
+            LongPressGesture(minimumDuration: 0.55)
+                .exclusively(before: TapGesture())
+                .onEnded { value in
+                    guard !editing else { return }
+                    switch value {
+                    case .first:
+                        onBeginEdit()
+                    case .second:
+                        onOpen()
+                    }
+                }
+        )
         .overlay(alignment: .topLeading) {
             if editing {
                 Button(action: onHide) {
