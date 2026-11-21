@@ -10,6 +10,7 @@ struct RootView: View {
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var showRecords = false
     @State private var showSettings = false
+    @State private var showWorkspace = false
     @State private var settingsDetailOpen = false
     @State private var composerDraft = ""
     @State private var composerFocused = false
@@ -50,6 +51,24 @@ struct RootView: View {
                 onBackToChat: { showSettings = false }
             )
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showWorkspace) {
+            WhaleWorkspaceView(model: model, onOpenMusic: {
+                showWorkspace = false
+                openDiscover(.music)
+            }) { prompt in
+                showWorkspace = false
+                page = .conversation
+                Task { @MainActor in
+                    try? await Task.sleep(nanoseconds: 250_000_000)
+                    NotificationCenter.default.post(
+                        name: .whalePrefillDraft,
+                        object: nil,
+                        userInfo: ["text": prompt]
+                    )
+                }
+            }
+            .presentationDragIndicator(.visible)
         }
         .task {
             WhaleSystemChrome.apply(selectedPalette)
@@ -93,8 +112,18 @@ struct RootView: View {
             model.refreshPermissions()
             await model.refreshDashboard(force: true)
             await model.drainSharedInbox()
+            if UserDefaults.standard.bool(forKey: "whale.open.workspace.pending") {
+                UserDefaults.standard.removeObject(forKey: "whale.open.workspace.pending")
+                showWorkspace = true
+            }
         }
-        .onOpenURL { url in Task { await model.handleSharedURL(url) } }
+        .onOpenURL { url in
+            if url.scheme == "whaleagent", url.host == "workspace" {
+                showWorkspace = true
+            } else {
+                Task { await model.handleSharedURL(url) }
+            }
+        }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             Task { await model.flushResultOutbox(); await model.drainSharedInbox() }
@@ -110,6 +139,12 @@ struct RootView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenChat)) { _ in
             showRecords = false; showSettings = false; page = .conversation
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .whaleOpenWorkspace)) { _ in
+            showRecords = false
+            showSettings = false
+            page = .conversation
+            showWorkspace = true
         }
     }
 
@@ -139,7 +174,8 @@ struct RootView: View {
     private var conversationPage: some View {
         ConversationTabView(model: model, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
-            onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
+            onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records },
+            onOpenDiscover: openDiscover, onOpenWorkspace: { showWorkspace = true })
     }
 
     /// Composer and tabs share one bottom inset. This avoids nested safe-area

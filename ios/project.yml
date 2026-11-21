@@ -52,6 +52,8 @@ targets:
       - sdk: PhotosUI.framework
       - target: WhaleAgentShare
         embed: true
+      - target: WhaleAgentWidgets
+        embed: true
   WhaleAgentSideload:
     type: application
     platform: iOS
@@ -88,6 +90,8 @@ targets:
       - sdk: PDFKit.framework
       - sdk: PhotosUI.framework
       - target: WhaleAgentShareSideload
+        embed: true
+      - target: WhaleAgentWidgetsSideload
         embed: true
   WhaleAgentShare:
     type: app-extension
@@ -132,6 +136,56 @@ targets:
         SWIFT_VERSION: "5.0"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) FREE_SIGNING"
         APPLICATION_EXTENSION_API_ONLY: YES
+  WhaleAgentWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: WhaleAgentWidgets
+        excludes:
+          - "Info.plist"
+          - "WhaleAgentWidgets.entitlements"
+      - path: Shared
+      - path: WhaleAgent/Models/DailyQuote.swift
+      - path: WhaleAgent/Models/DailyQuoteCorpus.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.whale01.agent.widgets
+        PRODUCT_NAME: WhaleAgentWidgets
+        INFOPLIST_FILE: WhaleAgentWidgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: WhaleAgentWidgets/WhaleAgentWidgets.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.0"
+        APPLICATION_EXTENSION_API_ONLY: YES
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+  WhaleAgentWidgetsSideload:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: WhaleAgentWidgets
+        excludes:
+          - "Info.plist"
+          - "WhaleAgentWidgets.entitlements"
+      - path: Shared
+      - path: WhaleAgent/Models/DailyQuote.swift
+      - path: WhaleAgent/Models/DailyQuoteCorpus.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.whale01.whaleagent.alt.widgets
+        PRODUCT_NAME: WhaleAgentWidgets
+        INFOPLIST_FILE: WhaleAgentWidgets/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.0"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) FREE_SIGNING"
+        APPLICATION_EXTENSION_API_ONLY: YES
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
   WhaleAgentTests:
     type: bundle.unit-test
     platform: iOS

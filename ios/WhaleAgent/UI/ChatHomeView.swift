@@ -11,6 +11,7 @@ struct ConversationTabView: View {
     let onOpenMusic: () -> Void
     let onOpenTodo: () -> Void
     let onOpenDiscover: (DiscoverChannel) -> Void
+    let onOpenWorkspace: () -> Void
 
     @AppStorage("whale.chat.browsingStarter") private var browsingStarter = false
     @State private var showConversation = false
@@ -43,7 +44,8 @@ struct ConversationTabView: View {
                         onOpenMusic: onOpenMusic,
                         onOpenTodo: onOpenTodo,
                         onOpenDiscover: onOpenDiscover,
-                        onOpenConversation: enterConversation
+                        onOpenConversation: enterConversation,
+                        onOpenWorkspace: onOpenWorkspace
                     )
                     .transition(.opacity)
                 } else {
@@ -108,6 +110,7 @@ struct ConversationTabView: View {
             }
             Spacer()
             Menu {
+                Button("鲸鱼工作台", systemImage: "square.stack.3d.up", action: onOpenWorkspace)
                 Button("新对话", systemImage: "square.and.pencil") { model.newConversation(); goToStarter() }
                     .disabled(model.isBusy || !model.pending.isEmpty)
                 Button("执行记录", systemImage: "clock.arrow.circlepath", action: onOpenRecords)

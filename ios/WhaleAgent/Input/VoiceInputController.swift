@@ -36,6 +36,7 @@ final class VoiceInputController: ObservableObject {
     private var finalTimeout: Task<Void, Never>?
 
     var isSupported: Bool { recognizer != nil }
+    var currentSessionID: UUID { sessionId }
 
     func toggle() async {
         if isRecording {
@@ -48,6 +49,9 @@ final class VoiceInputController: ObservableObject {
     func start() async {
         guard !isRecording, !isFinalizing else { return }
         cancel()
+        // cancel() invalidates the previous session and creates a new one.
+        // Capture the new token only after that reset, otherwise every
+        // asynchronous permission and recognition callback is discarded.
         let token = sessionId
         NotificationCenter.default.post(name: .whaleInterruptSpeech, object: nil)
         errorText = nil

@@ -9,6 +9,9 @@ struct ChatView: View {
     @Binding var focusOnAppear: Bool
     @StateObject private var voice = VoiceInputController()
     @FocusState private var inputFocused: Bool
+    @State private var voicePrefix = ""
+    @State private var voiceSessionID: UUID?
+    @State private var voiceDraftIsActive = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -57,12 +60,13 @@ struct ChatView: View {
         .task {
             if startVoiceOnAppear {
                 startVoiceOnAppear = false
-                await voice.start()
+                await beginVoice()
             } else if focusOnAppear {
                 focusOnAppear = false
                 inputFocused = true
             }
         }
+        .onDisappear { restoreVoiceDraft() }
     }
 
     private var activityState: AgentActivityState {
@@ -197,7 +201,11 @@ struct ChatView: View {
             HStack(alignment: .bottom, spacing: 9) {
                 Button {
                     inputFocused = false
-                    Task { await voice.toggle() }
+                    if voice.isRecording {
+                        voice.stop()
+                    } else {
+                        Task { await beginVoice() }
+                    }
                 } label: {
                     Image(systemName: voice.isRecording ? "waveform" : "mic")
                         .whaleFont(size: 20, weight: .medium)
@@ -272,15 +280,71 @@ struct ChatView: View {
                 .frame(height: 0.5)
         }
         .onChange(of: voice.transcript) { _, text in
-            guard !text.isEmpty else { return }
-            model.input = text
+            guard voiceDraftIsActive,
+                  let voiceSessionID,
+                  voice.currentSessionID == voiceSessionID else { return }
+            model.input = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
+        }
+        .onChange(of: voice.finalResult) { _, result in
+            guard let result,
+                  voiceDraftIsActive,
+                  result.sessionId == voiceSessionID,
+                  voice.errorText == nil else { return }
+            model.input = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
+            voiceDraftIsActive = false
+            voiceSessionID = nil
+            inputFocused = true
+        }
+        .onChange(of: voice.errorText) { _, error in
+            if error != nil { restoreVoiceDraft() }
         }
     }
 
     private func submitFromKeyboard() {
-        if voice.isRecording { voice.stop() }
+        if voice.isRecording || voice.isFinalizing {
+            Task { await finishVoiceIntoDraft() }
+            return
+        }
         inputFocused = false
         Task { await model.send() }
+    }
+
+    private func beginVoice() async {
+        voicePrefix = model.input
+        voiceDraftIsActive = true
+        voiceSessionID = nil
+        await voice.start()
+        if voice.isRecording {
+            voiceSessionID = voice.currentSessionID
+        } else {
+            restoreVoiceDraft()
+        }
+    }
+
+    private func finishVoiceIntoDraft() async {
+        guard let final = await voice.finishRecognition(),
+              !final.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            restoreVoiceDraft()
+            return
+        }
+        model.input = mergeVoiceDraft(prefix: voicePrefix, recognized: final)
+        voiceDraftIsActive = false
+        voiceSessionID = nil
+        inputFocused = true
+    }
+
+    private func mergeVoiceDraft(prefix: String, recognized: String) -> String {
+        let spoken = recognized.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !spoken.isEmpty else { return prefix }
+        guard !prefix.isEmpty else { return spoken }
+        return prefix.last?.isWhitespace == true ? prefix + spoken : prefix + "\n" + spoken
+    }
+
+    private func restoreVoiceDraft() {
+        voice.cancel()
+        if voiceDraftIsActive { model.input = voicePrefix }
+        voiceDraftIsActive = false
+        voiceSessionID = nil
     }
 
     private func scrollToBottom(_ proxy: ScrollViewProxy) {
@@ -299,6 +363,18 @@ struct MessageRow: View {
     var isHighlighted: Bool = false
     var onToggleSpeech: () -> Void = {}
     var onCreateTodo: ((String) -> Void)? = nil
+    @State private var analysisExpanded = false
+
+    private static let analysisTools: Set<String> = [
+        "get_stock_quote",
+        "search_stock",
+        "get_stock_kline",
+        "get_stock_intraday",
+        "search_web",
+        "research_web",
+        "fetch_web_content",
+        "search_merchant_prices"
+    ]
 
     var body: some View {
         Group {
@@ -332,18 +408,7 @@ struct MessageRow: View {
             } else if message.role == .assistant {
                 VStack(alignment: .leading, spacing: 6) {
                     byline
-                    Text(renderedMarkdown(message.text))
-                        .whaleFont(size: 17)
-                        .lineSpacing(4)
-                        .foregroundStyle(WhaleTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .textSelection(.enabled)
-                        .onLongPressGesture(minimumDuration: 0.65) {
-                            onToggleSpeech()
-                        }
-                        .accessibilityAction(named: isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复") {
-                            onToggleSpeech()
-                        }
+                    assistantBody
                     HStack(alignment: .bottom, spacing: 10) {
                         if let detail = message.detail, !detail.isEmpty {
                             Text(detail)
@@ -395,7 +460,32 @@ struct MessageRow: View {
                             Label(message.text, systemImage: message.executionStatus == "success" ? "checkmark.circle" : message.executionStatus == nil ? "iphone" : "exclamationmark.circle")
                                 .font(.headline).foregroundStyle(WhaleTheme.accent)
                             if let detail = message.detail, !detail.isEmpty {
-                                Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled)
+                                if shouldCollapse(message.tool, text: detail) {
+                                    VStack(alignment: .leading, spacing: 9) {
+                                        if analysisExpanded {
+                                            ScrollView(.vertical) {
+                                                Text(detail)
+                                                    .font(.body)
+                                                    .foregroundStyle(WhaleTheme.ink)
+                                                    .textSelection(.enabled)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                            }
+                                            .frame(maxHeight: 340)
+                                            .scrollIndicators(.visible)
+                                            .padding(10)
+                                            .background(WhaleTheme.soft.opacity(0.7), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                        } else {
+                                            Text(detail)
+                                                .font(.body)
+                                                .foregroundStyle(WhaleTheme.ink)
+                                                .textSelection(.enabled)
+                                                .lineLimit(5)
+                                        }
+                                        analysisToggle(toolLabel: true)
+                                    }
+                                } else {
+                                    Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled)
+                                }
                             }
                         }.frame(maxWidth: .infinity, alignment: .leading).whaleCard(padding: 14)
                     }
@@ -431,8 +521,93 @@ struct MessageRow: View {
                         Label("转为待办", systemImage: "checklist")
                     }
                 }
+                Button {
+                    _ = WhaleWorkspaceStore.shared.capture(
+                        title: String(message.text.prefix(60)),
+                        body: message.text,
+                        kind: .chat,
+                        sourceURL: "whaleagent://message/\(message.id.uuidString)",
+                        isKnowledge: true
+                    )
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                } label: {
+                    Label("保存到知识库", systemImage: "books.vertical")
+                }
             }
         }
+    }
+
+    @ViewBuilder
+    private var assistantBody: some View {
+        let collapsed = shouldCollapse(message.tool, text: message.text)
+        if collapsed {
+            VStack(alignment: .leading, spacing: 9) {
+                if analysisExpanded {
+                    ScrollView(.vertical) {
+                        Text(renderedMarkdown(message.text))
+                            .whaleFont(size: 17)
+                            .lineSpacing(4)
+                            .foregroundStyle(WhaleTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .frame(maxHeight: 360)
+                    .scrollIndicators(.visible)
+                    .padding(11)
+                    .background(WhaleTheme.soft.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                } else {
+                    Text(renderedMarkdown(message.text))
+                        .whaleFont(size: 17)
+                        .lineSpacing(4)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .textSelection(.enabled)
+                        .lineLimit(5)
+                }
+                analysisToggle(toolLabel: message.tool != nil)
+            }
+        } else {
+            Text(renderedMarkdown(message.text))
+                .whaleFont(size: 17)
+                .lineSpacing(4)
+                .foregroundStyle(WhaleTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .textSelection(.enabled)
+                .onLongPressGesture(minimumDuration: 0.65) {
+                    onToggleSpeech()
+                }
+                .accessibilityAction(named: isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复") {
+                    onToggleSpeech()
+                }
+        }
+    }
+
+    private func analysisToggle(toolLabel: Bool) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                analysisExpanded.toggle()
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: analysisExpanded ? "chevron.up" : "text.alignleft")
+                    .whaleFont(size: 12, weight: .semibold)
+                Text(analysisExpanded ? "收起详情" : (toolLabel ? "查看分析详情" : "展开完整回复"))
+                    .whaleFont(size: 13, weight: .semibold)
+            }
+            .foregroundStyle(WhaleTheme.accent)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(analysisExpanded ? "收起详情" : (toolLabel ? "查看分析详情" : "展开完整回复"))
+    }
+
+    private func shouldCollapse(_ tool: String?, text: String) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        let explicitAnalysis = tool.map { Self.analysisTools.contains($0) } ?? false
+        let lineCount = trimmed.split(separator: "\n", omittingEmptySubsequences: false).count
+        return explicitAnalysis || trimmed.count > 520 || lineCount > 8
     }
 
     private var byline: some View {

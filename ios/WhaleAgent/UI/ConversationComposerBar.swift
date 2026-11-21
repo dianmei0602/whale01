@@ -21,6 +21,8 @@ struct ConversationComposerBar: View {
     @State private var finishingVoice = false
     @State private var draftContext: String?
     @State private var voicePrefix = ""
+    @State private var voiceSessionID: UUID?
+    @State private var voiceDraftIsActive = false
     @State private var voiceAnalysis: VoiceDraftAnalysis?
     @State private var voiceStartedAt: Date?
     @State private var voiceLocked = false
@@ -83,8 +85,11 @@ struct ConversationComposerBar: View {
             handleImportedFile(result)
         }
         .onChange(of: voice.transcript) { _, text in
-            guard !text.isEmpty else { return }
-            draft = voicePrefix.isEmpty ? text : voicePrefix + "\n" + text
+            guard voiceDraftIsActive,
+                  let voiceSessionID,
+                  voice.currentSessionID == voiceSessionID,
+                  !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            draft = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
         }
         .onChange(of: voice.isRecording) { wasRecording, isRecording in
             if isRecording {
@@ -97,6 +102,9 @@ struct ConversationComposerBar: View {
         }
         .onChange(of: voice.finalResult) { _, result in
             handleFinalVoiceResult(result)
+        }
+        .onChange(of: voice.errorText) { _, error in
+            if error != nil { abortVoiceDraft() }
         }
         .onChange(of: focused) { _, value in
             externalFocused = value
@@ -126,21 +134,26 @@ struct ConversationComposerBar: View {
             drafts.save(draft, context: context)
         }
         .onChange(of: model.composerContextID) { _, context in
+            restoreVoiceDraft()
             if let old = draftContext { drafts.save(draft, context: old) }
             draftContext = context; draft = drafts.load(context: context)
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active, let context = draftContext { drafts.save(draft, context: context); voice.cancel() }
+            if phase != .active {
+                restoreVoiceDraft()
+                if let context = draftContext { drafts.save(draft, context: context) }
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .whalePrefillDraft)) { notification in
             guard let text = notification.userInfo?["text"] as? String else { return }
+            restoreVoiceDraft()
             draft = draft.isEmpty ? text : draft + "\n" + text
             focused = true
         }
         .onDisappear {
             if let context = draftContext { drafts.save(draft, context: context) }
             externalFocused = false
-            voice.cancel()
+            restoreVoiceDraft()
         }
     }
 
@@ -203,16 +216,16 @@ struct ConversationComposerBar: View {
             }
 
             Button(action: submit) {
-                Image(systemName: "paperplane.fill")
+                Image(systemName: voice.isRecording || voice.isFinalizing ? "checkmark" : "paperplane.fill")
                     .whaleFont(size: 16, weight: .semibold)
                     .foregroundStyle(WhaleTheme.buttonInk)
                     .frame(width: 44, height: 44)
                     .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
             .buttonStyle(.whalePress)
-            .disabled(model.isBusy || isDraftEmpty || finishingVoice)
-            .opacity(model.isBusy || isDraftEmpty ? 0.5 : 1)
-            .accessibilityLabel("发送")
+            .disabled(model.isBusy || (isDraftEmpty && !voice.isRecording && !voice.isFinalizing) || finishingVoice)
+            .opacity(model.isBusy || (isDraftEmpty && !voice.isRecording && !voice.isFinalizing) ? 0.5 : 1)
+            .accessibilityLabel(voice.isRecording || voice.isFinalizing ? "完成语音输入" : "发送")
             .accessibilityIdentifier("assistant-send")
         }
         .padding(.horizontal, 4)
@@ -232,11 +245,11 @@ struct ConversationComposerBar: View {
     private var micButton: some View {
         Button {
             focused = false
-            if !voice.isRecording {
-                voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-                voiceAnalysis = nil
+            if voice.isRecording {
+                voice.stop()
+            } else {
+                Task { await beginVoice() }
             }
-            Task { await voice.toggle() }
         } label: {
             Image(systemName: voice.isRecording ? "waveform" : "mic")
                 .whaleFont(size: 19, weight: .medium)
@@ -259,10 +272,8 @@ struct ConversationComposerBar: View {
                     try? await Task.sleep(nanoseconds: 380_000_000)
                     guard !Task.isCancelled, longPressToken == token else { return }
                     longPressArmed = true
-                    voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-                    voiceAnalysis = nil
                     focused = false
-                    await voice.start()
+                    await beginVoice()
                 }
             } else {
                 longPressToken = nil
@@ -275,19 +286,59 @@ struct ConversationComposerBar: View {
     }
 
     private func handleFinalVoiceResult(_ result: VoiceInputController.FinalResult?) {
-        guard let result, voice.errorText == nil else { return }
-        let raw = voicePrefix.isEmpty ? result.text : voicePrefix + "\n" + result.text
+        guard let result,
+              voiceDraftIsActive,
+              result.sessionId == voiceSessionID,
+              voice.errorText == nil else { return }
         let analysis = VoiceDraftAnalyzer.analyze(
-            raw,
+            result.text,
             engine: voice.engineName,
             elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
             confidence: voice.confidence
         )
         voiceAnalysis = analysis
-        draft = analysis.correctedText
-        voicePrefix = ""
+        draft = mergeVoiceDraft(prefix: voicePrefix, recognized: analysis.correctedText)
+        voiceDraftIsActive = false
+        voiceSessionID = nil
         model.setVoiceInteractionPhase(recording: false, editable: true)
         focused = true
+    }
+
+    private func beginVoice() async {
+        voicePrefix = draft
+        voiceDraftIsActive = true
+        voiceSessionID = nil
+        voiceAnalysis = nil
+        await voice.start()
+        if voice.isRecording {
+            voiceSessionID = voice.currentSessionID
+            model.setVoiceInteractionPhase(recording: true)
+        } else {
+            restoreVoiceDraft()
+        }
+    }
+
+    private func mergeVoiceDraft(prefix: String, recognized: String) -> String {
+        let spoken = recognized.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !spoken.isEmpty else { return prefix }
+        guard !prefix.isEmpty else { return spoken }
+        return prefix.last?.isWhitespace == true ? prefix + spoken : prefix + "\n" + spoken
+    }
+
+    private func abortVoiceDraft() {
+        restoreVoiceDraft()
+    }
+
+    private func restoreVoiceDraft() {
+        voice.cancel()
+        if voiceDraftIsActive { draft = voicePrefix }
+        voiceDraftIsActive = false
+        voiceSessionID = nil
+        voiceAnalysis = nil
+        voiceStartedAt = nil
+        voiceLocked = false
+        finishingVoice = false
+        model.setVoiceInteractionPhase(recording: false)
     }
 
     private func notice(_ text: String) -> some View {
@@ -368,9 +419,8 @@ struct ConversationComposerBar: View {
             DragGesture(minimumDistance: 14)
                 .onEnded { value in
                     if value.translation.width < -56 {
-                        voice.cancel()
+                        restoreVoiceDraft()
                         voiceAnalysis = nil
-                        draft = voicePrefix.isEmpty ? "" : voicePrefix
                         UINotificationFeedbackGenerator().notificationOccurred(.warning)
                     } else if value.translation.height < -48 {
                         voiceLocked = true
@@ -483,23 +533,26 @@ struct ConversationComposerBar: View {
             Task {
                 defer { finishingVoice = false }
                 guard let final = await voice.finishRecognition(), !final.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    draft = voicePrefix.isEmpty ? voice.transcript : voicePrefix + "\n" + voice.transcript
+                    if voiceDraftIsActive {
+                        draft = mergeVoiceDraft(prefix: voicePrefix, recognized: voice.transcript)
+                    }
                     focused = true
                     return
                 }
                 focused = false
-                let composed = voicePrefix.isEmpty ? final : voicePrefix + "\n" + final
                 let analysis = VoiceDraftAnalyzer.analyze(
-                    composed,
+                    final,
                     engine: voice.engineName,
                     elapsed: voiceStartedAt.map { Date().timeIntervalSince($0) },
                     confidence: voice.confidence
                 )
                 voiceAnalysis = analysis
-                draft = analysis.correctedText
-                voicePrefix = ""
+                draft = mergeVoiceDraft(prefix: voicePrefix, recognized: analysis.correctedText)
+                voiceDraftIsActive = false
+                voiceSessionID = nil
                 model.setVoiceInteractionPhase(recording: false, editable: true)
                 finishingVoice = false
+                focused = true
             }
         } else {
             let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -519,6 +572,7 @@ struct ConversationComposerBar: View {
             // Preflight rejection and newer edits must keep their draft intact.
             guard draftContext == context, model.composerContextID == context, draft == original else { return }
             draft = ""
+            voicePrefix = ""
             if let context { drafts.save("", context: context) }
         })
     }
@@ -547,7 +601,7 @@ struct ConversationComposerBar: View {
             confidence: voice.confidence
         )
         voiceAnalysis = updated
-        draft = updated.correctedText
+        draft = mergeVoiceDraft(prefix: voicePrefix, recognized: updated.correctedText)
         correctingCorrection = nil
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }

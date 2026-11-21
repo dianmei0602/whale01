@@ -109,6 +109,9 @@ struct TodoView: View {
     @State private var detailItem: TodoReminder?
     @State private var scheduleItem: TodoReminder?
     @FocusState private var composerFocused: Bool
+    @State private var voicePrefix = ""
+    @State private var voiceSessionID: UUID?
+    @State private var voiceDraftIsActive = false
 
     private var reminderStatus: String { model.permissionsSnapshot["reminder"] ?? "unknown" }
     private var pendingItems: [TodoReminder] { items.filter { !$0.completed } }
@@ -230,16 +233,30 @@ struct TodoView: View {
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     Task { await reload() }
+                } else {
+                    restoreVoiceDraft()
                 }
             }
             .onChange(of: voice.transcript) { _, text in
-                if !text.isEmpty { draft = text }
+                guard voiceDraftIsActive,
+                      let voiceSessionID,
+                      voice.currentSessionID == voiceSessionID else { return }
+                draft = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
             }
             .onChange(of: voice.finalResult) { _, result in
-                guard let result, voice.errorText == nil, !result.text.isEmpty else { return }
-                draft = result.text
+                guard let result,
+                      voiceDraftIsActive,
+                      result.sessionId == voiceSessionID,
+                      voice.errorText == nil else { return }
+                draft = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
+                voiceDraftIsActive = false
+                voiceSessionID = nil
+                composerFocused = true
             }
-            .onDisappear { voice.cancel() }
+            .onChange(of: voice.errorText) { _, error in
+                if error != nil { restoreVoiceDraft() }
+            }
+            .onDisappear { restoreVoiceDraft() }
             .alert("删除这条待办？", isPresented: Binding(get: { pendingDeletion != nil }, set: { if !$0 { pendingDeletion = nil } })) {
                 Button("取消", role: .cancel) { pendingDeletion = nil }
                 Button("删除", role: .destructive) {
@@ -700,7 +717,11 @@ struct TodoView: View {
             HStack(spacing: 8) {
                 Button {
                     composerFocused = false
-                    Task { await voice.toggle() }
+                    if voice.isRecording {
+                        voice.stop()
+                    } else {
+                        Task { await beginVoice() }
+                    }
                 } label: {
                     Image(systemName: voice.isRecording ? "waveform" : "mic.fill")
                         .whaleFont(size: 17, weight: .semibold)
@@ -802,7 +823,7 @@ struct TodoView: View {
             Button {
                 voice.stop()
             } label: {
-                Text("停止")
+                Text("完成")
                     .whaleFont(size: 13, weight: .semibold)
                     .foregroundStyle(WhaleTheme.danger)
                     .padding(.horizontal, 10)
@@ -822,6 +843,33 @@ struct TodoView: View {
 
     private func submitDraft() {
         submitText(draft)
+    }
+
+    private func beginVoice() async {
+        quickPreview = nil
+        voicePrefix = draft
+        voiceDraftIsActive = true
+        voiceSessionID = nil
+        await voice.start()
+        if voice.isRecording {
+            voiceSessionID = voice.currentSessionID
+        } else {
+            restoreVoiceDraft()
+        }
+    }
+
+    private func mergeVoiceDraft(prefix: String, recognized: String) -> String {
+        let spoken = recognized.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !spoken.isEmpty else { return prefix }
+        guard !prefix.isEmpty else { return spoken }
+        return prefix.last?.isWhitespace == true ? prefix + spoken : prefix + "\n" + spoken
+    }
+
+    private func restoreVoiceDraft() {
+        voice.cancel()
+        if voiceDraftIsActive { draft = voicePrefix }
+        voiceDraftIsActive = false
+        voiceSessionID = nil
     }
 
     private func submitText(_ text: String) {

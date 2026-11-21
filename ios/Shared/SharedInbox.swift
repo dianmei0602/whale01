@@ -9,6 +9,7 @@ struct SharedItem: Codable, Identifiable, Equatable {
     let url: String?
     let title: String?
     let createdAt: Date
+    var attachmentName: String? = nil
 
     var trimmedText: String {
         text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -22,6 +23,7 @@ struct SharedItem: Codable, Identifiable, Equatable {
 enum SharedInbox {
     static let appGroup = "group.com.whale01.whaleagent"
     private static let key = "pending.share.v1"
+    private static let attachmentFolder = "shared-attachments"
 
     private static var sharedDefaults: UserDefaults? {
         UserDefaults(suiteName: appGroup)
@@ -32,6 +34,10 @@ enum SharedInbox {
 
     private static var store: UserDefaults {
         testDefaults ?? sharedDefaults ?? .standard
+    }
+
+    static var supportsAttachments: Bool {
+        sharedContainerURL != nil
     }
 
     static func save(_ item: SharedItem) {
@@ -49,7 +55,41 @@ enum SharedInbox {
         guard let current = pending() else { return }
         if let id, current.id != id { return }
         store.removeObject(forKey: key)
+        if let attachmentName = current.attachmentName,
+           let url = attachmentURL(for: attachmentName) {
+            try? FileManager.default.removeItem(at: url)
+        }
         sharedDefaults?.synchronize()
+    }
+
+    static func saveAttachment(_ data: Data, fileName: String) -> String? {
+        guard !data.isEmpty,
+              let base = sharedContainerURL else {
+            return nil
+        }
+        let folder = base.appendingPathComponent(attachmentFolder, isDirectory: true)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let safeName = "\(UUID().uuidString)-\(fileName.replacingOccurrences(of: "/", with: "-"))"
+            try data.write(to: folder.appendingPathComponent(safeName), options: .atomic)
+            return safeName
+        } catch {
+            return nil
+        }
+    }
+
+    static func attachmentURL(for fileName: String) -> URL? {
+        guard let base = sharedContainerURL else {
+            return nil
+        }
+        let url = base
+            .appendingPathComponent(attachmentFolder, isDirectory: true)
+            .appendingPathComponent(fileName)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    private static var sharedContainerURL: URL? {
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
     }
 }
 extension Notification.Name {

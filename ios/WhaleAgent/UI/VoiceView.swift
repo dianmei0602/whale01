@@ -2,7 +2,7 @@ import SwiftUI
 
 struct VoiceView: View {
     @ObservedObject var voice: VoiceInputController
-    let onSend: (String) -> Void
+    let onInsert: (String) -> Void
     let onClose: (String) -> Void
     let onCancel: () -> Void
 
@@ -36,7 +36,7 @@ struct VoiceView: View {
 
             Spacer(minLength: 6)
             controls
-            Text("停止后自动发送，或转成文字继续编辑。")
+            Text("识别结果只填入输入框，确认后再由你发送。")
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted)
                 .padding(.top, 10)
@@ -48,19 +48,12 @@ struct VoiceView: View {
         .onDisappear {
             voice.cancel()
         }
-        .onChange(of: voice.finalResult) { _, result in
-            guard let result, !isFinishing, voice.errorText == nil else { return }
-            let text = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !text.isEmpty else { return }
-            isFinishing = true
-            onSend(text)
-        }
     }
 
     private var header: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("语音对话")
+                Text("语音输入")
                     .whaleFont(size: 17, weight: .semibold)
                     .foregroundStyle(WhaleTheme.ink)
                 Text(voice.isRecording ? "正在听你说话" : "轻点麦克风开始")
@@ -194,13 +187,13 @@ struct VoiceView: View {
 
     private var primaryIcon: String {
         if voice.isRecording { return "stop.fill" }
-        if canSend { return "arrow.up" }
+        if canSend { return "checkmark" }
         return "mic.fill"
     }
 
     private var primaryLabel: String {
-        if voice.isRecording { return "停止并发送" }
-        if canSend { return "发送语音内容" }
+        if voice.isRecording { return "完成语音输入" }
+        if canSend { return "填入输入框" }
         return "开始说话"
     }
 
@@ -210,7 +203,7 @@ struct VoiceView: View {
 
     private func primaryAction() {
         if voice.isRecording || canSend {
-            finishAndSend()
+            finishAndInsert()
         } else {
             startRecording()
         }
@@ -229,7 +222,7 @@ struct VoiceView: View {
         Task { await voice.start() }
     }
 
-    private func finishAndSend() {
+    private func finishAndInsert() {
         guard !isFinishing else { return }
         isFinishing = true
         Task {
@@ -238,7 +231,7 @@ struct VoiceView: View {
                 isFinishing = false
                 return
             }
-            onSend(final)
+            onInsert(final)
         }
     }
 

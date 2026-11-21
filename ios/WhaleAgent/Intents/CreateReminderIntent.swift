@@ -77,6 +77,7 @@ struct CreateReminderIntent: AppIntent {
 }
 
 struct WhaleShortcuts: AppShortcutsProvider {
+    @AppShortcutsBuilder
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: CreateReminderIntent(),
@@ -86,6 +87,36 @@ struct WhaleShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "创建提醒",
             systemImageName: "bell.badge"
+        )
+
+        AppShortcut(
+            intent: CaptureToWorkspaceIntent(),
+            phrases: [
+                "用\(.applicationName)记到收件箱",
+                "让\(.applicationName)记下来"
+            ],
+            shortTitle: "记录到收件箱",
+            systemImageName: "tray.and.arrow.down"
+        )
+
+        AppShortcut(
+            intent: OpenWorkspaceIntent(),
+            phrases: [
+                "打开\(.applicationName)工作台",
+                "用\(.applicationName)看今天"
+            ],
+            shortTitle: "打开工作台",
+            systemImageName: "square.stack.3d.up"
+        )
+
+        AppShortcut(
+            intent: ReadDailyQuoteIntent(),
+            phrases: [
+                "用\(.applicationName)读今日一句",
+                "让\(.applicationName)说句鼓励"
+            ],
+            shortTitle: "朗读今日一句",
+            systemImageName: "text.quote"
         )
     }
 }
