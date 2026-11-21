@@ -341,7 +341,7 @@ struct MessageRow: View {
                         .onLongPressGesture(minimumDuration: 0.65) {
                             onToggleSpeech()
                         }
-                        .accessibilityAction(named: isSpeaking ? "停止朗读" : "朗读这条回复") {
+                        .accessibilityAction(named: isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复") {
                             onToggleSpeech()
                         }
                     HStack(alignment: .bottom, spacing: 10) {
@@ -375,7 +375,7 @@ struct MessageRow: View {
                                 .overlay(Circle().strokeBorder(WhaleTheme.line, lineWidth: 1))
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel(isSpeaking ? "停止播报" : "朗读这条回复")
+                        .accessibilityLabel(isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复")
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -421,7 +421,7 @@ struct MessageRow: View {
             }
             if message.role == .assistant {
                 Button(action: onToggleSpeech) {
-                    Label(isSpeaking ? "停止朗读" : "朗读这条回复",
+                    Label(isSpeaking ? "停止小露朗读" : "用小露朗读这条回复",
                           systemImage: isSpeaking ? "stop.circle" : "speaker.wave.2")
                 }
                 if let onCreateTodo {

@@ -279,14 +279,6 @@ struct WhaleHomeCanvas: View {
         }
     }
 
-    private func commandIcon(_ kind: AssistantCommandItem.Kind) -> String {
-        switch kind {
-        case .next: return "arrow.right.circle"
-        case .needsYou: return "hand.raised"
-        case .resume: return "arrow.uturn.forward.circle"
-        }
-    }
-
     private func commandLabel(_ kind: AssistantCommandItem.Kind) -> String {
         switch kind {
         case .next: return "接下来"
@@ -324,9 +316,15 @@ struct WhaleHomeCanvas: View {
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("home-shortcuts-done")
                 } else {
-                    Text("长按整理")
-                        .whaleFont(size: 12)
+                    Button("整理") {
+                        withAnimation(.easeOut(duration: 0.18)) {
+                            editingShortcuts = true
+                        }
+                    }
+                        .whaleFont(size: 12, weight: .medium)
                         .foregroundStyle(WhaleTheme.muted)
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("home-shortcuts-edit")
                 }
             }
 
@@ -410,15 +408,12 @@ struct WhaleHomeCanvas: View {
                 )
         } else {
             tile
-                .simultaneousGesture(
-                    LongPressGesture(minimumDuration: 0.55)
-                        .onEnded { _ in
-                            withAnimation(.easeOut(duration: 0.18)) {
-                                editingShortcuts = true
-                            }
-                            UISelectionFeedbackGenerator().selectionChanged()
-                        }
-                )
+                .onLongPressGesture(minimumDuration: 0.55) {
+                    withAnimation(.easeOut(duration: 0.18)) {
+                        editingShortcuts = true
+                    }
+                    UISelectionFeedbackGenerator().selectionChanged()
+                }
         }
     }
 

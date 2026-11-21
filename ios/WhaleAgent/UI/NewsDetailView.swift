@@ -34,11 +34,31 @@ struct NewsDetailView: View {
                                 )
                             }
                         Label(
-                            isReading(titleId) ? "正在朗读，再点一次停止" : "轻点朗读 · 长按复制",
+                            isReading(titleId) ? "小露正在朗读，再点一次停止" : "轻点小露朗读 · 长按复制",
                             systemImage: isReading(titleId) ? "speaker.wave.2.fill" : "speaker.wave.2"
                         )
                         .whaleFont(size: 13, weight: .medium)
                         .foregroundStyle(isReading(titleId) ? WhaleTheme.accent : WhaleTheme.muted)
+                        if let speechError = appModel.speechErrorText {
+                            HStack(spacing: 8) {
+                                Label(speechError, systemImage: "speaker.slash")
+                                    .whaleFont(size: 12)
+                                    .foregroundStyle(WhaleTheme.warm)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Button {
+                                    appModel.clearSpeechError()
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .whaleFont(size: 11, weight: .semibold)
+                                        .foregroundStyle(WhaleTheme.muted)
+                                        .frame(width: 32, height: 32)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("关闭朗读提示")
+                            }
+                            .padding(.horizontal, 10)
+                            .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
                         summaryCard
                         readingActions
                         if let chineseGuide {

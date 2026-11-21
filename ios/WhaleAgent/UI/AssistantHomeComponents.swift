@@ -1,5 +1,4 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 private struct WhaleHomeSoftShadow: ViewModifier {
     let elevated: Bool
