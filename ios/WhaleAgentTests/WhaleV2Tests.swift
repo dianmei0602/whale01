@@ -118,7 +118,7 @@ final class WhaleV2Tests: XCTestCase {
     @MainActor
     func testSpeechPlaybackRejectsMissingXfyunInsteadOfUsingSystemVoice() {
         let speech = SpeechPlaybackController(configProvider: { nil })
-        speech.speak("这段内容只能用讯飞小露朗读")
+        XCTAssertFalse(speech.speak("这段内容只能用讯飞小露朗读"))
 
         XCTAssertFalse(speech.isSpeaking)
         XCTAssertEqual(

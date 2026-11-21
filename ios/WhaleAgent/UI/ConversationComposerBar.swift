@@ -37,6 +37,9 @@ struct ConversationComposerBar: View {
 
     private var content: some View {
         VStack(spacing: 7) {
+            if let speechError = model.speechErrorText {
+                speechNotice(speechError)
+            }
             if let voiceError = voice.errorText {
                 notice(voiceError)
             }
@@ -299,6 +302,32 @@ struct ConversationComposerBar: View {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
             }
+    }
+
+    private func speechNotice(_ text: String) -> some View {
+        HStack(spacing: 8) {
+            Label(text, systemImage: "speaker.slash")
+                .whaleFont(size: 13)
+                .foregroundStyle(WhaleTheme.warm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                model.clearSpeechError()
+            } label: {
+                Image(systemName: "xmark")
+                    .whaleFont(size: 12, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .frame(width: 32, height: 32)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("关闭朗读提示")
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 5)
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
+        }
     }
 
     private var isDraftEmpty: Bool {

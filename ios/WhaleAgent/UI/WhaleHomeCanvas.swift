@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 /// The conversation starter. Tapping 对话 lands here: a real chat surface with
 /// a rotating daily note, immediate prompts and the state the phone actually has.
@@ -25,6 +26,9 @@ struct WhaleHomeCanvas: View {
     @State private var showWeatherDetail = false
     @State private var homeTodos: [TodoReminder] = []
     @StateObject private var digest = HomeDigestModel()
+    @StateObject private var shortcutLayout = HomeShortcutLayoutStore()
+    @State private var editingShortcuts = ProcessInfo.processInfo.environment["WHALE_DEMO_HOME_EDIT"] == "1"
+    @State private var draggedShortcut: DiscoverChannel?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var textSize
     @State private var weatherExpanded = ProcessInfo.processInfo.environment["WHALE_DEMO_WEATHER"] == "1"
@@ -42,10 +46,9 @@ struct WhaleHomeCanvas: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 assistantCommandCenter
-                todayCard
-                insightCard
-                if showQuote { dailyQuote }
+                homeWidgetGrid
                 categoryGrid
+                if showQuote { dailyQuote }
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, WhaleTheme.pagePadding).padding(.top, 12).padding(.bottom, 24)
         }.scrollIndicators(.hidden).scrollDismissesKeyboard(.interactively)
@@ -88,107 +91,69 @@ struct WhaleHomeCanvas: View {
                 isWarning: false,
                 isActionable: false
             )
-        let secondary = actionable
-            .filter { $0.id != primary.id && !$0.isWarning }
-            .prefix(2)
-            .map { $0 }
+        return Button {
+            open(command: primary)
+        } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 8) {
+                    Text("现在")
+                        .whaleFont(size: 13, weight: .bold, design: .rounded)
+                    Spacer()
+                    Text(model.interactionPhase.title)
+                        .whaleFont(size: 11, weight: .semibold)
+                        .padding(.horizontal, 9)
+                        .padding(.vertical, 4)
+                        .background(WhaleTheme.chrome.opacity(0.72), in: Capsule())
+                }
+                .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
 
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("现在")
-                    .whaleFont(size: 18, weight: .bold, design: .rounded)
+                Text(primary.title)
+                    .whaleFont(size: 22, weight: .bold, design: .rounded)
                     .foregroundStyle(WhaleTheme.ink)
-                Spacer()
-                Text(model.interactionPhase.title)
-                    .whaleFont(size: 11, weight: .semibold)
-                    .foregroundStyle(model.interactionPhase.isActive ? WhaleTheme.accent : WhaleTheme.muted)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(WhaleTheme.accentSoft, in: Capsule())
-            }
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
 
-            Button {
-                open(command: primary)
-            } label: {
-                VStack(alignment: .leading, spacing: 9) {
-                    HStack(spacing: 8) {
-                        Image(systemName: commandIcon(primary.kind))
-                            .whaleFont(size: 15, weight: .semibold)
-                        Text(commandLabel(primary.kind))
-                            .whaleFont(size: 12, weight: .bold)
-                        Spacer()
-                        Image(systemName: "arrow.up.right")
-                            .whaleFont(size: 13, weight: .bold)
-                    }
-                    .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+                Text(primary.detail)
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
 
-                    Text(primary.title)
-                        .whaleFont(size: 21, weight: .bold, design: .rounded)
-                        .foregroundStyle(WhaleTheme.ink)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
-
-                    Text(primary.detail)
-                        .whaleFont(size: 13)
-                        .foregroundStyle(WhaleTheme.muted)
-                        .lineLimit(3)
-                        .multilineTextAlignment(.leading)
-
+                HStack(spacing: 8) {
                     Text(primaryActionTitle(primary))
                         .whaleFont(size: 13, weight: .semibold)
                         .foregroundStyle(WhaleTheme.onAccent)
-                        .padding(.horizontal, 13)
-                        .frame(minHeight: 36)
-                        .background(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent, in: Capsule())
+                        .padding(.horizontal, 14)
+                        .frame(minHeight: 38)
+                        .background(
+                            primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent,
+                            in: Capsule()
+                        )
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                        .whaleFont(size: 14, weight: .bold)
+                        .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(15)
-                .background(
-                    primary.isWarning ? WhaleTheme.warm.opacity(0.09) : WhaleTheme.accentSoft.opacity(0.72),
-                    in: RoundedRectangle(cornerRadius: 17, style: .continuous)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
             }
-            .buttonStyle(.whalePress)
-            .accessibilityLabel("\(commandLabel(primary.kind))，\(primary.title)，\(primary.detail)")
-            .accessibilityIdentifier("home-primary-task")
-
-            if !secondary.isEmpty {
-                VStack(spacing: 0) {
-                    ForEach(secondary) { item in
-                        Button {
-                            open(command: item)
-                        } label: {
-                            HStack(spacing: 9) {
-                                Image(systemName: commandIcon(item.kind))
-                                    .foregroundStyle(WhaleTheme.accent)
-                                    .frame(width: 22)
-                                Text(item.title)
-                                    .whaleFont(size: 13, weight: .semibold)
-                                    .foregroundStyle(WhaleTheme.ink)
-                                    .lineLimit(1)
-                                Spacer(minLength: 6)
-                                Text(commandLabel(item.kind))
-                                    .whaleFont(size: 11)
-                                    .foregroundStyle(WhaleTheme.muted)
-                                Image(systemName: "chevron.right")
-                                    .whaleFont(size: 11, weight: .semibold)
-                                    .foregroundStyle(WhaleTheme.muted.opacity(0.6))
-                            }
-                            .frame(minHeight: 40)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        if item.id != secondary.last?.id {
-                            Divider().overlay(WhaleTheme.line.opacity(0.55))
-                        }
-                    }
-                }
-                .padding(.horizontal, 12)
-                .background(WhaleTheme.card.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .frame(maxWidth: .infinity, minHeight: 178, alignment: .leading)
+            .padding(17)
+            .background(
+                primary.isWarning ? WhaleTheme.warm.opacity(0.09) : WhaleTheme.accentSoft.opacity(0.72),
+                in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .strokeBorder(
+                        (primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent).opacity(0.12),
+                        lineWidth: 0.8
+                    )
             }
+            .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
-        .accessibilityIdentifier("home-command-center")
+        .buttonStyle(.whalePress)
+        .whaleHomeFloating(elevated: true)
+        .accessibilityLabel("\(commandLabel(primary.kind))，\(primary.title)，\(primary.detail)")
+        .accessibilityIdentifier("home-primary-task")
     }
 
     private var activeContextCommand: AssistantCommandItem? {
@@ -244,6 +209,21 @@ struct WhaleHomeCanvas: View {
     }
 
     @ViewBuilder
+    private var homeWidgetGrid: some View {
+        if digest.insight == nil {
+            todayCard
+        } else {
+            let layout = textSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+                : AnyLayout(HStackLayout(alignment: .top, spacing: 10))
+            layout {
+                todayCard
+                insightCard
+            }
+        }
+    }
+
+    @ViewBuilder
     private var insightCard: some View {
         if let insight = digest.insight {
             Button {
@@ -260,9 +240,10 @@ struct WhaleHomeCanvas: View {
                             .foregroundStyle(WhaleTheme.ink)
                         Spacer()
                         Text(insight.sourceLabel)
-                            .whaleFont(size: 10, weight: .medium)
+                            .whaleFont(size: 11, weight: .medium)
                             .foregroundStyle(WhaleTheme.muted)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                     }
                     Text(insight.summary)
                         .whaleFont(size: 15, weight: .medium)
@@ -270,14 +251,26 @@ struct WhaleHomeCanvas: View {
                         .lineSpacing(3)
                         .lineLimit(briefingExpanded || textSize.isAccessibilitySize ? nil : 2)
                         .multilineTextAlignment(.leading)
-                    Text("只综合本次已取得的标题与摘要，不补充外部事实")
-                        .whaleFont(size: 11)
-                        .foregroundStyle(WhaleTheme.muted.opacity(0.82))
+                    HStack(spacing: 5) {
+                        Text("仅使用已取得来源")
+                        Spacer(minLength: 4)
+                        Image(systemName: "arrow.up.right")
+                            .whaleFont(size: 11, weight: .bold)
+                    }
+                    .whaleFont(size: 11)
+                    .foregroundStyle(WhaleTheme.muted.opacity(0.82))
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .whaleCard(padding: 14)
+                .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+                .padding(14)
+                .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
+                }
+                .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             }
             .buttonStyle(.whalePress)
+            .whaleHomeFloating()
             .contextMenu {
                 Button("隐藏今日判断", systemImage: "eye.slash") {
                     digest.hideInsight()
@@ -303,61 +296,144 @@ struct WhaleHomeCanvas: View {
     }
 
     private var categoryGrid: some View {
-        VStack(alignment: .leading, spacing: 9) {
-            Text("常用操作")
-                .whaleFont(size: 15, weight: .semibold)
-                .foregroundStyle(WhaleTheme.ink)
-            LazyVGrid(
-                columns: Array(
-                    repeating: GridItem(.flexible(), spacing: 8, alignment: .top),
-                    count: textSize.isAccessibilitySize ? 1 : 2
-                ),
-                spacing: 8
-            ) {
-                ForEach(Array(DiscoverChannel.allCases.enumerated()), id: \.element) { offset, channel in
-                    Button {
-                        if channel == .music { onOpenMusic() }
-                        else { onOpenDiscover(channel) }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 9) {
-                            HStack(spacing: 7) {
-                                Image(systemName: channel.icon)
-                                    .font(.system(size: 15, weight: .semibold))
-                                Text(channel.title)
-                                    .whaleFont(size: 14, weight: .semibold)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.84)
-                                Spacer(minLength: 2)
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(channel.entryInk.opacity(0.72))
-                            }
-                            RollingSummaryText(
-                                lines: summaryLines(for: channel),
-                                delay: Double(offset) * 0.55,
-                                maxLines: 1,
-                                fontSize: 12,
-                                foreground: channel.entryInk
-                            )
-                        }
-                        .foregroundStyle(channel.entryInk)
-                        .padding(.horizontal, 11)
-                        .padding(.vertical, 10)
-                        .frame(maxWidth: .infinity, minHeight: 82, alignment: .leading)
-                        .background(
-                            channel.homeCardBackground,
-                            in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(channel.entryInk.opacity(0.10), lineWidth: 0.6)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Text("常用操作")
+                    .whaleFont(size: 15, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer()
+                if editingShortcuts {
+                    Button("恢复默认") {
+                        withAnimation(.snappy(duration: 0.24)) {
+                            shortcutLayout.reset()
                         }
                     }
-                    .buttonStyle(.whalePress)
-                    .accessibilityLabel(channel.title)
-                        .accessibilityIdentifier("home-channel-" + channel.rawValue)
+                    .whaleFont(size: 12, weight: .medium)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("home-shortcuts-reset")
+
+                    Button("完成") {
+                        finishShortcutEditing()
+                    }
+                    .whaleFont(size: 12, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.onAccent)
+                    .padding(.horizontal, 12)
+                    .frame(minHeight: 32)
+                    .background(WhaleTheme.accent, in: Capsule())
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("home-shortcuts-done")
+                } else {
+                    Text("长按整理")
+                        .whaleFont(size: 12)
+                        .foregroundStyle(WhaleTheme.muted)
                 }
             }
+
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 10, alignment: .top),
+                    count: textSize.isAccessibilitySize ? 1 : 3
+                ),
+                spacing: 14
+            ) {
+                ForEach(Array(shortcutLayout.visibleChannels.enumerated()), id: \.element) { offset, channel in
+                    shortcutItem(channel, phase: offset)
+                }
+            }
+            .accessibilityIdentifier("home-shortcut-grid")
+
+            if shortcutLayout.visibleChannels.isEmpty {
+                Button {
+                    withAnimation(.snappy(duration: 0.24)) {
+                        shortcutLayout.showAll()
+                    }
+                } label: {
+                    Label("恢复 6 个常用入口", systemImage: "rectangle.grid.3x2.fill")
+                        .whaleFont(size: 14, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                        .frame(maxWidth: .infinity, minHeight: 72)
+                        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("home-shortcuts-restore-all")
+            } else if !shortcutLayout.hidden.isEmpty {
+                HStack(spacing: 8) {
+                    Text("已隐藏 \(shortcutLayout.hidden.count) 个入口")
+                        .whaleFont(size: 12)
+                        .foregroundStyle(WhaleTheme.muted)
+                    Spacer()
+                    Button("全部恢复") {
+                        withAnimation(.snappy(duration: 0.24)) {
+                            shortcutLayout.showAll()
+                        }
+                    }
+                    .whaleFont(size: 12, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.accent)
+                    .buttonStyle(.plain)
+                }
+                .accessibilityIdentifier("home-shortcuts-hidden-summary")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func shortcutItem(_ channel: DiscoverChannel, phase: Int) -> some View {
+        let tile = AssistantShortcutTile(
+            channel: channel,
+            lines: summaryLines(for: channel),
+            tickerDelay: Double(phase) * 0.55,
+            editing: editingShortcuts,
+            phase: phase,
+            onOpen: { openShortcut(channel) },
+            onHide: {
+                withAnimation(.snappy(duration: 0.24)) {
+                    shortcutLayout.hide(channel)
+                }
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+            }
+        )
+
+        if editingShortcuts {
+            tile
+                .onDrag {
+                    draggedShortcut = channel
+                    return NSItemProvider(object: channel.rawValue as NSString)
+                }
+                .onDrop(
+                    of: [UTType.text],
+                    delegate: AssistantShortcutDropDelegate(
+                        target: channel,
+                        dragged: $draggedShortcut,
+                        layout: shortcutLayout
+                    )
+                )
+        } else {
+            tile
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.55)
+                        .onEnded { _ in
+                            withAnimation(.easeOut(duration: 0.18)) {
+                                editingShortcuts = true
+                            }
+                            UISelectionFeedbackGenerator().selectionChanged()
+                        }
+                )
+        }
+    }
+
+    private func openShortcut(_ channel: DiscoverChannel) {
+        if channel == .music {
+            onOpenMusic()
+        } else {
+            onOpenDiscover(channel)
+        }
+    }
+
+    private func finishShortcutEditing() {
+        draggedShortcut = nil
+        withAnimation(.easeOut(duration: 0.18)) {
+            editingShortcuts = false
         }
     }
 
@@ -388,13 +464,14 @@ struct WhaleHomeCanvas: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: weatherDays.first?.icon ?? "cloud.sun")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(WhaleTheme.accent)
                 Text(compactWeatherText)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
-            .whaleFont(size: 12, weight: .regular)
-            .foregroundStyle(WhaleTheme.muted)
+            .whaleFont(size: 13, weight: .medium)
+            .foregroundStyle(WhaleTheme.ink)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -413,40 +490,59 @@ struct WhaleHomeCanvas: View {
     }
     private var dailyQuote: some View {
         TimelineView(.periodic(from: Date(), by: 60)) { context in
-            Button {
-                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) { quoteExpanded.toggle() }
-            } label: {
-                let quote = DailyQuote.item(at: context.date)
-                VStack(alignment: .leading, spacing: 7) {
-                    HStack(spacing: 8) {
-                        Text("每日一句")
-                            .whaleFont(size: 12, weight: .medium)
-                        Spacer(minLength: 8)
-                        Text(context.date.formatted(.dateTime.month().day().weekday(.abbreviated)))
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundStyle(WhaleTheme.muted)
-                    }
-                    .foregroundStyle(WhaleTheme.muted)
-
-                    Text(quote.text)
-                        .whaleFont(size: 18, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.ink)
-                        .lineSpacing(4)
-                        .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
-
-                    Text(quote.source)
-                        .font(.system(size: 12, weight: .medium))
+            let quote = DailyQuote.item(at: context.date)
+            let quoteId = "home-quote-\(quote.text)"
+            let isReading = model.speech.isSpeaking && model.speakingContentId == quoteId
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Text("每日一句")
+                        .whaleFont(size: 12, weight: .medium)
+                    Spacer(minLength: 8)
+                    Text(context.date.formatted(.dateTime.month().day().weekday(.abbreviated)))
+                        .font(.system(size: 12, weight: .regular))
                         .foregroundStyle(WhaleTheme.muted)
-                        .lineLimit(1)
+                    Button {
+                        model.toggleContentSpeech(text: quote.text, contentId: quoteId)
+                    } label: {
+                        Image(systemName: isReading ? "stop.circle.fill" : "speaker.wave.2.fill")
+                            .whaleFont(size: 15, weight: .semibold)
+                            .foregroundStyle(isReading ? WhaleTheme.accent : WhaleTheme.muted)
+                            .frame(width: 34, height: 34)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isReading ? "停止小露朗读" : "用小露 x4_yezi 朗读每日一句")
                 }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                .whaleCard(padding: 16)
-                .accessibilityElement(children: .combine)
+                .foregroundStyle(WhaleTheme.muted)
+
+                Text(quote.text)
+                    .whaleFont(size: 18, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.ink)
+                    .lineSpacing(4)
+                    .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
+
+                Text(quote.source)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(WhaleTheme.muted)
+                    .lineLimit(1)
             }
-            .buttonStyle(.whalePress)
-                .accessibilityIdentifier("home-inspiration-card")
-                .accessibilityHint("点击展开每日一句")
-                .contextMenu { Button("隐藏今日一句") { showQuote = false } }
+            .frame(maxWidth: .infinity, minHeight: 108, alignment: .leading)
+            .padding(16)
+            .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .onTapGesture {
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) {
+                    quoteExpanded.toggle()
+                }
+            }
+            .whaleHomeFloating()
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("home-inspiration-card")
+            .accessibilityHint("点击展开每日一句，点扬声器用小露朗读")
+            .contextMenu { Button("隐藏今日一句") { showQuote = false } }
         }
     }
     private func loadHomeTodos() async {
@@ -915,44 +1011,54 @@ struct WhaleHomeCanvas: View {
     // MARK: - Real calendar
 
     private var todayCard: some View {
-        let layout = textSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
-            : AnyLayout(HStackLayout(alignment: .center, spacing: 7))
-
-        return layout {
-            Text("今天 · \(todayLabel)")
-                .whaleFont(size: 12, weight: .semibold)
-                .foregroundStyle(WhaleTheme.ink)
-                .fixedSize(horizontal: true, vertical: false)
-
-            Text("·")
-                .font(.system(size: 12))
-                .foregroundStyle(WhaleTheme.line)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("今天")
+                    .whaleFont(size: 15, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer(minLength: 6)
+                Text(todayLabel)
+                    .whaleFont(size: 11)
+                    .foregroundStyle(WhaleTheme.muted)
+                    .lineLimit(1)
+            }
 
             todayWeather
 
-            Text("·")
-                .font(.system(size: 12))
-                .foregroundStyle(WhaleTheme.line)
+            Rectangle()
+                .fill(WhaleTheme.line.opacity(0.7))
+                .frame(height: 0.6)
 
             Button(action: onOpenTodo) {
-                HStack(spacing: 4) {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "clock")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                        .padding(.top, 1)
                     Text(compactAgendaText)
-                        .lineLimit(1)
+                        .whaleFont(size: 13, weight: .medium)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: 4)
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .semibold))
+                        .whaleFont(size: 11, weight: .bold)
+                        .foregroundStyle(WhaleTheme.muted.opacity(0.7))
                 }
-                .whaleFont(size: 12)
-                .foregroundStyle(WhaleTheme.muted)
+                .frame(minHeight: 40, alignment: .top)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-
-            if !textSize.isAccessibilitySize {
-                Spacer(minLength: 0)
-            }
         }
-        .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+        .padding(14)
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
+        }
+        .whaleHomeFloating()
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("home-today-card")
     }

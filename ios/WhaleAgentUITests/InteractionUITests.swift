@@ -206,4 +206,24 @@ final class InteractionUITests: XCTestCase {
         attach("home-live-gilded")
     }
 
+    func testAssistantHomeEntersAndExitsDesktopEditingMode() {
+        let app = launch()
+        let shortcut = app.buttons["home-channel-ai"]
+        let homeScroll = app.scrollViews.firstMatch
+        for _ in 0..<3 where !shortcut.isHittable {
+            homeScroll.swipeUp()
+        }
+        XCTAssertTrue(shortcut.waitForExistence(timeout: 10))
+        shortcut.press(forDuration: 0.7)
+
+        let done = app.buttons["home-shortcuts-done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["home-channel-hide-ai"].exists)
+        attach("home-shortcuts-editing")
+
+        done.tap()
+        XCTAssertFalse(done.exists)
+        XCTAssertTrue(shortcut.exists)
+    }
+
 }

@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Run all native and UI tests, UI tests, or the appearance switch regression
+        description: Run all native and UI tests, UI tests, appearance, or assistant desktop
         type: choice
-        options: [all, ui, appearance]
+        options: [all, ui, appearance, assistant]
         default: all
   workflow_call:
     inputs:
@@ -47,7 +47,7 @@ jobs:
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
       - name: Run native unit tests
-        if: ${{ inputs.scope != 'ui' && inputs.scope != 'appearance' }}
+        if: ${{ inputs.scope != 'ui' && inputs.scope != 'appearance' && inputs.scope != 'assistant' }}
         working-directory: ios
         run: |
           set -o pipefail
@@ -78,6 +78,12 @@ jobs:
             # The focused test launches once, switches three themes with
             # screenshots, closes Settings and captures the updated home
             # screen. GitHub's first-run simulator is slower than 2 minutes.
+            TEST_ALLOWANCE=240
+          elif [ "${{ inputs.scope }}" = "assistant" ]; then
+            TEST_FILTER=(
+              -only-testing:WhaleAgentUITests/InteractionUITests/testThreeTabsKeepDiscoverySeparateFromTheAssistant
+              -only-testing:WhaleAgentUITests/InteractionUITests/testAssistantHomeEntersAndExitsDesktopEditingMode
+            )
             TEST_ALLOWANCE=240
           fi
           # Simulator UI tests flake when the simulator render server crashes

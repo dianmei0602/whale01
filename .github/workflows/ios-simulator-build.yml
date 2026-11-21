@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Quick compile, palette screenshots, appearance switching, UI-only regression, or full regression
+        description: Quick compile, palette screenshots, appearance, assistant desktop, UI-only regression, or full regression
         type: choice
-        options: [quick, palette, appearance, ui, interaction]
+        options: [quick, palette, appearance, assistant, ui, interaction]
         default: quick
   push:
     paths:
@@ -111,6 +111,13 @@ jobs:
     uses: ./.github/workflows/ios-ui-tests.yml
     with:
       scope: appearance
+
+  assistant:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'assistant' }}
+    name: Assistant desktop regression
+    uses: ./.github/workflows/ios-ui-tests.yml
+    with:
+      scope: assistant
 
   palette:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'palette' }}

@@ -28,6 +28,6 @@ struct XfyunConfig {
     static var isConfigured: Bool { current != nil }
 
     static var statusText: String {
-        isConfigured ? "讯飞小露 x4_yezi 已配置" : "讯飞小露未配置（听写与朗读使用系统能力）"
+        isConfigured ? "讯飞小露 x4_yezi 已配置" : "讯飞小露未配置（App 朗读暂不可用）"
     }
 }

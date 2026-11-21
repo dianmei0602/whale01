@@ -117,6 +117,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var canStopReply = false
     @Published private(set) var speakingMessageId: String?
     @Published private(set) var speakingContentId: String?
+    @Published private(set) var speechErrorText: String?
     @Published private(set) var interactionPhase: AgentInteractionPhase = .idle
     @Published private(set) var operationReceipts: [AgentOperationReceipt] = []
     @Published private(set) var highlightedMessageId: String?
@@ -183,6 +184,9 @@ final class AppModel: ObservableObject {
                 self?.speakingContentId = nil
             }
         }
+        speech.onError = { [weak self] message in
+            self?.speechErrorText = message
+        }
         speechInterruptObserver = NotificationCenter.default.publisher(for: .whaleInterruptSpeech)
             .sink { [weak self] _ in
                 self?.speech.stop()
@@ -205,8 +209,8 @@ final class AppModel: ObservableObject {
             return
         }
         speakingContentId = nil
-        speakingMessageId = message.id.uuidString
-        speech.speak(message.text)
+        speakingMessageId = speech.speak(message.text) ? message.id.uuidString : nil
+        speechErrorText = speech.lastErrorText
     }
 
     func toggleContentSpeech(text: String, contentId: String) {
@@ -217,8 +221,12 @@ final class AppModel: ObservableObject {
             return
         }
         speakingMessageId = nil
-        speakingContentId = contentId
-        speech.speak(trimmed)
+        speakingContentId = speech.speak(trimmed) ? contentId : nil
+        speechErrorText = speech.lastErrorText
+    }
+
+    func clearSpeechError() {
+        speech.clearError()
     }
 
     func reloadRecentActions() async {
@@ -1465,8 +1473,8 @@ final class AppModel: ObservableObject {
         appendMessage(message)
         if speakReplyForActiveTurn {
             speakReplyForActiveTurn = false
-            speakingMessageId = message.id.uuidString
-            speech.speak(reply)
+            speakingMessageId = speech.speak(reply) ? message.id.uuidString : nil
+            speechErrorText = speech.lastErrorText
         }
     }
 

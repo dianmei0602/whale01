@@ -887,7 +887,7 @@ private struct ServiceSettingsView: View {
                         badgeIcon: nil,
                         badgeTone: .mint,
                         connected: XfyunConfig.isConfigured,
-                        statusText: XfyunConfig.isConfigured ? "已配置" : "系统能力"
+                        statusText: XfyunConfig.isConfigured ? "已配置" : "朗读停用"
                     )
 
                     SettingsChrome.divider
@@ -932,7 +932,7 @@ private struct ServiceSettingsView: View {
                 SettingsChrome.card {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("讯飞语音 · 小露 x4_yezi").font(.headline)
-                        Text("用于语音听写和助手回复朗读。密钥保存在本机钥匙串，不进入构建包或对话上下文。")
+                        Text("语音听写可降级到系统能力；全 App 朗读固定使用讯飞小露 x4_yezi，配置缺失或合成失败时不会切换系统音色。密钥保存在本机钥匙串，不进入对话上下文。")
                             .font(.footnote)
                             .foregroundStyle(WhaleTheme.muted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -974,7 +974,7 @@ private struct ServiceSettingsView: View {
                                 xfyunAppID = ""
                                 xfyunAPIKey = ""
                                 xfyunAPISecret = ""
-                                xfyunMessage = "已删除，语音听写和朗读将使用系统能力"
+                                xfyunMessage = "已删除；App 朗读将停用，直到重新配置讯飞小露 x4_yezi"
                             }
                         }
 
