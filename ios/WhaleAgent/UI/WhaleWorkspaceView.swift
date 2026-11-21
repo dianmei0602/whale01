@@ -1121,7 +1121,7 @@ private struct WorkspaceCaptureEditor: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var voice = VoiceInputController()
     @State private var title = ""
-    @State private var body = ""
+    @State private var captureText = ""
     @State private var kind: WorkspaceCaptureKind = .note
     @State private var projectID: String?
     @State private var saveToKnowledge = false
@@ -1140,7 +1140,7 @@ private struct WorkspaceCaptureEditor: View {
             Form {
                 Section("收件内容") {
                     TextField("标题（可留空自动生成）", text: $title)
-                    TextEditor(text: $body)
+                    TextEditor(text: $captureText)
                         .frame(minHeight: 150)
                     HStack {
                         Button {
@@ -1212,7 +1212,7 @@ private struct WorkspaceCaptureEditor: View {
                         .disabled(
                             isImporting
                                 || (title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                    && body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                                    && captureText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         )
                 }
             }
@@ -1236,14 +1236,14 @@ private struct WorkspaceCaptureEditor: View {
                 guard voiceDraftIsActive,
                       let voiceSessionID,
                       voice.currentSessionID == voiceSessionID else { return }
-                body = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
+                captureText = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
             }
             .onChange(of: voice.finalResult) { _, result in
                 guard let result,
                       voiceDraftIsActive,
                       result.sessionId == voiceSessionID,
                       voice.errorText == nil else { return }
-                body = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
+                captureText = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
                 voiceDraftIsActive = false
                 voiceSessionID = nil
                 focused = true
@@ -1256,7 +1256,7 @@ private struct WorkspaceCaptureEditor: View {
     }
 
     private func save() {
-        let cleanBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanBody = captureText.trimmingCharacters(in: .whitespacesAndNewlines)
         let finalKind: WorkspaceCaptureKind = {
             guard kind == .note, cleanBody.contains("http") else { return kind }
             return .link
@@ -1341,7 +1341,7 @@ private struct WorkspaceCaptureEditor: View {
 
     private func beginVoice() async {
         focused = false
-        voicePrefix = body
+        voicePrefix = captureText
         voiceDraftIsActive = true
         voiceSessionID = nil
         await voice.start()
@@ -1354,7 +1354,7 @@ private struct WorkspaceCaptureEditor: View {
 
     private func restoreVoiceDraft() {
         voice.cancel()
-        if voiceDraftIsActive { body = voicePrefix }
+        if voiceDraftIsActive { captureText = voicePrefix }
         voiceDraftIsActive = false
         voiceSessionID = nil
     }
