@@ -69,57 +69,60 @@ struct AssistantShortcutTile: View {
     let phase: Int
     let onOpen: () -> Void
     let onHide: () -> Void
+    let onBeginEdit: () -> Void
 
     var body: some View {
-        Button {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(alignment: .center, spacing: 6) {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(channel.entryInk.opacity(0.13))
+                    .frame(width: 48, height: 48)
+                    .overlay {
+                        Image(systemName: channel.icon)
+                            .font(.system(size: 21, weight: .semibold))
+                            .foregroundStyle(channel.entryInk)
+                    }
+
+                Spacer(minLength: 2)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(channel.entryInk.opacity(0.72))
+            }
+
+            Text(channel.title)
+                .whaleFont(size: 14, weight: .semibold)
+                .foregroundStyle(channel.entryInk)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+
+            RollingSummaryText(
+                lines: lines,
+                delay: tickerDelay,
+                maxLines: 2,
+                fontSize: 11.5,
+                foreground: channel.entryInk.opacity(0.82)
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
+        .background(
+            channel.homeCardBackground,
+            in: RoundedRectangle(cornerRadius: 19, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 19, style: .continuous)
+                .strokeBorder(channel.entryInk.opacity(0.09), lineWidth: 0.7)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .onTapGesture {
             guard !editing else { return }
             onOpen()
-        } label: {
-            VStack(alignment: .leading, spacing: 9) {
-                HStack(alignment: .center, spacing: 6) {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(channel.entryInk.opacity(0.13))
-                        .frame(width: 48, height: 48)
-                        .overlay {
-                            Image(systemName: channel.icon)
-                                .font(.system(size: 21, weight: .semibold))
-                                .foregroundStyle(channel.entryInk)
-                        }
-
-                    Spacer(minLength: 2)
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(channel.entryInk.opacity(0.72))
-                }
-
-                Text(channel.title)
-                    .whaleFont(size: 14, weight: .semibold)
-                    .foregroundStyle(channel.entryInk)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.82)
-
-                RollingSummaryText(
-                    lines: lines,
-                    delay: tickerDelay,
-                    maxLines: 2,
-                    fontSize: 11.5,
-                    foreground: channel.entryInk.opacity(0.82)
-                )
-            }
-            .padding(12)
-            .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
-            .background(
-                channel.homeCardBackground,
-                in: RoundedRectangle(cornerRadius: 19, style: .continuous)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 19, style: .continuous)
-                    .strokeBorder(channel.entryInk.opacity(0.09), lineWidth: 0.7)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
         }
-        .buttonStyle(.whalePress)
+        .onLongPressGesture(minimumDuration: 0.55) {
+            guard !editing else { return }
+            onBeginEdit()
+        }
         .overlay(alignment: .topLeading) {
             if editing {
                 Button(action: onHide) {
@@ -142,6 +145,15 @@ struct AssistantShortcutTile: View {
         .whaleDesktopWiggle(active: editing, phase: phase)
         .accessibilityLabel(channel.title)
         .accessibilityHint(editing ? "拖动调整顺序，点左上角减号隐藏" : "轻点打开，长按整理桌面")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            guard !editing else { return }
+            onOpen()
+        }
+        .accessibilityAction(named: "整理桌面") {
+            guard !editing else { return }
+            onBeginEdit()
+        }
         .accessibilityIdentifier("home-channel-" + channel.rawValue)
     }
 }

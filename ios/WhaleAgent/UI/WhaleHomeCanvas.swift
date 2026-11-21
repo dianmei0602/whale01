@@ -389,6 +389,12 @@ struct WhaleHomeCanvas: View {
                     shortcutLayout.hide(channel)
                 }
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
+            },
+            onBeginEdit: {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    editingShortcuts = true
+                }
+                UISelectionFeedbackGenerator().selectionChanged()
             }
         )
 
@@ -408,12 +414,6 @@ struct WhaleHomeCanvas: View {
                 )
         } else {
             tile
-                .onLongPressGesture(minimumDuration: 0.55) {
-                    withAnimation(.easeOut(duration: 0.18)) {
-                        editingShortcuts = true
-                    }
-                    UISelectionFeedbackGenerator().selectionChanged()
-                }
         }
     }
 
