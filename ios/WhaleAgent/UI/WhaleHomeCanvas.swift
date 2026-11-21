@@ -238,12 +238,12 @@ struct WhaleHomeCanvas: View {
                         Text("今日判断")
                             .whaleFont(size: 13, weight: .bold)
                             .foregroundStyle(WhaleTheme.ink)
-                        Spacer()
-                        Text(insight.sourceLabel)
-                            .whaleFont(size: 11, weight: .medium)
-                            .foregroundStyle(WhaleTheme.muted)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.75)
+                            .fixedSize(horizontal: true, vertical: false)
+                        Spacer()
+                        Image(systemName: "ellipsis")
+                            .whaleFont(size: 11, weight: .semibold)
+                            .foregroundStyle(WhaleTheme.muted.opacity(0.65))
                     }
                     Text(insight.summary)
                         .whaleFont(size: 15, weight: .medium)
@@ -251,8 +251,13 @@ struct WhaleHomeCanvas: View {
                         .lineSpacing(3)
                         .lineLimit(briefingExpanded || textSize.isAccessibilitySize ? nil : 2)
                         .multilineTextAlignment(.leading)
+                    Text(insight.sourceLabel)
+                        .whaleFont(size: 11, weight: .medium)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
                     HStack(spacing: 5) {
-                        Text("仅使用已取得来源")
+                        Text("基于已取得内容")
                         Spacer(minLength: 4)
                         Image(systemName: "arrow.up.right")
                             .whaleFont(size: 11, weight: .bold)
@@ -260,7 +265,7 @@ struct WhaleHomeCanvas: View {
                     .whaleFont(size: 11)
                     .foregroundStyle(WhaleTheme.muted.opacity(0.82))
                 }
-                .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+                .frame(maxWidth: .infinity, minHeight: 124, alignment: .topLeading)
                 .padding(14)
                 .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay {
@@ -1045,7 +1050,7 @@ struct WhaleHomeCanvas: View {
             }
             .buttonStyle(.plain)
         }
-        .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 124, alignment: .topLeading)
         .padding(14)
         .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
