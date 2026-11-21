@@ -226,7 +226,11 @@ struct NewsTopicStrip: View {
                         } label: {
                             HStack(spacing: 5) {
                                 Text(cluster.title)
-                                Text("\(cluster.count)")
+                                Text("\(cluster.sourceCount)家")
+                                if let latest = cluster.latestPublishedAt {
+                                    Text(DiscoverFormat.relative(latest))
+                                        .foregroundStyle(WhaleTheme.muted)
+                                }
                                     .whaleFont(size: 10, weight: .bold)
                                     .padding(.horizontal, 5)
                                     .padding(.vertical, 2)
@@ -240,7 +244,7 @@ struct NewsTopicStrip: View {
                             .whaleRaisedPill(selected: selection == cluster.id)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("\(cluster.title)，\(cluster.count) 条相关资讯")
+                        .accessibilityLabel("\(cluster.title)，\(cluster.sourceCount) 家来源")
                         .accessibilityAddTraits(selection == cluster.id ? .isSelected : [])
                     }
                 }

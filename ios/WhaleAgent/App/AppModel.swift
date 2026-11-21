@@ -3,56 +3,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-enum ChatRole: String, Codable {
-    case user
-    case assistant
-    case tool
-}
-
-struct ResultLink: Identifiable, Equatable, Codable {
-    let title: String
-    let url: String
-
-    var id: String { url }
-}
-
-struct ChatMessage: Identifiable, Equatable, Codable {
-    let id: UUID
-    let role: ChatRole
-    let text: String
-    var detail: String?
-    var places: [PlaceSummary] = []
-    var links: [ResultLink]? = nil
-    var weather: [WeatherDaySummary]? = nil
-    var tool: String? = nil
-    var executionStatus: String? = nil
-    let createdAt: Date
-
-    init(
-        id: UUID = UUID(),
-        role: ChatRole,
-        text: String,
-        detail: String? = nil,
-        places: [PlaceSummary] = [],
-        links: [ResultLink]? = nil,
-        weather: [WeatherDaySummary]? = nil,
-        tool: String? = nil,
-        executionStatus: String? = nil,
-        createdAt: Date = Date()
-    ) {
-        self.id = id
-        self.role = role
-        self.text = text
-        self.detail = detail
-        self.places = places
-        self.links = links
-        self.weather = weather
-        self.tool = tool
-        self.executionStatus = executionStatus
-        self.createdAt = createdAt
-    }
-}
-
 enum MusicPlayMode: String {
     case sequential
     case shuffle
@@ -118,6 +68,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var speakingMessageId: String?
     @Published private(set) var speakingContentId: String?
     @Published private(set) var speechErrorText: String?
+    @Published private(set) var streamingReply = ""
     @Published private(set) var interactionPhase: AgentInteractionPhase = .idle
     @Published private(set) var operationReceipts: [AgentOperationReceipt] = []
     @Published private(set) var highlightedMessageId: String?
@@ -585,13 +536,22 @@ final class AppModel: ObservableObject {
         }
         refreshPermissions()
         let startedAt = Date()
+        streamingReply = ""
         do {
             let transport = client
             let conversation = conversationId
             let permissionState = permissionsSnapshot
             let deferred = defersToDevice
             let response = try await requestAgent {
-                try await transport.startTurn(text: text, conversationId: conversation, permissions: permissionState, deferExecution: deferred)
+                try await transport.startTurnStreaming(
+                    text: text,
+                    conversationId: conversation,
+                    permissions: permissionState,
+                    deferExecution: deferred,
+                    onDelta: { [weak self] delta in
+                        Task { @MainActor in self?.appendStreamingDelta(delta) }
+                    }
+                )
             }
             TurnMetricsStore.record(seconds: Date().timeIntervalSince(startedAt))
             conversationId = response.conversationId
@@ -600,6 +560,7 @@ final class AppModel: ObservableObject {
             appendReplyIfNeeded(response)
             await handle(response)
         } catch {
+            preserveStreamingReplyForRetry(input: text)
             if stoppedReply || error is CancellationError || (error as? URLError)?.code == .cancelled {
                 appendMessage(ChatMessage(role: .tool, text: "已停止等待回复", detail: "已保留对话和草稿；系统中已经完成的操作不会因此撤销。"))
             } else {
@@ -651,6 +612,21 @@ final class AppModel: ObservableObject {
         let response = try await request.value
         if stoppedReply { throw CancellationError() }
         return response
+    }
+
+    private func appendStreamingDelta(_ delta: String) {
+        guard !stoppedReply else { return }
+        streamingReply += delta
+        interactionPhase = .streaming
+    }
+
+    private func preserveStreamingReplyForRetry(input: String) {
+        let partial = streamingReply.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !partial.isEmpty else { return }
+        streamingReply = ""
+        appendMessage(ChatMessage(role: .assistant, text: partial))
+        lastFailedInput = input
+        errorText = "回答在传输中断前已收到一部分，已保留在上面；可以直接重试剩余请求。"
     }
 
     func retryCurrentRequest() async {
@@ -1473,10 +1449,20 @@ final class AppModel: ObservableObject {
         do {
             activityText = "正在整理执行结果"
             let transport = client
-            let response = try await requestAgent { try await transport.submitToolResults(turnId: turnId, results: payload) }
+            streamingReply = ""
+            let response = try await requestAgent {
+                try await transport.submitToolResultsStreaming(
+                    turnId: turnId,
+                    results: payload,
+                    onDelta: { [weak self] delta in
+                        Task { @MainActor in self?.appendStreamingDelta(delta) }
+                    }
+                )
+            }
             await ResultOutbox.shared.remove(turnId: turnId)
             await adopt(response)
         } catch {
+            preserveStreamingReplyForRetry(input: currentGoal ?? "")
             if stoppedReply || error is CancellationError || (error as? URLError)?.code == .cancelled {
                 errorText = "系统操作结果已保存，已停止整理回复。请在记录中核对，稍后可继续回传。"
                 appendMessage(ChatMessage(role: .tool, text: "结果已保留", detail: errorText))
@@ -1511,9 +1497,11 @@ final class AppModel: ObservableObject {
             return
         }
         if messages.last?.role == .assistant && messages.last?.text == reply {
+            streamingReply = ""
             return
         }
         let message = ChatMessage(role: .assistant, text: reply)
+        streamingReply = ""
         appendMessage(message)
         if speakReplyForActiveTurn {
             speakReplyForActiveTurn = false

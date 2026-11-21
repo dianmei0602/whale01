@@ -52,8 +52,9 @@ struct WhaleWorkspaceView: View {
     @State private var selectedCapture: WorkspaceCapture?
     @State private var showProjectEditor = false
     @State private var showFollowUpEditor = false
-    @State private var safari: SafariTarget?
+    @State private var readerArticle: SavedArticle?
     @State private var highlightArticle: SavedArticle?
+    @State private var readingFilter: ReadingStatus?
     @State private var toast: String?
 
     var body: some View {
@@ -63,6 +64,13 @@ struct WhaleWorkspaceView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         sectionSelector
+                        if let issue = store.loadIssue {
+                            Label(issue, systemImage: "exclamationmark.triangle")
+                                .whaleFont(size: 13)
+                                .foregroundStyle(WhaleTheme.warm)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .whaleCard(padding: 13)
+                        }
                         sectionContent
                     }
                     .padding(.horizontal, WhaleTheme.pagePadding)
@@ -131,9 +139,8 @@ struct WhaleWorkspaceView: View {
         .sheet(isPresented: $showFollowUpEditor) {
             WorkspaceFollowUpEditor(store: store)
         }
-        .sheet(item: $safari) { target in
-            InAppSafari(url: target.url)
-                .ignoresSafeArea()
+        .sheet(item: $readerArticle) { article in
+            NativeArticleReaderView(item: newsItem(for: article), library: reading)
         }
         .sheet(item: $highlightArticle) { article in
             WorkspaceReadingHighlightSheet(article: article, store: store) {
@@ -288,6 +295,13 @@ struct WhaleWorkspaceView: View {
                     .background(WhaleTheme.accentSoft, in: Capsule())
             }
 
+            HStack(spacing: 8) {
+                readingFilterButton(nil, title: "全部")
+                readingFilterButton(.toRead, title: "待读")
+                readingFilterButton(.reading, title: "在读")
+                readingFilterButton(.finished, title: "读完")
+            }
+
             if reading.saved.isEmpty {
                 workspaceEmpty(
                     title: "还没有稍后读内容",
@@ -295,7 +309,7 @@ struct WhaleWorkspaceView: View {
                     icon: "bookmark"
                 )
             } else {
-                ForEach(reading.saved) { article in
+                ForEach(displayedReading) { article in
                     readingCard(article)
                 }
             }
@@ -522,9 +536,10 @@ struct WhaleWorkspaceView: View {
             HStack(spacing: 8) {
                 Text(article.source)
                 Text("·")
-                Text(article.isReadLater ? "稍后读" : "已读")
+                Text(article.status.title)
+                Text("· \(Int(article.progress * 100))%")
                 Spacer()
-                if article.isReadLater {
+                if article.status != .finished {
                     Button("读完") {
                         let placeholder = NewsItem(
                             id: article.id,
@@ -545,17 +560,50 @@ struct WhaleWorkspaceView: View {
                 }
                 .foregroundStyle(WhaleTheme.accent)
                 Button("打开") {
-                    if let url = URL(string: article.link) {
-                        safari = SafariTarget(url: url)
-                    } else {
-                        showToast("这条收藏没有可用的原文链接")
-                    }
+                    readerArticle = article
                 }
                 .foregroundStyle(WhaleTheme.accent)
             }
             .whaleFont(size: 12, weight: .semibold)
+            ProgressView(value: article.progress)
+                .tint(article.status == .finished ? WhaleTheme.success : WhaleTheme.accent)
         }
         .whaleCard(padding: 14)
+    }
+
+    private var displayedReading: [SavedArticle] {
+        guard let readingFilter else { return reading.saved }
+        return reading.articles(with: readingFilter)
+    }
+
+    private func newsItem(for article: SavedArticle) -> NewsItem {
+        NewsItem(
+            id: article.id,
+            title: article.title,
+            summary: article.summary,
+            source: article.source,
+            link: article.link,
+            publishedAt: nil,
+            channel: article.channel,
+            rank: nil
+        )
+    }
+
+    private func readingFilterButton(_ status: ReadingStatus?, title: String) -> some View {
+        Button {
+            readingFilter = status
+        } label: {
+            Text(title)
+                .whaleFont(size: 12, weight: .semibold)
+                .foregroundStyle(readingFilter == status ? WhaleTheme.onAccent : WhaleTheme.ink)
+                .padding(.horizontal, 11)
+                .frame(minHeight: 34)
+                .background(
+                    readingFilter == status ? WhaleTheme.accent : WhaleTheme.card,
+                    in: Capsule()
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     private func followUpRow(_ item: WorkspaceFollowUp) -> some View {

@@ -13,6 +13,38 @@ protocol AgentTransport: Sendable {
         deferExecution: Bool
     ) async throws -> AgentTurnResponse
     func submitToolResults(turnId: String, results: [ToolResultPayload]) async throws -> AgentTurnResponse
+    func startTurnStreaming(
+        text: String,
+        conversationId: String?,
+        permissions: [String: String],
+        deferExecution: Bool,
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse
+    func submitToolResultsStreaming(
+        turnId: String,
+        results: [ToolResultPayload],
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse
+}
+
+extension AgentTransport {
+    func startTurnStreaming(
+        text: String,
+        conversationId: String?,
+        permissions: [String: String],
+        deferExecution: Bool,
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse {
+        try await startTurn(text: text, conversationId: conversationId, permissions: permissions, deferExecution: deferExecution)
+    }
+
+    func submitToolResultsStreaming(
+        turnId: String,
+        results: [ToolResultPayload],
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse {
+        try await submitToolResults(turnId: turnId, results: results)
+    }
 }
 
 enum LocalAgentConfig {
@@ -53,17 +85,6 @@ enum LocalAgentError: LocalizedError {
             return "这一批结果正在处理，请稍后重试；不会重复执行已经完成的动作。"
         }
     }
-}
-
-private struct ToolContract: Decodable {
-    struct Tool: Decodable {
-        let name: String
-        let description: String
-        let requiresConfirmation: Bool
-        let inputSchema: JSONValue
-    }
-
-    let tools: [Tool]
 }
 
 struct DSMessage: Codable, Sendable {
@@ -119,6 +140,27 @@ private struct DSResponse: Decodable {
     let usage: ModelRequestMetrics.Usage?
 }
 
+private struct DSStreamChunk: Decodable {
+    struct Choice: Decodable {
+        struct Delta: Decodable {
+            let content: String?
+            let tool_calls: [ToolCallDelta]?
+        }
+        let delta: Delta
+    }
+    struct ToolCallDelta: Decodable {
+        struct Function: Decodable {
+            let name: String?
+            let arguments: String?
+        }
+        let index: Int
+        let id: String?
+        let type: String?
+        let function: Function?
+    }
+    let choices: [Choice]
+}
+
 private enum ModelCallProfile {
     case agent
     case toolPlanning
@@ -154,6 +196,7 @@ private struct LocalTurn: Codable {
     var taskState: LocalTaskState?
     var analysis: RequestAnalysis? = nil
     var resultBatch: ToolResultBatch? = nil
+    var planRevisions: Int? = nil
 }
 
 actor LocalAgentEngine: AgentTransport {
@@ -177,7 +220,7 @@ actor LocalAgentEngine: AgentTransport {
 #endif
         session = URLSession(configuration: configuration)
 
-        let loaded = Self.loadTools()
+        let loaded = ToolRegistry.tools
         tools = loaded
         toolMap = Dictionary(uniqueKeysWithValues: loaded.map { ($0.name, $0) })
         turns = Self.loadTurns()
@@ -201,6 +244,38 @@ actor LocalAgentEngine: AgentTransport {
         permissions: [String: String],
         deferExecution: Bool
     ) async throws -> AgentTurnResponse {
+        try await startTurnInternal(
+            text: text,
+            conversationId: conversationId,
+            permissions: permissions,
+            deferExecution: deferExecution,
+            onDelta: nil
+        )
+    }
+
+    func startTurnStreaming(
+        text: String,
+        conversationId: String?,
+        permissions: [String: String],
+        deferExecution: Bool,
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse {
+        try await startTurnInternal(
+            text: text,
+            conversationId: conversationId,
+            permissions: permissions,
+            deferExecution: deferExecution,
+            onDelta: onDelta
+        )
+    }
+
+    private func startTurnInternal(
+        text: String,
+        conversationId: String?,
+        permissions: [String: String],
+        deferExecution: Bool,
+        onDelta: (@Sendable (String) -> Void)?
+    ) async throws -> AgentTurnResponse {
         guard LocalAgentConfig.isConfigured else { throw LocalAgentError.missingKey }
         let conversation = conversationId ?? Self.newId("conv")
         let turnId = Self.newId("turn")
@@ -209,7 +284,12 @@ actor LocalAgentEngine: AgentTransport {
         history.append(DSMessage(role: "user", content: text, tool_calls: nil, tool_call_id: nil, name: nil))
         saveHistory(history, for: conversation)
 
-        let analysis = await reasoning.analyze(
+        let heuristic = RequestAnalysis.heuristic(for: text)
+        let canUseFastLocalPlan = onDelta != nil
+            && !heuristic.needsFreshData
+            && !heuristic.needsDeviceAction
+            && heuristic.suggestedTools.isEmpty
+        let analysis = canUseFastLocalPlan ? heuristic : await reasoning.analyze(
             text: text,
             recentHistory: priorMessages,
             tools: tools.map { ($0.name, $0.description) }
@@ -219,7 +299,7 @@ actor LocalAgentEngine: AgentTransport {
             conversationId: conversation,
             pending: [],
             batches: 0,
-            batchBudget: min(max(analysis.tasks.count + 3, 6), 8),
+            batchBudget: AgentPlanningPolicy.batchBudget(for: analysis.tasks.count),
             permissions: permissions,
             taskState: LocalTaskState(
                 goal: analysis.goal,
@@ -240,12 +320,29 @@ actor LocalAgentEngine: AgentTransport {
             permissions: permissions,
             taskState: turn.taskState,
             analysis: analysis,
-            profile: profile
+            profile: profile,
+            onDelta: onDelta
         )
-        return try await advance(message: message, history: &history, turn: &turn)
+        return try await advance(message: message, history: &history, turn: &turn, onDelta: onDelta)
     }
 
     func submitToolResults(turnId: String, results: [ToolResultPayload]) async throws -> AgentTurnResponse {
+        try await submitToolResultsInternal(turnId: turnId, results: results, onDelta: nil)
+    }
+
+    func submitToolResultsStreaming(
+        turnId: String,
+        results: [ToolResultPayload],
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> AgentTurnResponse {
+        try await submitToolResultsInternal(turnId: turnId, results: results, onDelta: onDelta)
+    }
+
+    private func submitToolResultsInternal(
+        turnId: String,
+        results: [ToolResultPayload],
+        onDelta: (@Sendable (String) -> Void)?
+    ) async throws -> AgentTurnResponse {
         if let completed = await receipts.response(for: turnId) { return completed }
         guard processingTurns.insert(turnId).inserted else { throw LocalAgentError.requestInProgress }
         defer { processingTurns.remove(turnId) }
@@ -297,11 +394,36 @@ actor LocalAgentEngine: AgentTransport {
         if !novelResults.isEmpty {
             turn.batches += 1
         }
+        let orderedResults = batch.orderedResults
+        if AgentPlanningPolicy.shouldRevisePlan(
+            results: orderedResults,
+            taskCount: turn.analysis?.tasks.count ?? 0,
+            previousRevisions: turn.planRevisions ?? 0
+        ) {
+            turn.planRevisions = (turn.planRevisions ?? 0) + 1
+            history.append(
+                DSMessage(
+                    role: "system",
+                    content: "本批工具全部失败，且任务多于一步。你最多可以换路一次：重新检查目标，选择仍可用的替代工具；禁止原样重试相同工具和参数。如果无法可靠替代，请如实说明失败步骤并追问或结束，不得假装完成。",
+                    tool_calls: nil,
+                    tool_call_id: nil,
+                    name: nil
+                )
+            )
+            saveHistory(history, for: turn.conversationId)
+        }
         if turn.batches >= (turn.batchBudget ?? 6) {
+            let remaining = (turn.analysis?.tasks ?? [])
+                .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            let remainingText = remaining.enumerated()
+                .map { "\($0.offset + 1). \($0.element)" }
+                .joined(separator: "\n")
             let response = makeResponse(
                 status: "completed_with_limits",
                 turn: turn,
-                reply: "这一轮已达到当前工具执行预算，任务尚需核对。我保留了目标和执行记录，请查看未完成事项后继续。",
+                reply: remainingText.isEmpty
+                    ? "这一轮已达到工具执行预算，但还没有完成最终核对。执行记录已保留，可以继续处理。"
+                    : "这一轮已达到工具执行预算，以下步骤尚未完成：\n\(remainingText)",
                 pending: []
             )
             await receipts.record(response)
@@ -328,9 +450,10 @@ actor LocalAgentEngine: AgentTransport {
             permissions: turn.permissions,
             taskState: turn.taskState,
             analysis: turn.analysis,
-            profile: .synthesis
+            profile: .synthesis,
+            onDelta: onDelta
         )
-        return try await advance(message: message, history: &history, turn: &turn)
+        return try await advance(message: message, history: &history, turn: &turn, onDelta: onDelta)
     }
 
     func turnSnapshot(turnId: String) async throws -> AgentTurnResponse {
@@ -361,6 +484,15 @@ actor LocalAgentEngine: AgentTransport {
         message: DSMessage,
         history: inout [DSMessage],
         turn: inout LocalTurn
+    ) async throws -> AgentTurnResponse {
+        try await advance(message: message, history: &history, turn: &turn, onDelta: nil)
+    }
+
+    private func advance(
+        message: DSMessage,
+        history: inout [DSMessage],
+        turn: inout LocalTurn,
+        onDelta: (@Sendable (String) -> Void)?
     ) async throws -> AgentTurnResponse {
         if let calls = message.tool_calls, !calls.isEmpty {
             if RealDataGuard.suppressesTools(latestTurnContext(history).userText) {
@@ -414,7 +546,8 @@ actor LocalAgentEngine: AgentTransport {
                 taskState: turn.taskState,
                 analysis: turn.analysis,
                 toolsEnabled: false,
-                profile: .answer
+                profile: .answer,
+                onDelta: nil
             ), let text = repaired.content?.trimmingCharacters(in: .whitespacesAndNewlines),
                RealDataGuard.isSafeWithoutEvidence(text, for: intent) {
                 candidate = text
@@ -447,7 +580,8 @@ actor LocalAgentEngine: AgentTransport {
                     taskState: turn.taskState,
                     analysis: analysis,
                     toolsEnabled: false,
-                    profile: .answer
+                    profile: .answer,
+                    onDelta: nil
                 ), let text = revised.content?.trimmingCharacters(in: .whitespacesAndNewlines),
                    !text.isEmpty {
                     candidate = text
@@ -528,8 +662,10 @@ actor LocalAgentEngine: AgentTransport {
         taskState: LocalTaskState? = nil,
         analysis: RequestAnalysis? = nil,
         toolsEnabled: Bool = true,
-        profile: ModelCallProfile = .agent
+        profile: ModelCallProfile = .agent,
+        onDelta: (@Sendable (String) -> Void)? = nil
     ) async throws -> DSMessage {
+        let visibleDelta = profile == .toolPlanning ? nil : onDelta
         let exposedTools = toolsEnabled ? relevantTools(for: analysis) : []
         var messages = [
             DSMessage(
@@ -570,7 +706,7 @@ actor LocalAgentEngine: AgentTransport {
                 )
             } : nil,
             tool_choice: shouldExposeTools ? "auto" : nil,
-            stream: false,
+            stream: visibleDelta != nil,
             max_tokens: profile.maxTokens,
             temperature: profile.temperature
         )
@@ -588,6 +724,11 @@ actor LocalAgentEngine: AgentTransport {
         var usage: ModelRequestMetrics.Usage?
         var succeeded = false
         defer { ModelRequestMetrics.record(requestId: requestId, seconds: Date().timeIntervalSince(started), usage: usage, succeeded: succeeded) }
+        if let visibleDelta {
+            let message = try await sendStreamingModelRequest(request, onDelta: visibleDelta)
+            succeeded = true
+            return message
+        }
         let (data, response) = try await sendModelRequest(request)
         guard let http = response as? HTTPURLResponse else { throw LocalAgentError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
@@ -620,6 +761,65 @@ actor LocalAgentEngine: AgentTransport {
         }
     }
 
+    private func sendStreamingModelRequest(
+        _ request: URLRequest,
+        onDelta: @escaping @Sendable (String) -> Void
+    ) async throws -> DSMessage {
+        let (bytes, response) = try await session.bytes(for: request)
+        guard let http = response as? HTTPURLResponse else { throw LocalAgentError.invalidResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            var body = ""
+            for try await line in bytes.lines {
+                body += line
+                if body.count > 1_200 { break }
+            }
+            throw LocalAgentError.http(http.statusCode, body)
+        }
+
+        var content = ""
+        var calls: [Int: (id: String, type: String, name: String, arguments: String)] = [:]
+        for try await line in bytes.lines {
+            try Task.checkCancellation()
+            guard line.hasPrefix("data:") else { continue }
+            let payload = String(line.dropFirst(5)).trimmingCharacters(in: .whitespaces)
+            if payload == "[DONE]" { break }
+            guard let data = payload.data(using: .utf8),
+                  let chunk = try? JSONDecoder().decode(DSStreamChunk.self, from: data) else {
+                continue
+            }
+            for choice in chunk.choices {
+                if let text = choice.delta.content, !text.isEmpty {
+                    content += text
+                    onDelta(text)
+                }
+                for delta in choice.delta.tool_calls ?? [] {
+                    var current = calls[delta.index] ?? ("", "function", "", "")
+                    if let id = delta.id, !id.isEmpty { current.id = id }
+                    if let type = delta.type, !type.isEmpty { current.type = type }
+                    if let name = delta.function?.name, !name.isEmpty { current.name += name }
+                    if let arguments = delta.function?.arguments { current.arguments += arguments }
+                    calls[delta.index] = current
+                }
+            }
+        }
+        let toolCalls = calls.sorted { $0.key < $1.key }.compactMap { _, value -> DSToolCall? in
+            guard !value.name.isEmpty else { return nil }
+            return DSToolCall(
+                id: value.id.isEmpty ? Self.newId("call") : value.id,
+                type: value.type.isEmpty ? "function" : value.type,
+                function: DSFunctionCall(name: value.name, arguments: value.arguments.isEmpty ? "{}" : value.arguments)
+            )
+        }
+        guard !content.isEmpty || !toolCalls.isEmpty else { throw LocalAgentError.invalidResponse }
+        return DSMessage(
+            role: "assistant",
+            content: content.isEmpty ? nil : content,
+            tool_calls: toolCalls.isEmpty ? nil : toolCalls,
+            tool_call_id: nil,
+            name: nil
+        )
+    }
+
     private func relevantTools(for analysis: RequestAnalysis?) -> [ToolContract.Tool] {
         guard let analysis else { return tools }
         if analysis.confidence < 0.45 ||
@@ -628,7 +828,8 @@ actor LocalAgentEngine: AgentTransport {
         }
         let available = Set(tools.map(\.name))
         let selected = analysis.selectedToolNames(available: available)
-        let filtered = tools.filter { selected.contains($0.name) }
+        let protected = selected.union(AgentPlanningPolicy.coreToolNames.filter { available.contains($0) })
+        let filtered = tools.filter { protected.contains($0.name) }
         return filtered.isEmpty ? tools : filtered
     }
 
@@ -818,17 +1019,6 @@ actor LocalAgentEngine: AgentTransport {
         if let data = try? JSONEncoder().encode(Dictionary(uniqueKeysWithValues: trimmed.map { ($0.key, $0.value) })) {
             UserDefaults.standard.set(data, forKey: Self.turnsKey)
         }
-    }
-
-    private static func loadTools() -> [ToolContract.Tool] {
-        let url = Bundle.main.url(forResource: "tools.v1", withExtension: "json")
-            ?? Bundle.main.url(forResource: "tools.v1", withExtension: "json", subdirectory: "Resources")
-        guard
-            let url,
-            let data = try? Data(contentsOf: url),
-            let contract = try? JSONDecoder().decode(ToolContract.self, from: data)
-        else { return [] }
-        return contract.tools.filter { $0.name != "summarize_shared_content" }
     }
 
     private func loadText(_ name: String) -> String? {

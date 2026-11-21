@@ -55,6 +55,9 @@ struct OperationRecord: Identifiable, Equatable, Codable {
         case "search_web", "research_web", "fetch_web_content": return "safari.fill"
         case "search_merchant_prices": return "yensign.circle.fill"
         case "list_memory", "set_memory", "delete_memory": return "brain.head.profile"
+        case "search_workspace": return "text.magnifyingglass"
+        case "save_capture": return "tray.and.arrow.down"
+        case "add_followup": return "arrow.triangle.branch"
         case "ocr_document": return "doc.viewfinder"
         default: return "sparkles"
         }
@@ -578,6 +581,9 @@ enum ToolPresentation {
             return "music.note"
         case "summarize_shared_content": return "doc.text"
         case "list_memory", "set_memory", "delete_memory": return "brain.head.profile"
+        case "search_workspace": return "text.magnifyingglass"
+        case "save_capture": return "tray.and.arrow.down"
+        case "add_followup": return "arrow.triangle.branch"
         case "search_web", "research_web", "fetch_web_content": return "safari"
         case "search_merchant_prices": return "yensign.circle"
         default: return "sparkles"
@@ -651,6 +657,16 @@ enum ToolPresentation {
             return join(args.optionalString("key"), args.optionalString("value"))
         case "delete_memory":
             return args.optionalString("key") ?? "删除一条偏好"
+        case "search_workspace":
+            return args.optionalString("query") ?? "检索本机工作区"
+        case "save_capture":
+            return [args.optionalString("title"), args.optionalString("projectId")]
+                .compactMap { $0 }
+                .joined(separator: " · ")
+        case "add_followup":
+            return [args.optionalString("subject"), formatDateTime(args.optionalString("dueAt"))]
+                .compactMap { $0 }
+                .joined(separator: " · ")
         case "search_web":
             return args.optionalString("query") ?? "搜索网页来源"
         case "research_web":
@@ -759,6 +775,13 @@ enum ToolPresentation {
             return "已保存偏好 · 可随时修改或删除"
         case "delete_memory":
             return object.optionalBool("deleted") == true ? "已删除该偏好" : "没有找到这条偏好"
+        case "search_workspace":
+            let count = object.optionalInt("count") ?? 0
+            return count == 0 ? "工作区没有找到匹配记录" : "找到 \(count) 条本机记录"
+        case "save_capture":
+            return object.optionalBool("saved") == true ? "已保存到收件箱 · 未创建提醒或日程" : "没有保存"
+        case "add_followup":
+            return object.optionalBool("saved") == true ? "已加入工作区跟进 · 未创建系统提醒" : "没有添加跟进"
         case "search_web":
             let count = object.optionalInt("count") ?? 0
             return count == 0 ? "没有找到网页来源" : "找到 \(count) 个网页来源 · 需再读正文"

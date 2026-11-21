@@ -7,7 +7,7 @@ struct NewsDetailView: View {
     @ObservedObject var appModel: AppModel
     @ObservedObject private var library = DiscoverReadingLibrary.shared
     @Environment(\.dismiss) private var dismiss
-    @State private var safari: SafariTarget?
+    @State private var showReader = false
     @State private var chineseGuide: String?
     @State private var guideError: String?
     @State private var isLoadingGuide = false
@@ -81,11 +81,10 @@ struct NewsDetailView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .background(SwipeBackEnabler().frame(width: 1, height: 1))
-        .sheet(item: $safari) { target in
-            InAppSafari(url: target.url)
-                .ignoresSafeArea()
+        .sheet(isPresented: $showReader) {
+            NativeArticleReaderView(item: item, library: library)
         }
-        .onAppear { library.markRead(item) }
+        .onAppear { library.markReading(item) }
     }
 
     private var topBar: some View {
@@ -211,13 +210,13 @@ struct NewsDetailView: View {
 
     private var sourceButton: some View {
         Button {
-            if let url = item.url { safari = SafariTarget(url: url) }
+            showReader = true
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "safari.fill")
-                Text("阅读原文")
+                Text("进入原生阅读")
                 Spacer()
-                Image(systemName: "arrow.up.right")
+                Image(systemName: "book.pages")
                     .whaleFont(size: 13, weight: .bold)
             }
             .whaleFont(size: 15, weight: .semibold)

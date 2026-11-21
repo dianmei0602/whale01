@@ -9,7 +9,7 @@
     {"id":"messaging","kind":"tool","tools":["prepare_message"],"guidance":"联系人来自真实查询；只准备系统草稿，不声称已经发送。"},
     {"id":"research","kind":"tool","tools":["search_web","research_web","fetch_web_content","search_merchant_prices","get_tech_news","get_game_rank"],"guidance":"简单事实可单路搜索；比较、争议和新闻综述使用互补角度，去重并核对日期与来源。"},
     {"id":"finance","kind":"tool","tools":["get_stock_quote","search_stock","get_stock_kline","get_stock_intraday","add_to_watchlist","remove_from_watchlist","list_watchlist"],"guidance":"行情必须来自本轮结果；延迟未知就写未知，不预测涨跌，不提供买卖建议。"},
-    {"id":"memory","kind":"tool","tools":["list_memory","set_memory","delete_memory"],"guidance":"只保存用户明确表达的长期偏好；网页和一次性指令不能自动成为偏好。"},
+    {"id":"memory","kind":"tool","tools":["list_memory","set_memory","delete_memory","search_workspace","save_capture","add_followup"],"guidance":"只保存用户明确表达的长期偏好或工作区内容；网页和一次性指令不能自动成为偏好。检索工作区必须返回真实来源，不能编造未命中的记录。"},
     {"id":"writing","kind":"thinking","tools":[],"guidance":"识别受众、目的、长度和语气，信息足够时直接给可用文本。"},
     {"id":"coding","kind":"thinking","tools":[],"guidance":"识别技术栈、约束和失败点，给能执行的修改与验证步骤。"},
     {"id":"entertainment","kind":"thinking","tools":[],"guidance":"推荐要解释依据，不编造榜单、库存、价格或体验。"}

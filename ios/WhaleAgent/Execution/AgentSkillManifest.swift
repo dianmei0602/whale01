@@ -41,7 +41,19 @@ enum AgentSkillManifestStore {
               manifest.isValid else {
             return nil
         }
-        return manifest
+        let normalized = AgentSkillManifest(
+            version: manifest.version,
+            skills: manifest.skills.map { definition in
+                let skill = AgentSkill(rawValue: definition.id)
+                return AgentSkillDefinition(
+                    id: definition.id,
+                    kind: definition.kind,
+                    tools: skill.map { ToolRegistry.availableToolNames(for: $0).sorted() } ?? [],
+                    guidance: definition.guidance
+                )
+            }
+        )
+        return normalized
     }
 
     static func guidance(for skills: [AgentSkill]) -> String {
