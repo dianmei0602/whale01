@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       scope:
-        description: Run all native and UI tests, UI tests, appearance, or assistant desktop
+        description: Run all tests, unit tests, UI tests, appearance, or assistant desktop
         type: choice
-        options: [all, ui, appearance, assistant]
+        options: [all, units, ui, appearance, assistant]
         default: all
   workflow_call:
     inputs:
@@ -47,7 +47,7 @@ jobs:
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
       - name: Run native unit tests
-        if: ${{ inputs.scope != 'ui' && inputs.scope != 'appearance' && inputs.scope != 'assistant' }}
+        if: ${{ inputs.scope == 'all' || inputs.scope == 'units' }}
         working-directory: ios
         run: |
           set -o pipefail
@@ -59,7 +59,7 @@ jobs:
             -derivedDataPath build -resultBundlePath build/TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO test | tee test.log
       - name: Restart simulator before UI tests
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && inputs.scope != 'units' }}
         run: |
           # A simulator left over from the unit-test pass occasionally loses its
           # render server, which shows up as "Failed to terminate" at app launch.
@@ -67,7 +67,7 @@ jobs:
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
       - name: Run navigation and draft UI tests
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && inputs.scope != 'units' }}
         working-directory: ios
         run: |
           set -o pipefail
