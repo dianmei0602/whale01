@@ -60,4 +60,155 @@ final class WorkspaceTests: XCTestCase {
         XCTAssertEqual(store.focusSessions.count, 1)
         XCTAssertNotNil(store.focusSessions.first?.endedAt)
     }
+
+    func testLegacyWorkspaceArchiveLoadsAndMigratesWithoutLosingCaptures() {
+        let suite = "workspace-legacy-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(Data("{\"captures\":[]}".utf8), forKey: "archive")
+
+        let store = WhaleWorkspaceStore(defaults: defaults, storageKey: "archive")
+        XCTAssertNil(store.loadIssue)
+        _ = store.capture(title: "新记录", body: "迁移后的内容", kind: .note)
+
+        let restored = WhaleWorkspaceStore(defaults: defaults, storageKey: "archive")
+        XCTAssertEqual(restored.captures.first?.title, "新记录")
+    }
+
+    func testCorruptWorkspaceArchiveIsBackedUpAndReported() {
+        let suite = "workspace-corrupt-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let corrupt = Data("not-json".utf8)
+        defaults.set(corrupt, forKey: "archive")
+
+        let store = WhaleWorkspaceStore(defaults: defaults, storageKey: "archive")
+        XCTAssertNotNil(store.loadIssue)
+        XCTAssertEqual(defaults.data(forKey: "archive.corrupt-backup"), corrupt)
+    }
+
+    func testWorkspaceToolsRoundTripThroughNativeRouter() async throws {
+        let router = NativeToolRouter(permissions: PermissionCenter())
+        let marker = "router-\(UUID().uuidString)"
+        let save = PendingTool(
+            tool: "save_capture",
+            toolCallId: "save-\(marker)",
+            operationId: "save-op-\(marker)",
+            arguments: [
+                "body": .string("把 \(marker) 保存到工作区"),
+                "title": .string(marker)
+            ],
+            requiresConfirmation: false
+        )
+        let saveResult = await router.execute(save)
+        XCTAssertEqual(saveResult.status, "success")
+        let savedID = try XCTUnwrap(saveResult.data?.objectValue?.optionalString("id"))
+
+        let search = PendingTool(
+            tool: "search_workspace",
+            toolCallId: "search-\(marker)",
+            operationId: "search-op-\(marker)",
+            arguments: ["query": .string(marker)],
+            requiresConfirmation: false
+        )
+        let searchResult = await router.execute(search)
+        XCTAssertEqual(searchResult.status, "success")
+        XCTAssertGreaterThanOrEqual(searchResult.data?.objectValue?.optionalInt("count") ?? 0, 1)
+
+        if let item = WhaleWorkspaceStore.shared.captures.first(where: { $0.id == savedID }) {
+            WhaleWorkspaceStore.shared.delete(item)
+        }
+    }
+}
+
+final class AgentPlanningPolicyTests: XCTestCase {
+    func testBudgetUsesRequestedFormulaAndBounds() {
+        XCTAssertEqual(AgentPlanningPolicy.batchBudget(for: 0), 3)
+        XCTAssertEqual(AgentPlanningPolicy.batchBudget(for: 1), 3)
+        XCTAssertEqual(AgentPlanningPolicy.batchBudget(for: 3), 5)
+        XCTAssertEqual(AgentPlanningPolicy.batchBudget(for: 20), 10)
+    }
+
+    func testPlanRevisionRequiresAllFailedMultiStepAndNoPriorRevision() {
+        let failed = ToolResultPayload(
+            toolCallId: "a",
+            status: "failed",
+            error: ToolErrorPayload(code: "timeout", message: "超时")
+        )
+        XCTAssertTrue(
+            AgentPlanningPolicy.shouldRevisePlan(results: [failed], taskCount: 2, previousRevisions: 0)
+        )
+        XCTAssertFalse(
+            AgentPlanningPolicy.shouldRevisePlan(results: [failed], taskCount: 1, previousRevisions: 0)
+        )
+        XCTAssertFalse(
+            AgentPlanningPolicy.shouldRevisePlan(results: [failed], taskCount: 2, previousRevisions: 1)
+        )
+        let success = ToolResultPayload(toolCallId: "b", status: "success")
+        XCTAssertFalse(
+            AgentPlanningPolicy.shouldRevisePlan(results: [failed, success], taskCount: 2, previousRevisions: 0)
+        )
+    }
+
+    func testCoreToolsSurviveNarrowToolSelection() {
+        let available = AgentPlanningPolicy.coreToolNames.union(["play_music", "research_web"])
+        let analysis = RequestAnalysis(
+            goal: "整理文字",
+            tasks: ["组织文字"],
+            skills: ["writing"],
+            suggestedTools: [],
+            confidence: 0.9
+        )
+        let selected = analysis.selectedToolNames(available: available)
+        XCTAssertTrue(AgentPlanningPolicy.coreToolNames.isSubset(of: selected))
+    }
+}
+
+@MainActor
+final class AgentStreamingPipelineTests: XCTestCase {
+    private actor StreamingTransport: AgentTransport {
+        func health() async throws -> HealthResponse {
+            HealthResponse(status: "ok", modelMode: "mock", executionMode: "ios", adapterConfigured: true, tools: 0, requiresDeferExecution: true, authRequired: false)
+        }
+        func turnSnapshot(turnId: String) async throws -> AgentTurnResponse { throw URLError(.unsupportedURL) }
+        func startTurn(text: String, conversationId: String?, permissions: [String: String], deferExecution: Bool) async throws -> AgentTurnResponse {
+            throw URLError(.unsupportedURL)
+        }
+        func submitToolResults(turnId: String, results: [ToolResultPayload]) async throws -> AgentTurnResponse {
+            throw URLError(.unsupportedURL)
+        }
+        func startTurnStreaming(text: String, conversationId: String?, permissions: [String: String], deferExecution: Bool, onDelta: @escaping @Sendable (String) -> Void) async throws -> AgentTurnResponse {
+            onDelta("流式")
+            onDelta("完成")
+            return AgentTurnResponse(
+                contractVersion: "1.0",
+                turnId: "turn-stream",
+                conversationId: "conversation-stream",
+                status: "completed",
+                reply: "流式完成",
+                modelMode: "mock",
+                executionMode: "ios",
+                events: [],
+                pending: [],
+                task: nil
+            )
+        }
+    }
+
+    func testStreamingDeltaFlowsThroughAppModelAndFinalReplyReplacesPreview() async {
+        let model = AppModel(transport: StreamingTransport())
+        model.setVoiceReply(false)
+        await model.send(text: "测试流式")
+        XCTAssertEqual(model.messages.last?.role, .assistant)
+        XCTAssertEqual(model.messages.last?.text, "流式完成")
+        XCTAssertTrue(model.streamingReply.isEmpty)
+    }
+
+    func testToolContractRegistryIsSingleSourceForSkills() {
+        XCTAssertEqual(ToolRegistry.tools.count, 42)
+        XCTAssertTrue(ToolRegistry.names.contains("search_workspace"))
+        for skill in AgentSkill.allCases {
+            XCTAssertTrue(skill.tools.isSubset(of: ToolRegistry.names))
+        }
+    }
 }

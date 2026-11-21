@@ -478,6 +478,74 @@ final class NativeToolRouter {
         ])
     }
 
+    private func searchWorkspace(_ arguments: [String: JSONValue]) throws -> JSONValue {
+        let query = try arguments.requiredString("query")
+        let limit = min(20, max(1, arguments.optionalInt("limit") ?? 8))
+        let results = Array(WhaleWorkspaceStore.shared.searchAll(query).prefix(limit))
+        let rows = results.map { item in
+            JSONValue.object([
+                "id": .string(item.id),
+                "title": .string(item.title),
+                "body": .string(String(item.body.prefix(1200))),
+                "kind": .string(item.kind.rawValue),
+                "sourceURL": jsonText(item.sourceURL),
+                "projectId": jsonText(item.projectID),
+                "isKnowledge": .bool(item.isKnowledge),
+                "updatedAt": .string(ToolDate.iso(item.updatedAt))
+            ])
+        }
+        return .object([
+            "query": .string(query),
+            "count": .number(Double(rows.count)),
+            "results": .array(rows),
+            "source": .string("whale-workspace")
+        ])
+    }
+
+    private func saveCapture(_ arguments: [String: JSONValue]) throws -> JSONValue {
+        let body = try arguments.requiredString("body")
+        let item = WhaleWorkspaceStore.shared.capture(
+            title: arguments.optionalString("title") ?? "",
+            body: body,
+            kind: .note,
+            sourceURL: arguments.optionalString("sourceURL"),
+            projectID: arguments.optionalString("projectId"),
+            isKnowledge: arguments.optionalBool("saveToKnowledge") ?? false
+        )
+        return .object([
+            "id": .string(item.id),
+            "title": .string(item.title),
+            "saved": .bool(true),
+            "source": .string("whale-workspace"),
+            "note": .string("已保存到工作区收件箱，未创建提醒或日程")
+        ])
+    }
+
+    private func addFollowUp(_ arguments: [String: JSONValue]) throws -> JSONValue {
+        let subject = try arguments.requiredString("subject")
+        let dueRaw = arguments.optionalString("dueAt")
+        let dueAt = dueRaw.flatMap(ToolDate.parse)
+        if dueRaw != nil, dueAt == nil {
+            throw ToolExecutionError(code: "invalid_due_at", message: "跟进时间无法解析，请提供有效日期。")
+        }
+        guard let item = WhaleWorkspaceStore.shared.addFollowUp(
+            subject: subject,
+            detail: arguments.optionalString("detail") ?? "",
+            dueAt: dueAt,
+            projectID: arguments.optionalString("projectId")
+        ) else {
+            throw ToolExecutionError(code: "followup_invalid", message: "跟进对象或事项不能为空")
+        }
+        return .object([
+            "id": .string(item.id),
+            "subject": .string(item.subject),
+            "dueAt": jsonText(item.dueAt.map { ToolDate.iso($0) }),
+            "saved": .bool(true),
+            "source": .string("whale-workspace"),
+            "note": .string("已保存为工作区跟进，不是系统提醒")
+        ])
+    }
+
     private func addWatchlist(_ arguments: [String: JSONValue]) async throws -> JSONValue {
         let query = try arguments.requiredString("query")
         let stock = try await resolveStock(query)
@@ -813,6 +881,12 @@ final class NativeToolRouter {
             return try setMemory(pending.arguments)
         case "delete_memory":
             return try deleteMemory(pending.arguments)
+        case "search_workspace":
+            return try searchWorkspace(pending.arguments)
+        case "save_capture":
+            return try saveCapture(pending.arguments)
+        case "add_followup":
+            return try addFollowUp(pending.arguments)
         case "search_web":
             return try await web.search(
                 query: try pending.arguments.requiredString("query"),

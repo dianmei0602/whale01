@@ -62,6 +62,10 @@ struct ConversationSurface: View {
                                 model.presentedConfirmation = item
                             }.id(item.id)
                         }
+                        if !model.streamingReply.isEmpty {
+                            StreamingReplyView(text: model.streamingReply)
+                                .id("streaming-reply")
+                        }
                         AssistantActivityView(model: model)
                         InteractionReceiptCard(model: model)
                         Color.clear.frame(height: 20 + bottomInset).id(Self.bottomAnchor)
@@ -86,6 +90,9 @@ struct ConversationSurface: View {
                 }
                 .onChange(of: model.pending.count) { _, _ in
                     if followState.receive() { pinToBottom(proxy) }
+                }
+                .onChange(of: model.streamingReply) { _, _ in
+                    if followState.nearBottom { pinToBottom(proxy, animated: false) }
                 }
                 .onChange(of: viewport.size.height) { _, _ in
                     if followState.nearBottom { pinToBottom(proxy, animated: false) }
@@ -201,6 +208,32 @@ struct ConversationSurface: View {
             from: nil,
             for: nil
         )
+    }
+}
+
+private struct StreamingReplyView: View {
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 7) {
+                WhaleMarkView(size: 22)
+                Text("鲸鱼 · 正在回答")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.muted)
+                ProgressView()
+                    .controlSize(.mini)
+            }
+            Text(text)
+                .whaleFont(size: 17)
+                .lineSpacing(4)
+                .foregroundStyle(WhaleTheme.ink)
+                .textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("鲸鱼正在回答，\(text)")
     }
 }
 

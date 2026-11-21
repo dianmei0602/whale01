@@ -1,30 +1,6 @@
 import SwiftUI
 import UIKit
 
-struct TodoReminder: Identifiable, Equatable {
-    let id: String
-    let title: String
-    let completed: Bool
-    let listName: String
-    let dueAt: Date?
-    let notes: String?
-    let deduplicated: Bool
-
-    init?(json: JSONValue) {
-        guard let object = json.objectValue,
-              let id = object.optionalString("recordId"),
-              let title = object.optionalString("title"),
-              !title.isEmpty else { return nil }
-        self.id = id
-        self.title = title
-        self.completed = object.optionalBool("completed") ?? false
-        self.listName = object.optionalString("listName") ?? "提醒事项"
-        self.dueAt = object.optionalString("dueAt").flatMap(ToolDate.parse)
-        self.notes = object.optionalString("notes")
-        self.deduplicated = object.optionalBool("deduplicated") ?? false
-    }
-}
-
 private enum TodoFilter: String, CaseIterable, Identifiable {
     case pending
     case inProgress

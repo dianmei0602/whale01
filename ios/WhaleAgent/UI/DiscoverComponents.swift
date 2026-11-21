@@ -224,23 +224,12 @@ struct NewsTopicStrip: View {
                         Button {
                             onSelect(selection == cluster.id ? nil : cluster.id)
                         } label: {
-                            HStack(spacing: 5) {
-                                Text(cluster.title)
-                                Text("\(cluster.count)")
-                                    .whaleFont(size: 10, weight: .bold)
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        (selection == cluster.id ? WhaleTheme.onAccent : WhaleTheme.muted)
-                                            .opacity(0.14),
-                                        in: Capsule()
-                                    )
-                            }
+                            clusterLabel(cluster)
                             .whaleFont(size: 12, weight: .semibold)
                             .whaleRaisedPill(selected: selection == cluster.id)
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("\(cluster.title)，\(cluster.count) 条相关资讯")
+                        .accessibilityLabel("\(cluster.title)，\(cluster.sourceCount) 家来源")
                         .accessibilityAddTraits(selection == cluster.id ? .isSelected : [])
                     }
                 }
@@ -249,6 +238,28 @@ struct NewsTopicStrip: View {
             .scrollIndicators(.hidden)
             .accessibilityIdentifier("discover-topic-strip")
         }
+    }
+
+    private func clusterLabel(_ cluster: NewsTopicCluster) -> some View {
+        let badgeColor = (selection == cluster.id ? WhaleTheme.onAccent : WhaleTheme.muted).opacity(0.14)
+        return HStack(spacing: 5) {
+            Text(cluster.title)
+            Text("\(cluster.sourceCount)家")
+                .whaleFont(size: 10, weight: .bold)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(badgeColor, in: Capsule())
+            if let latest = cluster.latestPublishedAt {
+                Text(relativeAge(latest))
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+        }
+    }
+
+    private func relativeAge(_ date: Date) -> String {
+        let minutes = max(0, Int(Date().timeIntervalSince(date) / 60))
+        if minutes < 60 { return "\(minutes) 分钟前" }
+        return "\(max(1, minutes / 60)) 小时前"
     }
 }
 

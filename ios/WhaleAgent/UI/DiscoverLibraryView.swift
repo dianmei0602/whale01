@@ -4,8 +4,7 @@ import UIKit
 struct DiscoverLibraryView: View {
     @ObservedObject var library: DiscoverReadingLibrary
     @Environment(\.dismiss) private var dismiss
-    @State private var safari: SafariTarget?
-    @State private var errorText: String?
+    @State private var readerArticle: SavedArticle?
 
     var body: some View {
         NavigationStack {
@@ -32,12 +31,12 @@ struct DiscoverLibraryView: View {
                                         Text(article.source)
                                         Text("·")
                                         Text(article.savedAt.formatted(.relative(presentation: .named)))
-                                        if article.isReadLater {
-                                            Text("稍后读")
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(WhaleTheme.accentSoft, in: Capsule())
-                                        }
+                                        Text(article.status.title)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(WhaleTheme.accentSoft, in: Capsule())
+                                        Text("\(Int(article.progress * 100))%")
+                                            .foregroundStyle(WhaleTheme.muted)
                                     }
                                     .font(.caption)
                                     .foregroundStyle(WhaleTheme.muted)
@@ -67,27 +66,27 @@ struct DiscoverLibraryView: View {
                     Button("完成") { dismiss() }
                 }
             }
-            .sheet(item: $safari) { target in
-                InAppSafari(url: target.url)
-                    .ignoresSafeArea()
-            }
-            .alert("无法打开原文", isPresented: Binding(
-                get: { errorText != nil },
-                set: { if !$0 { errorText = nil } }
-            )) {
-                Button("知道了", role: .cancel) {}
-            } message: {
-                Text(errorText ?? "")
+            .sheet(item: $readerArticle) { article in
+                NativeArticleReaderView(item: newsItem(for: article), library: library)
             }
         }
     }
 
     private func open(_ article: SavedArticle) {
-        guard let url = URL(string: article.link), ["https", "http"].contains(url.scheme?.lowercased() ?? "") else {
-            errorText = "这条收藏没有可用的原文链接。"
-            return
-        }
-        safari = SafariTarget(url: url)
+        readerArticle = article
+    }
+
+    private func newsItem(for article: SavedArticle) -> NewsItem {
+        NewsItem(
+            id: article.id,
+            title: article.title,
+            summary: article.summary,
+            source: article.source,
+            link: article.link,
+            publishedAt: nil,
+            channel: article.channel,
+            rank: nil
+        )
     }
 
     private func remove(_ article: SavedArticle) {

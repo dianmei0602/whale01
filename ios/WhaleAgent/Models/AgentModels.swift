@@ -134,6 +134,9 @@ enum ToolCatalog {
         case "list_memory": return "读取偏好"
         case "set_memory": return "保存偏好"
         case "delete_memory": return "删除偏好"
+        case "search_workspace": return "检索工作区"
+        case "save_capture": return "保存到工作区"
+        case "add_followup": return "添加跟进"
         case "search_web": return "搜索网页"
         case "research_web": return "多角度查证"
         case "fetch_web_content": return "读取网页"
@@ -192,6 +195,16 @@ enum ToolCatalog {
             return [args.optionalString("key"), args.optionalString("value")].compactMap { $0 }.joined(separator: "：")
         case "delete_memory":
             return args.optionalString("key") ?? args.optionalString("id") ?? "删除偏好"
+        case "search_workspace":
+            return args.optionalString("query") ?? "检索本机工作区"
+        case "save_capture":
+            return [args.optionalString("title"), args.optionalString("body").map { String($0.prefix(80)) }]
+                .compactMap { $0 }
+                .joined(separator: " · ")
+        case "add_followup":
+            return [args.optionalString("subject"), args.optionalString("dueAt")]
+                .compactMap { $0 }
+                .joined(separator: " · ")
         case "search_web":
             return args.optionalString("query") ?? "网页搜索"
         case "research_web":

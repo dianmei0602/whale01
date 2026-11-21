@@ -261,7 +261,7 @@ final class WhaleV2Tests: XCTestCase {
         ]
         let clusters = NewsTopicClusterer.clusters(rows)
         XCTAssertTrue(clusters.contains { $0.count >= 2 })
-        XCTAssertTrue(clusters.allSatisfy { $0.itemIDs.count == $0.count || $0.count > 5 })
+        XCTAssertTrue(clusters.allSatisfy { $0.sourceCount >= 2 && $0.itemIDs.count >= 2 })
     }
 
     func testTodoRichPreviewExtractsProjectTimeAndEstimate() {
@@ -344,6 +344,15 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertTrue(candidates.allSatisfy { candidate in
             candidate.end <= event.startAt || candidate.start >= event.endAt
         })
+    }
+
+    func testLegacySavedArticleDecodesIntoReadingQueue() throws {
+        let json = """
+        {"id":"article-1","title":"旧收藏","summary":"摘要","source":"来源","link":"https://example.com","channel":"ai","savedAt":0,"isReadLater":true}
+        """
+        let article = try JSONDecoder().decode(SavedArticle.self, from: Data(json.utf8))
+        XCTAssertEqual(article.status, .toRead)
+        XCTAssertEqual(article.progress, 0)
     }
 
     private func contrast(_ foreground: UInt32, _ background: UInt32) -> Double {

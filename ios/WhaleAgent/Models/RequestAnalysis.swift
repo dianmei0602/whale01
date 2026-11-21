@@ -15,41 +15,7 @@ enum AgentSkill: String, CaseIterable, Codable, Sendable {
     case entertainment
 
     var tools: Set<String> {
-        switch self {
-        case .general:
-            return []
-        case .schedule:
-            return [
-                "create_reminder", "list_reminders", "update_reminder", "delete_reminder",
-                "list_calendar_events", "find_free_slots", "create_calendar_event",
-                "update_calendar_event", "delete_calendar_event"
-            ]
-        case .travel:
-            return ["get_weather", "get_current_location", "search_places", "open_navigation"]
-        case .health:
-            return ["get_activity_summary"]
-        case .music:
-            return [
-                "search_music_library", "play_music", "play_music_album", "open_netease_music",
-                "pause_music", "resume_music", "skip_music_track", "get_playback_state"
-            ]
-        case .messaging:
-            return ["prepare_message"]
-        case .research:
-            return [
-                "search_web", "research_web", "fetch_web_content", "search_merchant_prices",
-                "get_tech_news", "get_game_rank"
-            ]
-        case .finance:
-            return [
-                "get_stock_quote", "search_stock", "get_stock_kline", "get_stock_intraday",
-                "add_to_watchlist", "remove_from_watchlist", "list_watchlist"
-            ]
-        case .memory:
-            return ["list_memory", "set_memory", "delete_memory"]
-        case .writing, .coding, .entertainment:
-            return []
-        }
+        ToolRegistry.availableToolNames(for: self)
     }
 
     static func normalize(_ rawSkills: [String]) -> [AgentSkill] {
@@ -94,6 +60,7 @@ struct RequestAnalysis: Codable, Equatable, Sendable {
             ["list_memory", "set_memory", "search_web", "research_web", "fetch_web_content"]
                 .filter { available.contains($0) }
         )
+        names.formUnion(AgentPlanningPolicy.coreToolNames.filter { available.contains($0) })
         return names.isEmpty ? available : names
     }
 
@@ -206,7 +173,7 @@ struct RequestAnalysis: Codable, Equatable, Sendable {
             add(.messaging, task: "准备联系人或消息草稿", candidates: AgentSkill.messaging.tools)
             risk = "medium"
         }
-        if contains(compact, ["记住", "以后", "偏好", "我叫", "家庭地址", "住址"]) {
+        if contains(compact, ["记住", "以后", "偏好", "我叫", "家庭地址", "住址", "记一下", "记下来", "保存到工作区", "上周记", "跟进"]) {
             add(.memory, task: "读取或保存用户偏好", candidates: AgentSkill.memory.tools)
         }
         if contains(compact, ["写", "改写", "润色", "总结", "提纲", "文案"]) {

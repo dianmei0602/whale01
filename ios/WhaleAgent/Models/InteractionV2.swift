@@ -14,6 +14,7 @@ enum AgentInteractionPhase: String, Codable, CaseIterable, Equatable {
     case listening
     case editable
     case understanding
+    case streaming
     case executing
     case awaitingConfirmation
     case completed
@@ -26,6 +27,7 @@ enum AgentInteractionPhase: String, Codable, CaseIterable, Equatable {
         case .listening: return "正在听"
         case .editable: return "可编辑"
         case .understanding: return "正在理解"
+        case .streaming: return "正在回答"
         case .executing: return "正在执行"
         case .awaitingConfirmation: return "等待确认"
         case .completed: return "已完成"

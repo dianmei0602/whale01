@@ -122,13 +122,48 @@ struct WorkspaceFocusSession: Identifiable, Codable, Equatable {
 }
 
 private struct WhaleWorkspaceArchive: Codable {
-    var captures: [WorkspaceCapture] = []
-    var projects: [WorkspaceProject] = []
-    var followUps: [WorkspaceFollowUp] = []
-    var reviews: [String: WorkspaceDailyReview] = [:]
-    var focusSessions: [WorkspaceFocusSession] = []
+    static let currentSchemaVersion = 2
+
+    var schemaVersion: Int
+    var captures: [WorkspaceCapture]
+    var projects: [WorkspaceProject]
+    var followUps: [WorkspaceFollowUp]
+    var reviews: [String: WorkspaceDailyReview]
+    var focusSessions: [WorkspaceFocusSession]
     var activeFocusMode: WorkspaceFocusMode?
     var focusStartedAt: Date?
+
+    init(
+        schemaVersion: Int = Self.currentSchemaVersion,
+        captures: [WorkspaceCapture] = [],
+        projects: [WorkspaceProject] = [],
+        followUps: [WorkspaceFollowUp] = [],
+        reviews: [String: WorkspaceDailyReview] = [:],
+        focusSessions: [WorkspaceFocusSession] = [],
+        activeFocusMode: WorkspaceFocusMode? = nil,
+        focusStartedAt: Date? = nil
+    ) {
+        self.schemaVersion = schemaVersion
+        self.captures = captures
+        self.projects = projects
+        self.followUps = followUps
+        self.reviews = reviews
+        self.focusSessions = focusSessions
+        self.activeFocusMode = activeFocusMode
+        self.focusStartedAt = focusStartedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try container.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 1
+        captures = try container.decodeIfPresent([WorkspaceCapture].self, forKey: .captures) ?? []
+        projects = try container.decodeIfPresent([WorkspaceProject].self, forKey: .projects) ?? []
+        followUps = try container.decodeIfPresent([WorkspaceFollowUp].self, forKey: .followUps) ?? []
+        reviews = try container.decodeIfPresent([String: WorkspaceDailyReview].self, forKey: .reviews) ?? [:]
+        focusSessions = try container.decodeIfPresent([WorkspaceFocusSession].self, forKey: .focusSessions) ?? []
+        activeFocusMode = try container.decodeIfPresent(WorkspaceFocusMode.self, forKey: .activeFocusMode)
+        focusStartedAt = try container.decodeIfPresent(Date.self, forKey: .focusStartedAt)
+    }
 }
 
 @MainActor
@@ -141,10 +176,12 @@ final class WhaleWorkspaceStore: ObservableObject {
     @Published private(set) var focusSessions: [WorkspaceFocusSession]
     @Published private(set) var activeFocusMode: WorkspaceFocusMode?
     @Published private(set) var focusStartedAt: Date?
+    @Published private(set) var loadIssue: String?
 
     private let defaults: UserDefaults
     private let storageKey: String
     private var reviews: [String: WorkspaceDailyReview]
+    private var canPersist = true
 
     init(
         defaults: UserDefaults = .standard,
@@ -152,7 +189,10 @@ final class WhaleWorkspaceStore: ObservableObject {
     ) {
         self.defaults = defaults
         self.storageKey = storageKey
-        let archive = Self.load(defaults: defaults, key: storageKey)
+        let loaded = Self.load(defaults: defaults, key: storageKey)
+        let archive = loaded.archive
+        loadIssue = loaded.issue
+        canPersist = loaded.canPersist
         captures = archive.captures
         projects = archive.projects
         followUps = archive.followUps
@@ -408,7 +448,9 @@ final class WhaleWorkspaceStore: ObservableObject {
     }
 
     private func persist() {
+        guard canPersist else { return }
         let archive = WhaleWorkspaceArchive(
+            schemaVersion: WhaleWorkspaceArchive.currentSchemaVersion,
             captures: captures,
             projects: projects,
             followUps: followUps,
@@ -421,12 +463,31 @@ final class WhaleWorkspaceStore: ObservableObject {
         defaults.set(data, forKey: storageKey)
     }
 
-    private static func load(defaults: UserDefaults, key: String) -> WhaleWorkspaceArchive {
-        guard let data = defaults.data(forKey: key),
-              let archive = try? JSONDecoder().decode(WhaleWorkspaceArchive.self, from: data) else {
-            return WhaleWorkspaceArchive()
+    private static func load(
+        defaults: UserDefaults,
+        key: String
+    ) -> (archive: WhaleWorkspaceArchive, issue: String?, canPersist: Bool) {
+        guard let data = defaults.data(forKey: key) else {
+            return (WhaleWorkspaceArchive(), nil, true)
         }
-        return archive
+        do {
+            let archive = try JSONDecoder().decode(WhaleWorkspaceArchive.self, from: data)
+            guard archive.schemaVersion <= WhaleWorkspaceArchive.currentSchemaVersion else {
+                return (
+                    WhaleWorkspaceArchive(),
+                    "工作区数据来自更新的版本，本次以只读方式启动，避免覆盖新版数据。",
+                    false
+                )
+            }
+            return (archive, nil, true)
+        } catch {
+            defaults.set(data, forKey: key + ".corrupt-backup")
+            return (
+                WhaleWorkspaceArchive(),
+                "工作区旧数据无法解析，原始数据已保留在本机备份中。",
+                true
+            )
+        }
     }
 
     private static func dayKey(_ date: Date) -> String {

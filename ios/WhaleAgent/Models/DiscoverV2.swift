@@ -1,6 +1,20 @@
 import Combine
 import Foundation
 
+enum ReadingStatus: String, Codable, CaseIterable {
+    case toRead
+    case reading
+    case finished
+
+    var title: String {
+        switch self {
+        case .toRead: return "待读"
+        case .reading: return "在读"
+        case .finished: return "读完"
+        }
+    }
+}
+
 struct SavedArticle: Identifiable, Codable, Equatable {
     let id: String
     let title: String
@@ -10,6 +24,9 @@ struct SavedArticle: Identifiable, Codable, Equatable {
     let channel: String
     let savedAt: Date
     var isReadLater: Bool
+    var status: ReadingStatus
+    var progress: Double
+    var excerpt: String?
 
     init(item: NewsItem, savedAt: Date = Date(), isReadLater: Bool = true) {
         id = item.id
@@ -20,6 +37,26 @@ struct SavedArticle: Identifiable, Codable, Equatable {
         channel = item.channel
         self.savedAt = savedAt
         self.isReadLater = isReadLater
+        status = isReadLater ? .toRead : .finished
+        progress = isReadLater ? 0 : 1
+        excerpt = nil
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        summary = try container.decodeIfPresent(String.self, forKey: .summary) ?? ""
+        source = try container.decodeIfPresent(String.self, forKey: .source) ?? ""
+        link = try container.decodeIfPresent(String.self, forKey: .link) ?? ""
+        channel = try container.decodeIfPresent(String.self, forKey: .channel) ?? ""
+        savedAt = try container.decodeIfPresent(Date.self, forKey: .savedAt) ?? Date()
+        isReadLater = try container.decodeIfPresent(Bool.self, forKey: .isReadLater) ?? true
+        status = try container.decodeIfPresent(ReadingStatus.self, forKey: .status)
+            ?? (isReadLater ? .toRead : .finished)
+        progress = min(1, max(0, try container.decodeIfPresent(Double.self, forKey: .progress)
+            ?? (isReadLater ? 0 : 1)))
+        excerpt = try container.decodeIfPresent(String.self, forKey: .excerpt)
     }
 }
 
@@ -55,7 +92,38 @@ final class DiscoverReadingLibrary: ObservableObject {
     func markRead(_ item: NewsItem) {
         guard let index = saved.firstIndex(where: { $0.id == item.id }) else { return }
         saved[index].isReadLater = false
+        saved[index].status = .finished
+        saved[index].progress = 1
         persist()
+    }
+
+    func markReading(_ item: NewsItem) {
+        guard let index = saved.firstIndex(where: { $0.id == item.id }) else { return }
+        if saved[index].status != .finished {
+            saved[index].isReadLater = true
+            saved[index].status = .reading
+            saved[index].progress = max(0.05, saved[index].progress)
+        }
+        persist()
+    }
+
+    func updateProgress(_ item: NewsItem, progress: Double) {
+        guard let index = saved.firstIndex(where: { $0.id == item.id }) else { return }
+        let value = min(1, max(0, progress))
+        saved[index].progress = value
+        saved[index].status = value >= 0.98 ? .finished : (value > 0 ? .reading : .toRead)
+        saved[index].isReadLater = saved[index].status != .finished
+        persist()
+    }
+
+    func saveExcerpt(_ item: NewsItem, excerpt: String) {
+        guard let index = saved.firstIndex(where: { $0.id == item.id }) else { return }
+        saved[index].excerpt = String(excerpt.trimmingCharacters(in: .whitespacesAndNewlines).prefix(2_000))
+        persist()
+    }
+
+    func articles(with status: ReadingStatus) -> [SavedArticle] {
+        saved.filter { $0.status == status }
     }
 
     func mute(topic: String) {
@@ -90,6 +158,8 @@ struct NewsTopicCluster: Identifiable, Equatable {
     let id: String
     let title: String
     let count: Int
+    let sourceCount: Int
+    let latestPublishedAt: Date?
     let itemIDs: [String]
 }
 
@@ -100,24 +170,67 @@ enum NewsTopicClusterer {
     ]
 
     static func clusters(_ items: [NewsItem], limit: Int = 6) -> [NewsTopicCluster] {
-        var buckets: [String: [NewsItem]] = [:]
-        for item in items.prefix(60) {
-            for token in tokens(item.displayTitle).prefix(4) {
-                buckets[token, default: []].append(item)
+        let dated: [(item: NewsItem, date: Date?)] = items.prefix(100).compactMap { item in
+            guard !item.id.isEmpty else { return nil }
+            return (item, DiscoverFormat.date(from: item.publishedAt))
+        }
+        let anchor = dated.compactMap(\.date).max() ?? Date()
+        let windowStart = anchor.addingTimeInterval(-36 * 3_600)
+        let candidateItems = dated.filter { entry in
+            guard let date = entry.date else { return true }
+            return date >= windowStart
+        }.map(\.item)
+        guard candidateItems.count >= 2 else { return [] }
+
+        let tokenSets = candidateItems.map { Set(tokens($0.displayTitle)) }
+        var parents = Array(candidateItems.indices)
+        func root(_ value: Int) -> Int {
+            var value = value
+            while parents[value] != value { value = parents[value] }
+            return value
+        }
+        func union(_ lhs: Int, _ rhs: Int) {
+            let a = root(lhs), b = root(rhs)
+            if a != b { parents[b] = a }
+        }
+        for left in candidateItems.indices {
+            for right in candidateItems.indices where right > left {
+                let shared = tokenSets[left].intersection(tokenSets[right])
+                let unionCount = tokenSets[left].union(tokenSets[right]).count
+                let similarity = unionCount == 0 ? 0 : Double(shared.count) / Double(unionCount)
+                if (shared.count >= 2 && similarity >= 0.30) || similarity >= 0.45 {
+                    union(left, right)
+                }
             }
         }
-        return buckets.compactMap { token, rows -> NewsTopicCluster? in
-            let unique = Dictionary(grouping: rows, by: \.id).compactMap { $0.value.first }
-            guard unique.count >= 2 else { return nil }
+        let grouped = Dictionary(grouping: candidateItems.indices, by: root)
+        return grouped.values.compactMap { indices -> NewsTopicCluster? in
+            let rows = indices.map { candidateItems[$0] }
+            let sources = Set(rows.map(\.source).filter { !$0.isEmpty })
+            guard rows.count >= 2, sources.count >= 2 else { return nil }
+            let tokenFrequency = Dictionary(grouping: rows.flatMap { tokens($0.displayTitle) }, by: \.self)
+                .mapValues(\.count)
+            let titleToken = tokenFrequency
+                .filter { $0.value >= 2 && $0.key.count >= 2 }
+                .sorted {
+                    if $0.value != $1.value { return $0.value > $1.value }
+                    return $0.key.count > $1.key.count
+                }
+                .first?.key
+            let representative = titleToken ?? rows[0].displayTitle
+            let latest = rows.compactMap { DiscoverFormat.date(from: $0.publishedAt) }.max()
             return NewsTopicCluster(
-                id: token,
-                title: token,
-                count: unique.count,
-                itemIDs: unique.prefix(5).map(\.id)
+                id: "cluster-\(rows[0].id)-\(titleToken ?? "topic")",
+                title: representative,
+                count: sources.count,
+                sourceCount: sources.count,
+                latestPublishedAt: latest,
+                itemIDs: rows.prefix(5).map(\.id)
             )
         }
         .sorted {
-            $0.count == $1.count ? $0.title.count > $1.title.count : $0.count > $1.count
+            if $0.sourceCount != $1.sourceCount { return $0.sourceCount > $1.sourceCount }
+            return ($0.latestPublishedAt ?? .distantPast) > ($1.latestPublishedAt ?? .distantPast)
         }
         .prefix(max(1, limit))
         .map { $0 }
