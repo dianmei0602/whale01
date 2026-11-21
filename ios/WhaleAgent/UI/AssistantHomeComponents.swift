@@ -143,6 +143,7 @@ struct AssistantShortcutTile: View {
         }
         .whaleHomeFloating()
         .whaleDesktopWiggle(active: editing, phase: phase)
+        .accessibilityElement(children: editing ? .contain : .ignore)
         .accessibilityLabel(channel.title)
         .accessibilityHint(editing ? "拖动调整顺序，点左上角减号隐藏" : "轻点打开，长按整理桌面")
         .accessibilityAddTraits(.isButton)
