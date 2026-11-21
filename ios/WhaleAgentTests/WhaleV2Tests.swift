@@ -85,6 +85,48 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertEqual(restored.palette, .nightSea)
     }
 
+    @MainActor
+    func testHomeShortcutLayoutMovesDraggedChannelBeforeTargetAndPersists() {
+        let suite = "whale.home.shortcuts.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let layout = HomeShortcutLayoutStore(defaults: defaults)
+        XCTAssertEqual(layout.visibleChannels, DiscoverChannel.allCases)
+
+        layout.move(.weibo, before: .ai)
+        XCTAssertEqual(layout.visibleChannels.first, .weibo)
+
+        let restored = HomeShortcutLayoutStore(defaults: defaults)
+        XCTAssertEqual(restored.visibleChannels.first, .weibo)
+    }
+
+    @MainActor
+    func testHomeShortcutLayoutHidesAndRestoresEveryChannel() {
+        let suite = "whale.home.shortcuts.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let layout = HomeShortcutLayoutStore(defaults: defaults)
+        layout.hide(.music)
+        XCTAssertFalse(layout.visibleChannels.contains(.music))
+
+        layout.restoreAll()
+        XCTAssertEqual(layout.visibleChannels, DiscoverChannel.allCases)
+    }
+
+    @MainActor
+    func testSpeechPlaybackRejectsMissingXfyunInsteadOfUsingSystemVoice() {
+        let speech = SpeechPlaybackController(configProvider: { nil })
+        speech.speak("这段内容只能用讯飞小露朗读")
+
+        XCTAssertFalse(speech.isSpeaking)
+        XCTAssertEqual(
+            speech.lastErrorText,
+            "未配置讯飞小露 x4_yezi，App 朗读暂不可用"
+        )
+    }
+
     func testAppearancePalettesKeepKeyTextAboveAccessibilityContrast() {
         let checks: [(String, WhalePaletteStyle, WhalePaletteToken, WhalePaletteToken)] = [
             ("night ink", .nightSea, .ink, .background),
