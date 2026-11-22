@@ -159,7 +159,7 @@ struct RootView: View {
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) },
             onOpenTodo: { openWorkspace(mode: .tasks) },
-            onOpenDiscover: openDiscover, onOpenWorkspace: openWorkspace)
+            onOpenDiscover: openDiscover, onOpenWorkspace: { openWorkspace() })
     }
 
     /// Composer and tabs share one bottom inset. This avoids nested safe-area
