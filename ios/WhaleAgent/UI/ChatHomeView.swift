@@ -86,7 +86,7 @@ struct ConversationTabView: View {
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
                 .disabled(model.isBusy || model.isExtractingDocument)
                 .opacity(model.isBusy || model.isExtractingDocument ? 0.45 : 1)
                 .accessibilityLabel("语音输入")

@@ -67,10 +67,10 @@ final class InteractionUITests: XCTestCase {
         XCTAssertLessThan(tab(app, "discover").frame.midX, tab(app, "records").frame.midX)
         tab(app, "records").tap()
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-hub"]
+            app.descendants(matching: .any)["workspace-tasks-overview"]
                 .waitForExistence(timeout: 5)
         )
-        XCTAssertTrue(app.buttons["workspace-hub-mode-tasks"].exists)
+        XCTAssertTrue(app.buttons["workspace-section-inbox"].exists)
         tab(app, "discover").tap()
         let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         capture.name = "discovery-after-tab-tap"; capture.lifetime = .keepAlways; add(capture)
@@ -94,22 +94,14 @@ final class InteractionUITests: XCTestCase {
         tab(app, "records").tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-hub"]
+            app.descendants(matching: .any)["workspace-tasks-overview"]
                 .waitForExistence(timeout: 10)
         )
-        let tasks = app.buttons["workspace-hub-mode-tasks"]
-        let workspace = app.buttons["workspace-hub-mode-workspace"]
-        XCTAssertTrue(tasks.isSelected)
-
-        workspace.tap()
-        XCTAssertTrue(workspace.isSelected)
         XCTAssertTrue(
             app.buttons["workspace-section-inbox"].waitForExistence(timeout: 10)
         )
-
-        tasks.tap()
-        XCTAssertTrue(tasks.isSelected)
-        attach("workspace-hub-tasks")
+        XCTAssertTrue(app.buttons["workspace-open-todo"].exists)
+        attach("workspace-tasks-and-content")
     }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()

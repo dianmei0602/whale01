@@ -141,10 +141,12 @@ struct WhalePressButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
-            .opacity(configuration.isPressed ? 0.92 : 1)
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.945 : 1)
+            .offset(y: configuration.isPressed && !reduceMotion ? 1.2 : 0)
+            .brightness(configuration.isPressed ? -0.035 : 0)
+            .opacity(configuration.isPressed ? 0.90 : 1)
             .animation(
-                reduceMotion ? nil : .spring(response: 0.22, dampingFraction: 0.78),
+                reduceMotion ? nil : .spring(response: 0.20, dampingFraction: 0.70),
                 value: configuration.isPressed
             )
     }

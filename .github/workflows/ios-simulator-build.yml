@@ -22,7 +22,6 @@ on:
       - "tools/test_voice_overlay_state.swift"
       - "tools/test_home_landing_state.swift"
       - "tools/test_chat_header_state.swift"
-      - "tools/test_workspace_hub_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -44,7 +43,6 @@ on:
       - "tools/test_voice_overlay_state.swift"
       - "tools/test_home_landing_state.swift"
       - "tools/test_chat_header_state.swift"
-      - "tools/test_workspace_hub_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -118,13 +116,6 @@ jobs:
             tools/test_chat_header_state.swift \
             -o /tmp/chat-header-state-test
           /tmp/chat-header-state-test
-      - name: Run workspace hub state contract
-        run: |
-          swiftc \
-            ios/WhaleAgent/Models/WhaleWorkspaceHubMode.swift \
-            tools/test_workspace_hub_state.swift \
-            -o /tmp/workspace-hub-state-test
-          /tmp/workspace-hub-state-test
       - name: Validate release identity
         run: python3 tools/release_identity.py --check --github-env
       - name: Generate source identity

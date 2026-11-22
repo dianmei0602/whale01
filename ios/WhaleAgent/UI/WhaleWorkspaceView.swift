@@ -57,6 +57,13 @@ struct WhaleWorkspaceView: View {
     @State private var highlightArticle: SavedArticle?
     @State private var readingFilter: ReadingStatus?
     @State private var toast: String?
+    @State private var taskItems: [TodoReminder] = []
+    @State private var taskDraft = ""
+    @State private var taskError: String?
+    @State private var taskLoading = false
+    @State private var taskSubmitting = false
+    @State private var busyTaskIds: Set<String> = []
+    @State private var showTodoManager = false
 
     var body: some View {
         Group {
@@ -97,6 +104,20 @@ struct WhaleWorkspaceView: View {
         .sheet(isPresented: $showFollowUpEditor) {
             WorkspaceFollowUpEditor(store: store)
         }
+        .sheet(isPresented: $showTodoManager) {
+            NavigationStack {
+                TodoView(
+                    model: model,
+                    embedded: true,
+                    bottomBarInset: 0
+                )
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("完成") { showTodoManager = false }
+                    }
+                }
+            }
+        }
         .sheet(item: $readerArticle) { article in
             NativeArticleReaderView(item: newsItem(for: article), library: reading)
         }
@@ -112,6 +133,7 @@ struct WhaleWorkspaceView: View {
             WhaleBackdrop().ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    tasksOverview
                     sectionSelector
                     if let issue = store.loadIssue {
                         Label(issue, systemImage: "exclamationmark.triangle")
@@ -128,9 +150,16 @@ struct WhaleWorkspaceView: View {
             }
             .scrollIndicators(.hidden)
             .refreshable {
+                await loadTaskOverview(silent: true)
                 if section == .brief {
                     NotificationCenter.default.post(name: .whaleWorkspaceBriefRefresh, object: nil)
                 }
+            }
+            .task {
+                await loadTaskOverview()
+            }
+            .onChange(of: model.permissionsSnapshot) { _, _ in
+                Task { await loadTaskOverview(silent: true) }
             }
 
             if let toast {
@@ -164,6 +193,197 @@ struct WhaleWorkspaceView: View {
         .accessibilityLabel("新增")
     }
 
+    private var pendingTasks: [TodoReminder] {
+        taskItems
+            .filter { !$0.completed }
+            .sorted { ($0.dueAt ?? .distantFuture) < ($1.dueAt ?? .distantFuture) }
+    }
+
+    private var completedTaskCount: Int {
+        taskItems.filter(\.completed).count
+    }
+
+    private var tasksOverview: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Label("待办", systemImage: "checklist")
+                    .whaleFont(size: 16, weight: .bold)
+                    .foregroundStyle(WhaleTheme.ink)
+                if !pendingTasks.isEmpty {
+                    Text("\(pendingTasks.count)")
+                        .whaleFont(size: 11, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.accent)
+                        .padding(.horizontal, 7)
+                        .frame(minHeight: 22)
+                        .background(WhaleTheme.accentSoft, in: Capsule())
+                }
+                Spacer()
+                Button("全部") {
+                    showTodoManager = true
+                }
+                .whaleFont(size: 12, weight: .semibold)
+                .foregroundStyle(WhaleTheme.accent)
+                .buttonStyle(.whalePress)
+                .accessibilityIdentifier("workspace-open-todo")
+            }
+
+            HStack(spacing: 8) {
+                TextField("快速添加待办", text: $taskDraft)
+                    .whaleFont(size: 14)
+                    .submitLabel(.done)
+                    .onSubmit { Task { await addTaskFromOverview() } }
+                    .padding(.horizontal, 12)
+                    .frame(minHeight: 42)
+                    .background(WhaleTheme.cardSolid, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                Button {
+                    Task { await addTaskFromOverview() }
+                } label: {
+                    Image(systemName: taskSubmitting ? "hourglass" : "plus")
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(WhaleTheme.onAccent)
+                        .frame(width: 42, height: 42)
+                        .background(WhaleTheme.accent, in: Circle())
+                }
+                .buttonStyle(.whalePress)
+                .disabled(taskSubmitting || taskDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .accessibilityLabel("添加待办")
+            }
+
+            if let taskError {
+                Text(taskError)
+                    .whaleFont(size: 12)
+                    .foregroundStyle(WhaleTheme.warm)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if taskLoading {
+                ProgressView()
+                    .controlSize(.small)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else if pendingTasks.isEmpty {
+                Text("目前没有未完成事项。")
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+            } else {
+                ForEach(pendingTasks.prefix(4)) { item in
+                    taskOverviewRow(item)
+                }
+                if pendingTasks.count > 4 {
+                    Text("还有 \(pendingTasks.count - 4) 项未显示")
+                        .whaleFont(size: 12)
+                        .foregroundStyle(WhaleTheme.muted)
+                }
+            }
+
+            if completedTaskCount > 0 {
+                Text("已完成 \(completedTaskCount) 项")
+                    .whaleFont(size: 11)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+        }
+        .padding(14)
+        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
+        }
+        .accessibilityIdentifier("workspace-tasks-overview")
+    }
+
+    private func taskOverviewRow(_ item: TodoReminder) -> some View {
+        Button {
+            Task { await toggleTask(item) }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: busyTaskIds.contains(item.id) ? "hourglass" : "circle")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(WhaleTheme.accent)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.title)
+                        .whaleFont(size: 14, weight: .medium)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineLimit(1)
+                    if let due = item.dueAt {
+                        Text(taskDueText(due))
+                            .whaleFont(size: 11)
+                            .foregroundStyle(WhaleTheme.muted)
+                    }
+                }
+                Spacer(minLength: 6)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(WhaleTheme.muted.opacity(0.55))
+            }
+            .frame(maxWidth: .infinity, minHeight: 38, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.whalePress)
+        .disabled(busyTaskIds.contains(item.id))
+        .accessibilityLabel("完成 \(item.title)")
+    }
+
+    @MainActor
+    private func loadTaskOverview(silent: Bool = false) async {
+        guard !taskLoading else { return }
+        model.refreshPermissions()
+        guard model.permissionsSnapshot["reminder"] == "granted" else {
+            taskItems = []
+            taskError = "允许提醒事项权限后，待办会显示在这里。"
+            return
+        }
+        taskLoading = true
+        if !silent { taskError = nil }
+        defer { taskLoading = false }
+        do {
+            taskItems = try await model.loadTodoReminders(includeCompleted: true)
+            taskError = nil
+        } catch {
+            taskError = error.localizedDescription
+        }
+    }
+
+    @MainActor
+    private func addTaskFromOverview() async {
+        let title = taskDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !title.isEmpty, !taskSubmitting else { return }
+        taskSubmitting = true
+        defer { taskSubmitting = false }
+        do {
+            let item = try await model.createTodoReminder(title: title, dueAt: nil)
+            taskDraft = ""
+            if let index = taskItems.firstIndex(where: { $0.id == item.id }) {
+                taskItems[index] = item
+            } else {
+                taskItems.append(item)
+            }
+            taskError = nil
+        } catch {
+            taskError = error.localizedDescription
+        }
+    }
+
+    @MainActor
+    private func toggleTask(_ item: TodoReminder) async {
+        guard !busyTaskIds.contains(item.id) else { return }
+        busyTaskIds.insert(item.id)
+        defer { busyTaskIds.remove(item.id) }
+        do {
+            let updated = try await model.setTodoReminder(item, completed: !item.completed)
+            if let index = taskItems.firstIndex(where: { $0.id == updated.id }) {
+                taskItems[index] = updated
+            }
+            taskError = nil
+        } catch {
+            taskError = error.localizedDescription
+        }
+    }
+
+    private func taskDueText(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.dateFormat = Calendar.current.isDateInToday(date) ? "今天 HH:mm" : "M月d日 HH:mm"
+        return formatter.string(from: date)
+    }
+
     private var sectionSelector: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
@@ -190,8 +410,11 @@ struct WhaleWorkspaceView: View {
                                     )
                             }
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.whalePress)
                     .accessibilityIdentifier("workspace-section-" + item.rawValue)
+                }
+                if embedded {
+                    addMenu
                 }
             }
             .padding(.horizontal, 1)

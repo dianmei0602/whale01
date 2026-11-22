@@ -9,7 +9,6 @@ struct RootView: View {
     @StateObject private var keyboard = KeyboardObserver()
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var conversationMode = ConversationEntryMode.defaultMode
-    @State private var workspaceHubMode = WhaleWorkspaceHubMode.defaultMode
     @State private var showRecords = false
     @State private var showSettings = false
     @State private var settingsDetailOpen = false
@@ -133,32 +132,27 @@ struct RootView: View {
 
     // MARK: - Main pages
 
-    /// Keep all three pages mounted so drafts and scroll positions survive tab
-    /// changes, but do not compete with channel, reading and back-swipe gestures.
+    /// Native paged navigation keeps the swipe continuous and supplies the
+    /// slide transition without maintaining a second custom gesture state.
     private var pager: some View {
-        ZStack {
+        TabView(selection: $page) {
             conversationPage
-                .opacity(page == .conversation ? 1 : 0)
-                .accessibilityHidden(page != .conversation)
-                .allowsHitTesting(page == .conversation)
+                .tag(AppTab.conversation)
             discoverPage
-                .opacity(page == .discover ? 1 : 0)
-                .accessibilityHidden(page != .discover)
-                .allowsHitTesting(page == .discover)
+                .tag(AppTab.discover)
             recordsPage
-                .opacity(page == .records ? 1 : 0)
-                .accessibilityHidden(page != .records)
-                .allowsHitTesting(page == .records)
+                .tag(AppTab.records)
         }
+        .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.easeInOut(duration: 0.16), value: page)
+        .animation(.spring(response: 0.30, dampingFraction: 0.86), value: page)
     }
 
     private var conversationPage: some View {
         ConversationTabView(model: model, entryMode: $conversationMode, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) },
-            onOpenTodo: { openWorkspace(mode: .tasks) },
+            onOpenTodo: { openWorkspace() },
             onOpenDiscover: openDiscover, onOpenWorkspace: { openWorkspace() })
     }
 
@@ -185,11 +179,11 @@ struct RootView: View {
     }
 
     private var recordsPage: some View {
-        WhaleWorkspaceHubView(
+        WhaleWorkspaceView(
             model: model,
-            mode: $workspaceHubMode,
-            onOpenMusic: { openDiscover(.music) }
-        ) { prompt in
+            embedded: true,
+            onOpenMusic: { openDiscover(.music) },
+            onOpenChat: { prompt in
             conversationMode = .chat
             page = .conversation
             Task { @MainActor in
@@ -200,7 +194,7 @@ struct RootView: View {
                     userInfo: ["text": prompt]
                 )
             }
-        }
+        })
     }
 
     private func move(to tab: AppTab) {
@@ -214,8 +208,7 @@ struct RootView: View {
         move(to: .discover)
     }
 
-    private func openWorkspace(mode: WhaleWorkspaceHubMode = .workspace) {
-        workspaceHubMode = mode
+    private func openWorkspace() {
         move(to: .records)
     }
     private var colorScheme: ColorScheme? {
@@ -285,9 +278,11 @@ struct WhaleRootTabBar: View {
                     .font(.system(size: 11, weight: selected ? .semibold : .medium))
             }
             .foregroundStyle(selected ? WhaleIMessagePalette.outgoing : WhaleIMessagePalette.muted)
+            .scaleEffect(selected ? 1.04 : 0.97)
             .frame(maxWidth: .infinity)
             .frame(height: 46)
             .contentShape(Rectangle())
+            .animation(.spring(response: 0.28, dampingFraction: 0.72), value: selected)
         }
         .buttonStyle(.whalePress)
         .accessibilityLabel(title)
