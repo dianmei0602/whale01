@@ -116,6 +116,8 @@ jobs:
             tools/test_chat_header_state.swift \
             -o /tmp/chat-header-state-test
           /tmp/chat-header-state-test
+      - name: Run UI interaction source contract
+        run: python tools/test_ui_interaction_contract.py
       - name: Validate release identity
         run: python3 tools/release_identity.py --check --github-env
       - name: Generate source identity

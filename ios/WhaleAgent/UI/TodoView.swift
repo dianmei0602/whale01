@@ -1,22 +1,6 @@
 import SwiftUI
 import UIKit
 
-private enum TodoFilter: String, CaseIterable, Identifiable {
-    case pending
-    case inProgress
-    case completed
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .pending: return "待办"
-        case .inProgress: return "进行中"
-        case .completed: return "已完成"
-        }
-    }
-}
-
 private enum TodoQuickCommand {
     case complete(String)
     case restore(String)
@@ -70,7 +54,6 @@ struct TodoView: View {
     @EnvironmentObject private var navigation: RootNavigationModel
     @StateObject private var voice = VoiceInputController()
 
-    @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
     @AppStorage("whale.todo.board") private var board: TodoBoard = .today
     private var items: [TodoReminder] { todoStore.items }
     @AppStorage("whale.draft.todo") private var draft = ""
@@ -94,14 +77,6 @@ struct TodoView: View {
 
     private var reminderStatus: String { model.permissionsSnapshot["reminder"] ?? "unknown" }
     private var pendingItems: [TodoReminder] { items.filter { !$0.completed } }
-    private var inProgressItems: [TodoReminder] {
-        let start = Calendar.current.startOfDay(for: Date())
-        let endOfToday = Calendar.current.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86_400)
-        return items.filter { item in
-            guard !item.completed, let due = item.dueAt else { return false }
-            return due < endOfToday
-        }
-    }
     private var completedItems: [TodoReminder] { items.filter(\.completed) }
     private var visibleItems: [TodoReminder] {
         if board == .projects {
@@ -163,13 +138,6 @@ struct TodoView: View {
                     .scrollDismissesKeyboard(.interactively)
                     .refreshable { await reload() }
                     .onTapGesture { composerFocused = false }
-                    .horizontalTabSwipe(
-                        onPrevious: { stepFilter(-1) },
-                        onNext: { stepFilter(1) }
-                    )
-                    .onChange(of: filter) { _, _ in
-                        withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("todo-top", anchor: .top) }
-                    }
                     .onChange(of: board) { _, _ in
                         withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("todo-top", anchor: .top) }
                     }
@@ -310,24 +278,6 @@ struct TodoView: View {
         .whaleCard(padding: 16)
     }
 
-    private func stepFilter(_ delta: Int) {
-        let all = TodoFilter.allCases
-        guard let index = all.firstIndex(of: filter) else { return }
-        let next = min(max(index + delta, 0), all.count - 1)
-        guard next != index else { return }
-        composerFocused = false
-        withAnimation(.easeInOut(duration: 0.18)) { filter = all[next] }
-    }
-
-    private var filterBar: some View {
-        HStack(spacing: 8) {
-            filterButton(.pending, count: pendingItems.count)
-            filterButton(.inProgress, count: inProgressItems.count)
-            filterButton(.completed, count: completedItems.count)
-            Spacer(minLength: 0)
-        }
-    }
-
     private var boardBar: some View {
         ScrollView(.horizontal) {
             HStack(spacing: 7) {
@@ -367,88 +317,6 @@ struct TodoView: View {
         }
         .scrollIndicators(.hidden)
         .accessibilityIdentifier("todo-board-bar")
-    }
-
-    private var statsCard: some View {
-        VStack(spacing: 9) {
-            HStack(spacing: 0) {
-                statMetric(.pending, count: pendingItems.count, label: "待办事项", tint: WhaleTheme.ink)
-                statDivider
-                statMetric(.inProgress, count: inProgressItems.count, label: "进行中", tint: WhaleTheme.coral)
-                statDivider
-                statMetric(.completed, count: completedItems.count, label: "已完成", tint: WhaleTheme.success)
-            }
-            Text("进行中 = 今天到期或已逾期；待办 = 全部未完成")
-                .whaleFont(size: 13)
-                .foregroundStyle(WhaleTheme.muted.opacity(0.8))
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .padding(.vertical, 13)
-        .padding(.horizontal, 8)
-        .background(WhaleTheme.card.opacity(0.78), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
-        }
-    }
-
-    private func statMetric(_ value: TodoFilter, count: Int, label: String, tint: Color) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.18)) { filter = value }
-        } label: {
-            VStack(spacing: 2) {
-                Text("\(count)")
-                    .whaleFont(size: 23, weight: .bold, design: .rounded)
-                    .foregroundStyle(tint)
-                    .monospacedDigit()
-                Text(label)
-                    .whaleFont(size: 13, weight: .medium)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 3)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(filter == value ? tint.opacity(0.08) : Color.clear)
-            )
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(label) \(count) 条")
-    }
-
-    private var statDivider: some View {
-        Rectangle()
-            .fill(WhaleTheme.line.opacity(0.55))
-            .frame(width: 0.6, height: 34)
-    }
-
-    private func filterButton(_ value: TodoFilter, count: Int) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.18)) { filter = value }
-        } label: {
-            HStack(spacing: 6) {
-                Text(value.title)
-                Text("\(count)")
-                    .whaleFont(size: 13, weight: .bold, design: .rounded)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background((filter == value ? WhaleTheme.onAccent : WhaleTheme.muted).opacity(0.12), in: Capsule())
-            }
-            .whaleFont(size: 13, weight: .semibold)
-            .foregroundStyle(filter == value ? WhaleTheme.onAccent : WhaleTheme.ink)
-            .padding(.horizontal, 13)
-            .padding(.vertical, 8)
-            .background {
-                if filter == value {
-                    Capsule().fill(WhaleTheme.auroraGradient)
-                } else {
-                    Capsule().fill(WhaleTheme.card.opacity(0.8))
-                }
-            }
-            .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
-        }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder
