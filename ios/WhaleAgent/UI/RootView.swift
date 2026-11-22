@@ -12,8 +12,6 @@ struct RootView: View {
     @State private var showSettings = false
     @State private var showWorkspace = false
     @State private var settingsDetailOpen = false
-    @State private var composerDraft = ""
-    @State private var composerFocused = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
@@ -130,7 +128,6 @@ struct RootView: View {
         }
         .onChange(of: page) { _, tab in
             UserDefaults.standard.set(tab.rawValue, forKey: "whale.root.tab")
-            composerFocused = false
             UISelectionFeedbackGenerator().selectionChanged()
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -183,21 +180,9 @@ struct RootView: View {
     /// is present the tab bar yields its space to the composer.
     @ViewBuilder
     private var bottomChrome: some View {
-        if page == .conversation {
-            VStack(spacing: 0) {
-                ConversationComposerBar(model: model, externalFocused: $composerFocused, draft: $composerDraft)
-                if RootBottomChromePolicy.tabBarVisible(
-                    page: page,
-                    composerFocused: composerFocused,
-                    keyboardVisible: keyboard.isVisible
-                ) {
-                    WhaleRootTabBar(selection: $page)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-            }
-        } else if RootBottomChromePolicy.tabBarVisible(
+        if RootBottomChromePolicy.tabBarVisible(
             page: page,
-            composerFocused: composerFocused,
+            composerFocused: false,
             keyboardVisible: keyboard.isVisible
         ) {
             WhaleRootTabBar(selection: $page)
@@ -256,7 +241,7 @@ struct WhaleRootTabBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            item(.conversation, title: "助手", icon: "bubble.left.and.bubble.right")
+            item(.conversation, title: "对话", icon: "bubble.left.and.bubble.right")
             item(.discover, title: "发现", icon: "square.grid.2x2")
             item(.records, title: "待办", icon: "checklist")
         }

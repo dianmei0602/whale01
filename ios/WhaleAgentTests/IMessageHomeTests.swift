@@ -122,4 +122,32 @@ final class IMessageHomeTests: XCTestCase {
         XCTAssertTrue(WhaleIMessageLayout.isSameGroup(previous: assistant, current: assistantLater))
         XCTAssertFalse(WhaleIMessageLayout.isSameGroup(previous: assistantLater, current: nextDay))
     }
+
+    func testAgentDraftPlanKeepsTextAndPrefersDocumentLabel() {
+        let document = URL(fileURLWithPath: "/tmp/report.pdf")
+        let image = URL(fileURLWithPath: "/tmp/photo.jpg")
+        let plan = WhaleAgentDraftPlan(
+            text: "看看这个",
+            documentURL: document,
+            documentLabel: "PDF",
+            imageURL: image,
+            unsupportedVideoCount: 1
+        )
+        XCTAssertFalse(plan.isEmpty)
+        XCTAssertEqual(plan.text, "看看这个")
+        XCTAssertEqual(plan.primaryAttachmentDescription, "PDF")
+        XCTAssertEqual(plan.unsupportedVideoCount, 1)
+    }
+
+    func testAgentDraftPlanRecognizesEmptyDraft() {
+        let plan = WhaleAgentDraftPlan(
+            text: "  ",
+            documentURL: nil,
+            documentLabel: nil,
+            imageURL: nil,
+            unsupportedVideoCount: 0
+        )
+        XCTAssertTrue(plan.isEmpty)
+        XCTAssertNil(plan.primaryAttachmentDescription)
+    }
 }

@@ -19,7 +19,7 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
         XCTAssertTrue(
             app.descendants(matching: .any)
-                .matching(identifier: "imessage-assistant-home")
+                .matching(identifier: "whale-agent-chat-surface")
                 .firstMatch
                 .waitForExistence(timeout: 20)
         )
@@ -28,12 +28,12 @@ final class InteractionUITests: XCTestCase {
                 NSPredicate(format: "label CONTAINS %@", "我是鲸鱼")
             ).firstMatch.exists
         )
-        XCTAssertTrue(app.descendants(matching: .any)["imessage-home-quote"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["agent-welcome-header"].exists)
         XCTAssertFalse(app.staticTexts["常用操作"].exists)
-        attach("imessage-assistant-home")
+        attach("life-agent-chat")
         XCTAssertTrue(tab(app, "records").exists)
         XCTAssertTrue(tab(app, "discover").exists)
-        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
+        let composer = app.textFields["给鲸鱼发消息"].firstMatch
         XCTAssertTrue(composer.exists)
         XCTAssertLessThanOrEqual(composer.frame.maxY, tab(app, "conversation").frame.minY + 2)
         XCTAssertLessThan(tab(app, "conversation").frame.midX, tab(app, "discover").frame.midX)
@@ -57,7 +57,7 @@ final class InteractionUITests: XCTestCase {
         tab(app, "conversation").tap()
         XCTAssertTrue(
             app.descendants(matching: .any)
-                .matching(identifier: "imessage-assistant-home")
+                .matching(identifier: "whale-agent-chat-surface")
                 .firstMatch
                 .waitForExistence(timeout: 5)
         )
@@ -80,7 +80,7 @@ final class InteractionUITests: XCTestCase {
             // The root keeps all three pages mounted, so the composer still
             // exists in the tree; it must not be reachable while Discover is
             // the visible page.
-            XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.isHittable)
+            XCTAssertFalse(app.textFields["给鲸鱼发消息"].firstMatch.isHittable)
             attach("fixed-shell-" + channel)
         }
     }
@@ -107,7 +107,7 @@ final class InteractionUITests: XCTestCase {
         }
         tab(app, "conversation").tap()
         XCTAssertTrue(
-            app.buttons["imessage-prompt-今天怎么安排？"]
+            app.buttons["agent-prompt-今天怎么安排？"]
                 .waitForExistence(timeout: 10)
         )
         tab(app, "discover").tap()
@@ -127,20 +127,20 @@ final class InteractionUITests: XCTestCase {
     }
     func testDraftSurvivesTabSwitchAndAppRelaunchWithoutSending() {
         let app = launch()
-        let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
+        let composer = app.textFields["给鲸鱼发消息"].firstMatch
         XCTAssertTrue(composer.waitForExistence(timeout: 10))
         composer.tap()
         composer.typeText("draft preserved without sending")
-        app.buttons["收起键盘"].tap()
+        app.scrollViews.firstMatch.tap()
         tab(app, "discover").tap()
         let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         capture.name = "draft-after-discovery-tab"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(app.buttons["discover-channel-music"].waitForExistence(timeout: 10))
         tab(app, "conversation").tap()
-        XCTAssertTrue((app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.value as? String ?? "").contains("draft preserved"))
+        XCTAssertTrue((app.textFields["给鲸鱼发消息"].firstMatch.value as? String ?? "").contains("draft preserved"))
         app.terminate()
         app.launch()
-        let restored = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
+        let restored = app.textFields["给鲸鱼发消息"].firstMatch
         XCTAssertTrue(restored.waitForExistence(timeout: 10))
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
@@ -213,19 +213,17 @@ final class InteractionUITests: XCTestCase {
         attach("home-live-gilded")
     }
 
-    func testIMessageSuggestionPrefillsDraft() {
+    func testLifeAgentSuggestionPrefillsDraft() {
         let app = launch()
-        let prompt = app.buttons["imessage-prompt-今天怎么安排？"]
+        let prompt = app.buttons["agent-prompt-今天怎么安排？"]
         XCTAssertTrue(prompt.waitForExistence(timeout: 10))
         prompt.tap()
-        let composer = app.descendants(matching: .any)
-            .matching(identifier: "assistant-composer")
-            .firstMatch
+        let composer = app.textFields["给鲸鱼发消息"].firstMatch
         XCTAssertTrue(composer.waitForExistence(timeout: 5))
         let predicate = NSPredicate(format: "value CONTAINS %@", "今天怎么安排")
         expectation(for: predicate, evaluatedWith: composer)
         waitForExpectations(timeout: 5)
-        attach("imessage-prompt-prefilled")
+        attach("life-agent-prompt-prefilled")
     }
 
 }

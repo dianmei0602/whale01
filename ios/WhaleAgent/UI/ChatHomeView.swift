@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Root conversation page. The new-conversation screen and the running
-/// conversation are two states of the same tab; a left-edge swipe (or the
-/// header chevron) goes back to the starter without deleting the messages.
+/// Root conversation page. ExyteChat owns the mature message list, long-content
+/// menus, media/document input and pagination; Whale supplies the Life Agent
+/// shell, theme and application state.
 struct ConversationTabView: View {
     @ObservedObject var model: AppModel
     let bottomInset: CGFloat
@@ -13,106 +13,29 @@ struct ConversationTabView: View {
     let onOpenDiscover: (DiscoverChannel) -> Void
     let onOpenWorkspace: () -> Void
 
-    @AppStorage("whale.chat.browsingStarter") private var browsingStarter = false
-    @State private var showConversation = false
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    private var showingStarter: Bool {
-        !showConversation && (model.messages.isEmpty || browsingStarter)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             header
-            ZStack {
-                if showingStarter {
-                    WhaleIMessageHomeView(
-                        model: model,
-                        onOpenRecords: onOpenRecords,
-                        onOpenMusic: onOpenMusic,
-                        onOpenWorkspace: onOpenWorkspace,
-                        onUsePrompt: usePrompt
-                    )
-                    .transition(.opacity)
-                } else {
-                    ConversationSurface(
-                        model: model,
-                        bottomInset: bottomInset,
-                        onReturnToRecords: onOpenRecords
-                    )
-                    .transition(.opacity)
-                    .overlay(alignment: .leading) {
-                        ConversationBackSwipe(isEnabled: true, onBack: goToStarter)
-                            .frame(width: 22)
-                            .frame(maxHeight: .infinity)
-                            .accessibilityHidden(true)
-                    }
-                }
-            }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: showingStarter)
+            WhaleAgentChatSurface(
+                model: model,
+                bottomInset: bottomInset,
+                onOpenRecords: onOpenRecords,
+                onOpenMusic: onOpenMusic,
+                onOpenWorkspace: onOpenWorkspace
+            )
         }
         .background(WhaleIMessagePalette.canvas)
         .tint(WhaleIMessagePalette.outgoing)
-        .onChange(of: model.messages.count) { oldCount, newCount in
-            if newCount == 0 {
-                browsingStarter = false
-                showConversation = false
-            }
-            if newCount > oldCount && model.messages.last?.role == .user {
-                browsingStarter = false
-                showConversation = true
-            }
-        }
-    }
-
-    private func goToStarter() {
-        guard showConversation || !model.messages.isEmpty else { return }
-        withAnimation(.easeInOut(duration: 0.2)) {
-            showConversation = false
-            browsingStarter = true
-        }
-    }
-
-    private func enterConversation() {
-        guard showingStarter else { return }
-        withAnimation(.easeInOut(duration: 0.2)) {
-            browsingStarter = false
-            showConversation = true
-        }
-    }
-
-    private func usePrompt(_ text: String) {
-        enterConversation()
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 180_000_000)
-            NotificationCenter.default.post(
-                name: .whalePrefillDraft,
-                object: nil,
-                userInfo: ["text": text]
-            )
-        }
     }
 
     private var header: some View {
         ZStack {
             HStack {
-                Group {
-                    if !showingStarter {
-                        Button(action: goToStarter) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 19, weight: .semibold))
-                                .whaleTouchTarget()
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("返回助手首页")
-                    } else {
-                        Color.clear.frame(width: 44, height: 44)
-                    }
-                }
+                Color.clear.frame(width: 44, height: 44)
                 Spacer()
                 Menu {
                     Button("鲸鱼工作台", systemImage: "square.stack.3d.up", action: onOpenWorkspace)
-                    Button("新对话", systemImage: "square.and.pencil") { model.newConversation(); goToStarter() }
+                    Button("新对话", systemImage: "square.and.pencil") { model.newConversation() }
                         .disabled(model.isBusy || !model.pending.isEmpty)
                     Button("执行记录", systemImage: "clock.arrow.circlepath", action: onOpenRecords)
                     Divider()
@@ -161,11 +84,7 @@ struct ConversationTabView: View {
         if model.isExecutingTool { return "正在执行设备操作…" }
         if model.isBusy { return "正在处理…" }
         if !model.backendOnline { return "当前离线" }
-        if let track = model.playback.track {
-            let prefix = model.playback.isPlaying ? "正在播放" : "已暂停"
-            return "\(prefix) · \(track.title)"
-        }
-        return "说一句，鲸鱼来办"
+        return "随时在"
     }
 
     private var statusColor: Color {

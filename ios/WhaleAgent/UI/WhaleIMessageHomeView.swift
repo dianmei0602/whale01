@@ -2,37 +2,37 @@ import SwiftUI
 import UIKit
 
 enum WhaleIMessagePalette {
-    static let outgoing = Color(red: 0.0, green: 0.478, blue: 1.0)
-    static let outgoingPressed = Color(red: 0.0, green: 0.384, blue: 0.8)
+    static let outgoing = Color(red: 45 / 255, green: 127 / 255, blue: 132 / 255)
+    static let outgoingPressed = Color(red: 37 / 255, green: 105 / 255, blue: 109 / 255)
     static let outgoingText = Color.white
 
     static let canvas = adaptive(
-        light: UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1),
-        dark: UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1)
+        light: UIColor(red: 0.953, green: 0.969, blue: 0.961, alpha: 1),
+        dark: UIColor(red: 0.055, green: 0.102, blue: 0.114, alpha: 1)
     )
     static let header = adaptive(
-        light: UIColor(red: 0.976, green: 0.976, blue: 0.984, alpha: 1),
-        dark: UIColor(red: 0.110, green: 0.110, blue: 0.118, alpha: 1)
+        light: UIColor(red: 0.976, green: 0.988, blue: 0.984, alpha: 1),
+        dark: UIColor(red: 0.071, green: 0.129, blue: 0.145, alpha: 1)
     )
     static let incoming = adaptive(
-        light: UIColor(red: 0.914, green: 0.914, blue: 0.922, alpha: 1),
-        dark: UIColor(red: 0.149, green: 0.149, blue: 0.165, alpha: 1)
+        light: UIColor(red: 0.902, green: 0.937, blue: 0.925, alpha: 1),
+        dark: UIColor(red: 0.090, green: 0.165, blue: 0.184, alpha: 1)
     )
     static let field = adaptive(
-        light: UIColor(red: 0.973, green: 0.973, blue: 0.984, alpha: 1),
-        dark: UIColor(red: 0.173, green: 0.173, blue: 0.180, alpha: 1)
+        light: UIColor.white,
+        dark: UIColor(red: 0.086, green: 0.153, blue: 0.173, alpha: 1)
     )
     static let line = adaptive(
-        light: UIColor(red: 0.898, green: 0.898, blue: 0.910, alpha: 1),
-        dark: UIColor(red: 0.173, green: 0.173, blue: 0.180, alpha: 1)
+        light: UIColor(red: 0.839, green: 0.890, blue: 0.875, alpha: 1),
+        dark: UIColor(red: 0.165, green: 0.247, blue: 0.273, alpha: 1)
     )
     static let muted = adaptive(
-        light: UIColor(red: 0.420, green: 0.420, blue: 0.435, alpha: 1),
-        dark: UIColor(red: 0.659, green: 0.659, blue: 0.678, alpha: 1)
+        light: UIColor(red: 0.380, green: 0.459, blue: 0.478, alpha: 1),
+        dark: UIColor(red: 0.690, green: 0.780, blue: 0.800, alpha: 1)
     )
     static let text = adaptive(
-        light: UIColor.black,
-        dark: UIColor.white
+        light: UIColor(red: 0.090, green: 0.196, blue: 0.220, alpha: 1),
+        dark: UIColor(red: 0.929, green: 0.976, blue: 0.984, alpha: 1)
     )
 
     static func incomingShape(isLast: Bool = true) -> UnevenRoundedRectangle {

@@ -77,6 +77,10 @@
   <string>用于语音输入，把你的话转成文字发给鲸鱼。</string>
   <key>NSSpeechRecognitionUsageDescription</key>
   <string>用于把语音转写成文字，方便你直接说话安排事情。</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>用于从相册选择图片或视频，发送到聊天中识别或保存。</string>
+  <key>NSCameraUsageDescription</key>
+  <string>用于拍摄照片或视频并发送到聊天中处理。</string>
   <key>NSAppleMusicUsageDescription</key>
   <string>用于搜索你的音乐库并播放你选择的歌曲。</string>
   <key>NSLocalNetworkUsageDescription</key>
