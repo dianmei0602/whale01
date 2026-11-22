@@ -51,12 +51,7 @@ struct WhaleWorkspaceView: View {
     @EnvironmentObject private var navigation: RootNavigationModel
     @Environment(\.dismiss) private var dismiss
     @State private var section: WhaleWorkspaceSection = .inbox
-    @State private var showCaptureEditor = false
-    @State private var selectedCapture: WorkspaceCapture?
-    @State private var showProjectEditor = false
-    @State private var showFollowUpEditor = false
-    @State private var readerArticle: SavedArticle?
-    @State private var highlightArticle: SavedArticle?
+    @State private var sheet: WorkspaceSheet?
     @State private var readingFilter: ReadingStatus?
     @State private var toast: String?
     @State private var taskDraft = ""
@@ -86,30 +81,33 @@ struct WhaleWorkspaceView: View {
             }
         }
         .tint(WhaleTheme.accent)
-        .sheet(isPresented: $showCaptureEditor) {
-            WorkspaceCaptureEditor(store: store)
-        }
-        .sheet(item: $selectedCapture) { item in
-            WorkspaceCaptureDetailSheet(
-                item: item,
-                store: store,
-                model: model,
-                onOpenChat: onOpenChat,
-                onShowToast: showToast
-            )
-        }
-        .sheet(isPresented: $showProjectEditor) {
-            WorkspaceProjectEditor(store: store)
-        }
-        .sheet(isPresented: $showFollowUpEditor) {
-            WorkspaceFollowUpEditor(store: store)
-        }
-        .sheet(item: $readerArticle) { article in
-            NativeArticleReaderView(item: newsItem(for: article), library: reading)
-        }
-        .sheet(item: $highlightArticle) { article in
-            WorkspaceReadingHighlightSheet(article: article, store: store) {
-                showToast("摘录已保存到私人知识库")
+        .sheet(item: $sheet) { destination in
+            switch destination {
+            case .captureEditor:
+                WorkspaceCaptureEditor(store: store)
+            case .captureDetail(let id):
+                if let item = store.captures.first(where: { $0.id == id }) {
+                    WorkspaceCaptureDetailSheet(
+                        item: item,
+                        store: store,
+                        model: model,
+                        onOpenChat: onOpenChat,
+                        onShowToast: showToast
+                    )
+                }
+            case .projectEditor:
+                WorkspaceProjectEditor(store: store)
+            case .followUpEditor:
+                WorkspaceFollowUpEditor(store: store)
+            case .reader(let article):
+                NativeArticleReaderView(
+                    item: newsItem(for: article),
+                    library: reading
+                )
+            case .highlight(let article):
+                WorkspaceReadingHighlightSheet(article: article, store: store) {
+                    showToast("摘录已保存到私人知识库")
+                }
             }
         }
     }
@@ -175,13 +173,13 @@ struct WhaleWorkspaceView: View {
     private var addMenu: some View {
         Menu {
             Button("记录想法", systemImage: "square.and.pencil") {
-                showCaptureEditor = true
+                sheet = .captureEditor
             }
             Button("新建项目", systemImage: "folder.badge.plus") {
-                showProjectEditor = true
+                sheet = .projectEditor
             }
             Button("新增跟进", systemImage: "arrow.triangle.branch") {
-                showFollowUpEditor = true
+                sheet = .followUpEditor
             }
         } label: {
             Image(systemName: "plus")
@@ -476,7 +474,7 @@ struct WhaleWorkspaceView: View {
                 icon: "tray.and.arrow.down.fill"
             ) {
                 Button {
-                    showCaptureEditor = true
+                    sheet = .captureEditor
                 } label: {
                     Label("记录或导入", systemImage: "plus")
                         .whaleFont(size: 13, weight: .semibold)
@@ -486,6 +484,7 @@ struct WhaleWorkspaceView: View {
                         .background(WhaleTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("workspace-open-capture-editor")
             }
 
             if store.inbox.isEmpty {
@@ -510,7 +509,7 @@ struct WhaleWorkspaceView: View {
                 icon: "square.stack.3d.up.fill"
             ) {
                 Button {
-                    showProjectEditor = true
+                    sheet = .projectEditor
                 } label: {
                     Label("新建项目", systemImage: "folder.badge.plus")
                         .whaleFont(size: 13, weight: .semibold)
@@ -539,7 +538,7 @@ struct WhaleWorkspaceView: View {
     private var knowledgeSection: some View {
         WorkspaceKnowledgeSection(
             store: store,
-            onSelect: { selectedCapture = $0 },
+            onSelect: { sheet = .captureDetail($0.id) },
             onAsk: { prompt in onOpenChat(prompt) }
         )
     }
@@ -588,7 +587,7 @@ struct WhaleWorkspaceView: View {
                 icon: "arrow.triangle.branch"
             ) {
                 Button {
-                    showFollowUpEditor = true
+                    sheet = .followUpEditor
                 } label: {
                     Label("新增跟进", systemImage: "plus")
                         .whaleFont(size: 13, weight: .semibold)
@@ -683,7 +682,7 @@ struct WhaleWorkspaceView: View {
 
     private func captureRow(_ item: WorkspaceCapture) -> some View {
         Button {
-            selectedCapture = item
+            sheet = .captureDetail(item.id)
         } label: {
             HStack(alignment: .top, spacing: 11) {
                 Image(systemName: item.kind.icon)
@@ -756,7 +755,7 @@ struct WhaleWorkspaceView: View {
             }
             ForEach(captures.prefix(3)) { item in
                 Button {
-                    selectedCapture = item
+                    sheet = .captureDetail(item.id)
                 } label: {
                     HStack(spacing: 8) {
                         Image(systemName: item.kind.icon)
@@ -820,11 +819,11 @@ struct WhaleWorkspaceView: View {
                     .foregroundStyle(WhaleTheme.accent)
                 }
                 Button("摘录") {
-                    highlightArticle = article
+                    sheet = .highlight(article)
                 }
                 .foregroundStyle(WhaleTheme.accent)
                 Button("打开") {
-                    readerArticle = article
+                    sheet = .reader(article)
                 }
                 .foregroundStyle(WhaleTheme.accent)
             }
@@ -1452,6 +1451,13 @@ private struct WorkspaceCaptureEditor: View {
     @State private var voiceDraftIsActive = false
     @FocusState private var focused: Bool
 
+    private var hasChanges: Bool {
+        !title.isEmpty
+            || !captureText.isEmpty
+            || voice.isRecording
+            || voice.isFinalizing
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -1459,6 +1465,7 @@ private struct WorkspaceCaptureEditor: View {
                     TextField("标题（可留空自动生成）", text: $title)
                     TextEditor(text: $captureText)
                         .frame(minHeight: 150)
+                        .accessibilityIdentifier("workspace-capture-body")
                     HStack {
                         Button {
                             toggleVoice()
@@ -1569,6 +1576,10 @@ private struct WorkspaceCaptureEditor: View {
                 if error != nil { restoreVoiceDraft() }
             }
             .onDisappear { restoreVoiceDraft() }
+            .whaleDraftGuard(
+                hasChanges: hasChanges,
+                isBusy: isImporting || voice.isFinalizing
+            )
         }
     }
 
@@ -1702,6 +1713,7 @@ private struct WorkspaceCaptureDetailSheet: View {
     @State private var isSavingTodo = false
     @State private var errorText: String?
     @State private var confirmTodo = false
+    @State private var destructiveAction: WorkspaceCaptureDestructiveAction?
 
     init(
         item: WorkspaceCapture,
@@ -1720,6 +1732,15 @@ private struct WorkspaceCaptureDetailSheet: View {
         _kind = State(initialValue: item.kind)
         _projectID = State(initialValue: item.projectID)
         _isKnowledge = State(initialValue: item.isKnowledge)
+    }
+
+    private var hasChanges: Bool {
+        title != item.title
+            || bodyText != item.body
+            || kind != item.kind
+            || projectID != item.projectID
+            || isKnowledge != item.isKnowledge
+            || followUpEnabled
     }
 
     var body: some View {
@@ -1797,13 +1818,11 @@ private struct WorkspaceCaptureDetailSheet: View {
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button("移入归档") {
-                        store.archive(item)
-                        dismiss()
+                        destructiveAction = .archive
                     }
                     Spacer()
                     Button("删除", role: .destructive) {
-                        store.delete(item)
-                        dismiss()
+                        destructiveAction = .delete
                     }
                 }
             }
@@ -1819,8 +1838,40 @@ private struct WorkspaceCaptureDetailSheet: View {
             } message: {
                 Text("会创建：\(title)。这一步会请求提醒事项权限，并真实写入系统。")
             }
+            .confirmationDialog(
+                "处理这条记录？",
+                isPresented: Binding(
+                    get: { destructiveAction != nil },
+                    set: { if !$0 { destructiveAction = nil } }
+                ),
+                titleVisibility: .visible
+            ) {
+                if destructiveAction == .archive {
+                    Button("移入归档") {
+                        store.archive(item)
+                        destructiveAction = nil
+                        dismiss()
+                    }
+                }
+                if destructiveAction == .delete {
+                    Button("确认删除", role: .destructive) {
+                        store.delete(item)
+                        destructiveAction = nil
+                        dismiss()
+                    }
+                }
+                Button("取消", role: .cancel) {
+                    destructiveAction = nil
+                }
+            } message: {
+                Text(item.title)
+            }
         }
         .presentationDetents([.large])
+        .whaleDraftGuard(
+            hasChanges: hasChanges,
+            isBusy: isSavingTodo
+        )
     }
 
     private func save() {
@@ -1879,6 +1930,10 @@ private struct WorkspaceProjectEditor: View {
     @State private var name = ""
     @State private var summary = ""
 
+    private var hasChanges: Bool {
+        !name.isEmpty || !summary.isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -1908,6 +1963,7 @@ private struct WorkspaceProjectEditor: View {
             }
         }
         .presentationDetents([.medium])
+        .whaleDraftGuard(hasChanges: hasChanges)
     }
 }
 
@@ -1918,6 +1974,10 @@ private struct WorkspaceReadingHighlightSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var excerpt: String
     @State private var note = ""
+
+    private var hasChanges: Bool {
+        excerpt != article.summary || !note.isEmpty
+    }
 
     init(article: SavedArticle, store: WhaleWorkspaceStore, onSaved: @escaping () -> Void) {
         self.article = article
@@ -1978,6 +2038,7 @@ private struct WorkspaceReadingHighlightSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+        .whaleDraftGuard(hasChanges: hasChanges)
     }
 }
 
@@ -1989,6 +2050,13 @@ private struct WorkspaceFollowUpEditor: View {
     @State private var dueAt = Date().addingTimeInterval(86_400)
     @State private var useDueDate = true
     @State private var projectID: String?
+
+    private var hasChanges: Bool {
+        !subject.isEmpty
+            || !detail.isEmpty
+            || projectID != nil
+            || !useDueDate
+    }
 
     var body: some View {
         NavigationStack {
@@ -2046,6 +2114,7 @@ private struct WorkspaceFollowUpEditor: View {
             }
         }
         .presentationDetents([.medium, .large])
+        .whaleDraftGuard(hasChanges: hasChanges)
     }
 }
 

@@ -1326,6 +1326,10 @@ private struct ProfileEditorSheet: View {
     private let nicknameLimit = 20
     private let bioLimit = 80
 
+    private var hasChanges: Bool {
+        nickname != storedNickname || bio != storedBio
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -1363,6 +1367,7 @@ private struct ProfileEditorSheet: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+        .whaleDraftGuard(hasChanges: hasChanges)
     }
 
     private var identity: some View {

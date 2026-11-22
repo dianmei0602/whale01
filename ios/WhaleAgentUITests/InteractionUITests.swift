@@ -189,6 +189,21 @@ final class InteractionUITests: XCTestCase {
                 .waitForExistence(timeout: 5)
         )
     }
+
+    func testWorkspaceEditorRejectsAccidentalSwipeDismiss() {
+        let app = launch()
+        tab(app, "records").tap()
+        app.buttons["workspace-section-inbox"].tap()
+        app.buttons["workspace-open-capture-editor"].tap()
+
+        let editor = app.textViews["workspace-capture-body"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        editor.tap()
+        editor.typeText("未保存内容")
+
+        app.swipeDown()
+        XCTAssertTrue(editor.exists)
+    }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
         tab(app, "discover").tap()
