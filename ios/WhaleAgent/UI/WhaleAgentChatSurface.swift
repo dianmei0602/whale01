@@ -36,43 +36,13 @@ struct WhaleAgentChatSurface: View {
     )
 
     var body: some View {
-        chatView
-            .chatTheme(theme)
-            .setAvailableInputs([.text, .media, .document])
-            .assetsPickerLimit(assetsPickerLimit: 4)
-            .showAvatar(false)
-            .showUsername(false)
-            .showTimeView(true)
-            .setMessageFont(UIFont.systemFont(ofSize: 16, weight: .regular))
-            .messageLinkPreviewLimit(2)
-            .showScrollToBottomButton(true)
-            .showDateHeaders(true)
-            .showMessageMenuOnLongPress(true)
-            .keyboardDismissMode(.interactive)
-            .messageMenuAnimationDuration(0.22)
-            .contentInsets(top: 8, bottom: max(8, bottomInset + 8))
-            .inputViewText($inputText)
-            .localization(Self.localization)
-            .mainHeaderBuilder {
-                AnyView(
-                    Group {
-                        if model.messages.isEmpty, model.pending.isEmpty, !model.isBusy {
-                            WhaleAgentWelcomeHeader(
-                                model: model,
-                                onUsePrompt: { inputText = $0 },
-                                onOpenRecords: onOpenRecords,
-                                onOpenMusic: onOpenMusic,
-                                onOpenWorkspace: onOpenWorkspace
-                            )
-                        } else {
-                            EmptyView()
-                        }
-                    }
-                )
-            }
-            .betweenListAndInputViewBuilder {
-                AnyView(chatNotice)
-            }
+        lifecycleChatView
+            .background(WhaleIMessagePalette.canvas)
+            .accessibilityIdentifier("whale-agent-chat-surface")
+    }
+
+    private var lifecycleChatView: some View {
+        builtChatView
             .task {
                 if draftContext == nil {
                     draftContext = model.composerContextID
@@ -94,8 +64,62 @@ struct WhaleAgentChatSurface: View {
                 guard let text = notification.userInfo?["text"] as? String else { return }
                 inputText = inputText.isEmpty ? text : inputText + "\n" + text
             }
-        .background(WhaleIMessagePalette.canvas)
-        .accessibilityIdentifier("whale-agent-chat-surface")
+    }
+
+    private var builtChatView: some View {
+        localizedChatView
+            .mainHeaderBuilder {
+                welcomeHeader
+            }
+            .betweenListAndInputViewBuilder {
+                AnyView(chatNotice)
+            }
+    }
+
+    private var localizedChatView: some View {
+        sizedChatView
+            .inputViewText($inputText)
+            .localization(Self.localization)
+    }
+
+    private var sizedChatView: some View {
+        styledChatView
+            .contentInsets(top: 8, bottom: max(8, bottomInset + 8))
+    }
+
+    private var styledChatView: some View {
+        chatView
+            .chatTheme(theme)
+            .setAvailableInputs([.text, .media, .document])
+            .assetsPickerLimit(assetsPickerLimit: 4)
+            .showAvatar(false)
+            .showUsername(false)
+            .showTimeView(true)
+            .setMessageFont(UIFont.systemFont(ofSize: 16, weight: .regular))
+            .messageLinkPreviewLimit(2)
+            .showScrollToBottomButton(true)
+            .showDateHeaders(true)
+            .showMessageMenuOnLongPress(true)
+            .keyboardDismissMode(.interactive)
+            .messageMenuAnimationDuration(0.22)
+    }
+
+    private var welcomeHeader: AnyView {
+        AnyView(
+            Group {
+                if model.messages.isEmpty, model.pending.isEmpty, !model.isBusy {
+                    WhaleAgentWelcomeHeader(
+                        model: model,
+                        onUsePrompt: { inputText = $0 },
+                        onOpenRecords: onOpenRecords,
+                        onOpenMusic: onOpenMusic,
+                        onOpenWorkspace: onOpenWorkspace
+                    )
+                } else {
+                    EmptyView()
+                }
+            }
+        )
     }
 
     private var chatView: some View {
