@@ -150,6 +150,12 @@ struct WhaleVoiceCaptureSheet: View {
     private func startIfNeeded() async {
         guard !didAutoStart else { return }
         didAutoStart = true
+#if DEBUG
+        if ProcessInfo.processInfo.environment["WHALE_DEMO_VOICE"] == "1" {
+            phase = .idle
+            return
+        }
+#endif
         phase = .listening
         await voice.start()
         if voice.errorText != nil {
