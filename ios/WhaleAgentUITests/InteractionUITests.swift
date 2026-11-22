@@ -13,6 +13,7 @@ final class InteractionUITests: XCTestCase {
         app.launchEnvironment["WHALE_DEMO_HOME"] = "1"
         app.launchEnvironment["WHALE_DEMO_INITIAL_CHANNEL"] = "ai"
         app.launchEnvironment["WHALE_DEMO_PALETTE"] = "seaSalt"
+        app.launchEnvironment["WHALE_DEMO_VOICE"] = "1"
         for (key, value) in additionalEnvironment {
             app.launchEnvironment[key] = value
         }
