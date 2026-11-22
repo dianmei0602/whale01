@@ -71,6 +71,24 @@ struct TodoReminder: Identifiable, Equatable {
     let notes: String?
     let deduplicated: Bool
 
+    init(
+        id: String,
+        title: String,
+        completed: Bool,
+        listName: String,
+        dueAt: Date?,
+        notes: String?,
+        deduplicated: Bool
+    ) {
+        self.id = id
+        self.title = title
+        self.completed = completed
+        self.listName = listName
+        self.dueAt = dueAt
+        self.notes = notes
+        self.deduplicated = deduplicated
+    }
+
     init?(json: JSONValue) {
         guard let object = json.objectValue,
               let id = object.optionalString("recordId"),
@@ -85,3 +103,23 @@ struct TodoReminder: Identifiable, Equatable {
         self.deduplicated = object.optionalBool("deduplicated") ?? false
     }
 }
+
+#if DEBUG
+extension TodoReminder {
+    static func demo(
+        id: String,
+        title: String,
+        completed: Bool
+    ) -> TodoReminder {
+        TodoReminder(
+            id: id,
+            title: title,
+            completed: completed,
+            listName: "演示",
+            dueAt: nil,
+            notes: nil,
+            deduplicated: false
+        )
+    }
+}
+#endif

@@ -85,6 +85,15 @@ struct RootView: View {
                 )
             }
             if environment["WHALE_DEMO_TODO"] == "1" { navigation.selectedTab = .records }
+            if environment["WHALE_DEMO_TODO_SYNC"] == "1" {
+                todoStore.replaceLoaded([
+                    .demo(
+                        id: "demo-sync",
+                        title: "验证跨页面同步",
+                        completed: false
+                    )
+                ])
+            }
             if environment["WHALE_DEMO_HUB"] == "1" { navigation.selectedTab = .discover }
             if environment["WHALE_DEMO_SETTINGS"] == "1" { showSettings = true }
             if environment["WHALE_DEMO_DISCOVER"] == "1" { openDiscover(.market) }

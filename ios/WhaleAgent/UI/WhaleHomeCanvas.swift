@@ -26,7 +26,7 @@ struct WhaleHomeCanvas: View {
     @State private var quoteExpanded = false
     @State private var briefingExpanded = false
     @State private var showWeatherDetail = false
-    @State private var homeTodos: [TodoReminder] = []
+    @EnvironmentObject private var todoStore: TodoTimelineStore
     @StateObject private var digest = HomeDigestModel()
     @StateObject private var shortcutLayout = HomeShortcutLayoutStore()
     @State private var editingShortcuts = ProcessInfo.processInfo.environment["WHALE_DEMO_HOME_EDIT"] == "1"
@@ -59,7 +59,7 @@ struct WhaleHomeCanvas: View {
             .background(WhaleBackdrop())
             .task {
                 await loadWeatherIfNeeded()
-                await loadHomeTodos()
+                await reloadTodoStore(using: model)
                 await model.refreshDashboard()
                 await digest.prime()
                 syncWidgetSnapshot()
@@ -67,12 +67,12 @@ struct WhaleHomeCanvas: View {
             .onChange(of: model.permissionsSnapshot) { _, _ in
                 Task {
                     await loadWeatherIfNeeded()
-                    await loadHomeTodos()
+                    await reloadTodoStore(using: model)
                     await model.refreshDashboard(force: true)
                     syncWidgetSnapshot()
                 }
             }
-            .onChange(of: homeTodos) { _, _ in syncWidgetSnapshot() }
+            .onChange(of: todoStore.items) { _, _ in syncWidgetSnapshot() }
             .onChange(of: model.upcomingEvents) { _, _ in syncWidgetSnapshot() }
             .sheet(isPresented: $showWeatherDetail) {
                 NavigationStack {
@@ -87,7 +87,7 @@ struct WhaleHomeCanvas: View {
         let items = AssistantCommandPlanner.items(
             now: Date(),
             events: model.upcomingEvents,
-            todos: homeTodos,
+            todos: todoStore.pending,
             records: model.taskRecords,
             pendingConfirmation: model.presentedConfirmation
         )
@@ -713,7 +713,8 @@ struct WhaleHomeCanvas: View {
             .filter { $0.endAt > Date() }
             .sorted { $0.startAt < $1.startAt }
             .first
-        let nextTodo = homeTodos
+        let nextTodo = todoStore
+            .pending
             .filter { !$0.completed }
             .sorted { ($0.dueAt ?? .distantFuture) < ($1.dueAt ?? .distantFuture) }
             .first
@@ -747,9 +748,21 @@ struct WhaleHomeCanvas: View {
         WidgetCenter.shared.reloadTimelines(ofKind: "WhaleQuoteWidget")
     }
 
-    private func loadHomeTodos() async {
-        guard model.permissionsSnapshot["reminder"] == "granted" else { homeTodos = []; return }
-        homeTodos = (try? await model.loadTodoReminders(includeCompleted: false)) ?? homeTodos
+    private func reloadTodoStore(using model: AppModel) async {
+#if DEBUG
+        if TodoDemoMode.isSyncFixture { return }
+#endif
+        guard model.permissionsSnapshot["reminder"] == "granted" else {
+            todoStore.replaceLoaded([])
+            return
+        }
+        do {
+            let items = try await model.loadTodoReminders(includeCompleted: true)
+            todoStore.replaceLoaded(items)
+            todoStore.markLoaded()
+        } catch {
+            // Keep the last known rows. Workspace and Todo expose actionable errors.
+        }
     }
 
     // MARK: - Weather
@@ -1269,7 +1282,7 @@ struct WhaleHomeCanvas: View {
         if let event = todayEvents.first(where: { $0.endAt > Date() }) {
             return "\(event.startAt.formatted(date: .omitted, time: .shortened)) \(event.title)"
         }
-        if let todo = homeTodos.first(where: { !$0.completed }) {
+        if let todo = todoStore.pending.first {
             return todo.title
         }
         if !calendarGranted {

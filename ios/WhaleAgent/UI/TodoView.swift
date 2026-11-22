@@ -65,11 +65,12 @@ struct TodoView: View {
     var showsHeader: Bool = true
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @EnvironmentObject private var todoStore: TodoTimelineStore
     @StateObject private var voice = VoiceInputController()
 
     @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
     @AppStorage("whale.todo.board") private var board: TodoBoard = .today
-    @State private var items: [TodoReminder] = []
+    private var items: [TodoReminder] { todoStore.items }
     @AppStorage("whale.draft.todo") private var draft = ""
     @State private var isLoading = false
     @State private var isSubmitting = false
@@ -1008,13 +1009,21 @@ struct TodoView: View {
 
     private func reload(silent: Bool = false) async {
         guard !isLoading else { return }
+#if DEBUG
+        if TodoDemoMode.isSyncFixture { return }
+#endif
         model.refreshPermissions()
-        guard reminderStatus == "granted" else { items = []; return }
+        guard reminderStatus == "granted" else {
+            todoStore.replaceLoaded([])
+            return
+        }
         isLoading = true
         if !silent { errorText = nil }
         defer { isLoading = false }
         do {
-            items = try await model.loadTodoReminders(includeCompleted: true)
+            let loaded = try await model.loadTodoReminders(includeCompleted: true)
+            todoStore.replaceLoaded(loaded)
+            todoStore.markLoaded()
             model.refreshPermissions()
         } catch {
             let permissionDenied = (error as? ToolExecutionError)?.code == "permission_denied"
@@ -1026,24 +1035,11 @@ struct TodoView: View {
     }
 
     private func upsert(_ item: TodoReminder) {
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items[index] = item
-        } else {
-            items.append(item)
-        }
-        items.sort { left, right in
-            if left.completed != right.completed { return !left.completed }
-            switch (left.dueAt, right.dueAt) {
-            case let (leftDate?, rightDate?): return leftDate < rightDate
-            case (_?, nil): return true
-            case (nil, _?): return false
-            default: return left.title.localizedStandardCompare(right.title) == .orderedAscending
-            }
-        }
+        todoStore.upsert(item)
     }
 
     private func removeLocal(_ id: String) {
-        items.removeAll { $0.id == id }
+        todoStore.remove(id: id)
     }
 
     private func showToast(_ text: String, undo: Bool = false) {

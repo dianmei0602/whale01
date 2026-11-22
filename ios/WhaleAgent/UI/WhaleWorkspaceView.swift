@@ -47,6 +47,7 @@ struct WhaleWorkspaceView: View {
 
     @StateObject private var store = WhaleWorkspaceStore.shared
     @StateObject private var reading = DiscoverReadingLibrary.shared
+    @EnvironmentObject private var todoStore: TodoTimelineStore
     @Environment(\.dismiss) private var dismiss
     @State private var section: WhaleWorkspaceSection = .inbox
     @State private var showCaptureEditor = false
@@ -57,7 +58,6 @@ struct WhaleWorkspaceView: View {
     @State private var highlightArticle: SavedArticle?
     @State private var readingFilter: ReadingStatus?
     @State private var toast: String?
-    @State private var taskItems: [TodoReminder] = []
     @State private var taskDraft = ""
     @State private var taskError: String?
     @State private var taskLoading = false
@@ -194,13 +194,11 @@ struct WhaleWorkspaceView: View {
     }
 
     private var pendingTasks: [TodoReminder] {
-        taskItems
-            .filter { !$0.completed }
-            .sorted { ($0.dueAt ?? .distantFuture) < ($1.dueAt ?? .distantFuture) }
+        todoStore.pending
     }
 
     private var completedTaskCount: Int {
-        taskItems.filter(\.completed).count
+        todoStore.completed.count
     }
 
     private var tasksOverview: some View {
@@ -324,9 +322,12 @@ struct WhaleWorkspaceView: View {
     @MainActor
     private func loadTaskOverview(silent: Bool = false) async {
         guard !taskLoading else { return }
+#if DEBUG
+        if TodoDemoMode.isSyncFixture { return }
+#endif
         model.refreshPermissions()
         guard model.permissionsSnapshot["reminder"] == "granted" else {
-            taskItems = []
+            todoStore.replaceLoaded([])
             taskError = "允许提醒事项权限后，待办会显示在这里。"
             return
         }
@@ -334,7 +335,9 @@ struct WhaleWorkspaceView: View {
         if !silent { taskError = nil }
         defer { taskLoading = false }
         do {
-            taskItems = try await model.loadTodoReminders(includeCompleted: true)
+            let items = try await model.loadTodoReminders(includeCompleted: true)
+            todoStore.replaceLoaded(items)
+            todoStore.markLoaded()
             taskError = nil
         } catch {
             taskError = error.localizedDescription
@@ -350,11 +353,7 @@ struct WhaleWorkspaceView: View {
         do {
             let item = try await model.createTodoReminder(title: title, dueAt: nil)
             taskDraft = ""
-            if let index = taskItems.firstIndex(where: { $0.id == item.id }) {
-                taskItems[index] = item
-            } else {
-                taskItems.append(item)
-            }
+            todoStore.upsert(item)
             taskError = nil
         } catch {
             taskError = error.localizedDescription
@@ -366,11 +365,25 @@ struct WhaleWorkspaceView: View {
         guard !busyTaskIds.contains(item.id) else { return }
         busyTaskIds.insert(item.id)
         defer { busyTaskIds.remove(item.id) }
+#if DEBUG
+        if TodoDemoMode.isSyncFixture {
+            todoStore.upsert(
+                TodoReminder(
+                    id: item.id,
+                    title: item.title,
+                    completed: !item.completed,
+                    listName: item.listName,
+                    dueAt: item.dueAt,
+                    notes: item.notes,
+                    deduplicated: item.deduplicated
+                )
+            )
+            return
+        }
+#endif
         do {
             let updated = try await model.setTodoReminder(item, completed: !item.completed)
-            if let index = taskItems.firstIndex(where: { $0.id == updated.id }) {
-                taskItems[index] = updated
-            }
+            todoStore.upsert(updated)
             taskError = nil
         } catch {
             taskError = error.localizedDescription
@@ -1052,7 +1065,7 @@ private struct WorkspaceKnowledgeSection: View {
 private struct WorkspaceBriefSection: View {
     @ObservedObject var model: AppModel
     @ObservedObject var store: WhaleWorkspaceStore
-    @State private var reminders: [TodoReminder] = []
+    @EnvironmentObject private var todoStore: TodoTimelineStore
     @State private var isLoading = false
     @State private var errorText: String?
     @State private var review = WorkspaceDailyReview(
@@ -1066,11 +1079,11 @@ private struct WorkspaceBriefSection: View {
     @State private var eveningNote = ""
 
     private var pending: [TodoReminder] {
-        reminders.filter { !$0.completed }
+        todoStore.pending
     }
 
     private var completed: [TodoReminder] {
-        reminders.filter(\.completed)
+        todoStore.completed
     }
 
     private var upcoming: [CalendarEventPreview] {
@@ -1112,7 +1125,7 @@ private struct WorkspaceBriefSection: View {
             }
             .whaleCard(padding: 16)
 
-            if isLoading && reminders.isEmpty {
+            if isLoading && todoStore.items.isEmpty {
                 ProgressView("正在读取真实日程与提醒…")
                     .frame(maxWidth: .infinity)
                     .whaleCard(padding: 18)
@@ -1229,6 +1242,9 @@ private struct WorkspaceBriefSection: View {
 
     private func load() async {
         guard !isLoading else { return }
+#if DEBUG
+        if TodoDemoMode.isSyncFixture { return }
+#endif
         isLoading = true
         errorText = nil
         let current = store.review()
@@ -1236,7 +1252,9 @@ private struct WorkspaceBriefSection: View {
         morningFocus = current.morningFocus
         eveningNote = current.eveningNote
         do {
-            reminders = try await model.loadTodoReminders(includeCompleted: true)
+            let reminders = try await model.loadTodoReminders(includeCompleted: true)
+            todoStore.replaceLoaded(reminders)
+            todoStore.markLoaded()
         } catch {
             errorText = error.localizedDescription
         }

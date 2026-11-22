@@ -144,6 +144,24 @@ final class InteractionUITests: XCTestCase {
                 .waitForExistence(timeout: 5)
         )
     }
+
+    func testTodoCompletionRefreshesHomeAndWorkspaceSummary() {
+        let app = launch(additionalEnvironment: [
+            "WHALE_DEMO_TODO_SYNC": "1"
+        ])
+
+        tab(app, "records").tap()
+        XCTAssertTrue(
+            app.staticTexts["验证跨页面同步"].waitForExistence(timeout: 10)
+        )
+        app.buttons["完成 验证跨页面同步"].tap()
+
+        tab(app, "conversation").tap()
+        XCTAssertFalse(app.staticTexts["验证跨页面同步"].exists)
+
+        tab(app, "records").tap()
+        XCTAssertTrue(app.staticTexts["目前没有未完成事项。"].exists)
+    }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
         tab(app, "discover").tap()

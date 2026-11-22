@@ -1,6 +1,14 @@
 import Combine
 import Foundation
 
+#if DEBUG
+enum TodoDemoMode {
+    static var isSyncFixture: Bool {
+        ProcessInfo.processInfo.environment["WHALE_DEMO_TODO_SYNC"] == "1"
+    }
+}
+#endif
+
 @MainActor
 final class TodoTimelineStore: ObservableObject {
     @Published private(set) var items: [TodoReminder] = []
