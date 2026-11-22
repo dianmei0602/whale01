@@ -15,6 +15,7 @@ struct MusicView: View {
     @State private var dragOffset: CGFloat = 0
     @State private var cardOpacity: Double = 1
     @State private var isSwitchingAlbum = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Group {
@@ -66,8 +67,15 @@ struct MusicView: View {
             allowedContentTypes: [.audio],
             allowsMultipleSelection: true
         ) { result in
-            guard case .success(let urls) = result else { return }
-            Task { await model.importLocalMusic(from: urls) }
+            switch result {
+            case .success(let urls):
+                Task { await model.importLocalMusic(from: urls) }
+            case .failure(let error):
+                WhaleAccessibility.announce("导入音乐失败")
+                model.presentMusicImportError(
+                    "导入音乐失败：\(error.localizedDescription)"
+                )
+            }
         }
         .alert("音乐从哪来", isPresented: $showSourceInfo) {
             Button("知道了", role: .cancel) {}
@@ -263,6 +271,13 @@ struct MusicView: View {
 
     private func completeSwipe(_ step: Int) {
         guard !isSwitchingAlbum else { return }
+        if reduceMotion {
+            shiftAlbum(step)
+            dragOffset = 0
+            cardOpacity = 1
+            isSwitchingAlbum = false
+            return
+        }
         isSwitchingAlbum = true
         withAnimation(.easeIn(duration: 0.16)) {
             dragOffset = -CGFloat(step) * 90

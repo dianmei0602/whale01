@@ -1146,6 +1146,10 @@ final class AppModel: ObservableObject {
         }
     }
 
+    func presentMusicImportError(_ message: String) {
+        musicError = message
+    }
+
     func deleteLocalTrack(_ track: MusicTrackItem) async {
         LocalMusicLibrary.shared.delete(id: track.trackId)
         if playback.track?.trackId == track.trackId {

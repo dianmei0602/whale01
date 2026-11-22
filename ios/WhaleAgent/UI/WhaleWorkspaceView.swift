@@ -919,6 +919,7 @@ struct WhaleWorkspaceView: View {
     }
 
     private func showToast(_ text: String) {
+        WhaleAccessibility.announce(text)
         withAnimation(.easeOut(duration: 0.18)) {
             toast = text
         }

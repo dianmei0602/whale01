@@ -100,7 +100,8 @@ struct WhaleVoiceCaptureSheet: View {
         TimelineView(
             .animation(
                 minimumInterval: 1.0 / 24.0,
-                paused: !content.showsWaveform || reduceMotion
+                paused: !content.showsWaveform
+                    || !InteractionMotion.waveformEnabled(reduceMotion: reduceMotion)
             )
         ) { context in
             let time = context.date.timeIntervalSinceReferenceDate

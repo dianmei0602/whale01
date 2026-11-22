@@ -5,6 +5,7 @@ struct DiscoverLibraryView: View {
     @ObservedObject var library: DiscoverReadingLibrary
     @Environment(\.dismiss) private var dismiss
     @State private var readerArticle: SavedArticle?
+    @State private var recentlyRemoved: SavedArticle?
 
     var body: some View {
         NavigationStack {
@@ -69,6 +70,29 @@ struct DiscoverLibraryView: View {
             .sheet(item: $readerArticle) { article in
                 NativeArticleReaderView(item: newsItem(for: article), library: library)
             }
+            .safeAreaInset(edge: .bottom) {
+                if let recentlyRemoved {
+                    HStack(spacing: 10) {
+                        Text("已移出稍后读")
+                            .font(.subheadline)
+                            .foregroundStyle(WhaleTheme.ink)
+                        Spacer()
+                        Button("撤销") {
+                            restore(recentlyRemoved)
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(WhaleTheme.accent)
+                    }
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 48)
+                    .background(WhaleTheme.card)
+                    .overlay(alignment: .top) {
+                        Rectangle()
+                            .fill(WhaleTheme.line)
+                            .frame(height: 0.5)
+                    }
+                }
+            }
         }
     }
 
@@ -100,6 +124,24 @@ struct DiscoverLibraryView: View {
             channel: article.channel,
             rank: nil
         )
+        guard library.isSaved(placeholder) else { return }
         library.toggleSaved(placeholder)
+        recentlyRemoved = article
+        WhaleAccessibility.announce("已移出稍后读，可以撤销")
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            if recentlyRemoved?.id == article.id {
+                recentlyRemoved = nil
+            }
+        }
+    }
+
+    private func restore(_ article: SavedArticle) {
+        let placeholder = newsItem(for: article)
+        if !library.isSaved(placeholder) {
+            library.toggleSaved(placeholder)
+        }
+        recentlyRemoved = nil
+        WhaleAccessibility.announce("已恢复到稍后读")
     }
 }

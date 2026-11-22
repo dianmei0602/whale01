@@ -20,6 +20,7 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         pager
@@ -160,7 +161,10 @@ struct RootView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.spring(response: 0.30, dampingFraction: 0.86), value: navigation.selectedTab)
+        .animation(
+            InteractionMotion.page(reduceMotion: reduceMotion),
+            value: navigation.selectedTab
+        )
     }
 
     private var conversationPage: some View {
@@ -221,7 +225,11 @@ struct RootView: View {
     private func move(to tab: AppTab) {
         guard tab != navigation.selectedTab else { return }
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(.easeInOut(duration: 0.16)) { navigation.selectedTab = tab }
+        withAnimation(
+            InteractionMotion.page(reduceMotion: reduceMotion)
+        ) {
+            navigation.selectedTab = tab
+        }
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {

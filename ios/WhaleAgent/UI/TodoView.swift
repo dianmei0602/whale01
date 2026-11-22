@@ -836,6 +836,9 @@ struct TodoView: View {
     }
 
     private func showToast(_ text: String, undo: Bool = false) {
+        WhaleAccessibility.announce(
+            undo ? "\(text)，可以撤销" : text
+        )
         toast = text
         if !undo { undoAction = nil }
         undoExpiresAt = Date().addingTimeInterval(8)
