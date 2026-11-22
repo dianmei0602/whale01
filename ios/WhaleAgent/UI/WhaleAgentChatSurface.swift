@@ -42,7 +42,7 @@ struct WhaleAgentChatSurface: View {
     }
 
     private var lifecycleChatView: some View {
-        builtChatView
+        configuredChatView
             .task {
                 if draftContext == nil {
                     draftContext = model.composerContextID
@@ -66,63 +66,7 @@ struct WhaleAgentChatSurface: View {
             }
     }
 
-    private var builtChatView: some View {
-        localizedChatView
-            .mainHeaderBuilder {
-                welcomeHeader
-            }
-            .betweenListAndInputViewBuilder {
-                AnyView(chatNotice)
-            }
-    }
-
-    private var localizedChatView: some View {
-        sizedChatView
-            .inputViewText($inputText)
-            .localization(Self.localization)
-    }
-
-    private var sizedChatView: some View {
-        styledChatView
-            .contentInsets(top: 8, bottom: max(8, bottomInset + 8))
-    }
-
-    private var styledChatView: some View {
-        chatView
-            .chatTheme(theme)
-            .setAvailableInputs([.text, .media, .document])
-            .assetsPickerLimit(assetsPickerLimit: 4)
-            .showAvatar(false)
-            .showUsername(false)
-            .showTimeView(true)
-            .setMessageFont(UIFont.systemFont(ofSize: 16, weight: .regular))
-            .messageLinkPreviewLimit(2)
-            .showScrollToBottomButton(true)
-            .showDateHeaders(true)
-            .showMessageMenuOnLongPress(true)
-            .keyboardDismissMode(.interactive)
-            .messageMenuAnimationDuration(0.22)
-    }
-
-    private var welcomeHeader: AnyView {
-        AnyView(
-            Group {
-                if model.messages.isEmpty, model.pending.isEmpty, !model.isBusy {
-                    WhaleAgentWelcomeHeader(
-                        model: model,
-                        onUsePrompt: { inputText = $0 },
-                        onOpenRecords: onOpenRecords,
-                        onOpenMusic: onOpenMusic,
-                        onOpenWorkspace: onOpenWorkspace
-                    )
-                } else {
-                    EmptyView()
-                }
-            }
-        )
-    }
-
-    private var chatView: some View {
+    private var configuredChatView: some View {
         ChatView(
             messages: exyteMessages,
             didSendMessage: handleDraft,
@@ -143,6 +87,40 @@ struct WhaleAgentChatSurface: View {
                     speak(message)
                 case .save:
                     save(message)
+                }
+            }
+        )
+        .chatTheme(theme)
+        .setAvailableInputs([.text, .media, .document])
+        .assetsPickerLimit(assetsPickerLimit: 4)
+        .showAvatar(false)
+        .showUsername(false)
+        .setMessageFont(UIFont.systemFont(ofSize: 16, weight: .regular))
+        .keyboardDismissMode(.interactive)
+        .contentInsets(top: 8, bottom: max(8, bottomInset + 8))
+        .inputViewText($inputText)
+        .localization(Self.localization)
+            .mainHeaderBuilder {
+                welcomeHeader
+            }
+            .betweenListAndInputViewBuilder {
+                AnyView(chatNotice)
+            }
+    }
+
+    private var welcomeHeader: AnyView {
+        AnyView(
+            Group {
+                if model.messages.isEmpty, model.pending.isEmpty, !model.isBusy {
+                    WhaleAgentWelcomeHeader(
+                        model: model,
+                        onUsePrompt: { inputText = $0 },
+                        onOpenRecords: onOpenRecords,
+                        onOpenMusic: onOpenMusic,
+                        onOpenWorkspace: onOpenWorkspace
+                    )
+                } else {
+                    EmptyView()
                 }
             }
         )
