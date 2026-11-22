@@ -106,4 +106,20 @@ final class IMessageHomeTests: XCTestCase {
         XCTAssertFalse(items.first?.detail?.contains("已经结束") == true)
         XCTAssertFalse(items.first?.detail?.contains("下午散步") == true)
     }
+
+    func testMessageSpacingGroupsConsecutiveRepliesAndSeparatesSpeakerChanges() {
+        let base = Date(timeIntervalSince1970: 1_800_000_000)
+        let user = ChatMessage(role: .user, text: "你好", createdAt: base)
+        let assistant = ChatMessage(role: .assistant, text: "在", createdAt: base.addingTimeInterval(30))
+        let assistantLater = ChatMessage(role: .assistant, text: "继续", createdAt: base.addingTimeInterval(70))
+        let nextDay = ChatMessage(role: .assistant, text: "第二天", createdAt: base.addingTimeInterval(86_400))
+
+        XCTAssertEqual(WhaleIMessageLayout.verticalSpacing(previous: nil, current: user), 2)
+        XCTAssertEqual(WhaleIMessageLayout.verticalSpacing(previous: user, current: assistant), 10)
+        XCTAssertEqual(WhaleIMessageLayout.verticalSpacing(previous: assistant, current: assistantLater), 3)
+        XCTAssertEqual(WhaleIMessageLayout.verticalSpacing(previous: assistantLater, current: nextDay), 18)
+        XCTAssertFalse(WhaleIMessageLayout.isSameGroup(previous: user, current: assistant))
+        XCTAssertTrue(WhaleIMessageLayout.isSameGroup(previous: assistant, current: assistantLater))
+        XCTAssertFalse(WhaleIMessageLayout.isSameGroup(previous: assistantLater, current: nextDay))
+    }
 }

@@ -117,6 +117,14 @@ final class InteractionUITests: XCTestCase {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
+    private func openSettings(_ app: XCUIApplication) {
+        let more = app.buttons["assistant-settings"]
+        XCTAssertTrue(more.waitForExistence(timeout: 10))
+        more.tap()
+        let settings = app.buttons["设置"]
+        XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        settings.tap()
+    }
     func testDraftSurvivesTabSwitchAndAppRelaunchWithoutSending() {
         let app = launch()
         let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
@@ -151,7 +159,7 @@ final class InteractionUITests: XCTestCase {
 
     func testAppearancePaletteChoicePersistsAcrossRelaunch() {
         let app = launch()
-        app.buttons["assistant-settings"].tap()
+        openSettings(app)
         let gilded = app.buttons["appearance-palette-gilded"]
         if !gilded.waitForExistence(timeout: 5) {
             app.scrollViews.firstMatch.swipeUp()
@@ -165,7 +173,7 @@ final class InteractionUITests: XCTestCase {
         relaunched.launchEnvironment["WHALE_DEMO_HOME"] = "1"
         relaunched.launch()
         XCTAssertTrue(relaunched.buttons["assistant-settings"].waitForExistence(timeout: 30))
-        relaunched.buttons["assistant-settings"].tap()
+        openSettings(relaunched)
         let restored = relaunched.buttons["appearance-palette-gilded"]
         if !restored.waitForExistence(timeout: 5) {
             relaunched.scrollViews.firstMatch.swipeUp()
@@ -176,7 +184,7 @@ final class InteractionUITests: XCTestCase {
 
     func testEveryAppearancePaletteUpdatesInPlace() {
         let app = launch()
-        app.buttons["assistant-settings"].tap()
+        openSettings(app)
 
         let paletteNames = ["seaSalt": "海盐", "nightSea": "夜海", "gilded": "鎏金"]
         let current = app.staticTexts["appearance-current"]

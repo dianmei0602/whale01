@@ -47,7 +47,9 @@ if ($ExpectedSourceSHA -and $runMetadata.head_sha -ne $ExpectedSourceSHA) {
 }
 
 $artifacts = (Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/actions/runs/$RunId/artifacts" -Headers $headers).artifacts
-$artifact = $artifacts | Where-Object { $_.name -eq "WhaleAgent-Sideload-ipa-enc" } | Select-Object -First 1
+$artifact = $artifacts |
+    Where-Object { $_.name -in @("WhaleAgent-Sideload-ipa-enc", "WhaleAgent-Xfyun-ipa-enc") } |
+    Select-Object -First 1
 $encrypted = $true
 if (-not $artifact) {
     $artifact = $artifacts | Where-Object { $_.name -eq "WhaleAgent-Sideload-ipa" } | Select-Object -First 1
@@ -63,11 +65,11 @@ Invoke-WebRequest -Uri "https://api.github.com/repos/$Repo/actions/artifacts/$($
 Expand-Archive -Path $zip -DestinationPath $work -Force
 $ipa = Get-ChildItem -Path $work -Recurse -Filter "WhaleAgent-Sideload.ipa" | Select-Object -First 1
 if (-not $ipa) {
-    $enc = Get-ChildItem -Path $work -Recurse -Filter "WhaleAgent-Sideload.ipa.enc" | Select-Object -First 1
+    $enc = Get-ChildItem -Path $work -Recurse -Filter "*.ipa.enc" | Select-Object -First 1
     if (-not $enc) { throw "Artifact did not contain a usable IPA or encrypted IPA." }
     if (-not $encrypted) { throw "Found an encrypted IPA in an unexpected artifact." }
     if (-not $IpaPass) {
-        $wrapped = Get-ChildItem -Path $work -Recurse -Filter "WhaleAgent-pass.enc" | Select-Object -First 1
+        $wrapped = Get-ChildItem -Path $work -Recurse -Filter "*-pass.enc" | Select-Object -First 1
         if ($wrapped -and (Test-Path -LiteralPath $PrivateKeyPath)) {
             $rsa = [System.Security.Cryptography.RSA]::Create()
             $rsa.ImportFromPem((Get-Content -LiteralPath $PrivateKeyPath -Raw))
@@ -110,8 +112,8 @@ if (-not $ipa) {
     Write-Host "decrypted IPA_PASS artifact"
 }
 
-$manifestFile = Get-ChildItem -LiteralPath $work -Recurse -Filter 'WhaleAgent-Sideload.manifest.json' | Select-Object -First 1
-$expectedHashFile = Get-ChildItem -LiteralPath $work -Recurse -Filter 'WhaleAgent-Sideload.sha256' | Select-Object -First 1
+$manifestFile = Get-ChildItem -LiteralPath $work -Recurse -Filter '*.manifest.json' | Select-Object -First 1
+$expectedHashFile = Get-ChildItem -LiteralPath $work -Recurse -Filter '*.sha256' | Select-Object -First 1
 if (-not $manifestFile -or -not $expectedHashFile) { throw "This artifact has no candidate identity manifest; it cannot be published as the optimized build." }
 $manifest = Get-Content -LiteralPath $manifestFile.FullName -Raw | ConvertFrom-Json
 $expectedHash = ((Get-Content -LiteralPath $expectedHashFile.FullName -Raw).Trim() -split '\s+')[0].ToLowerInvariant()

@@ -35,21 +35,21 @@ enum WhaleIMessagePalette {
         dark: UIColor.white
     )
 
-    static func incomingShape() -> UnevenRoundedRectangle {
+    static func incomingShape(isLast: Bool = true) -> UnevenRoundedRectangle {
         UnevenRoundedRectangle(
             topLeadingRadius: 18,
-            bottomLeadingRadius: 5,
+            bottomLeadingRadius: isLast ? 5 : 18,
             bottomTrailingRadius: 18,
             topTrailingRadius: 18,
             style: .continuous
         )
     }
 
-    static func outgoingShape() -> UnevenRoundedRectangle {
+    static func outgoingShape(isLast: Bool = true) -> UnevenRoundedRectangle {
         UnevenRoundedRectangle(
             topLeadingRadius: 18,
             bottomLeadingRadius: 18,
-            bottomTrailingRadius: 5,
+            bottomTrailingRadius: isLast ? 5 : 18,
             topTrailingRadius: 18,
             style: .continuous
         )

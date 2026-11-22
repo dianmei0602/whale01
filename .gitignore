@@ -1,6 +1,7 @@
 backend/data/
 node_modules/
 .taste-skill/
+.superpowers/
 .env
 backend/.env
 *.log

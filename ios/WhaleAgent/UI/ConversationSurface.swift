@@ -47,33 +47,54 @@ struct ConversationSurface: View {
         GeometryReader { viewport in
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 16) {
+                    LazyVStack(alignment: .leading, spacing: 0) {
                         if model.messages.isEmpty && model.pending.isEmpty && !model.isBusy { emptyConversation }
-                        ForEach(model.messages) { message in
-                            MessageRow(message: message,
+                        if let first = model.messages.first {
+                            Text(dayLabel(first.createdAt))
+                                .whaleFont(size: 11, weight: .medium)
+                                .foregroundStyle(WhaleIMessagePalette.muted)
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 4)
+                                .padding(.bottom, 9)
+                        }
+                        ForEach(Array(model.messages.enumerated()), id: \.element.id) { index, message in
+                            MessageRow(
+                                message: message,
                                 isSpeaking: model.isSpeakingReply && model.speakingMessageId == message.id.uuidString,
                                 isHighlighted: model.highlightedMessageId == message.id.uuidString,
+                                isLastInGroup: isLastMessageInGroup(at: index),
                                 onToggleSpeech: { model.toggleSpeech(for: message) },
                                 onCreateTodo: message.role == .assistant
                                     ? { todoCandidate = MessageTodoCandidate(text: $0, messageID: message.id.uuidString) }
-                                    : nil).id(message.id)
+                                    : nil
+                            )
+                            .id(message.id)
+                            .padding(.top, messageTopSpacing(at: index))
                         }
                         ForEach(model.pending) { item in
                             PendingActionCard(item: item, isBusy: model.isBusy) {
                                 model.presentedConfirmation = item
-                            }.id(item.id)
+                            }
+                            .frame(maxWidth: 334, alignment: .leading)
+                            .padding(.top, 12)
+                            .id(item.id)
                         }
                         if !model.streamingReply.isEmpty {
                             StreamingReplyView(text: model.streamingReply)
+                                .padding(.top, 10)
                                 .id("streaming-reply")
                         }
                         AssistantActivityView(model: model)
+                            .frame(maxWidth: 334, alignment: .leading)
+                            .padding(.top, 10)
                         InteractionReceiptCard(model: model)
+                            .frame(maxWidth: 334, alignment: .leading)
+                            .padding(.top, 10)
                         Color.clear.frame(height: 20 + bottomInset).id(Self.bottomAnchor)
                             .background(GeometryReader { geometry in
                                 Color.clear.preference(key: ConversationBottomKey.self, value: geometry.frame(in: .named("conversation-viewport")).maxY)
                             })
-                    }.padding(.horizontal, 16).padding(.top, 16)
+                    }.padding(.horizontal, 16).padding(.top, 10)
                 }
                 .coordinateSpace(name: "conversation-viewport")
                 .scrollDismissesKeyboard(.interactively).scrollBounceBehavior(.basedOnSize).defaultScrollAnchor(.bottom)
@@ -143,6 +164,31 @@ struct ConversationSurface: View {
     }
 
     private static let bottomAnchor = "conversationBottom"
+
+    private func messageTopSpacing(at index: Int) -> CGFloat {
+        guard model.messages.indices.contains(index) else { return 2 }
+        let previous = index > 0 ? model.messages[index - 1] : nil
+        return WhaleIMessageLayout.verticalSpacing(
+            previous: previous,
+            current: model.messages[index]
+        )
+    }
+
+    private func isLastMessageInGroup(at index: Int) -> Bool {
+        guard model.messages.indices.contains(index),
+              model.messages.indices.contains(index + 1) else { return true }
+        return !WhaleIMessageLayout.isSameGroup(
+            previous: model.messages[index],
+            current: model.messages[index + 1]
+        )
+    }
+
+    private func dayLabel(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.dateFormat = "M月d日 HH:mm"
+        return formatter.string(from: date)
+    }
 
     /// Keeps the newest message pinned. Only content changes move the list;
     /// typing never does, so the scroll position stays put while composing.
@@ -216,29 +262,23 @@ private struct StreamingReplyView: View {
     let text: String
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 7) {
-            WhaleMarkView(size: 27)
+        HStack {
             VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 7) {
-                    Text("鲸鱼")
-                        .whaleFont(size: 13, weight: .semibold)
-                        .foregroundStyle(WhaleIMessagePalette.muted)
-                    ProgressView()
-                        .controlSize(.mini)
-                }
                 Text(text)
                     .whaleFont(size: 17)
-                    .lineSpacing(4)
+                    .lineSpacing(2)
                     .foregroundStyle(WhaleIMessagePalette.text)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(
-                        WhaleIMessagePalette.incoming,
-                        in: WhaleIMessagePalette.incomingShape()
-                    )
+                ProgressView()
+                    .controlSize(.mini)
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                WhaleIMessagePalette.incoming,
+                in: WhaleIMessagePalette.incomingShape()
+            )
             .frame(maxWidth: 330, alignment: .leading)
             Spacer(minLength: 0)
         }

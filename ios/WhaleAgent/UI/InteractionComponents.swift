@@ -51,11 +51,11 @@ struct AssistantActivityView: View {
             VStack(alignment: .leading, spacing: 9) {
                 HStack(spacing: 8) {
                     Circle()
-                        .fill(WhaleTheme.accent)
+                        .fill(WhaleIMessagePalette.outgoing)
                         .frame(width: 7, height: 7)
                     Text(model.isExecutingTool ? "正在执行" : "正在研究")
                         .whaleFont(size: 14, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.ink)
+                        .foregroundStyle(WhaleIMessagePalette.text)
                     Spacer(minLength: 0)
                     if model.canStopReply {
                         Menu {
@@ -70,7 +70,7 @@ struct AssistantActivityView: View {
                         } label: {
                             Label("处理中", systemImage: "ellipsis.circle")
                                 .whaleFont(size: 13, weight: .medium)
-                                .foregroundStyle(WhaleTheme.muted)
+                                .foregroundStyle(WhaleIMessagePalette.muted)
                                 .whaleTouchTarget()
                         }
                         .accessibilityLabel("停止或跳过当前步骤")
@@ -79,7 +79,7 @@ struct AssistantActivityView: View {
 
                 Text(model.activityDescription)
                     .whaleFont(size: 14)
-                    .foregroundStyle(WhaleTheme.muted)
+                    .foregroundStyle(WhaleIMessagePalette.muted)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -88,18 +88,11 @@ struct AssistantActivityView: View {
                     systemImage: "checklist.checked"
                 )
                 .whaleFont(size: 12, weight: .medium)
-                .foregroundStyle(WhaleTheme.muted.opacity(0.82))
+                .foregroundStyle(WhaleIMessagePalette.muted)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(
-                WhaleTheme.card,
-                in: RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
-                    .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
-            }
+            .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
             .accessibilityElement(children: .contain)
         }
     }
@@ -126,27 +119,23 @@ struct InteractionReceiptCard: View {
                     HStack(spacing: 7) {
                         Text("操作回执")
                             .whaleFont(size: 12, weight: .bold)
-                            .foregroundStyle(WhaleTheme.accent)
+                            .foregroundStyle(WhaleIMessagePalette.outgoing)
                         Text(receipt.createdAt.formatted(date: .omitted, time: .shortened))
                             .whaleFont(size: 12)
-                            .foregroundStyle(WhaleTheme.muted)
+                            .foregroundStyle(WhaleIMessagePalette.muted)
                     }
                     Text(receipt.title)
                         .whaleFont(size: 14, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.ink)
+                        .foregroundStyle(WhaleIMessagePalette.text)
                     Text(receipt.detail)
                         .whaleFont(size: 13)
-                        .foregroundStyle(WhaleTheme.muted)
+                        .foregroundStyle(WhaleIMessagePalette.muted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 0)
             }
             .padding(13)
-            .background(WhaleTheme.card.opacity(0.82), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
-            }
+            .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
             .accessibilityElement(children: .combine)
         }
     }
@@ -236,8 +225,8 @@ struct OperationPreviewCard<Actions: View>: View {
     private var tint: Color {
         switch preview.kind {
         case .delete: return WhaleTheme.danger
-        case .external: return WhaleTheme.warm
-        case .create, .update, .save: return WhaleTheme.accent
+        case .external: return WhaleIMessagePalette.outgoing
+        case .create, .update, .save: return WhaleIMessagePalette.outgoing
         }
     }
 
@@ -257,18 +246,18 @@ struct OperationPreviewCard<Actions: View>: View {
                             .foregroundStyle(tint)
                         Text("执行前预览")
                             .whaleFont(size: 11)
-                            .foregroundStyle(WhaleTheme.muted)
+                            .foregroundStyle(WhaleIMessagePalette.muted)
                     }
                     Text(preview.title)
                         .whaleFont(size: 18, weight: .bold, design: .rounded)
-                        .foregroundStyle(WhaleTheme.ink)
+                        .foregroundStyle(WhaleIMessagePalette.text)
                 }
                 Spacer(minLength: 0)
             }
 
             Text(preview.summary)
                 .whaleFont(size: 15, weight: .medium)
-                .foregroundStyle(WhaleTheme.ink)
+                .foregroundStyle(WhaleIMessagePalette.text)
                 .fixedSize(horizontal: false, vertical: true)
 
             if !preview.rows.isEmpty {
@@ -277,42 +266,38 @@ struct OperationPreviewCard<Actions: View>: View {
                         HStack(alignment: .top, spacing: 9) {
                             Image(systemName: row.icon)
                                 .whaleFont(size: 12, weight: .semibold)
-                                .foregroundStyle(WhaleTheme.muted)
+                                .foregroundStyle(WhaleIMessagePalette.muted)
                                 .frame(width: 18)
                             Text(row.label)
                                 .whaleFont(size: 12, weight: .medium)
-                                .foregroundStyle(WhaleTheme.muted)
+                                .foregroundStyle(WhaleIMessagePalette.muted)
                                 .frame(width: 42, alignment: .leading)
                             Text(row.value)
                                 .whaleFont(size: 13, weight: .semibold)
-                                .foregroundStyle(WhaleTheme.ink)
+                                .foregroundStyle(WhaleIMessagePalette.text)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         .padding(.vertical, 8)
                         if row.id != preview.rows.last?.id {
-                            Divider().overlay(WhaleTheme.line.opacity(0.55))
+                            Divider().overlay(WhaleIMessagePalette.line)
                         }
                     }
                 }
                 .padding(.horizontal, 11)
-                .background(WhaleTheme.soft.opacity(0.52), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(WhaleIMessagePalette.field, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
 
             Label(preview.note, systemImage: "checkmark.shield")
                 .whaleFont(size: 12)
-                .foregroundStyle(WhaleTheme.muted)
+                .foregroundStyle(WhaleIMessagePalette.muted)
                 .fixedSize(horizontal: false, vertical: true)
 
             actions
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(tint.opacity(0.20), lineWidth: 0.8)
-        }
+        .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("operation-preview")
     }

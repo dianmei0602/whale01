@@ -361,6 +361,7 @@ struct MessageRow: View {
     let message: ChatMessage
     var isSpeaking: Bool = false
     var isHighlighted: Bool = false
+    var isLastInGroup: Bool = true
     var onToggleSpeech: () -> Void = {}
     var onCreateTodo: ((String) -> Void)? = nil
     @State private var analysisExpanded = false
@@ -389,51 +390,26 @@ struct MessageRow: View {
                         .padding(.vertical, 10)
                         .background(
                             WhaleIMessagePalette.outgoing,
-                            in: WhaleIMessagePalette.outgoingShape()
+                            in: WhaleIMessagePalette.outgoingShape(isLast: isLastInGroup)
                         )
                 }
             } else if message.role == .assistant {
-                HStack(alignment: .bottom, spacing: 7) {
-                    WhaleMarkView(size: 27)
-                    VStack(alignment: .leading, spacing: 6) {
-                        byline
+                HStack {
+                    VStack(alignment: .leading, spacing: 5) {
                         assistantBody
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(
-                                WhaleIMessagePalette.incoming,
-                                in: WhaleIMessagePalette.incomingShape()
-                            )
-                        HStack(alignment: .bottom, spacing: 10) {
-                            if let detail = message.detail, !detail.isEmpty {
-                                Text(detail)
-                                    .whaleFont(size: 12)
-                                    .foregroundStyle(WhaleIMessagePalette.muted)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            } else {
-                                Spacer(minLength: 0)
-                            }
-                            Button {
-                                UIPasteboard.general.string = message.text
-                            } label: {
-                                Image(systemName: "doc.on.doc")
-                                    .whaleFont(size: 14, weight: .medium)
-                                    .foregroundStyle(WhaleIMessagePalette.muted)
-                                    .frame(width: 36, height: 36)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("复制这条回复")
-
-                            Button(action: onToggleSpeech) {
-                                Image(systemName: isSpeaking ? "stop.fill" : "speaker.wave.2")
-                                    .whaleFont(size: 14, weight: .medium)
-                                    .foregroundStyle(isSpeaking ? WhaleIMessagePalette.outgoing : WhaleIMessagePalette.muted)
-                                    .frame(width: 36, height: 36)
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复")
+                        if let detail = message.detail, !detail.isEmpty {
+                            Text(detail)
+                                .whaleFont(size: 12)
+                                .foregroundStyle(WhaleIMessagePalette.muted)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(
+                        WhaleIMessagePalette.incoming,
+                        in: WhaleIMessagePalette.incomingShape(isLast: isLastInGroup)
+                    )
                     .frame(maxWidth: 330, alignment: .leading)
                     Spacer(minLength: 0)
                 }
@@ -441,6 +417,9 @@ struct MessageRow: View {
             } else {
                 if message.tool == "get_weather", let weather = message.weather, !weather.isEmpty {
                     WeatherResultCard(days: weather)
+                        .padding(10)
+                        .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
+                        .frame(maxWidth: 334, alignment: .leading)
                 } else if message.places.isEmpty {
                     if let links = message.links, !links.isEmpty {
                         ToolLinkCard(
@@ -449,6 +428,9 @@ struct MessageRow: View {
                             links: links,
                             tool: message.tool
                         )
+                        .padding(10)
+                        .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
+                        .frame(maxWidth: 334, alignment: .leading)
                     } else {
                         VStack(alignment: .leading, spacing: 6) {
                             Label(message.text, systemImage: message.executionStatus == "success" ? "checkmark.circle" : message.executionStatus == nil ? "iphone" : "exclamationmark.circle")
@@ -481,10 +463,17 @@ struct MessageRow: View {
                                     Text(detail).font(.body).foregroundStyle(WhaleIMessagePalette.text).textSelection(.enabled)
                                 }
                             }
-                        }.frame(maxWidth: .infinity, alignment: .leading).whaleCard(padding: 14)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
+                        .frame(maxWidth: 334, alignment: .leading)
                     }
                 } else {
                     PlaceMapCard(places: message.places, statusText: message.detail ?? message.text)
+                        .padding(10)
+                        .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
+                        .frame(maxWidth: 334, alignment: .leading)
                 }
             }
         }
@@ -540,7 +529,7 @@ struct MessageRow: View {
                     ScrollView(.vertical) {
                         Text(renderedMarkdown(message.text))
                             .whaleFont(size: 17)
-                            .lineSpacing(4)
+                            .lineSpacing(2)
                             .foregroundStyle(WhaleIMessagePalette.text)
                             .fixedSize(horizontal: false, vertical: true)
                             .textSelection(.enabled)
@@ -553,7 +542,7 @@ struct MessageRow: View {
                 } else {
                     Text(renderedMarkdown(message.text))
                         .whaleFont(size: 17)
-                        .lineSpacing(4)
+                        .lineSpacing(2)
                         .foregroundStyle(WhaleIMessagePalette.text)
                         .textSelection(.enabled)
                         .lineLimit(5)
@@ -563,13 +552,10 @@ struct MessageRow: View {
         } else {
             Text(renderedMarkdown(message.text))
                 .whaleFont(size: 17)
-                .lineSpacing(4)
+                .lineSpacing(2)
                 .foregroundStyle(WhaleIMessagePalette.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
-                .onLongPressGesture(minimumDuration: 0.65) {
-                    onToggleSpeech()
-                }
                 .accessibilityAction(named: isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复") {
                     onToggleSpeech()
                 }
@@ -602,19 +588,6 @@ struct MessageRow: View {
         let explicitAnalysis = tool.map { Self.analysisTools.contains($0) } ?? false
         let lineCount = trimmed.split(separator: "\n", omittingEmptySubsequences: false).count
         return explicitAnalysis || trimmed.count > 520 || lineCount > 8
-    }
-
-    private var byline: some View {
-        HStack(spacing: 7) {
-            Text("鲸鱼")
-                .whaleFont(size: 13, weight: .semibold)
-                .foregroundStyle(WhaleIMessagePalette.muted)
-            if let tool = message.tool, !tool.isEmpty {
-                Text("· \(ToolPresentation.title(tool))")
-                    .whaleFont(size: 13)
-                    .foregroundStyle(WhaleIMessagePalette.muted.opacity(0.7))
-            }
-        }
     }
 
     private func renderedMarkdown(_ text: String) -> AttributedString {
@@ -962,10 +935,10 @@ struct PendingActionCard: View {
             Button(action: onReview) {
                 Label("查看并确认", systemImage: "checkmark.shield")
                     .whaleFont(size: 14, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.onAccent)
+                    .foregroundStyle(WhaleIMessagePalette.outgoingText)
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 42)
-                    .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                    .background(WhaleIMessagePalette.outgoing, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
             }
             .buttonStyle(.plain)
             .disabled(isBusy)

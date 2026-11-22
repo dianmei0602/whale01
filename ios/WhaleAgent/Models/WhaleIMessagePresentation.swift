@@ -124,3 +124,23 @@ enum WhaleIMessageStarterBuilder {
         return formatter
     }()
 }
+
+enum WhaleIMessageLayout {
+    static func isSameGroup(previous: ChatMessage?, current: ChatMessage) -> Bool {
+        guard let previous else { return false }
+        return previous.role == current.role
+            && Calendar.current.isDate(previous.createdAt, inSameDayAs: current.createdAt)
+            && current.createdAt.timeIntervalSince(previous.createdAt) < 120
+    }
+
+    static func verticalSpacing(previous: ChatMessage?, current: ChatMessage) -> CGFloat {
+        guard let previous else { return 2 }
+        if !Calendar.current.isDate(previous.createdAt, inSameDayAs: current.createdAt) {
+            return 18
+        }
+        if isSameGroup(previous: previous, current: current) {
+            return 3
+        }
+        return 10
+    }
+}

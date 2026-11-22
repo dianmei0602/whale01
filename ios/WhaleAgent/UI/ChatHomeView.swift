@@ -24,17 +24,6 @@ struct ConversationTabView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            if !showingStarter, let context = model.workingContext {
-                WorkingContextBar(
-                    context: context,
-                    onOpen: {
-                        enterConversation()
-                        _ = model.focusWorkingContextMessage()
-                    },
-                    onDismiss: model.clearWorkingContext
-                )
-            }
-
             ZStack {
                 if showingStarter {
                     WhaleIMessageHomeView(
@@ -105,41 +94,61 @@ struct ConversationTabView: View {
     }
 
     private var header: some View {
-        HStack(spacing: 9) {
-            if !showingStarter {
-                Button(action: goToStarter) { Image(systemName: "chevron.left").whaleTouchTarget() }
-                    .buttonStyle(.plain).accessibilityLabel("返回助手首页")
+        ZStack {
+            HStack {
+                Group {
+                    if !showingStarter {
+                        Button(action: goToStarter) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 19, weight: .semibold))
+                                .whaleTouchTarget()
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("返回助手首页")
+                    } else {
+                        Color.clear.frame(width: 44, height: 44)
+                    }
+                }
+                Spacer()
+                Menu {
+                    Button("鲸鱼工作台", systemImage: "square.stack.3d.up", action: onOpenWorkspace)
+                    Button("新对话", systemImage: "square.and.pencil") { model.newConversation(); goToStarter() }
+                        .disabled(model.isBusy || !model.pending.isEmpty)
+                    Button("执行记录", systemImage: "clock.arrow.circlepath", action: onOpenRecords)
+                    Divider()
+                    Button("设置", systemImage: "gearshape", action: onOpenSettings)
+                } label: {
+                    Image(systemName: "ellipsis.circle.fill")
+                        .font(.system(size: 21, weight: .medium))
+                        .whaleTouchTarget()
+                }
+                .accessibilityLabel("更多操作")
+                .accessibilityIdentifier("assistant-settings")
             }
-            WhaleMarkView(size: 33)
-            VStack(alignment: .leading, spacing: 1) {
-                Text("鲸鱼")
-                    .whaleFont(size: 16, weight: .semibold)
-                    .foregroundStyle(WhaleIMessagePalette.text)
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(statusColor)
-                        .frame(width: 6, height: 6)
-                    Text(statusText)
-                        .whaleFont(size: 11)
-                        .foregroundStyle(WhaleIMessagePalette.muted)
-                        .lineLimit(1)
+
+            HStack(spacing: 8) {
+                WhaleMarkView(size: 30)
+                VStack(spacing: 1) {
+                    Text("鲸鱼")
+                        .whaleFont(size: 16, weight: .semibold)
+                        .foregroundStyle(WhaleIMessagePalette.text)
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(statusColor)
+                            .frame(width: 6, height: 6)
+                        Text(statusText)
+                            .whaleFont(size: 10)
+                            .foregroundStyle(WhaleIMessagePalette.muted)
+                            .lineLimit(1)
+                    }
                 }
             }
-            Spacer()
-            Menu {
-                Button("鲸鱼工作台", systemImage: "square.stack.3d.up", action: onOpenWorkspace)
-                Button("新对话", systemImage: "square.and.pencil") { model.newConversation(); goToStarter() }
-                    .disabled(model.isBusy || !model.pending.isEmpty)
-                Button("执行记录", systemImage: "clock.arrow.circlepath", action: onOpenRecords)
-            } label: { Image(systemName: "ellipsis").whaleTouchTarget() }
-            .accessibilityLabel("对话与记录")
-            Button(action: onOpenSettings) { Image(systemName: "gearshape").whaleTouchTarget() }
-                .accessibilityLabel("设置")
-                .accessibilityIdentifier("assistant-settings")
+            .frame(maxWidth: 260)
+            .allowsHitTesting(false)
         }
         .foregroundStyle(WhaleIMessagePalette.outgoing)
         .padding(.horizontal, 15)
-        .padding(.vertical, 7)
+        .frame(minHeight: 50)
         .background(WhaleIMessagePalette.header)
         .overlay(alignment: .bottom) {
             Rectangle()
