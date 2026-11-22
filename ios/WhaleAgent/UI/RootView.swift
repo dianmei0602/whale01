@@ -7,6 +7,7 @@ struct RootView: View {
     @StateObject private var model = AppModel()
     @StateObject private var appearanceStore = WhaleAppearanceStore()
     @StateObject private var keyboard = KeyboardObserver()
+    @StateObject private var todoStore = TodoTimelineStore()
     @StateObject private var navigation = RootNavigationModel(
         selectedTab: NavigationHabits.restoredTab(
             UserDefaults.standard.string(forKey: "whale.root.tab")
@@ -22,6 +23,7 @@ struct RootView: View {
 
     var body: some View {
         pager
+        .environmentObject(todoStore)
         .id(appearanceStore.palette.rawValue)
         .background(WhaleTheme.background.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
