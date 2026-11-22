@@ -12,11 +12,15 @@ struct ConversationTabView: View {
     let onOpenTodo: () -> Void
     let onOpenDiscover: (DiscoverChannel) -> Void
     let onOpenWorkspace: () -> Void
+    @State private var chatDraft = ""
+    @StateObject private var voice = VoiceInputController()
+    @State private var showsVoice = false
 
     var body: some View {
         VStack(spacing: 0) {
             header
             WhaleAgentChatSurface(
+                inputText: $chatDraft,
                 model: model,
                 bottomInset: bottomInset,
                 onOpenRecords: onOpenRecords,
@@ -26,6 +30,14 @@ struct ConversationTabView: View {
         }
         .background(WhaleIMessagePalette.canvas)
         .tint(WhaleIMessagePalette.outgoing)
+        .fullScreenCover(isPresented: $showsVoice) {
+            VoiceView(
+                voice: voice,
+                onInsert: insertVoiceDraft,
+                onCancel: { showsVoice = false }
+            )
+            .presentationBackground(.clear)
+        }
     }
 
     private var header: some View {
@@ -33,6 +45,22 @@ struct ConversationTabView: View {
             HStack {
                 Color.clear.frame(width: 44, height: 44)
                 Spacer()
+                Button {
+                    showsVoice = true
+                } label: {
+                    Image(systemName: "mic.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(WhaleIMessagePalette.outgoing)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(model.isBusy || model.isExtractingDocument)
+                .opacity(model.isBusy || model.isExtractingDocument ? 0.45 : 1)
+                .accessibilityLabel("语音输入")
+                .accessibilityHint("打开鲸鱼语音听写，识别后填入草稿")
+                .accessibilityIdentifier("whale-chat-voice")
+
                 Menu {
                     Button("鲸鱼工作台", systemImage: "square.stack.3d.up", action: onOpenWorkspace)
                     Button("新对话", systemImage: "square.and.pencil") { model.newConversation() }
@@ -91,6 +119,15 @@ struct ConversationTabView: View {
         if model.isBusy || model.isExecutingTool { return WhaleIMessagePalette.outgoing }
         if !model.backendOnline { return .orange }
         return .green
+    }
+
+    private func insertVoiceDraft(_ transcript: String) {
+        chatDraft = WhaleAgentDraftPlan.mergingVoice(
+            transcript: transcript,
+            currentDraft: chatDraft
+        )
+        voice.reset()
+        showsVoice = false
     }
 }
 

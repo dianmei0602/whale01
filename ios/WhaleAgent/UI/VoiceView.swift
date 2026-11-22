@@ -1,264 +1,234 @@
 import SwiftUI
+import UIKit
 
+/// Compact listening surface. The underlying conversation remains visible
+/// through a material blur while recognition starts automatically.
 struct VoiceView: View {
     @ObservedObject var voice: VoiceInputController
     let onInsert: (String) -> Void
-    let onClose: (String) -> Void
     let onCancel: () -> Void
 
-    @State private var pulse = false
-    @State private var localHint: String?
+    @State private var localError: String?
     @State private var isFinishing = false
+    @State private var hasAutoStarted = false
+
+    private let voiceBlue = Color(
+        red: 31 / 255,
+        green: 105 / 255,
+        blue: 132 / 255
+    )
+    private let stopRed = Color(
+        red: 184 / 255,
+        green: 77 / 255,
+        blue: 88 / 255
+    )
+
+    private var content: WhaleVoiceOverlayContent {
+        WhaleVoiceOverlayPresenter.content(
+            isRecording: voice.isRecording,
+            isFinalizing: voice.isFinalizing || isFinishing,
+            transcript: voice.transcript,
+            errorText: localError ?? voice.errorText
+        )
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            Spacer(minLength: 4)
-            mascot
-
-            Text(stateTitle)
-                .whaleFont(size: 23, weight: .bold, design: .rounded)
-                .foregroundStyle(WhaleTheme.ink)
-                .padding(.top, 2)
-
-            Text(stateCaption)
-                .whaleFont(size: 14)
-                .foregroundStyle(WhaleTheme.muted)
-                .multilineTextAlignment(.center)
-                .lineSpacing(3)
-                .lineLimit(2)
-                .padding(.horizontal, 30)
-                .padding(.top, 6)
-                .frame(minHeight: 42, alignment: .top)
-
-            waveBars
-                .padding(.top, 6)
-
-            Spacer(minLength: 6)
-            controls
-            Text("识别结果只填入输入框，确认后再由你发送。")
-                .whaleFont(size: 13)
-                .foregroundStyle(WhaleTheme.muted)
-                .padding(.top, 10)
+        ZStack {
+            backdrop
+            listeningCard
+                .transition(.scale(scale: 0.94).combined(with: .opacity))
         }
-        .padding(.bottom, 12)
+        .ignoresSafeArea()
+        .accessibilityIdentifier("voice-input-overlay")
         .task {
-            startPulse()
+            await startIfNeeded()
         }
         .onDisappear {
             voice.cancel()
         }
     }
 
-    private var header: some View {
-        HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("语音输入")
-                    .whaleFont(size: 17, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.ink)
-                Text(voice.isRecording ? "正在听你说话" : "轻点麦克风开始")
-                    .whaleFont(size: 13)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-
-            Spacer()
-
-            Button {
-                finishToText()
-            } label: {
-                Text("转文字")
-                    .whaleFont(size: 14, weight: .medium)
-                    .foregroundStyle(WhaleTheme.accent)
-                    .frame(minWidth: 54, minHeight: 40)
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                cancel()
-            } label: {
-                Image(systemName: "xmark")
-                    .whaleFont(size: 14, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.muted)
-                    .frame(width: 36, height: 36)
-                    .background(WhaleTheme.card, in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("取消语音输入")
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 8)
-    }
-
-    private var mascot: some View {
+    private var backdrop: some View {
         ZStack {
-            Circle()
-                .stroke(WhaleTheme.accent.opacity(0.14), lineWidth: 1)
-                .frame(width: 150, height: 150)
-                .scaleEffect(pulse ? 1.04 : 0.95)
-                .opacity(pulse ? 0.55 : 1)
-            Circle()
-                .fill(WhaleTheme.accent.opacity(0.07))
-                .frame(width: 124, height: 124)
-                .scaleEffect(pulse ? 0.97 : 1.03)
-            WhaleCompanionView(listening: voice.isRecording || voice.isFinalizing)
-                .frame(width: 138, height: 104)
+            Rectangle()
+                .fill(.ultraThinMaterial)
+            Color.black.opacity(0.10)
         }
-        .frame(height: 142)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            cancel()
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("关闭语音输入")
+        .accessibilityIdentifier("voice-input-backdrop")
     }
 
-    private var waveBars: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: !voice.isRecording)) { context in
+    private var listeningCard: some View {
+        VStack(spacing: 0) {
+            Text(content.title)
+                .whaleFont(size: 17, weight: .semibold)
+                .foregroundStyle(.primary)
+
+            Text(content.message)
+                .whaleFont(size: 13)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(2)
+                .lineLimit(3)
+                .padding(.top, 6)
+                .padding(.horizontal, 18)
+                .frame(minHeight: 38, alignment: .top)
+
+            waveform
+                .padding(.top, 12)
+                .padding(.bottom, 14)
+
+            actionButton
+        }
+        .padding(.horizontal, 22)
+        .padding(.top, 26)
+        .padding(.bottom, 22)
+        .frame(maxWidth: 316)
+        .background(cardColor, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .overlay(alignment: .topTrailing) {
+            Button(action: cancel) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .background(Color.secondary.opacity(0.12), in: Circle())
+            }
+            .buttonStyle(.plain)
+            .padding(10)
+            .accessibilityLabel("取消语音输入")
+            .accessibilityIdentifier("voice-input-cancel")
+        }
+        .shadow(color: .black.opacity(0.16), radius: 28, y: 14)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("voice-input-card")
+    }
+
+    private var waveform: some View {
+        TimelineView(
+            .animation(minimumInterval: 1.0 / 24.0, paused: !content.showsWaveform)
+        ) { context in
             let time = context.date.timeIntervalSinceReferenceDate
-            HStack(spacing: 4) {
-                ForEach(0..<15, id: \.self) { index in
-                    let swing = voice.isRecording
-                        ? 0.4 + 0.6 * abs(sin(time * 3.1 + Double(index) * 0.55))
-                        : 0.32
+            HStack(spacing: 3) {
+                ForEach(0..<18, id: \.self) { index in
                     Capsule()
-                        .fill(WhaleTheme.accent.opacity(voice.isRecording ? 0.9 : 0.35))
-                        .frame(width: 3, height: barHeight(index) * CGFloat(swing))
+                        .fill(voiceBlue)
+                        .frame(width: 3, height: waveformHeight(index, time: time))
                 }
             }
-            .frame(height: 30)
+            .frame(height: 34)
         }
+        .opacity(content.showsWaveform ? 1 : 0.28)
         .accessibilityHidden(true)
     }
 
-    private var controls: some View {
-        HStack(spacing: 38) {
-            Button {
-                restart()
-            } label: {
-                Image(systemName: "arrow.counterclockwise")
-                    .whaleFont(size: 17, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.muted)
-                    .frame(width: 46, height: 46)
-                    .background(WhaleTheme.card, in: Circle())
-                    .overlay(Circle().strokeBorder(WhaleTheme.line, lineWidth: 1))
+    private var actionButton: some View {
+        Button(action: performPrimaryAction) {
+            HStack(spacing: 6) {
+                Image(systemName: actionIcon)
+                    .font(.system(size: 12, weight: .bold))
+                Text(content.actionTitle)
+                    .whaleFont(size: 14, weight: .semibold)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("重新开始")
+            .foregroundStyle(.white)
+            .padding(.horizontal, 22)
+            .frame(minHeight: 42)
+            .background(actionColor, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .disabled(!content.actionEnabled)
+        .opacity(content.actionEnabled ? 1 : 0.60)
+        .accessibilityIdentifier("voice-input-action")
+    }
 
-            Button {
-                primaryAction()
-            } label: {
-                Image(systemName: primaryIcon)
-                    .whaleFont(size: 24, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.buttonInk)
-                    .frame(width: 68, height: 68)
-                    .background(voice.isRecording ? WhaleTheme.accent : WhaleTheme.accentDeep, in: Circle())
-                    .shadow(color: WhaleTheme.accent.opacity(0.25), radius: 14, y: 7)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(primaryLabel)
-
-            Button {
-                finishToText()
-            } label: {
-                Image(systemName: "keyboard")
-                    .whaleFont(size: 18, weight: .medium)
-                    .foregroundStyle(WhaleTheme.muted)
-                    .frame(width: 46, height: 46)
-                    .background(WhaleTheme.card, in: Circle())
-                    .overlay(Circle().strokeBorder(WhaleTheme.line, lineWidth: 1))
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("转成文字")
+    private var actionIcon: String {
+        switch content.actionTitle {
+        case "停止": return "stop.fill"
+        case "再试一次": return "arrow.clockwise"
+        case "填入输入框": return "arrow.down.to.line"
+        case "开始说话": return "mic.fill"
+        default: return "waveform"
         }
     }
 
-    private var stateTitle: String {
-        if localHint != nil { return "还没听清" }
-        if voice.errorText != nil { return "需要用文字" }
-        if voice.isRecording { return "我在听" }
-        if !voice.transcript.isEmpty { return "听清了" }
-        return "准备好了"
-    }
-
-    private var stateCaption: String {
-        if let localHint { return localHint }
-        if let error = voice.errorText { return error }
-        if voice.isRecording {
-            return voice.transcript.isEmpty ? "说说你想做什么。" : voice.transcript
+    private var actionColor: Color {
+        switch content.actionTitle {
+        case "停止", "再试一次":
+            return stopRed
+        case "请稍候":
+            return Color.gray
+        default:
+            return voiceBlue
         }
-        if !voice.transcript.isEmpty { return voice.transcript }
-        return "点一下麦克风开始说话。"
     }
 
-    private var primaryIcon: String {
-        if voice.isRecording { return "stop.fill" }
-        if canSend { return "checkmark" }
-        return "mic.fill"
+    private var cardColor: Color {
+        Color(uiColor: UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.118, green: 0.129, blue: 0.141, alpha: 1)
+                : .white
+        })
     }
 
-    private var primaryLabel: String {
-        if voice.isRecording { return "完成语音输入" }
-        if canSend { return "填入输入框" }
-        return "开始说话"
+    private func waveformHeight(_ index: Int, time: TimeInterval) -> CGFloat {
+        let base: [CGFloat] = [10, 16, 23, 12, 28, 20, 32, 17, 25, 13, 29, 21, 34, 19, 26, 14, 22, 11]
+        guard content.showsWaveform else { return base[index % base.count] * 0.58 }
+        let swing = 0.46 + 0.54 * abs(sin(time * 6.4 + Double(index) * 0.62))
+        return base[index % base.count] * CGFloat(swing)
     }
 
-    private var canSend: Bool {
-        !voice.isRecording && !voice.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    private func startIfNeeded() async {
+        guard !hasAutoStarted else { return }
+        hasAutoStarted = true
+        localError = nil
+        guard !voice.isRecording, !voice.isFinalizing else { return }
+        await voice.start()
     }
 
-    private func primaryAction() {
-        if voice.isRecording || canSend {
+    private func performPrimaryAction() {
+        guard content.actionEnabled else { return }
+
+        if voice.errorText != nil || localError != nil {
+            localError = nil
+            isFinishing = false
+            voice.reset()
+            Task { await voice.start() }
+        } else if voice.isRecording || voice.isFinalizing || isFinishing {
             finishAndInsert()
         } else {
-            startRecording()
+            let transcript = voice.transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+            if transcript.isEmpty {
+                Task { await voice.start() }
+            } else {
+                onInsert(transcript)
+            }
         }
-    }
-
-    private func startRecording() {
-        localHint = nil
-        isFinishing = false
-        Task { await voice.start() }
-    }
-
-    private func restart() {
-        localHint = nil
-        isFinishing = false
-        voice.reset()
-        Task { await voice.start() }
     }
 
     private func finishAndInsert() {
         guard !isFinishing else { return }
         isFinishing = true
         Task {
-            guard let final = await voice.finishRecognition(), !final.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                localHint = voice.errorText ?? "还没收到完整内容，请检查草稿后再试。"
+            let final = await voice.finishRecognition()
+            let text = (final ?? voice.transcript)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else {
+                localError = voice.errorText ?? "没有收到最终识别结果，请再试一次。"
                 isFinishing = false
                 return
             }
-            onInsert(final)
-        }
-    }
-
-    private func finishToText() {
-        guard !isFinishing else { return }
-        isFinishing = true
-        Task {
-            _ = await voice.finishRecognition()
-            onClose(voice.transcript.trimmingCharacters(in: .whitespacesAndNewlines))
+            isFinishing = false
+            onInsert(text)
         }
     }
 
     private func cancel() {
         guard !isFinishing else { return }
-        isFinishing = true
         voice.cancel()
         onCancel()
-    }
-
-    private func barHeight(_ index: Int) -> CGFloat {
-        let pattern: [CGFloat] = [10, 17, 25, 31, 23, 15, 22, 29, 34, 26, 18, 24, 32, 24, 17]
-        return pattern[index % pattern.count]
-    }
-
-    private func startPulse() {
-        withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
-            pulse = true
-        }
     }
 }

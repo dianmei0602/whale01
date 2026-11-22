@@ -5,13 +5,13 @@ import UIKit
 /// The selected "Life Agent" conversation. ExyteChat owns bubble grouping,
 /// pagination, long-message menus and the media/document input workflow.
 struct WhaleAgentChatSurface: View {
+    @Binding var inputText: String
     @ObservedObject var model: AppModel
     let bottomInset: CGFloat
     let onOpenRecords: () -> Void
     let onOpenMusic: () -> Void
     let onOpenWorkspace: () -> Void
 
-    @State private var inputText = ""
     @State private var draftError: String?
     @State private var draftContext: String?
     private let drafts = ComposerDraftStore()
@@ -208,10 +208,10 @@ struct WhaleAgentChatSurface: View {
                 mainTint: WhaleIMessagePalette.outgoing,
                 mainText: WhaleIMessagePalette.text,
                 mainCaptionText: WhaleIMessagePalette.muted,
-                messageMyBG: WhaleIMessagePalette.outgoing,
-                messageMyText: .white,
-                messageMyTimeText: .white.opacity(0.62),
-                messageFriendBG: WhaleIMessagePalette.incoming,
+                messageMyBG: WhaleIMessagePalette.chatOutgoingBubble,
+                messageMyText: WhaleIMessagePalette.outgoingText,
+                messageMyTimeText: WhaleIMessagePalette.outgoingText.opacity(0.72),
+                messageFriendBG: WhaleIMessagePalette.chatIncomingBubble,
                 messageFriendText: WhaleIMessagePalette.text,
                 messageFriendTimeText: WhaleIMessagePalette.muted,
                 messageSystemBG: WhaleIMessagePalette.incoming,
@@ -298,7 +298,14 @@ struct WhaleAgentChatSurface: View {
             } else if let imageURL = plan.imageURL {
                 await model.ingestDocument(url: imageURL, label: "照片")
             } else if !plan.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                await model.send(text: plan.text)
+                let text = plan.text
+                await model.send(text: text, onAccepted: {
+                    guard inputText == text else { return }
+                    inputText = ""
+                    if let draftContext {
+                        drafts.save("", context: draftContext)
+                    }
+                })
             } else if plan.unsupportedVideoCount > 0 {
                 draftError = "当前只能识别图片和 PDF，视频内容还没有接入。"
             }
@@ -376,56 +383,67 @@ private struct WhaleAgentMessageContent: View {
         switch kind {
         case "tool":
             if let message = originalMessage {
-                MessageRow(
-                    message: message,
-                    isSpeaking: model.isSpeakingReply && model.speakingMessageId == message.id.uuidString,
-                    isHighlighted: model.highlightedMessageId == message.id.uuidString,
-                    onToggleSpeech: { model.toggleSpeech(for: message) }
-                )
+                WhaleAgentWeChatCardRow(layout: .resolve(isCurrentUser: false)) {
+                    MessageRow(
+                        message: message,
+                        isSpeaking: model.isSpeakingReply && model.speakingMessageId == message.id.uuidString,
+                        isHighlighted: model.highlightedMessageId == message.id.uuidString,
+                        onToggleSpeech: { model.toggleSpeech(for: message) }
+                    )
+                }
             } else {
-                params.defaultMessageView()
+                defaultContent(layout: .resolve(isCurrentUser: false))
             }
         case "pending":
             if let pendingID = params.message.customData["pendingID"] as? String,
                let item = model.pending.first(where: { $0.toolCallId == pendingID }) {
-                HStack {
+                WhaleAgentWeChatCardRow(layout: .resolve(isCurrentUser: false)) {
                     PendingActionCard(item: item, isBusy: model.isBusy) {
                         model.presentedConfirmation = item
                     }
-                    .frame(maxWidth: 334, alignment: .leading)
-                    Spacer(minLength: 0)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } else {
-                params.defaultMessageView()
+                defaultContent(layout: .resolve(isCurrentUser: false))
             }
         case "streaming":
-            HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(params.message.text)
-                        .whaleFont(size: 16)
-                        .foregroundStyle(WhaleIMessagePalette.text)
-                    ProgressView().controlSize(.mini)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .background(WhaleIMessagePalette.incoming, in: WhaleIMessagePalette.incomingShape())
-                .frame(maxWidth: 334, alignment: .leading)
-                Spacer(minLength: 0)
-            }
+            WhaleAgentWeChatTextRow(
+                text: params.message.text,
+                layout: .resolve(isCurrentUser: false),
+                isStreaming: true
+            )
         case "activity":
-            HStack {
+            WhaleAgentWeChatCardRow(layout: .resolve(isCurrentUser: false)) {
                 AssistantActivityView(model: model)
-                    .frame(maxWidth: 334, alignment: .leading)
-                Spacer(minLength: 0)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         case "receipt":
-            HStack {
+            WhaleAgentWeChatCardRow(layout: .resolve(isCurrentUser: false)) {
                 InteractionReceiptCard(model: model)
-                    .frame(maxWidth: 334, alignment: .leading)
-                Spacer(minLength: 0)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
         default:
+            let layout = WhaleChatMessageLayout.resolve(
+                isCurrentUser: params.message.user.isCurrentUser
+            )
+            if params.message.attachments.isEmpty {
+                WhaleAgentWeChatTextRow(
+                    text: params.message.text,
+                    layout: layout
+                )
+            } else {
+                defaultContent(layout: layout)
+            }
+        }
+    }
+
+    private func defaultContent(layout: WhaleChatMessageLayout) -> some View {
+        WhaleAgentWeChatMessageFrame(layout: layout) {
             params.defaultMessageView()
+                .frame(
+                    maxWidth: 292,
+                    alignment: layout.bubblePointsRight ? .trailing : .leading
+                )
         }
     }
 

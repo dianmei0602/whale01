@@ -2,9 +2,11 @@
 import argparse, io, json, os, re, subprocess, urllib.request, urllib.error, zipfile, time
 parser = argparse.ArgumentParser()
 parser.add_argument('--branch', default='codex/whale-reliability')
+parser.add_argument('--repo', default='dianmei0602/whale01')
 parser.add_argument('--run', type=int)
 parser.add_argument('--dispatch')
 parser.add_argument('--scope')
+parser.add_argument('--input', action='append', default=[])
 parser.add_argument('--log-pattern')
 parser.add_argument('--logs', action='store_true')
 parser.add_argument('--download-artifact', type=int)
@@ -19,7 +21,7 @@ credential = subprocess.run(['git', 'credential', 'fill'], input='protocol=https
 fields = dict(line.split('=', 1) for line in credential.stdout.splitlines() if '=' in line)
 token = fields.get('password', '')
 if not token: raise SystemExit('GitHub credential helper did not provide an existing credential')
-base = 'https://api.github.com/repos/wxguo56/whale01'
+base = 'https://api.github.com/repos/' + args.repo
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl): return None
 def download(path):
@@ -59,8 +61,19 @@ elif args.download_artifact:
     Path(args.out).write_bytes(download('/actions/artifacts/' + str(args.download_artifact) + '/zip'))
     print('Downloaded artifact to ' + args.out)
 elif args.dispatch:
-    request('/actions/workflows/' + args.dispatch + '/dispatches', 'POST', {'ref': args.branch, **({'inputs': {'scope': args.scope}} if args.scope else {})})
-    print('Dispatched ' + args.dispatch + ' for ' + args.branch)
+    inputs = {}
+    if args.scope:
+        inputs['scope'] = args.scope
+    for item in args.input:
+        if '=' not in item:
+            raise SystemExit('--input must be key=value')
+        key, value = item.split('=', 1)
+        inputs[key] = value
+    request('/actions/workflows/' + args.dispatch + '/dispatches', 'POST', {
+        'ref': args.branch,
+        **({'inputs': inputs} if inputs else {})
+    })
+    print('Dispatched ' + args.dispatch + ' for ' + args.repo + '@' + args.branch)
 elif args.run:
     run = request('/actions/runs/' + str(args.run))
     if args.artifacts:

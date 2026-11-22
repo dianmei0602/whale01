@@ -5,6 +5,11 @@ enum WhaleIMessagePalette {
     static let outgoing = Color(red: 45 / 255, green: 127 / 255, blue: 132 / 255)
     static let outgoingPressed = Color(red: 37 / 255, green: 105 / 255, blue: 109 / 255)
     static let outgoingText = Color.white
+    static let chatOutgoingBubble = Color(
+        red: 52 / 255,
+        green: 116 / 255,
+        blue: 211 / 255
+    )
 
     static let canvas = adaptive(
         light: UIColor(red: 0.953, green: 0.969, blue: 0.961, alpha: 1),
@@ -33,6 +38,18 @@ enum WhaleIMessagePalette {
     static let text = adaptive(
         light: UIColor(red: 0.090, green: 0.196, blue: 0.220, alpha: 1),
         dark: UIColor(red: 0.929, green: 0.976, blue: 0.984, alpha: 1)
+    )
+    static let chatIncomingBubble = adaptive(
+        light: UIColor.white,
+        dark: UIColor(red: 0.115, green: 0.151, blue: 0.171, alpha: 1)
+    )
+    static let userAvatarBackground = adaptive(
+        light: UIColor(red: 0.835, green: 0.859, blue: 0.871, alpha: 1),
+        dark: UIColor(red: 0.255, green: 0.294, blue: 0.318, alpha: 1)
+    )
+    static let userAvatarInk = adaptive(
+        light: UIColor(red: 0.365, green: 0.416, blue: 0.443, alpha: 1),
+        dark: UIColor(red: 0.875, green: 0.902, blue: 0.914, alpha: 1)
     )
 
     static func incomingShape(isLast: Bool = true) -> UnevenRoundedRectangle {

@@ -4,17 +4,18 @@
 
 ## 当前阶段
 
-- 最新版本：`2.0.4 (204.1)`，2.0 系列封版
-- 构建源码：`0332355`
-- 单元测试：110 项通过
-- 导航、草稿和助手首页 UI 回归通过
-- 侧载构建：[2.0 封版 IPA](https://github.com/dianmei0602/whale01/actions/runs/44977544321)
-- 当前阶段：2.0 封版后的真机验收
+- 最新版本：`2.1.0 (210.x)`，Life Agent 源码候选
+- 3.0 P0 收纳起点：`bccf663`（ExyteChat 生活 Agent 接入）
+- 对话界面：ExyteChat `3.3.7`，保留讯飞语音听写入口
+- 当前阶段：3.0 P0 本地源码检查通过；仍需 macOS 编译、模拟器、真机与 IPA 验证
+- 上一版稳定包：`2.0.4 (204.1)`，源码 `0332355`
 
 ## 从这里开始
 
 | 入口 | 用途 |
 | --- | --- |
+| [3.0 P0 收口](docs/logs/2026-11-22-v2.1.0-life-agent-p0.md) | Life Agent 版本身份、语音回归、验证边界与本轮证据 |
+| [3.0 P0 执行计划](docs/superpowers/plans/2026-11-22-whale-3.0-p0-closure.md) | 当前基线上的任务拆分、测试与审查门槛 |
 | [2.0 系列封版](docs/logs/2026-11-22-v2.0-series-archive.md) | 最终功能、测试、构建与 IPA 保存点 |
 | [Agent 工程与 Skill 手册](docs/AGENT_ENGINEERING_PLAYBOOK.md) | Agent、工具、数据、测试和 Skill 使用经验 |
 | [工程复盘 HTML](web/engineering-review/index.html) | 可视化查看 Agent、Skill、开发历程、经验与交付状态 |
@@ -43,7 +44,9 @@
 
 ## 安装包
 
-含讯飞凭据的 2.0.4 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
+2.1.0 Life Agent 候选尚未推送构建，因此目前没有对应的新 IPA。
+
+上一版稳定包含讯飞凭据，只保存在本机安装目录，不进入 Git，也不得公开转发：
 
 `C:\Users\Administrator\Desktop\WhaleAgent-Sideload-2.0.4-0332355-XFYUN.ipa`
 

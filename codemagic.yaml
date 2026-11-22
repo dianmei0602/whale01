@@ -6,9 +6,6 @@ workflows:
     environment:
       groups:
         - whale_secrets
-      vars:
-        MARKETING_VERSION: "0.5.1"
-        BUILD_NUMBER_OFFSET: "67"
       xcode: latest
     cache:
       cache_paths:
@@ -24,6 +21,7 @@ workflows:
       - name: Generate Xcode project
         script: |
           set -e
+          python3 tools/release_identity.py --check
           cd ios
           xcodegen generate
       - name: Archive without signing
@@ -38,8 +36,6 @@ workflows:
             -sdk iphoneos \
             -destination "generic/platform=iOS" \
             -archivePath build/WhaleAgent.xcarchive \
-            MARKETING_VERSION="$MARKETING_VERSION" \
-            CURRENT_PROJECT_VERSION="$((BUILD_NUMBER + BUILD_NUMBER_OFFSET))" \
             WHALE_API_TOKEN="$WHALE_API_TOKEN" \
             DEEPSEEK_API_KEY="$DEEPSEEK_API_KEY" \
             CODE_SIGNING_ALLOWED=NO \

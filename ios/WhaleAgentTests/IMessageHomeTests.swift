@@ -123,6 +123,20 @@ final class IMessageHomeTests: XCTestCase {
         XCTAssertFalse(WhaleIMessageLayout.isSameGroup(previous: assistantLater, current: nextDay))
     }
 
+    func testWeChatRowsUseWhaleOnTheLeftAndPersonOnTheRight() {
+        let incoming = WhaleChatMessageLayout.resolve(isCurrentUser: false)
+        XCTAssertEqual(incoming.side, .incoming)
+        XCTAssertEqual(incoming.avatar, .whale)
+        XCTAssertTrue(incoming.avatarIsLeading)
+        XCTAssertFalse(incoming.bubblePointsRight)
+
+        let outgoing = WhaleChatMessageLayout.resolve(isCurrentUser: true)
+        XCTAssertEqual(outgoing.side, .outgoing)
+        XCTAssertEqual(outgoing.avatar, .person)
+        XCTAssertFalse(outgoing.avatarIsLeading)
+        XCTAssertTrue(outgoing.bubblePointsRight)
+    }
+
     func testAgentDraftPlanKeepsTextAndPrefersDocumentLabel() {
         let document = URL(fileURLWithPath: "/tmp/report.pdf")
         let image = URL(fileURLWithPath: "/tmp/photo.jpg")
@@ -149,5 +163,55 @@ final class IMessageHomeTests: XCTestCase {
         )
         XCTAssertTrue(plan.isEmpty)
         XCTAssertNil(plan.primaryAttachmentDescription)
+    }
+
+    func testAgentVoiceInsertPreservesExistingDraft() {
+        XCTAssertEqual(
+            WhaleAgentDraftPlan.mergingVoice(
+                transcript: "帮我记一件事",
+                currentDraft: "晚上提醒我"
+            ),
+            "晚上提醒我\n帮我记一件事"
+        )
+        XCTAssertEqual(
+            WhaleAgentDraftPlan.mergingVoice(
+                transcript: "  今天怎么安排？ ",
+                currentDraft: "  "
+            ),
+            "今天怎么安排？"
+        )
+    }
+
+    func testVoiceOverlayStatePrioritizesListeningFinalizingAndFailure() {
+        let listening = WhaleVoiceOverlayPresenter.content(
+            isRecording: true,
+            isFinalizing: false,
+            transcript: "",
+            errorText: nil
+        )
+        XCTAssertEqual(listening.title, "正在听…")
+        XCTAssertEqual(listening.message, "说出你想让鲸鱼做的事")
+        XCTAssertEqual(listening.actionTitle, "停止")
+        XCTAssertTrue(listening.showsWaveform)
+
+        let finalizing = WhaleVoiceOverlayPresenter.content(
+            isRecording: false,
+            isFinalizing: true,
+            transcript: "帮我记一件事",
+            errorText: nil
+        )
+        XCTAssertEqual(finalizing.title, "正在整理…")
+        XCTAssertEqual(finalizing.actionTitle, "请稍候")
+        XCTAssertFalse(finalizing.actionEnabled)
+
+        let failed = WhaleVoiceOverlayPresenter.content(
+            isRecording: false,
+            isFinalizing: false,
+            transcript: "",
+            errorText: "没有收到最终识别结果"
+        )
+        XCTAssertEqual(failed.title, "没听清")
+        XCTAssertEqual(failed.actionTitle, "再试一次")
+        XCTAssertFalse(failed.showsWaveform)
     }
 }

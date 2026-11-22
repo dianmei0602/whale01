@@ -16,6 +16,17 @@ on:
       - "backend/**"
       - "!backend/**/*.md"
       - "tools/build_identity.py"
+      - "tools/release_identity.py"
+      - "tools/test_release_identity.py"
+      - "tools/test_whale_chat_layout.swift"
+      - "tools/test_voice_overlay_state.swift"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "00_执行看板.md"
+      - "docs/README.md"
+      - "docs/logs/**"
+      - "docs/superpowers/plans/**"
+      - ".github/workflows/fork-ios-sideload-ipa.yml"
       - ".github/workflows/ios-*.yml"
   pull_request:
     paths:
@@ -24,6 +35,17 @@ on:
       - "backend/**"
       - "!backend/**/*.md"
       - "tools/build_identity.py"
+      - "tools/release_identity.py"
+      - "tools/test_release_identity.py"
+      - "tools/test_whale_chat_layout.swift"
+      - "tools/test_voice_overlay_state.swift"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "00_执行看板.md"
+      - "docs/README.md"
+      - "docs/logs/**"
+      - "docs/superpowers/plans/**"
+      - ".github/workflows/fork-ios-sideload-ipa.yml"
       - ".github/workflows/ios-*.yml"
 
 permissions:
@@ -44,6 +66,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Run release identity contract
+        run: python -m unittest tools.test_release_identity -v
       - name: Run controlled backend tests
         working-directory: backend
         run: npm test
@@ -60,6 +84,22 @@ jobs:
         run: xcodebuild -version
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Run chat layout contract
+        run: |
+          swiftc \
+            ios/WhaleAgent/Models/WhaleChatMessageLayout.swift \
+            tools/test_whale_chat_layout.swift \
+            -o /tmp/whale-chat-layout-test
+          /tmp/whale-chat-layout-test
+      - name: Run voice overlay state contract
+        run: |
+          swiftc \
+            ios/WhaleAgent/Models/WhaleVoiceOverlayPresentation.swift \
+            tools/test_voice_overlay_state.swift \
+            -o /tmp/voice-overlay-state-test
+          /tmp/voice-overlay-state-test
+      - name: Validate release identity
+        run: python3 tools/release_identity.py --check --github-env
       - name: Generate source identity
         run: python3 tools/build_identity.py
       - name: Generate Xcode project
@@ -77,8 +117,8 @@ jobs:
               -sdk iphonesimulator \
               -destination 'generic/platform=iOS Simulator' \
               -derivedDataPath build \
-              MARKETING_VERSION=2.0.4 \
-              CURRENT_PROJECT_VERSION="204.${{ github.run_attempt }}" \
+              MARKETING_VERSION="$WHALE_MARKETING_VERSION" \
+              CURRENT_PROJECT_VERSION="$WHALE_BUILD_BASE.${{ github.run_attempt }}" \
               CODE_SIGNING_ALLOWED=NO \
               CODE_SIGNING_REQUIRED=NO \
               CODE_SIGN_IDENTITY="" \
@@ -136,6 +176,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Validate release identity
+        run: python3 tools/release_identity.py --check --github-env
       - name: Generate source identity
         run: python3 tools/build_identity.py
       - name: Generate Xcode project
@@ -151,8 +193,8 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
-            MARKETING_VERSION=2.0.4 \
-            CURRENT_PROJECT_VERSION="204.${{ github.run_attempt }}" \
+            MARKETING_VERSION="$WHALE_MARKETING_VERSION" \
+            CURRENT_PROJECT_VERSION="$WHALE_BUILD_BASE.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \

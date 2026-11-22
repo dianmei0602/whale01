@@ -25,6 +25,9 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Validate release identity
+        run: python3 tools/release_identity.py --check --github-env
+
       - name: Generate source identity
         run: python3 tools/build_identity.py
 
@@ -43,8 +46,8 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
-            MARKETING_VERSION=2.0.4 \
-            CURRENT_PROJECT_VERSION="204.${{ github.run_attempt }}" \
+            MARKETING_VERSION="$WHALE_MARKETING_VERSION" \
+            CURRENT_PROJECT_VERSION="$WHALE_BUILD_BASE.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \

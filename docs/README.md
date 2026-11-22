@@ -8,6 +8,8 @@
 | --- | --- |
 | [根目录 README](../README.md) | 项目定位、当前版本、工程入口 |
 | [CHANGELOG](../CHANGELOG.md) | 版本级变更摘要 |
+| [3.0 P0 收口计划](superpowers/plans/2026-11-22-whale-3.0-p0-closure.md) | Life Agent 版本身份、语音回归、测试与审查门槛 |
+| [2.1.0 Life Agent P0](logs/2026-11-22-v2.1.0-life-agent-p0.md) | 当前源码候选的变更、证据和未验证边界 |
 | [Agent 工程与 Skill 手册](AGENT_ENGINEERING_PLAYBOOK.md) | 工具契约、规划、流式、记忆、阅读、测试与 Skill 使用规则 |
 | [2.0 执行规格](plans/whale-2.0-execution-plan.md) | 能力 2.0 与交互 2.0 的实施边界 |
 | [2.0 系列封版](logs/2026-11-22-v2.0-series-archive.md) | 最终能力、110 项测试、构建与 IPA 保存点 |

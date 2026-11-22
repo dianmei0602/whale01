@@ -33,7 +33,7 @@ final class InteractionUITests: XCTestCase {
         attach("life-agent-chat")
         XCTAssertTrue(tab(app, "records").exists)
         XCTAssertTrue(tab(app, "discover").exists)
-        let composer = app.textFields["给鲸鱼发消息"].firstMatch
+        let composer = chatComposer(app)
         XCTAssertTrue(composer.exists)
         XCTAssertLessThanOrEqual(composer.frame.maxY, tab(app, "conversation").frame.minY + 2)
         XCTAssertLessThan(tab(app, "conversation").frame.midX, tab(app, "discover").frame.midX)
@@ -80,7 +80,7 @@ final class InteractionUITests: XCTestCase {
             // The root keeps all three pages mounted, so the composer still
             // exists in the tree; it must not be reachable while Discover is
             // the visible page.
-            XCTAssertFalse(app.textFields["给鲸鱼发消息"].firstMatch.isHittable)
+            XCTAssertFalse(chatComposer(app).isHittable)
             attach("fixed-shell-" + channel)
         }
     }
@@ -127,7 +127,7 @@ final class InteractionUITests: XCTestCase {
     }
     func testDraftSurvivesTabSwitchAndAppRelaunchWithoutSending() {
         let app = launch()
-        let composer = app.textFields["给鲸鱼发消息"].firstMatch
+        let composer = chatComposer(app)
         XCTAssertTrue(composer.waitForExistence(timeout: 10))
         composer.tap()
         composer.typeText("draft preserved without sending")
@@ -137,10 +137,10 @@ final class InteractionUITests: XCTestCase {
         capture.name = "draft-after-discovery-tab"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(app.buttons["discover-channel-music"].waitForExistence(timeout: 10))
         tab(app, "conversation").tap()
-        XCTAssertTrue((app.textFields["给鲸鱼发消息"].firstMatch.value as? String ?? "").contains("draft preserved"))
+        XCTAssertTrue((chatComposer(app).value as? String ?? "").contains("draft preserved"))
         app.terminate()
         app.launch()
-        let restored = app.textFields["给鲸鱼发消息"].firstMatch
+        let restored = chatComposer(app)
         XCTAssertTrue(restored.waitForExistence(timeout: 10))
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
@@ -218,12 +218,35 @@ final class InteractionUITests: XCTestCase {
         let prompt = app.buttons["agent-prompt-今天怎么安排？"]
         XCTAssertTrue(prompt.waitForExistence(timeout: 10))
         prompt.tap()
-        let composer = app.textFields["给鲸鱼发消息"].firstMatch
+        let composer = chatComposer(app)
         XCTAssertTrue(composer.waitForExistence(timeout: 5))
         let predicate = NSPredicate(format: "value CONTAINS %@", "今天怎么安排")
         expectation(for: predicate, evaluatedWith: composer)
         waitForExpectations(timeout: 5)
         attach("life-agent-prompt-prefilled")
+    }
+
+    func testLifeAgentVoiceEntryOpensVoiceExperience() {
+        let app = launch()
+        let voice = app.buttons["whale-chat-voice"]
+        XCTAssertTrue(voice.waitForExistence(timeout: 10))
+        voice.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["voice-input-card"]
+                .waitForExistence(timeout: 5)
+        )
+        attach("life-agent-voice-entry")
+        app.buttons["取消语音输入"].tap()
+        XCTAssertTrue(chatComposer(app).waitForExistence(timeout: 5))
+    }
+
+    private func chatComposer(_ app: XCUIApplication) -> XCUIElement {
+        let predicate = NSPredicate(
+            format: "placeholderValue == %@ OR label == %@",
+            "给鲸鱼发消息",
+            "给鲸鱼发消息"
+        )
+        return app.descendants(matching: .any).matching(predicate).firstMatch
     }
 
 }

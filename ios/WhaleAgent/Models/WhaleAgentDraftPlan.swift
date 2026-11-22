@@ -26,4 +26,13 @@ struct WhaleAgentDraftPlan: Equatable {
         }
         return nil
     }
+
+    static func mergingVoice(transcript: String, currentDraft: String) -> String {
+        let recognized = transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !recognized.isEmpty else { return currentDraft }
+
+        let existing = currentDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !existing.isEmpty else { return recognized }
+        return existing + "\n" + recognized
+    }
 }
