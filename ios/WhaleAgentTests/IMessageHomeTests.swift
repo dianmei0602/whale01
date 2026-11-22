@@ -1,0 +1,109 @@
+import XCTest
+@testable import WhaleAgent
+
+final class IMessageHomeTests: XCTestCase {
+    private let quote = DailyQuoteCorpus.Item(
+        id: "test-quote",
+        theme: "测试",
+        text: "知之为知之，不知为不知。",
+        source: "《论语》",
+        locator: "论语·为政",
+        tone: "克制"
+    )
+
+    func testStarterDoesNotInventCalendarEntriesWhenCalendarIsEmpty() throws {
+        let items = WhaleIMessageStarterBuilder.items(
+            now: Date(timeIntervalSince1970: 1_800_000_000),
+            events: [],
+            quote: quote
+        )
+        let summary = try XCTUnwrap(items.first?.detail)
+        XCTAssertEqual(summary, "今天暂时没有日程。直接告诉我想做什么。")
+        XCTAssertFalse(items.contains { $0.kind == .calendar })
+        XCTAssertFalse(items.contains { $0.kind == .music })
+        XCTAssertFalse(items.contains { $0.kind == .pending })
+    }
+
+    func testStarterUsesRealCalendarTitleInsteadOfGenericAssistantCopy() throws {
+        let start = Date(timeIntervalSince1970: 1_800_000_000)
+        let event = try XCTUnwrap(
+            CalendarEventPreview(
+                json: .object([
+                    "eventId": .string("event-1"),
+                    "title": .string("牙医复诊"),
+                    "startAt": .string(ToolDate.iso(start)),
+                    "endAt": .string(ToolDate.iso(start.addingTimeInterval(1_800))),
+                    "calendarTitle": .string("个人")
+                ])
+            )
+        )
+        let items = WhaleIMessageStarterBuilder.items(
+            now: start.addingTimeInterval(-3_600),
+            events: [event],
+            quote: quote
+        )
+        XCTAssertTrue(items.first?.detail?.contains("牙医复诊") == true)
+    }
+
+    func testStarterAddsMusicAndPendingOnlyWhenTheyExist() throws {
+        let track = try XCTUnwrap(
+            MusicTrackItem(
+                json: .object([
+                    "trackId": .string("track-1"),
+                    "title": .string("海边的风"),
+                    "artist": .string("测试歌手"),
+                    "source": .string("local")
+                ])
+            )
+        )
+        let playback = PlaybackSnapshot(
+            json: .object([
+                "state": .string("playing"),
+                "track": .object([
+                    "trackId": .string("track-1"),
+                    "title": .string("海边的风"),
+                    "artist": .string("测试歌手"),
+                    "source": .string("local")
+                ])
+            ])
+        )
+        let items = WhaleIMessageStarterBuilder.items(
+            events: [],
+            quote: quote,
+            playback: playback,
+            pendingCount: 2
+        )
+        XCTAssertEqual(track.title, "海边的风")
+        XCTAssertTrue(items.contains { $0.kind == .music })
+        XCTAssertTrue(items.contains { $0.kind == .pending })
+    }
+
+    func testStarterUsesOnlyTheNearestUpcomingEventAndIgnoresPastEvents() throws {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func event(id: String, title: String, offset: TimeInterval) throws -> CalendarEventPreview {
+            try XCTUnwrap(
+                CalendarEventPreview(
+                    json: .object([
+                        "eventId": .string(id),
+                        "title": .string(title),
+                        "startAt": .string(ToolDate.iso(now.addingTimeInterval(offset))),
+                        "endAt": .string(ToolDate.iso(now.addingTimeInterval(offset + 900))),
+                        "calendarTitle": .string("个人")
+                    ])
+                )
+            )
+        }
+        let past = try event(id: "past", title: "已经结束", offset: -3_600)
+        let later = try event(id: "later", title: "下午散步", offset: 7_200)
+        let next = try event(id: "next", title: "打电话给妈妈", offset: 1_800)
+
+        let items = WhaleIMessageStarterBuilder.items(
+            now: now,
+            events: [past, later, next],
+            quote: quote
+        )
+        XCTAssertTrue(items.first?.detail?.contains("打电话给妈妈") == true)
+        XCTAssertFalse(items.first?.detail?.contains("已经结束") == true)
+        XCTAssertFalse(items.first?.detail?.contains("下午散步") == true)
+    }
+}

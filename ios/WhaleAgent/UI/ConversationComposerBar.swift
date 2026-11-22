@@ -63,7 +63,7 @@ struct ConversationComposerBar: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .background(WhaleChromeBackground())
+        .background(WhaleIMessagePalette.header)
     }
 
     private func interactionBehaviors<Content: View>(_ content: Content) -> some View {
@@ -188,7 +188,7 @@ struct ConversationComposerBar: View {
 
             TextField("说点什么，或输入文字", text: $draft, axis: .vertical)
                 .font(.body)
-                .foregroundStyle(WhaleTheme.ink)
+                .foregroundStyle(WhaleIMessagePalette.text)
                 .lineLimit(1...5)
                 .frame(minHeight: 44)
                 .padding(.horizontal, 4)
@@ -218,9 +218,9 @@ struct ConversationComposerBar: View {
             Button(action: submit) {
                 Image(systemName: voice.isRecording || voice.isFinalizing ? "checkmark" : "paperplane.fill")
                     .whaleFont(size: 16, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.buttonInk)
+                    .foregroundStyle(WhaleIMessagePalette.outgoingText)
                     .frame(width: 44, height: 44)
-                    .background(WhaleTheme.accent, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(WhaleIMessagePalette.outgoing, in: Circle())
             }
             .buttonStyle(.whalePress)
             .disabled(model.isBusy || (isDraftEmpty && !voice.isRecording && !voice.isFinalizing) || finishingVoice)
@@ -232,12 +232,11 @@ struct ConversationComposerBar: View {
         .padding(.vertical, 6)
         .background {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(WhaleTheme.field)
+                .fill(WhaleIMessagePalette.field)
                 .overlay {
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
+                        .strokeBorder(WhaleIMessagePalette.line, lineWidth: 0.7)
                 }
-                .shadow(color: .black.opacity(0.06), radius: 8, y: 3)
         }
         .animation(.easeInOut(duration: 0.16), value: focused)
     }

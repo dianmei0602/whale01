@@ -262,9 +262,9 @@ struct WhaleRootTabBar: View {
         }
         .padding(.top, 7)
         .padding(.bottom, 1)
-        .background(WhaleTheme.chrome)
+        .background(WhaleIMessagePalette.header)
         .overlay(alignment: .top) {
-            Rectangle().fill(WhaleTheme.line.opacity(0.7)).frame(height: 0.5)
+            Rectangle().fill(WhaleIMessagePalette.line).frame(height: 0.5)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("root-tab-bar")
@@ -284,7 +284,7 @@ struct WhaleRootTabBar: View {
                 Text(title)
                     .font(.system(size: 11, weight: selected ? .semibold : .medium))
             }
-            .foregroundStyle(selected ? WhaleTheme.accent : WhaleTheme.muted)
+            .foregroundStyle(selected ? WhaleIMessagePalette.outgoing : WhaleIMessagePalette.muted)
             .frame(maxWidth: .infinity)
             .frame(height: 46)
             .contentShape(Rectangle())

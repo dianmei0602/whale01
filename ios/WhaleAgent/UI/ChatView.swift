@@ -382,66 +382,60 @@ struct MessageRow: View {
                 HStack {
                     Spacer(minLength: 52)
                     Text(message.text)
-                        .whaleFont(size: 16, weight: .medium)
-                        .foregroundStyle(.white)
+                        .whaleFont(size: 17)
+                        .foregroundStyle(WhaleIMessagePalette.outgoingText)
                         .textSelection(.enabled)
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 12)
-                        .background(WhaleTheme.accentDeep, in: UnevenRoundedRectangle(
-                            topLeadingRadius: 19,
-                            bottomLeadingRadius: 19,
-                            bottomTrailingRadius: 6,
-                            topTrailingRadius: 19,
-                            style: .continuous
-                        ))
-                        .overlay {
-                            UnevenRoundedRectangle(
-                                topLeadingRadius: 19,
-                                bottomLeadingRadius: 19,
-                                bottomTrailingRadius: 6,
-                                topTrailingRadius: 19,
-                                style: .continuous
-                            )
-                            .strokeBorder(.white.opacity(0.14), lineWidth: 0.8)
-                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(
+                            WhaleIMessagePalette.outgoing,
+                            in: WhaleIMessagePalette.outgoingShape()
+                        )
                 }
             } else if message.role == .assistant {
-                VStack(alignment: .leading, spacing: 6) {
-                    byline
-                    assistantBody
-                    HStack(alignment: .bottom, spacing: 10) {
-                        if let detail = message.detail, !detail.isEmpty {
-                            Text(detail)
-                                .whaleFont(size: 13)
-                                .foregroundStyle(WhaleTheme.muted)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        } else {
-                            Spacer(minLength: 0)
-                        }
-                        Button {
-                            UIPasteboard.general.string = message.text
-                        } label: {
-                            Image(systemName: "doc.on.doc")
-                                .whaleFont(size: 15, weight: .medium)
-                                .foregroundStyle(WhaleTheme.muted)
-                                .frame(width: 44, height: 44)
-                                .background(WhaleTheme.card, in: Circle())
-                                .overlay(Circle().strokeBorder(WhaleTheme.line, lineWidth: 1))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("复制这条回复")
+                HStack(alignment: .bottom, spacing: 7) {
+                    WhaleMarkView(size: 27)
+                    VStack(alignment: .leading, spacing: 6) {
+                        byline
+                        assistantBody
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(
+                                WhaleIMessagePalette.incoming,
+                                in: WhaleIMessagePalette.incomingShape()
+                            )
+                        HStack(alignment: .bottom, spacing: 10) {
+                            if let detail = message.detail, !detail.isEmpty {
+                                Text(detail)
+                                    .whaleFont(size: 12)
+                                    .foregroundStyle(WhaleIMessagePalette.muted)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            } else {
+                                Spacer(minLength: 0)
+                            }
+                            Button {
+                                UIPasteboard.general.string = message.text
+                            } label: {
+                                Image(systemName: "doc.on.doc")
+                                    .whaleFont(size: 14, weight: .medium)
+                                    .foregroundStyle(WhaleIMessagePalette.muted)
+                                    .frame(width: 36, height: 36)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("复制这条回复")
 
-                        Button(action: onToggleSpeech) {
-                            Image(systemName: isSpeaking ? "stop.circle.fill" : "speaker.wave.2")
-                                .whaleFont(size: 15, weight: .medium)
-                                .foregroundStyle(isSpeaking ? WhaleTheme.accent : WhaleTheme.muted)
-                                .frame(width: 44, height: 44)
-                                .background(WhaleTheme.card, in: Circle())
-                                .overlay(Circle().strokeBorder(WhaleTheme.line, lineWidth: 1))
+                            Button(action: onToggleSpeech) {
+                                Image(systemName: isSpeaking ? "stop.fill" : "speaker.wave.2")
+                                    .whaleFont(size: 14, weight: .medium)
+                                    .foregroundStyle(isSpeaking ? WhaleIMessagePalette.outgoing : WhaleIMessagePalette.muted)
+                                    .frame(width: 36, height: 36)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(isSpeaking ? "停止小露朗读" : "用小露 x4_yezi 朗读这条回复")
                     }
+                    .frame(maxWidth: 330, alignment: .leading)
+                    Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             } else {
@@ -466,25 +460,25 @@ struct MessageRow: View {
                                             ScrollView(.vertical) {
                                                 Text(detail)
                                                     .font(.body)
-                                                    .foregroundStyle(WhaleTheme.ink)
+                                                    .foregroundStyle(WhaleIMessagePalette.text)
                                                     .textSelection(.enabled)
                                                     .frame(maxWidth: .infinity, alignment: .leading)
                                             }
                                             .frame(maxHeight: 340)
                                             .scrollIndicators(.visible)
                                             .padding(10)
-                                            .background(WhaleTheme.soft.opacity(0.7), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                            .background(WhaleIMessagePalette.field, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                         } else {
                                             Text(detail)
                                                 .font(.body)
-                                                .foregroundStyle(WhaleTheme.ink)
+                                                .foregroundStyle(WhaleIMessagePalette.text)
                                                 .textSelection(.enabled)
                                                 .lineLimit(5)
                                         }
                                         analysisToggle(toolLabel: true)
                                     }
                                 } else {
-                                    Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled)
+                                    Text(detail).font(.body).foregroundStyle(WhaleIMessagePalette.text).textSelection(.enabled)
                                 }
                             }
                         }.frame(maxWidth: .infinity, alignment: .leading).whaleCard(padding: 14)
@@ -547,7 +541,7 @@ struct MessageRow: View {
                         Text(renderedMarkdown(message.text))
                             .whaleFont(size: 17)
                             .lineSpacing(4)
-                            .foregroundStyle(WhaleTheme.ink)
+                            .foregroundStyle(WhaleIMessagePalette.text)
                             .fixedSize(horizontal: false, vertical: true)
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -555,12 +549,12 @@ struct MessageRow: View {
                     .frame(maxHeight: 360)
                     .scrollIndicators(.visible)
                     .padding(11)
-                    .background(WhaleTheme.soft.opacity(0.62), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(WhaleIMessagePalette.field, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                 } else {
                     Text(renderedMarkdown(message.text))
                         .whaleFont(size: 17)
                         .lineSpacing(4)
-                        .foregroundStyle(WhaleTheme.ink)
+                        .foregroundStyle(WhaleIMessagePalette.text)
                         .textSelection(.enabled)
                         .lineLimit(5)
                 }
@@ -570,7 +564,7 @@ struct MessageRow: View {
             Text(renderedMarkdown(message.text))
                 .whaleFont(size: 17)
                 .lineSpacing(4)
-                .foregroundStyle(WhaleTheme.ink)
+                .foregroundStyle(WhaleIMessagePalette.text)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
                 .onLongPressGesture(minimumDuration: 0.65) {
@@ -594,7 +588,7 @@ struct MessageRow: View {
                 Text(analysisExpanded ? "收起详情" : (toolLabel ? "查看分析详情" : "展开完整回复"))
                     .whaleFont(size: 13, weight: .semibold)
             }
-            .foregroundStyle(WhaleTheme.accent)
+            .foregroundStyle(WhaleIMessagePalette.outgoing)
             .frame(minHeight: 44)
             .contentShape(Rectangle())
         }
@@ -612,14 +606,13 @@ struct MessageRow: View {
 
     private var byline: some View {
         HStack(spacing: 7) {
-            WhaleMarkView(size: 22)
             Text("鲸鱼")
                 .whaleFont(size: 13, weight: .semibold)
-                .foregroundStyle(WhaleTheme.muted)
+                .foregroundStyle(WhaleIMessagePalette.muted)
             if let tool = message.tool, !tool.isEmpty {
                 Text("· \(ToolPresentation.title(tool))")
                     .whaleFont(size: 13)
-                    .foregroundStyle(WhaleTheme.muted.opacity(0.7))
+                    .foregroundStyle(WhaleIMessagePalette.muted.opacity(0.7))
             }
         }
     }

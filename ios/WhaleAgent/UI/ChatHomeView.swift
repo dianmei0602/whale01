@@ -24,7 +24,7 @@ struct ConversationTabView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            if let context = model.workingContext {
+            if !showingStarter, let context = model.workingContext {
                 WorkingContextBar(
                     context: context,
                     onOpen: {
@@ -37,15 +37,12 @@ struct ConversationTabView: View {
 
             ZStack {
                 if showingStarter {
-                    WhaleHomeCanvas(
+                    WhaleIMessageHomeView(
                         model: model,
-                        bottomInset: bottomInset,
                         onOpenRecords: onOpenRecords,
                         onOpenMusic: onOpenMusic,
-                        onOpenTodo: onOpenTodo,
-                        onOpenDiscover: onOpenDiscover,
-                        onOpenConversation: enterConversation,
-                        onOpenWorkspace: onOpenWorkspace
+                        onOpenWorkspace: onOpenWorkspace,
+                        onUsePrompt: usePrompt
                     )
                     .transition(.opacity)
                 } else {
@@ -65,6 +62,8 @@ struct ConversationTabView: View {
             }
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: showingStarter)
         }
+        .background(WhaleIMessagePalette.canvas)
+        .tint(WhaleIMessagePalette.outgoing)
         .onChange(of: model.messages.count) { oldCount, newCount in
             if newCount == 0 {
                 browsingStarter = false
@@ -93,20 +92,38 @@ struct ConversationTabView: View {
         }
     }
 
+    private func usePrompt(_ text: String) {
+        enterConversation()
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 180_000_000)
+            NotificationCenter.default.post(
+                name: .whalePrefillDraft,
+                object: nil,
+                userInfo: ["text": text]
+            )
+        }
+    }
+
     private var header: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 9) {
             if !showingStarter {
                 Button(action: goToStarter) { Image(systemName: "chevron.left").whaleTouchTarget() }
                     .buttonStyle(.plain).accessibilityLabel("返回助手首页")
             }
-            Text("鲸鱼").font(.title2.bold()).foregroundStyle(WhaleTheme.ink)
-            if let track = model.playback.track {
-                Button(action: onOpenMusic) {
-                    MiniVinylView(track: track, isPlaying: model.playback.isPlaying)
+            WhaleMarkView(size: 33)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("鲸鱼")
+                    .whaleFont(size: 16, weight: .semibold)
+                    .foregroundStyle(WhaleIMessagePalette.text)
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(statusColor)
+                        .frame(width: 6, height: 6)
+                    Text(statusText)
+                        .whaleFont(size: 11)
+                        .foregroundStyle(WhaleIMessagePalette.muted)
+                        .lineLimit(1)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("正在播放 \(track.title)，打开音乐")
-                .accessibilityIdentifier("home-mini-vinyl")
             }
             Spacer()
             Menu {
@@ -119,8 +136,16 @@ struct ConversationTabView: View {
             Button(action: onOpenSettings) { Image(systemName: "gearshape").whaleTouchTarget() }
                 .accessibilityLabel("设置")
                 .accessibilityIdentifier("assistant-settings")
-        }.foregroundStyle(WhaleTheme.accent).padding(.horizontal, 16).padding(.vertical, 4)
-            .background(WhaleChromeBackground())
+        }
+        .foregroundStyle(WhaleIMessagePalette.outgoing)
+        .padding(.horizontal, 15)
+        .padding(.vertical, 7)
+        .background(WhaleIMessagePalette.header)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(WhaleIMessagePalette.line)
+                .frame(height: 0.5)
+        }
     }
 
     private var statusText: String {
@@ -135,9 +160,9 @@ struct ConversationTabView: View {
     }
 
     private var statusColor: Color {
-        if model.isBusy || model.isExecutingTool { return WhaleTheme.coral }
-        if !model.backendOnline { return WhaleTheme.warm }
-        return WhaleTheme.success
+        if model.isBusy || model.isExecutingTool { return WhaleIMessagePalette.outgoing }
+        if !model.backendOnline { return .orange }
+        return .green
     }
 }
 

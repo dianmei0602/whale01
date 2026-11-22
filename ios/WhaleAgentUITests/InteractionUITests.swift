@@ -17,19 +17,20 @@ final class InteractionUITests: XCTestCase {
     func testThreeTabsKeepDiscoverySeparateFromTheAssistant() {
         let app = launch()
         XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
-        let primaryTask = app.descendants(matching: .any)
-            .matching(identifier: "home-primary-task")
-            .firstMatch
-        XCTAssertTrue(primaryTask.waitForExistence(timeout: 20))
-        let today = app.otherElements["home-today-card"]
-        XCTAssertTrue(today.waitForExistence(timeout: 10))
-        XCTAssertLessThanOrEqual(primaryTask.frame.maxY, today.frame.minY + 1)
-        XCTAssertTrue(today.buttons["home-today-weather"].exists)
-        XCTAssertFalse(app.staticTexts["今天想做点什么？"].exists)
-        XCTAssertFalse(app.staticTexts["有一件事需要核对"].exists)
-        XCTAssertFalse(app.staticTexts["天气暂未更新"].exists)
-        XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "BOSS")).firstMatch.exists)
-        attach("home-inspiration-weather")
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: "imessage-assistant-home")
+                .firstMatch
+                .waitForExistence(timeout: 20)
+        )
+        XCTAssertTrue(
+            app.staticTexts.matching(
+                NSPredicate(format: "label CONTAINS %@", "我是鲸鱼")
+            ).firstMatch.exists
+        )
+        XCTAssertTrue(app.descendants(matching: .any)["imessage-home-quote"].exists)
+        XCTAssertFalse(app.staticTexts["常用操作"].exists)
+        attach("imessage-assistant-home")
         XCTAssertTrue(tab(app, "records").exists)
         XCTAssertTrue(tab(app, "discover").exists)
         let composer = app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch
@@ -54,7 +55,12 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(tab(app, "discover").isHittable)
         XCTAssertFalse(app.buttons["返回发现"].exists)
         tab(app, "conversation").tap()
-        XCTAssertTrue(app.staticTexts["常用操作"].waitForExistence(timeout: 5))
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: "imessage-assistant-home")
+                .firstMatch
+                .waitForExistence(timeout: 5)
+        )
     }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
@@ -100,18 +106,11 @@ final class InteractionUITests: XCTestCase {
             attach("unified-feed-" + channel)
         }
         tab(app, "conversation").tap()
-        let homeScroll = app.scrollViews.firstMatch
-        for channel in ["ai", "market", "game", "music", "headline", "weibo"] {
-            for _ in 0..<4 where !app.buttons["home-channel-" + channel].exists {
-                homeScroll.swipeUp()
-            }
-            XCTAssertTrue(app.buttons["home-channel-" + channel].exists)
-        }
-        for _ in 0..<3 {
-            if app.buttons["home-channel-ai"].isHittable { break }
-            homeScroll.swipeDown()
-        }
-        app.buttons["home-channel-ai"].tap()
+        XCTAssertTrue(
+            app.buttons["imessage-prompt-今天怎么安排？"]
+                .waitForExistence(timeout: 10)
+        )
+        tab(app, "discover").tap()
         XCTAssertTrue(app.otherElements["discover-content-ai"].waitForExistence(timeout: 10))
     }
     private func attach(_ name: String) {
@@ -206,24 +205,19 @@ final class InteractionUITests: XCTestCase {
         attach("home-live-gilded")
     }
 
-    func testAssistantHomeEntersAndExitsDesktopEditingMode() {
+    func testIMessageSuggestionPrefillsDraft() {
         let app = launch()
-        let shortcut = app.buttons["home-channel-ai"]
-        let homeScroll = app.scrollViews.firstMatch
-        for _ in 0..<3 where !shortcut.isHittable {
-            homeScroll.swipeUp()
-        }
-        XCTAssertTrue(shortcut.waitForExistence(timeout: 10))
-        shortcut.press(forDuration: 0.7)
-
-        let done = app.buttons["home-shortcuts-done"]
-        XCTAssertTrue(done.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["home-channel-hide-ai"].exists)
-        attach("home-shortcuts-editing")
-
-        done.tap()
-        XCTAssertFalse(done.exists)
-        XCTAssertTrue(shortcut.exists)
+        let prompt = app.buttons["imessage-prompt-今天怎么安排？"]
+        XCTAssertTrue(prompt.waitForExistence(timeout: 10))
+        prompt.tap()
+        let composer = app.descendants(matching: .any)
+            .matching(identifier: "assistant-composer")
+            .firstMatch
+        XCTAssertTrue(composer.waitForExistence(timeout: 5))
+        let predicate = NSPredicate(format: "value CONTAINS %@", "今天怎么安排")
+        expectation(for: predicate, evaluatedWith: composer)
+        waitForExpectations(timeout: 5)
+        attach("imessage-prompt-prefilled")
     }
 
 }

@@ -38,6 +38,7 @@ struct ConversationSurface: View {
             }
             conversation
         }
+        .background(WhaleIMessagePalette.canvas)
     }
 
     // MARK: - Conversation
@@ -215,21 +216,31 @@ private struct StreamingReplyView: View {
     let text: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 7) {
-                WhaleMarkView(size: 22)
-                Text("鲸鱼 · 正在回答")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.muted)
-                ProgressView()
-                    .controlSize(.mini)
+        HStack(alignment: .bottom, spacing: 7) {
+            WhaleMarkView(size: 27)
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 7) {
+                    Text("鲸鱼")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleIMessagePalette.muted)
+                    ProgressView()
+                        .controlSize(.mini)
+                }
+                Text(text)
+                    .whaleFont(size: 17)
+                    .lineSpacing(4)
+                    .foregroundStyle(WhaleIMessagePalette.text)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(
+                        WhaleIMessagePalette.incoming,
+                        in: WhaleIMessagePalette.incomingShape()
+                    )
             }
-            Text(text)
-                .whaleFont(size: 17)
-                .lineSpacing(4)
-                .foregroundStyle(WhaleTheme.ink)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: 330, alignment: .leading)
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)

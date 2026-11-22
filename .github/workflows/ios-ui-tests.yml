@@ -82,7 +82,7 @@ jobs:
           elif [ "${{ inputs.scope }}" = "assistant" ]; then
             TEST_FILTER=(
               -only-testing:WhaleAgentUITests/InteractionUITests/testThreeTabsKeepDiscoverySeparateFromTheAssistant
-              -only-testing:WhaleAgentUITests/InteractionUITests/testAssistantHomeEntersAndExitsDesktopEditingMode
+              -only-testing:WhaleAgentUITests/InteractionUITests/testIMessageSuggestionPrefillsDraft
             )
             TEST_ALLOWANCE=240
           fi
