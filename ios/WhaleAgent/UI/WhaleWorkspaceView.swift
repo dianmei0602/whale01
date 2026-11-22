@@ -1435,7 +1435,6 @@ private struct WorkspaceFocusSection: View {
 private struct WorkspaceCaptureEditor: View {
     @ObservedObject var store: WhaleWorkspaceStore
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var voice = VoiceInputController()
     @State private var title = ""
     @State private var captureText = ""
     @State private var kind: WorkspaceCaptureKind = .note
@@ -1446,16 +1445,13 @@ private struct WorkspaceCaptureEditor: View {
     @State private var showFileImporter = false
     @State private var isImporting = false
     @State private var errorText: String?
-    @State private var voicePrefix = ""
-    @State private var voiceSessionID: UUID?
-    @State private var voiceDraftIsActive = false
+    @State private var showsVoice = false
     @FocusState private var focused: Bool
 
     private var hasChanges: Bool {
         !title.isEmpty
             || !captureText.isEmpty
-            || voice.isRecording
-            || voice.isFinalizing
+            || showsVoice
     }
 
     var body: some View {
@@ -1468,22 +1464,20 @@ private struct WorkspaceCaptureEditor: View {
                         .accessibilityIdentifier("workspace-capture-body")
                     HStack {
                         Button {
-                            toggleVoice()
+                            focused = false
+                            showsVoice = true
                         } label: {
                             Label(
-                                voice.isRecording ? "完成语音输入" : "语音补一句",
-                                systemImage: voice.isRecording ? "waveform" : "mic"
+                                "语音补一句",
+                                systemImage: "mic"
                             )
                         }
-                        .disabled(isImporting || voice.isFinalizing)
+                        .disabled(isImporting)
+                        .accessibilityIdentifier("workspace-capture-voice")
                         Spacer()
                         if isImporting {
                             ProgressView()
                         }
-                    }
-                    if let voiceError = voice.errorText {
-                        Text(voiceError)
-                            .foregroundStyle(WhaleTheme.warm)
                     }
                 }
 
@@ -1556,29 +1550,19 @@ private struct WorkspaceCaptureEditor: View {
             ) { result in
                 Task { await ingestFile(result) }
             }
-            .onChange(of: voice.transcript) { _, text in
-                guard voiceDraftIsActive,
-                      let voiceSessionID,
-                      voice.currentSessionID == voiceSessionID else { return }
-                captureText = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
+            .sheet(isPresented: $showsVoice) {
+                WhaleVoiceCaptureSheet(
+                    target: .workspace,
+                    onCommit: insertVoiceDraft,
+                    onCancel: {}
+                )
+                .presentationDetents([.height(310)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
             }
-            .onChange(of: voice.finalResult) { _, result in
-                guard let result,
-                      voiceDraftIsActive,
-                      result.sessionId == voiceSessionID,
-                      voice.errorText == nil else { return }
-                captureText = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
-                voiceDraftIsActive = false
-                voiceSessionID = nil
-                focused = true
-            }
-            .onChange(of: voice.errorText) { _, error in
-                if error != nil { restoreVoiceDraft() }
-            }
-            .onDisappear { restoreVoiceDraft() }
             .whaleDraftGuard(
                 hasChanges: hasChanges,
-                isBusy: isImporting || voice.isFinalizing
+                isBusy: isImporting
             )
         }
     }
@@ -1659,32 +1643,12 @@ private struct WorkspaceCaptureEditor: View {
         dismiss()
     }
 
-    private func toggleVoice() {
-        if voice.isRecording {
-            voice.stop()
-        } else {
-            Task { await beginVoice() }
-        }
-    }
-
-    private func beginVoice() async {
-        focused = false
-        voicePrefix = captureText
-        voiceDraftIsActive = true
-        voiceSessionID = nil
-        await voice.start()
-        if voice.isRecording {
-            voiceSessionID = voice.currentSessionID
-        } else {
-            restoreVoiceDraft()
-        }
-    }
-
-    private func restoreVoiceDraft() {
-        voice.cancel()
-        if voiceDraftIsActive { captureText = voicePrefix }
-        voiceDraftIsActive = false
-        voiceSessionID = nil
+    private func insertVoiceDraft(_ text: String) {
+        captureText = mergeVoiceDraft(
+            prefix: captureText,
+            recognized: text
+        )
+        focused = true
     }
 
     private func mergeVoiceDraft(prefix: String, recognized: String) -> String {

@@ -52,7 +52,6 @@ struct TodoView: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var todoStore: TodoTimelineStore
     @EnvironmentObject private var navigation: RootNavigationModel
-    @StateObject private var voice = VoiceInputController()
 
     @AppStorage("whale.todo.board") private var board: TodoBoard = .today
     private var items: [TodoReminder] { todoStore.items }
@@ -71,9 +70,7 @@ struct TodoView: View {
     @State private var quickPreview: TodoQuickPreview?
     @State private var scheduleItem: TodoReminder?
     @FocusState private var composerFocused: Bool
-    @State private var voicePrefix = ""
-    @State private var voiceSessionID: UUID?
-    @State private var voiceDraftIsActive = false
+    @State private var showsVoice = false
 
     private var reminderStatus: String { model.permissionsSnapshot["reminder"] ?? "unknown" }
     private var pendingItems: [TodoReminder] { items.filter { !$0.completed } }
@@ -177,33 +174,21 @@ struct TodoView: View {
                     Task { await reload(silent: true) }
                 }
             }
+            .sheet(isPresented: $showsVoice) {
+                WhaleVoiceCaptureSheet(
+                    target: .todo,
+                    onCommit: insertVoiceDraft,
+                    onCancel: {}
+                )
+                .presentationDetents([.height(310)])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
+            }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     Task { await reload() }
-                } else {
-                    restoreVoiceDraft()
                 }
             }
-            .onChange(of: voice.transcript) { _, text in
-                guard voiceDraftIsActive,
-                      let voiceSessionID,
-                      voice.currentSessionID == voiceSessionID else { return }
-                draft = mergeVoiceDraft(prefix: voicePrefix, recognized: text)
-            }
-            .onChange(of: voice.finalResult) { _, result in
-                guard let result,
-                      voiceDraftIsActive,
-                      result.sessionId == voiceSessionID,
-                      voice.errorText == nil else { return }
-                draft = mergeVoiceDraft(prefix: voicePrefix, recognized: result.text)
-                voiceDraftIsActive = false
-                voiceSessionID = nil
-                composerFocused = true
-            }
-            .onChange(of: voice.errorText) { _, error in
-                if error != nil { restoreVoiceDraft() }
-            }
-            .onDisappear { restoreVoiceDraft() }
             .alert("删除这条待办？", isPresented: Binding(get: { pendingDeletion != nil }, set: { if !$0 { pendingDeletion = nil } })) {
                 Button("取消", role: .cancel) { pendingDeletion = nil }
                 Button("删除", role: .destructive) {
@@ -554,40 +539,23 @@ struct TodoView: View {
 
     private var composer: some View {
         VStack(spacing: 7) {
-            if let voiceError = voice.errorText {
-                Label(voiceError, systemImage: "mic.slash.fill")
-                    .whaleFont(size: 13)
-                    .foregroundStyle(WhaleTheme.danger)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            if voice.isRecording {
-                voiceStrip
-            }
             if let quickPreview {
                 quickPreviewCard(quickPreview)
             }
             HStack(spacing: 8) {
                 Button {
                     composerFocused = false
-                    if voice.isRecording {
-                        voice.stop()
-                    } else {
-                        Task { await beginVoice() }
-                    }
+                    showsVoice = true
                 } label: {
-                    Image(systemName: voice.isRecording ? "waveform" : "mic.fill")
+                    Image(systemName: "mic.fill")
                         .whaleFont(size: 17, weight: .semibold)
-                        .foregroundStyle(voice.isRecording ? WhaleTheme.onAccent : WhaleTheme.accent)
+                        .foregroundStyle(WhaleTheme.accent)
                         .frame(width: 44, height: 44)
-                        .background(
-                            voice.isRecording ? WhaleTheme.danger : WhaleTheme.accentSoft,
-                            in: Circle()
-                        )
+                        .background(WhaleTheme.accentSoft, in: Circle())
                 }
                 .buttonStyle(.plain)
-                .disabled(isSubmitting || voice.isFinalizing)
-                .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音新增待办")
+                .disabled(isSubmitting)
+                .accessibilityLabel("语音新增待办")
 
                 TextField("记一件事，或点击麦克风", text: $draft, axis: .vertical)
                     .lineLimit(1...4)
@@ -663,52 +631,15 @@ struct TodoView: View {
         }
     }
 
-    private var voiceStrip: some View {
-        HStack(spacing: 9) {
-            Circle()
-                .fill(WhaleTheme.danger)
-                .frame(width: 8, height: 8)
-            Text(voice.transcript.isEmpty ? "正在听你说…" : voice.transcript)
-                .whaleFont(size: 13, weight: .medium)
-                .foregroundStyle(WhaleTheme.ink)
-                .lineLimit(2)
-            Spacer(minLength: 6)
-            Button {
-                voice.stop()
-            } label: {
-                Text("完成")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.danger)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(WhaleTheme.danger.opacity(0.1), in: Capsule())
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 11)
-        .padding(.vertical, 8)
-        .background(WhaleTheme.card.opacity(0.9), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-                .strokeBorder(WhaleTheme.danger.opacity(0.22), lineWidth: 0.8)
-        )
-    }
-
     private func submitDraft() {
         submitText(draft)
     }
 
-    private func beginVoice() async {
+    private func insertVoiceDraft(_ text: String) {
         quickPreview = nil
-        voicePrefix = draft
-        voiceDraftIsActive = true
-        voiceSessionID = nil
-        await voice.start()
-        if voice.isRecording {
-            voiceSessionID = voice.currentSessionID
-        } else {
-            restoreVoiceDraft()
-        }
+        draft = mergeVoiceDraft(prefix: draft, recognized: text)
+        quickPreview = TodoQuickParser.parsePreview(draft)
+        composerFocused = true
     }
 
     private func mergeVoiceDraft(prefix: String, recognized: String) -> String {
@@ -716,13 +647,6 @@ struct TodoView: View {
         guard !spoken.isEmpty else { return prefix }
         guard !prefix.isEmpty else { return spoken }
         return prefix.last?.isWhitespace == true ? prefix + spoken : prefix + "\n" + spoken
-    }
-
-    private func restoreVoiceDraft() {
-        voice.cancel()
-        if voiceDraftIsActive { draft = voicePrefix }
-        voiceDraftIsActive = false
-        voiceSessionID = nil
     }
 
     private func submitText(_ text: String) {

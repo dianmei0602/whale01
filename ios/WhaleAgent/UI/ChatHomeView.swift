@@ -14,7 +14,6 @@ struct ConversationTabView: View {
     let onOpenDiscover: (DiscoverChannel) -> Void
     let onOpenWorkspace: () -> Void
     @State private var chatDraft = ""
-    @StateObject private var voice = VoiceInputController()
     @State private var showsVoice = false
 
     var body: some View {
@@ -32,10 +31,10 @@ struct ConversationTabView: View {
         .background(WhaleIMessagePalette.canvas)
         .tint(WhaleIMessagePalette.outgoing)
         .sheet(isPresented: $showsVoice) {
-            VoiceView(
-                voice: voice,
-                onInsert: insertVoiceDraft,
-                onCancel: { showsVoice = false }
+            WhaleVoiceCaptureSheet(
+                target: .chat,
+                onCommit: insertVoiceDraft,
+                onCancel: {}
             )
             .presentationDetents([.height(310)])
             .presentationDragIndicator(.visible)
@@ -87,8 +86,8 @@ struct ConversationTabView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.whalePress)
-                .disabled(model.isBusy || model.isExtractingDocument)
-                .opacity(model.isBusy || model.isExtractingDocument ? 0.45 : 1)
+                .disabled(model.isExtractingDocument)
+                .opacity(model.isExtractingDocument ? 0.45 : 1)
                 .accessibilityLabel("语音输入")
                 .accessibilityHint("打开鲸鱼语音听写，识别后填入草稿")
                 .accessibilityIdentifier("whale-chat-voice")
@@ -175,7 +174,6 @@ struct ConversationTabView: View {
             transcript: transcript,
             currentDraft: chatDraft
         )
-        voice.reset()
         showsVoice = false
     }
 }
