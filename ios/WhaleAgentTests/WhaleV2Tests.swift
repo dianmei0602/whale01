@@ -227,6 +227,26 @@ final class WhaleV2Tests: XCTestCase {
         XCTAssertTrue(actionable.contains { $0.kind == .needsYou && $0.isActionable && $0.isWarning })
     }
 
+    func testHomePlannerDoesNotUseAllDayCalendarEntriesAsPrimaryTask() throws {
+        let now = Date()
+        let allDay = try XCTUnwrap(CalendarEventPreview(json: .object([
+            "eventId": .string("solar-term"),
+            "title": .string("小雪"),
+            "startAt": .string(ToolDate.iso(now)),
+            "endAt": .string(ToolDate.iso(now.addingTimeInterval(86_400))),
+            "isAllDay": .bool(true),
+            "calendarTitle": .string("节假日")
+        ])))
+        let items = AssistantCommandPlanner.items(
+            now: now,
+            events: [allDay],
+            todos: [],
+            records: [],
+            pendingConfirmation: nil
+        )
+        XCTAssertFalse(items.contains { $0.kind == .next && $0.isActionable })
+    }
+
     func testVoiceCorrectionUsesOnlyExplainableTermsAndKeepsIntentOrder() {
         let analysis = VoiceDraftAnalyzer.analyze(
             "deepseek 帮我看看明天安排，然后提醒我取快递",

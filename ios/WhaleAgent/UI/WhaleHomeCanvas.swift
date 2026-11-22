@@ -111,64 +111,58 @@ struct WhaleHomeCanvas: View {
                 Button {
                     open(command: primary)
                 } label: {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 8) {
-                            Text("现在")
-                                .whaleFont(size: 13, weight: .bold, design: .rounded)
-                            Spacer()
-                            Text(model.interactionPhase.title)
+                    HStack(spacing: 12) {
+                        Image(systemName: primary.isWarning ? "exclamationmark.circle.fill" : "scope")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+                            .frame(width: 42, height: 42)
+                            .background(
+                                (primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent).opacity(0.10),
+                                in: Circle()
+                            )
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(commandLabel(primary.kind))
                                 .whaleFont(size: 11, weight: .semibold)
-                                .padding(.horizontal, 9)
-                                .padding(.vertical, 4)
-                                .background(WhaleTheme.chrome.opacity(0.72), in: Capsule())
+                                .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+                            Text(primary.title)
+                                .whaleFont(size: 17, weight: .semibold, design: .rounded)
+                                .foregroundStyle(WhaleTheme.ink)
+                                .lineLimit(1)
+                            Text(primary.detail)
+                                .whaleFont(size: 12)
+                                .foregroundStyle(WhaleTheme.muted)
+                                .lineLimit(1)
                         }
-                        .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
-
-                        Text(primary.title)
-                            .whaleFont(size: 22, weight: .bold, design: .rounded)
-                            .foregroundStyle(WhaleTheme.ink)
-                            .lineLimit(2)
-                            .multilineTextAlignment(.leading)
-
-                        Text(primary.detail)
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.muted)
-                            .lineLimit(3)
-                            .multilineTextAlignment(.leading)
-
-                        HStack(spacing: 8) {
+                        Spacer(minLength: 6)
+                        VStack(spacing: 3) {
                             Text(primaryActionTitle(primary))
-                                .whaleFont(size: 13, weight: .semibold)
-                                .foregroundStyle(WhaleTheme.onAccent)
-                                .padding(.horizontal, 14)
-                                .frame(minHeight: 38)
-                                .background(
-                                    primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent,
-                                    in: Capsule()
-                                )
-                            Spacer()
-                            Image(systemName: "arrow.up.right")
-                                .whaleFont(size: 14, weight: .bold)
+                                .whaleFont(size: 11, weight: .semibold)
+                                .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
+                                .lineLimit(1)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent)
                         }
                     }
-                    .frame(maxWidth: .infinity, minHeight: 178, alignment: .leading)
-                    .padding(17)
+                    .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
                     .background(
-                        primary.isWarning ? WhaleTheme.warm.opacity(0.09) : WhaleTheme.accentSoft.opacity(0.72),
-                        in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        primary.isWarning ? WhaleTheme.warm.opacity(0.08) : WhaleTheme.card,
+                        in: RoundedRectangle(cornerRadius: 18, style: .continuous)
                     )
                     .overlay {
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .strokeBorder(
-                                (primary.isWarning ? WhaleTheme.warm : WhaleTheme.accent).opacity(0.12),
-                                lineWidth: 0.8
+                                primary.isWarning ? WhaleTheme.warm.opacity(0.26) : WhaleTheme.line.opacity(0.85),
+                                lineWidth: 0.7
                             )
                     }
-                    .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
                 .buttonStyle(.whalePress)
-                .whaleHomeFloating(elevated: true)
+                .whaleHomeFloating()
                 .accessibilityLabel("\(commandLabel(primary.kind))，\(primary.title)，\(primary.detail)")
                 .accessibilityIdentifier("home-primary-task")
             } else {

@@ -295,7 +295,7 @@ enum AssistantCommandPlanner {
         pendingConfirmation: PendingTool?
     ) -> [AssistantCommandItem] {
         let nextEvent = events
-            .filter { $0.endAt > now }
+            .filter { $0.endAt > now && !$0.isAllDay }
             .sorted { $0.startAt < $1.startAt }
             .first
         let nextTodo = todos
