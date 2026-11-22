@@ -204,6 +204,18 @@ final class InteractionUITests: XCTestCase {
         app.swipeDown()
         XCTAssertTrue(editor.exists)
     }
+
+    func testHomeDoesNotRepeatWorkspaceEntryWhenWorkspaceIsEmpty() {
+        let app = launch(additionalEnvironment: [
+            "WHALE_DEMO_WORKSPACE_EMPTY": "1"
+        ])
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["home-inspiration-card"].exists
+        )
+        XCTAssertFalse(app.buttons["home-workspace"].exists)
+        XCTAssertTrue(app.buttons["home-start-conversation"].exists)
+    }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
         tab(app, "discover").tap()

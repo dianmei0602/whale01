@@ -167,7 +167,7 @@ struct RootView: View {
         ConversationTabView(model: model, entryMode: $navigation.conversationMode, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) },
-            onOpenTodo: { openWorkspace() },
+            onOpenTodo: { navigation.openWorkspace(.todos) },
             onOpenDiscover: openDiscover, onOpenWorkspace: { openWorkspace() })
     }
 

@@ -49,10 +49,13 @@ struct WhaleHomeCanvas: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 if showQuote { dailyQuote }
-                workspaceLauncher
+                assistantCommandCenter
                 homeWidgetGrid
                 categoryGrid
                 conversationEntryButton
+                if workspaceNeedsAttention {
+                    workspaceLauncher
+                }
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, WhaleTheme.pagePadding).padding(.top, 12).padding(.bottom, 24)
         }.scrollIndicators(.hidden).scrollDismissesKeyboard(.interactively)
@@ -166,40 +169,7 @@ struct WhaleHomeCanvas: View {
                 .accessibilityLabel("\(commandLabel(primary.kind))，\(primary.title)，\(primary.detail)")
                 .accessibilityIdentifier("home-primary-task")
             } else {
-                Button(action: onOpenConversation) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "bubble.left.and.text.bubble.right")
-                            .whaleFont(size: 18, weight: .semibold)
-                            .foregroundStyle(WhaleTheme.accent)
-                            .frame(width: 42, height: 42)
-                            .background(WhaleTheme.accentSoft.opacity(0.8), in: Circle())
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("和鲸鱼说一句")
-                                .whaleFont(size: 16, weight: .semibold)
-                                .foregroundStyle(WhaleTheme.ink)
-                            Text("输入或语音，先确认再执行")
-                                .whaleFont(size: 12)
-                                .foregroundStyle(WhaleTheme.muted)
-                        }
-                        Spacer(minLength: 8)
-                        Image(systemName: "arrow.up.right")
-                            .whaleFont(size: 13, weight: .bold)
-                            .foregroundStyle(WhaleTheme.accent)
-                    }
-                    .padding(.horizontal, 14)
-                    .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
-                    .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
-                    }
-                    .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                }
-                .buttonStyle(.whalePress)
-                .whaleHomeFloating()
-                .accessibilityLabel("和鲸鱼说一句，输入或语音")
-                .accessibilityIdentifier("home-primary-task")
+                EmptyView()
             }
         }
     }
@@ -706,6 +676,16 @@ struct WhaleHomeCanvas: View {
             return "收件箱 · 项目 · 知识库 · 晨晚报"
         }
         return "\(inbox) 条待整理 · \(followUps) 项跟进 · 晨晚报"
+    }
+
+    private var workspaceNeedsAttention: Bool {
+#if DEBUG
+        if ProcessInfo.processInfo.environment["WHALE_DEMO_WORKSPACE_EMPTY"] == "1" {
+            return false
+        }
+#endif
+        return !workspaceStore.inbox.isEmpty
+            || !workspaceStore.pendingFollowUps.isEmpty
     }
 
     private func syncWidgetSnapshot() {
