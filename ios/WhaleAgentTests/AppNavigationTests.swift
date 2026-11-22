@@ -24,7 +24,7 @@ final class AppNavigationTests: XCTestCase {
                     source: "来源",
                     link: "https://example.com",
                     publishedAt: nil,
-                    channel: .ai,
+                    channel: "ai",
                     rank: nil
                 )
             )
