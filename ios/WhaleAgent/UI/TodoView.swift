@@ -63,9 +63,11 @@ struct TodoView: View {
     var onBackToChat: (() -> Void)? = nil
     var bottomBarInset: CGFloat = 0
     var showsHeader: Bool = true
+    var hidesNavigationBar: Bool = false
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var todoStore: TodoTimelineStore
+    @EnvironmentObject private var navigation: RootNavigationModel
     @StateObject private var voice = VoiceInputController()
 
     @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
@@ -84,7 +86,6 @@ struct TodoView: View {
     private let drafts = ComposerDraftStore()
     @State private var pendingDeletion: TodoReminder?
     @State private var quickPreview: TodoQuickPreview?
-    @State private var detailItem: TodoReminder?
     @State private var scheduleItem: TodoReminder?
     @FocusState private var composerFocused: Bool
     @State private var voicePrefix = ""
@@ -188,7 +189,7 @@ struct TodoView: View {
             .safeAreaInset(edge: .bottom) {
                 composer.padding(.bottom, embedded ? bottomBarInset : 0)
             }
-            .navigationBarHidden(true)
+            .navigationBarHidden(hidesNavigationBar)
             .task { draft = drafts.load(context: "todo"); await reload() }
             .onChange(of: draft) { _, text in drafts.save(text, context: "todo") }
             .sheet(isPresented: $showTimeEditor) {
@@ -196,12 +197,6 @@ struct TodoView: View {
                     let item = try await model.createTodoReminder(title: title, dueAt: due)
                     draft = ""; upsert(item); undoAction = item.deduplicated ? nil : .added(item)
                     showToast(item.deduplicated ? "已有相同提醒" : "已添加 · " + title, undo: !item.deduplicated)
-                }
-            }
-            .sheet(item: $detailItem) { item in
-                TodoDetailSheet(item: item, model: model) { updated in
-                    if let updated { upsert(updated) } else { removeLocal(item.id) }
-                    Task { await reload(silent: true) }
                 }
             }
             .sheet(item: $scheduleItem) { item in
@@ -264,16 +259,18 @@ struct TodoView: View {
                     .foregroundStyle(WhaleTheme.muted)
             }
             Spacer(minLength: 8)
-            Button {
-                if embedded { onBackToChat?() } else { dismiss() }
-            } label: {
-                Image(systemName: embedded ? "bubble.left.and.bubble.right" : "xmark")
-                    .font(.system(size: embedded ? 15 : 14, weight: .semibold))
-                    .foregroundStyle(WhaleTheme.ink)
-                    .whaleGlassCircle(size: 44)
+            if !embedded || onBackToChat != nil {
+                Button {
+                    if embedded { onBackToChat?() } else { dismiss() }
+                } label: {
+                    Image(systemName: embedded ? "bubble.left.and.bubble.right" : "xmark")
+                        .font(.system(size: embedded ? 15 : 14, weight: .semibold))
+                        .foregroundStyle(WhaleTheme.ink)
+                        .whaleGlassCircle(size: 44)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(embedded ? "回到对话" : "关闭待办")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(embedded ? "回到对话" : "关闭待办")
         }
     }
 
@@ -560,7 +557,9 @@ struct TodoView: View {
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentShape(Rectangle())
-                    .onTapGesture { detailItem = item }
+                    .onTapGesture {
+                        navigation.workspacePath.append(.todoDetail(item.id))
+                    }
 
                 HStack(spacing: 7) {
                     if let due = item.dueAt {
@@ -640,7 +639,9 @@ struct TodoView: View {
                 .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
         )
         .contextMenu {
-            Button("打开详情", systemImage: "info.circle") { detailItem = item }
+            Button("打开详情", systemImage: "info.circle") {
+                navigation.workspacePath.append(.todoDetail(item.id))
+            }
             Button("智能排期", systemImage: "calendar.badge.clock") { scheduleItem = item }
             Button("移入收件箱", systemImage: "tray.and.arrow.down") { rescheduleToInbox(item) }
             Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }

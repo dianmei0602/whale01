@@ -24,6 +24,7 @@ struct RootView: View {
     var body: some View {
         pager
         .environmentObject(todoStore)
+        .environmentObject(navigation)
         .id(appearanceStore.palette.rawValue)
         .background(WhaleTheme.background.ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
@@ -193,22 +194,28 @@ struct RootView: View {
     }
 
     private var recordsPage: some View {
-        WhaleWorkspaceView(
-            model: model,
-            embedded: true,
-            onOpenMusic: { openDiscover(.music) },
-            onOpenChat: { prompt in
-            navigation.conversationMode = .chat
-            navigation.selectedTab = .conversation
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 250_000_000)
-                NotificationCenter.default.post(
-                    name: .whalePrefillDraft,
-                    object: nil,
-                    userInfo: ["text": prompt]
-                )
+        NavigationStack(path: $navigation.workspacePath) {
+            WhaleWorkspaceView(
+                model: model,
+                embedded: true,
+                onOpenMusic: { openDiscover(.music) },
+                onOpenChat: { prompt in
+                    navigation.conversationMode = .chat
+                    navigation.selectedTab = .conversation
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 250_000_000)
+                        NotificationCenter.default.post(
+                            name: .whalePrefillDraft,
+                            object: nil,
+                            userInfo: ["text": prompt]
+                        )
+                    }
+                }
+            )
+            .navigationDestination(for: WorkspaceRoute.self) { route in
+                WhaleWorkspaceRouteView(route: route, model: model)
             }
-        })
+        }
     }
 
     private func move(to tab: AppTab) {

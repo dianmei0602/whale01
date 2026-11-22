@@ -48,6 +48,7 @@ struct WhaleWorkspaceView: View {
     @StateObject private var store = WhaleWorkspaceStore.shared
     @StateObject private var reading = DiscoverReadingLibrary.shared
     @EnvironmentObject private var todoStore: TodoTimelineStore
+    @EnvironmentObject private var navigation: RootNavigationModel
     @Environment(\.dismiss) private var dismiss
     @State private var section: WhaleWorkspaceSection = .inbox
     @State private var showCaptureEditor = false
@@ -63,8 +64,6 @@ struct WhaleWorkspaceView: View {
     @State private var taskLoading = false
     @State private var taskSubmitting = false
     @State private var busyTaskIds: Set<String> = []
-    @State private var showTodoManager = false
-
     var body: some View {
         Group {
             if embedded {
@@ -103,20 +102,6 @@ struct WhaleWorkspaceView: View {
         }
         .sheet(isPresented: $showFollowUpEditor) {
             WorkspaceFollowUpEditor(store: store)
-        }
-        .sheet(isPresented: $showTodoManager) {
-            NavigationStack {
-                TodoView(
-                    model: model,
-                    embedded: true,
-                    bottomBarInset: 0
-                )
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("完成") { showTodoManager = false }
-                    }
-                }
-            }
         }
         .sheet(item: $readerArticle) { article in
             NativeArticleReaderView(item: newsItem(for: article), library: reading)
@@ -217,7 +202,7 @@ struct WhaleWorkspaceView: View {
                 }
                 Spacer()
                 Button("全部") {
-                    showTodoManager = true
+                    navigation.workspacePath.append(.todos)
                 }
                 .whaleFont(size: 12, weight: .semibold)
                 .foregroundStyle(WhaleTheme.accent)
