@@ -7,8 +7,11 @@ struct RootView: View {
     @StateObject private var model = AppModel()
     @StateObject private var appearanceStore = WhaleAppearanceStore()
     @StateObject private var keyboard = KeyboardObserver()
-    @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
-    @State private var conversationMode = ConversationEntryMode.defaultMode
+    @StateObject private var navigation = RootNavigationModel(
+        selectedTab: NavigationHabits.restoredTab(
+            UserDefaults.standard.string(forKey: "whale.root.tab")
+        )
+    )
     @State private var showRecords = false
     @State private var showSettings = false
     @State private var settingsDetailOpen = false
@@ -34,8 +37,8 @@ struct RootView: View {
                 onOpenTask: { task in
                     guard model.requestMessageFocus(for: task) else { return false }
                     showRecords = false
-                    conversationMode = .chat
-                    page = .conversation
+                    navigation.conversationMode = .chat
+                    navigation.selectedTab = .conversation
                     return true
                 },
                 showsClose: true,
@@ -58,7 +61,7 @@ struct RootView: View {
 #if DEBUG
             let environment = ProcessInfo.processInfo.environment
             if let raw = environment["WHALE_DEMO_INITIAL_CHANNEL"], let channel = DiscoverChannel(rawValue: raw) { discoverChannel = channel }
-            if environment["WHALE_DEMO_HOME"] == "1" || environment["WHALE_DEMO_WEATHER"] == "1" { page = .conversation }
+            if environment["WHALE_DEMO_HOME"] == "1" || environment["WHALE_DEMO_WEATHER"] == "1" { navigation.selectedTab = .conversation }
             if let raw = environment["WHALE_DEMO_PALETTE"],
                let palette = WhalePaletteStyle(rawValue: raw) {
                 appearanceStore.select(palette)
@@ -79,8 +82,8 @@ struct RootView: View {
                     requiresConfirmation: true
                 )
             }
-            if environment["WHALE_DEMO_TODO"] == "1" { page = .records }
-            if environment["WHALE_DEMO_HUB"] == "1" { page = .discover }
+            if environment["WHALE_DEMO_TODO"] == "1" { navigation.selectedTab = .records }
+            if environment["WHALE_DEMO_HUB"] == "1" { navigation.selectedTab = .discover }
             if environment["WHALE_DEMO_SETTINGS"] == "1" { showSettings = true }
             if environment["WHALE_DEMO_DISCOVER"] == "1" { openDiscover(.market) }
             if environment["WHALE_DEMO_GAME"] == "1" { openDiscover(.game) }
@@ -109,7 +112,7 @@ struct RootView: View {
             guard phase == .active else { return }
             Task { await model.flushResultOutbox(); await model.drainSharedInbox() }
         }
-        .onChange(of: page) { _, tab in
+        .onChange(of: navigation.selectedTab) { _, tab in
             UserDefaults.standard.set(tab.rawValue, forKey: "whale.root.tab")
             UISelectionFeedbackGenerator().selectionChanged()
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
@@ -120,8 +123,8 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenChat)) { _ in
             showRecords = false
             showSettings = false
-            conversationMode = .chat
-            page = .conversation
+            navigation.conversationMode = .chat
+            navigation.selectedTab = .conversation
         }
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenWorkspace)) { _ in
             showRecords = false
@@ -135,7 +138,7 @@ struct RootView: View {
     /// Native paged navigation keeps the swipe continuous and supplies the
     /// slide transition without maintaining a second custom gesture state.
     private var pager: some View {
-        TabView(selection: $page) {
+        TabView(selection: $navigation.selectedTab) {
             conversationPage
                 .tag(AppTab.conversation)
             discoverPage
@@ -145,11 +148,11 @@ struct RootView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .animation(.spring(response: 0.30, dampingFraction: 0.86), value: page)
+        .animation(.spring(response: 0.30, dampingFraction: 0.86), value: navigation.selectedTab)
     }
 
     private var conversationPage: some View {
-        ConversationTabView(model: model, entryMode: $conversationMode, bottomInset: 0,
+        ConversationTabView(model: model, entryMode: $navigation.conversationMode, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) },
             onOpenTodo: { openWorkspace() },
@@ -162,18 +165,18 @@ struct RootView: View {
     @ViewBuilder
     private var bottomChrome: some View {
         if RootBottomChromePolicy.tabBarVisible(
-            page: page,
+            page: navigation.selectedTab,
             composerFocused: false,
             keyboardVisible: keyboard.isVisible
         ) {
-            WhaleRootTabBar(selection: $page) {
-                conversationMode = .home
+            WhaleRootTabBar(selection: $navigation.selectedTab) { tab in
+                navigation.reselect(tab)
             }
         }
     }
 
     private var discoverPage: some View {
-        DiscoverView(selection: $discoverChannel, appModel: model,
+        DiscoverView(selection: $discoverChannel, path: $navigation.discoverPath, appModel: model,
                      onSettings: { showSettings = true },
                      onSwitchTab: { tab in move(to: tab) })
     }
@@ -184,8 +187,8 @@ struct RootView: View {
             embedded: true,
             onOpenMusic: { openDiscover(.music) },
             onOpenChat: { prompt in
-            conversationMode = .chat
-            page = .conversation
+            navigation.conversationMode = .chat
+            navigation.selectedTab = .conversation
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 250_000_000)
                 NotificationCenter.default.post(
@@ -198,9 +201,9 @@ struct RootView: View {
     }
 
     private func move(to tab: AppTab) {
-        guard tab != page else { return }
+        guard tab != navigation.selectedTab else { return }
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(.easeInOut(duration: 0.16)) { page = tab }
+        withAnimation(.easeInOut(duration: 0.16)) { navigation.selectedTab = tab }
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {
@@ -240,7 +243,7 @@ enum RootBottomChromePolicy {
 /// content above it can be paged horizontally.
 struct WhaleRootTabBar: View {
     @Binding var selection: AppTab
-    var onReselectConversation: () -> Void = {}
+    var onReselect: (AppTab) -> Void = { _ in }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -262,9 +265,7 @@ struct WhaleRootTabBar: View {
         let selected = selection == tab
         return Button {
             if selection == tab {
-                if tab == .conversation {
-                    onReselectConversation()
-                }
+                onReselect(tab)
                 return
             }
             UISelectionFeedbackGenerator().selectionChanged()

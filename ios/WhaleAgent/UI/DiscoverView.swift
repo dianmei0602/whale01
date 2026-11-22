@@ -2,10 +2,10 @@ import SwiftUI
 
 struct DiscoverView: View {
     @Binding var selection: DiscoverChannel
+    @Binding var path: [DiscoverRoute]
     @ObservedObject var appModel: AppModel
     let onSettings: () -> Void
     let onSwitchTab: (AppTab) -> Void
-    @State private var path = NavigationPath()
     @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
     @ObservedObject private var library = DiscoverReadingLibrary.shared
@@ -13,9 +13,10 @@ struct DiscoverView: View {
     @State private var showLibrary = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
+    init(selection: Binding<DiscoverChannel>, path: Binding<[DiscoverRoute]>, appModel: AppModel, onSettings: @escaping () -> Void,
          onSwitchTab: @escaping (AppTab) -> Void) {
         _selection = selection
+        _path = path
         self.onSettings = onSettings
         self.onSwitchTab = onSwitchTab
         _store = StateObject(wrappedValue: DiscoverChannelStore.shared)
@@ -105,7 +106,7 @@ struct DiscoverView: View {
                             }
                         }
                     }
-                    .onChange(of: selection) { _, _ in path = NavigationPath() }
+                    .onChange(of: selection) { _, _ in path = [] }
                 }
             }
         }
