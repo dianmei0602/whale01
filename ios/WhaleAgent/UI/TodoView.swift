@@ -62,6 +62,7 @@ struct TodoView: View {
     var embedded: Bool = false
     var onBackToChat: (() -> Void)? = nil
     var bottomBarInset: CGFloat = 0
+    var showsHeader: Bool = true
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var voice = VoiceInputController()
@@ -138,8 +139,14 @@ struct TodoView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
-                            header
-                                .id("todo-top")
+                            if showsHeader {
+                                header
+                                    .id("todo-top")
+                            } else {
+                                Color.clear
+                                    .frame(height: 0)
+                                    .id("todo-top")
+                            }
                             if reminderStatus != "granted" { permissionCard }
                             boardBar
                             content

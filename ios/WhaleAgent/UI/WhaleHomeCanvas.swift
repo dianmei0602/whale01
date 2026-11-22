@@ -48,12 +48,11 @@ struct WhaleHomeCanvas: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                assistantCommandCenter
-                conversationEntryButton
                 if showQuote { dailyQuote }
                 workspaceLauncher
                 homeWidgetGrid
                 categoryGrid
+                conversationEntryButton
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, WhaleTheme.pagePadding).padding(.top, 12).padding(.bottom, 24)
         }.scrollIndicators(.hidden).scrollDismissesKeyboard(.interactively)
@@ -368,9 +367,6 @@ struct WhaleHomeCanvas: View {
     private var categoryGrid: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                Text("常用操作")
-                    .whaleFont(size: 15, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.ink)
                 Spacer()
                 if editingShortcuts {
                     Button("恢复默认") {
@@ -394,15 +390,20 @@ struct WhaleHomeCanvas: View {
                     .buttonStyle(.plain)
                     .accessibilityIdentifier("home-shortcuts-done")
                 } else {
-                    Button("整理") {
+                    Button {
                         withAnimation(.easeOut(duration: 0.18)) {
                             editingShortcuts = true
                         }
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(WhaleTheme.muted)
+                            .frame(width: 36, height: 36)
+                            .background(WhaleTheme.card, in: Circle())
                     }
-                        .whaleFont(size: 12, weight: .medium)
-                        .foregroundStyle(WhaleTheme.muted)
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("home-shortcuts-edit")
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("整理常用入口")
+                    .accessibilityIdentifier("home-shortcuts-edit")
                 }
             }
 

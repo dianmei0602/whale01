@@ -9,9 +9,9 @@ struct RootView: View {
     @StateObject private var keyboard = KeyboardObserver()
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var conversationMode = ConversationEntryMode.defaultMode
+    @State private var workspaceHubMode = WhaleWorkspaceHubMode.defaultMode
     @State private var showRecords = false
     @State private var showSettings = false
-    @State private var showWorkspace = false
     @State private var settingsDetailOpen = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
@@ -51,25 +51,6 @@ struct RootView: View {
                 onBackToChat: { showSettings = false }
             )
                 .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $showWorkspace) {
-            WhaleWorkspaceView(model: model, onOpenMusic: {
-                showWorkspace = false
-                openDiscover(.music)
-            }) { prompt in
-                showWorkspace = false
-                conversationMode = .chat
-                page = .conversation
-                Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 250_000_000)
-                    NotificationCenter.default.post(
-                        name: .whalePrefillDraft,
-                        object: nil,
-                        userInfo: ["text": prompt]
-                    )
-                }
-            }
-            .presentationDragIndicator(.visible)
         }
         .task {
             WhaleSystemChrome.apply(selectedPalette)
@@ -115,12 +96,12 @@ struct RootView: View {
             await model.drainSharedInbox()
             if UserDefaults.standard.bool(forKey: "whale.open.workspace.pending") {
                 UserDefaults.standard.removeObject(forKey: "whale.open.workspace.pending")
-                showWorkspace = true
+                openWorkspace()
             }
         }
         .onOpenURL { url in
             if url.scheme == "whaleagent", url.host == "workspace" {
-                showWorkspace = true
+                openWorkspace()
             } else {
                 Task { await model.handleSharedURL(url) }
             }
@@ -146,8 +127,7 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenWorkspace)) { _ in
             showRecords = false
             showSettings = false
-            page = .conversation
-            showWorkspace = true
+            openWorkspace()
         }
     }
 
@@ -177,8 +157,9 @@ struct RootView: View {
     private var conversationPage: some View {
         ConversationTabView(model: model, entryMode: $conversationMode, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
-            onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records },
-            onOpenDiscover: openDiscover, onOpenWorkspace: { showWorkspace = true })
+            onOpenMusic: { openDiscover(.music) },
+            onOpenTodo: { openWorkspace(mode: .tasks) },
+            onOpenDiscover: openDiscover, onOpenWorkspace: openWorkspace)
     }
 
     /// Composer and tabs share one bottom inset. This avoids nested safe-area
@@ -204,7 +185,22 @@ struct RootView: View {
     }
 
     private var recordsPage: some View {
-        TodoView(model: model, embedded: true, onBackToChat: { page = .conversation }, bottomBarInset: 0)
+        WhaleWorkspaceHubView(
+            model: model,
+            mode: $workspaceHubMode,
+            onOpenMusic: { openDiscover(.music) }
+        ) { prompt in
+            conversationMode = .chat
+            page = .conversation
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                NotificationCenter.default.post(
+                    name: .whalePrefillDraft,
+                    object: nil,
+                    userInfo: ["text": prompt]
+                )
+            }
+        }
     }
 
     private func move(to tab: AppTab) {
@@ -216,6 +212,11 @@ struct RootView: View {
     private func openDiscover(_ channel: DiscoverChannel) {
         discoverChannel = channel
         move(to: .discover)
+    }
+
+    private func openWorkspace(mode: WhaleWorkspaceHubMode = .workspace) {
+        workspaceHubMode = mode
+        move(to: .records)
     }
     private var colorScheme: ColorScheme? {
         appearance == "light" ? .light : appearance == "dark" ? .dark : nil
@@ -252,7 +253,7 @@ struct WhaleRootTabBar: View {
         HStack(spacing: 0) {
             item(.conversation, title: "首页", icon: "house")
             item(.discover, title: "发现", icon: "square.grid.2x2")
-            item(.records, title: "待办", icon: "checklist")
+            item(.records, title: "工作台", icon: "square.stack.3d.up")
         }
         .padding(.top, 7)
         .padding(.bottom, 1)

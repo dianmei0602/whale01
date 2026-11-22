@@ -41,6 +41,7 @@ private enum WhaleWorkspaceSection: String, CaseIterable, Identifiable {
 
 struct WhaleWorkspaceView: View {
     @ObservedObject var model: AppModel
+    var embedded: Bool = false
     let onOpenMusic: () -> Void
     let onOpenChat: (String) -> Void
 
@@ -58,65 +59,22 @@ struct WhaleWorkspaceView: View {
     @State private var toast: String?
 
     var body: some View {
-        NavigationStack {
-            ZStack(alignment: .top) {
-                WhaleBackdrop().ignoresSafeArea()
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        sectionSelector
-                        if let issue = store.loadIssue {
-                            Label(issue, systemImage: "exclamationmark.triangle")
-                                .whaleFont(size: 13)
-                                .foregroundStyle(WhaleTheme.warm)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .whaleCard(padding: 13)
+        Group {
+            if embedded {
+                workspaceContent
+            } else {
+                NavigationStack {
+                    workspaceContent
+                        .navigationTitle("鲸鱼工作台")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("关闭") { dismiss() }
+                            }
+                            ToolbarItem(placement: .primaryAction) {
+                                addMenu
+                            }
                         }
-                        sectionContent
-                    }
-                    .padding(.horizontal, WhaleTheme.pagePadding)
-                    .padding(.top, 8)
-                    .padding(.bottom, 30)
-                }
-                .scrollIndicators(.hidden)
-                .refreshable {
-                    if section == .brief {
-                        NotificationCenter.default.post(name: .whaleWorkspaceBriefRefresh, object: nil)
-                    }
-                }
-
-                if let toast {
-                    Text(toast)
-                        .whaleFont(size: 13, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.ink)
-                        .padding(.horizontal, 14)
-                        .frame(minHeight: 40)
-                        .background(WhaleTheme.card, in: Capsule())
-                        .overlay(Capsule().strokeBorder(WhaleTheme.line, lineWidth: 0.8))
-                        .padding(.top, 8)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
-            .navigationTitle("鲸鱼工作台")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") { dismiss() }
-                }
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button("记录想法", systemImage: "square.and.pencil") {
-                            showCaptureEditor = true
-                        }
-                        Button("新建项目", systemImage: "folder.badge.plus") {
-                            showProjectEditor = true
-                        }
-                        Button("新增跟进", systemImage: "arrow.triangle.branch") {
-                            showFollowUpEditor = true
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .accessibilityLabel("新增")
                 }
             }
         }
@@ -147,6 +105,63 @@ struct WhaleWorkspaceView: View {
                 showToast("摘录已保存到私人知识库")
             }
         }
+    }
+
+    private var workspaceContent: some View {
+        ZStack(alignment: .top) {
+            WhaleBackdrop().ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    sectionSelector
+                    if let issue = store.loadIssue {
+                        Label(issue, systemImage: "exclamationmark.triangle")
+                            .whaleFont(size: 13)
+                            .foregroundStyle(WhaleTheme.warm)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .whaleCard(padding: 13)
+                    }
+                    sectionContent
+                }
+                .padding(.horizontal, WhaleTheme.pagePadding)
+                .padding(.top, 8)
+                .padding(.bottom, 30)
+            }
+            .scrollIndicators(.hidden)
+            .refreshable {
+                if section == .brief {
+                    NotificationCenter.default.post(name: .whaleWorkspaceBriefRefresh, object: nil)
+                }
+            }
+
+            if let toast {
+                Text(toast)
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.ink)
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 40)
+                    .background(WhaleTheme.card, in: Capsule())
+                    .overlay(Capsule().strokeBorder(WhaleTheme.line, lineWidth: 0.8))
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+    }
+
+    private var addMenu: some View {
+        Menu {
+            Button("记录想法", systemImage: "square.and.pencil") {
+                showCaptureEditor = true
+            }
+            Button("新建项目", systemImage: "folder.badge.plus") {
+                showProjectEditor = true
+            }
+            Button("新增跟进", systemImage: "arrow.triangle.branch") {
+                showFollowUpEditor = true
+            }
+        } label: {
+            Image(systemName: "plus")
+        }
+        .accessibilityLabel("新增")
     }
 
     private var sectionSelector: some View {

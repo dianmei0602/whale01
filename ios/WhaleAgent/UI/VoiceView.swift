@@ -1,8 +1,8 @@
 import SwiftUI
 import UIKit
 
-/// Compact listening surface. The underlying conversation remains visible
-/// through a material blur while recognition starts automatically.
+/// Compact listening panel presented from the bottom while recognition starts
+/// automatically.
 struct VoiceView: View {
     @ObservedObject var voice: VoiceInputController
     let onInsert: (String) -> Void
@@ -33,12 +33,9 @@ struct VoiceView: View {
     }
 
     var body: some View {
-        ZStack {
-            backdrop
-            listeningCard
-                .transition(.scale(scale: 0.94).combined(with: .opacity))
-        }
-        .ignoresSafeArea()
+        listeningCard
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(cardColor.ignoresSafeArea())
         .accessibilityIdentifier("voice-input-overlay")
         .task {
             await startIfNeeded()
@@ -46,21 +43,6 @@ struct VoiceView: View {
         .onDisappear {
             voice.cancel()
         }
-    }
-
-    private var backdrop: some View {
-        ZStack {
-            Rectangle()
-                .fill(.ultraThinMaterial)
-            Color.black.opacity(0.10)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            cancel()
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("关闭语音输入")
-        .accessibilityIdentifier("voice-input-backdrop")
     }
 
     private var listeningCard: some View {
@@ -86,10 +68,9 @@ struct VoiceView: View {
             actionButton
         }
         .padding(.horizontal, 22)
-        .padding(.top, 26)
+        .padding(.top, 18)
         .padding(.bottom, 22)
-        .frame(maxWidth: 316)
-        .background(cardColor, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .frame(maxWidth: .infinity)
         .overlay(alignment: .topTrailing) {
             Button(action: cancel) {
                 Image(systemName: "xmark")
@@ -103,7 +84,6 @@ struct VoiceView: View {
             .accessibilityLabel("取消语音输入")
             .accessibilityIdentifier("voice-input-cancel")
         }
-        .shadow(color: .black.opacity(0.16), radius: 28, y: 14)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("voice-input-card")
     }

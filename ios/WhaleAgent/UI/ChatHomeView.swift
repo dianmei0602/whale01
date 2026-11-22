@@ -31,13 +31,16 @@ struct ConversationTabView: View {
         }
         .background(WhaleIMessagePalette.canvas)
         .tint(WhaleIMessagePalette.outgoing)
-        .fullScreenCover(isPresented: $showsVoice) {
+        .sheet(isPresented: $showsVoice) {
             VoiceView(
                 voice: voice,
                 onInsert: insertVoiceDraft,
                 onCancel: { showsVoice = false }
             )
-            .presentationBackground(.clear)
+            .presentationDetents([.height(310)])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(28)
+            .presentationBackground(WhaleIMessagePalette.canvas)
         }
     }
 
@@ -71,6 +74,7 @@ struct ConversationTabView: View {
     private var header: some View {
         ZStack {
             HStack(spacing: 2) {
+                WhaleMarkView(size: 28)
                 headerStatus
                 Spacer()
                 Button {
@@ -105,12 +109,9 @@ struct ConversationTabView: View {
                 .accessibilityIdentifier("assistant-settings")
             }
 
-            HStack(spacing: 8) {
-                WhaleMarkView(size: 28)
-                Text("鲸鱼")
-                    .whaleFont(size: 16, weight: .semibold)
-                    .foregroundStyle(WhaleIMessagePalette.text)
-            }
+            Text("鲸鱼")
+                .whaleFont(size: 16, weight: .semibold)
+                .foregroundStyle(WhaleIMessagePalette.text)
             .fixedSize()
             .allowsHitTesting(false)
         }
