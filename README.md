@@ -48,13 +48,13 @@
 2.1.0 Life Agent 已生成侧载 IPA，包含个人讯飞凭据，只保存在本机安装目录，
 不进入 Git，也不得公开转发：
 
-`C:\Users\Administrator\Desktop\WhaleAgent-Sideload-2.1.0-Life-Agent-fdcd72b-XFYUN.ipa`
+`release/WhaleAgent-Sideload-2.1.0-Motion-Workspace-fce952c-XFYUN.ipa`
 
 当前 SHA256：
 
-`edbad4ec653402ffb49608d35780da20024e5d067c69d839d791fcc146f244a7`
+`8b133466c72f4decfc7f2a993defb2e13847ae61bf1cd91704865063e7cae6bd`
 
-构建运行：[45029680980](https://github.com/dianmei0602/whale01/actions/runs/45029680980)。
+构建运行：[45041870565](https://github.com/dianmei0602/whale01/actions/runs/45041870565)。
 
 ## 产品边界
 

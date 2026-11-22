@@ -5,13 +5,14 @@ Usage:
     pwsh tools/publish-ipa.ps1                 # latest successful "iOS Sideload IPA" run
     pwsh tools/publish-ipa.ps1 -RunId 123456   # publish a specific run
 
-Always overwrites C:\Users\<user>\WhaleAgent-Sideload.ipa and its .sha256 sidecar.
+By default, publishes to <repository>/release/WhaleAgent-Sideload.ipa.
+Always overwrites that IPA and its identity sidecars unless -Destination is supplied.
 #>
 [CmdletBinding()]
 param(
     [long]$RunId = 0,
-    [string]$Repo = "wxguo56/whale01",
-    [string]$Destination = (Join-Path $env:USERPROFILE "WhaleAgent-Sideload.ipa"),
+    [string]$Repo = "dianmei0602/whale01",
+    [string]$Destination = (Join-Path (Split-Path $PSScriptRoot -Parent) "release\WhaleAgent-Sideload.ipa"),
     [string]$ExpectedSourceSHA = "",
     [string]$IpaPass = $env:IPA_PASS,
     [string]$PrivateKeyPath = (Join-Path $env:USERPROFILE ".whale\ipa-private.pem")
