@@ -90,7 +90,6 @@ struct WhaleAgentChatSurface: View {
                 }
             }
         )
-        .chatTheme(theme)
         .setAvailableInputs([.text, .media, .document])
         .assetsPickerLimit(assetsPickerLimit: 4)
         .showAvatar(false)
@@ -100,12 +99,13 @@ struct WhaleAgentChatSurface: View {
         .contentInsets(top: 8, bottom: max(8, bottomInset + 8))
         .inputViewText($inputText)
         .localization(Self.localization)
-            .mainHeaderBuilder {
-                welcomeHeader
-            }
-            .betweenListAndInputViewBuilder {
-                AnyView(chatNotice)
-            }
+        .mainHeaderBuilder {
+            welcomeHeader
+        }
+        .betweenListAndInputViewBuilder {
+            AnyView(chatNotice)
+        }
+        .chatTheme(theme)
     }
 
     private var welcomeHeader: AnyView {
