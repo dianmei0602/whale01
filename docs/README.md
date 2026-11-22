@@ -8,7 +8,9 @@
 | --- | --- |
 | [根目录 README](../README.md) | 项目定位、当前版本、工程入口 |
 | [CHANGELOG](../CHANGELOG.md) | 版本级变更摘要 |
+| [Agent 工程与 Skill 手册](AGENT_ENGINEERING_PLAYBOOK.md) | 工具契约、规划、流式、记忆、阅读、测试与 Skill 使用规则 |
 | [2.0 执行规格](plans/whale-2.0-execution-plan.md) | 能力 2.0 与交互 2.0 的实施边界 |
+| [2.0 系列封版](logs/2026-11-22-v2.0-series-archive.md) | 最终能力、110 项测试、构建与 IPA 保存点 |
 | [2.0 开发日志](logs/2026-11-20-v2.0.0-interaction.md) | 本轮能力、交互、验证与已知边界 |
 | [2.0.1 外观配色](logs/2026-11-20-v2.0.1-appearance-palettes.md) | 夜海、鎏金色值、语义映射与对比度 |
 | [2.0.2 上下文与预览](logs/2026-11-20-v2.0.2-context-preview.md) | 当前任务、首页主任务、统一操作预览和深色调整 |

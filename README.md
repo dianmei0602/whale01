@@ -4,17 +4,19 @@
 
 ## 当前阶段
 
-- 最新版本：`2.0.4 (204.1)`
-- 构建源码：`69298d4`
-- 单元测试：98 项全部通过
-- 助手桌面专项：[组件、图标、柔和阴影与长按整理通过](https://github.com/dianmei0602/whale01/actions/runs/44864300701)
-- 侧载构建：[2.0.4 加密 IPA 构建通过](https://github.com/dianmei0602/whale01/actions/runs/44864303008)
-- 当前阶段：2.0.4 真机交互验收
+- 最新版本：`2.0.4 (204.1)`，2.0 系列封版
+- 构建源码：`0332355`
+- 单元测试：110 项通过
+- 导航、草稿和助手首页 UI 回归通过
+- 侧载构建：[2.0 封版 IPA](https://github.com/dianmei0602/whale01/actions/runs/44977544321)
+- 当前阶段：2.0 封版后的真机验收
 
 ## 从这里开始
 
 | 入口 | 用途 |
 | --- | --- |
+| [2.0 系列封版](docs/logs/2026-11-22-v2.0-series-archive.md) | 最终功能、测试、构建与 IPA 保存点 |
+| [Agent 工程与 Skill 手册](docs/AGENT_ENGINEERING_PLAYBOOK.md) | Agent、工具、数据、测试和 Skill 使用经验 |
 | [工程复盘 HTML](web/engineering-review/index.html) | 可视化查看 Agent、Skill、开发历程、经验与交付状态 |
 | [2.0 执行规格](docs/plans/whale-2.0-execution-plan.md) | 能力 2.0、交互状态机和分阶段交付门槛 |
 | [2.0 开发日志](docs/logs/2026-11-20-v2.0.0-interaction.md) | 本轮语音、助手、发现、待办与已知边界 |
@@ -43,11 +45,11 @@
 
 含讯飞凭据的 2.0.4 IPA 只保存在本机安装目录，不进入 Git，也不得公开转发：
 
-`E:\AI_work\AI_codex\代号鲸鱼001\代号鲸鱼001_2026-11-14\代号鲸鱼001\安装文件\WhaleAgent-Sideload-2.0.4-XFYUN.ipa`
+`C:\Users\Administrator\Desktop\WhaleAgent-Sideload-2.0.4-0332355-XFYUN.ipa`
 
 当前 SHA256：
 
-`b418ae5ca262968bb75f66f3e6e7739d3e1ad868eda5d3a7d67aa281f8963c62`
+`482bcb1af3a2ac4528b7a7c6c458ae906cf1e7ba43abf00f4c90da80544e4419`
 
 ## 产品边界
 
