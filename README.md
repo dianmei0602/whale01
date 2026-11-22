@@ -4,10 +4,11 @@
 
 ## 当前阶段
 
-- 最新版本：`2.1.0 (210.x)`，Life Agent 源码候选
+- 最新版本：`2.1.0 (210.1)`，Life Agent
+- 构建源码：`fdcd72b`
 - 3.0 P0 收纳起点：`bccf663`（ExyteChat 生活 Agent 接入）
 - 对话界面：ExyteChat `3.3.7`，保留讯飞语音听写入口
-- 当前阶段：3.0 P0 本地源码检查通过；仍需 macOS 编译、模拟器、真机与 IPA 验证
+- 当前阶段：3.0 P0 源码、Xcode 编译和侧载 IPA 已验证；仍需真机专项验收
 - 上一版稳定包：`2.0.4 (204.1)`，源码 `0332355`
 
 ## 从这里开始
@@ -44,15 +45,16 @@
 
 ## 安装包
 
-2.1.0 Life Agent 候选尚未推送构建，因此目前没有对应的新 IPA。
+2.1.0 Life Agent 已生成侧载 IPA，包含个人讯飞凭据，只保存在本机安装目录，
+不进入 Git，也不得公开转发：
 
-上一版稳定包含讯飞凭据，只保存在本机安装目录，不进入 Git，也不得公开转发：
-
-`C:\Users\Administrator\Desktop\WhaleAgent-Sideload-2.0.4-0332355-XFYUN.ipa`
+`C:\Users\Administrator\Desktop\WhaleAgent-Sideload-2.1.0-Life-Agent-fdcd72b-XFYUN.ipa`
 
 当前 SHA256：
 
-`482bcb1af3a2ac4528b7a7c6c458ae906cf1e7ba43abf00f4c90da80544e4419`
+`edbad4ec653402ffb49608d35780da20024e5d067c69d839d791fcc146f244a7`
+
+构建运行：[45029680980](https://github.com/dianmei0602/whale01/actions/runs/45029680980)。
 
 ## 产品边界
 

@@ -91,26 +91,28 @@ def check_repository(root: Path = ROOT) -> list[str]:
 
     required_fragments = {
         "README.md": [
-            f"最新版本：`{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.x)`",
+            f"最新版本：`{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.1)`",
+            "构建源码：`fdcd72b`",
             "docs/logs/2026-11-22-v2.1.0-life-agent-p0.md",
         ],
         "CHANGELOG.md": [
             f"## {EXPECTED_VERSION} — 2026-11-22",
             f"ExyteChat {EXPECTED_EXYTE_VERSION}",
             "讯飞语音入口",
-            "尚未推送构建",
+            "侧载构建",
         ],
         "docs/README.md": [
             "2026-11-22-v2.1.0-life-agent-p0.md",
             "superpowers/plans/2026-11-22-whale-3.0-p0-closure.md",
         ],
         "00_执行看板.md": [
-            f"版本 `{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.x)`",
-            "Life Agent 源码候选",
+            f"版本 `{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.1)`",
+            "Life Agent 侧载构建",
         ],
         "docs/logs/2026-11-22-v2.1.0-life-agent-p0.md": [
-            f"版本：`{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.x)`",
+            f"版本：`{EXPECTED_VERSION} ({EXPECTED_BUILD_BASE}.1)`",
             "ExyteChat `3.3.7`",
+            "构建源码：`fdcd72b3a0346cfc102ca05d99ee77eb44dc8c18`",
             "尚未完成",
         ],
     }
