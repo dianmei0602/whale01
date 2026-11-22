@@ -5,12 +5,17 @@ final class InteractionUITests: XCTestCase {
         app.buttons["tab-" + name]
     }
 
-    private func launch() -> XCUIApplication {
+    private func launch(
+        additionalEnvironment: [String: String] = [:]
+    ) -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchEnvironment["WHALE_DEMO_HOME"] = "1"
         app.launchEnvironment["WHALE_DEMO_INITIAL_CHANNEL"] = "ai"
         app.launchEnvironment["WHALE_DEMO_PALETTE"] = "seaSalt"
+        for (key, value) in additionalEnvironment {
+            app.launchEnvironment[key] = value
+        }
         app.launch()
         return app
     }
@@ -44,10 +49,23 @@ final class InteractionUITests: XCTestCase {
         XCTAssertFalse(chatSurface(app).exists)
     }
 
+    func testHomeRendersCurrentLandingContent() {
+        let app = launch()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["home-inspiration-card"]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertTrue(
+            app.descendants(matching: .any)["home-today-card"]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertTrue(app.buttons["home-start-conversation"].exists)
+    }
+
     func testThreeTabsKeepDiscoverySeparateFromTheAssistant() {
         let app = launch()
         XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["home-primary-task"].exists)
         XCTAssertTrue(app.buttons["home-start-conversation"].exists)
         openChat(app)
         XCTAssertTrue(
@@ -102,6 +120,29 @@ final class InteractionUITests: XCTestCase {
         )
         XCTAssertTrue(app.buttons["workspace-open-todo"].exists)
         attach("workspace-tasks-and-content")
+    }
+
+    func testWorkspaceTodoPageCanReturnToWorkspaceOverview() {
+        let app = launch()
+        tab(app, "records").tap()
+
+        let openAll = app.buttons["workspace-open-todo"]
+        XCTAssertTrue(openAll.waitForExistence(timeout: 10))
+        openAll.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["workspace-todo-list"]
+                .waitForExistence(timeout: 10)
+        )
+
+        let navigationBar = app.navigationBars.firstMatch
+        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5))
+        navigationBar.buttons.element(boundBy: 0).tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["workspace-tasks-overview"]
+                .waitForExistence(timeout: 5)
+        )
     }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
@@ -273,18 +314,18 @@ final class InteractionUITests: XCTestCase {
         attach("life-agent-prompt-prefilled")
     }
 
-    func testLifeAgentVoiceEntryOpensVoiceExperience() {
+    func testVoiceExperienceUsesOneSharedSheet() {
         let app = launch()
         openChat(app)
         let voice = app.buttons["whale-chat-voice"]
         XCTAssertTrue(voice.waitForExistence(timeout: 10))
         voice.tap()
         XCTAssertTrue(
-            app.descendants(matching: .any)["voice-input-card"]
+            app.descendants(matching: .any)["whale-voice-capture-sheet"]
                 .waitForExistence(timeout: 5)
         )
-        attach("life-agent-voice-entry")
-        app.buttons["取消语音输入"].tap()
+        XCTAssertTrue(app.buttons["whale-voice-cancel"].exists)
+        app.buttons["whale-voice-cancel"].tap()
         XCTAssertTrue(chatComposer(app).waitForExistence(timeout: 5))
     }
 
