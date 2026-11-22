@@ -14,15 +14,42 @@ final class InteractionUITests: XCTestCase {
         app.launch()
         return app
     }
+
+    private func chatSurface(_ app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)
+            .matching(identifier: "whale-agent-chat-surface")
+            .firstMatch
+    }
+
+    private func openChat(_ app: XCUIApplication) {
+        let start = app.buttons["home-start-conversation"]
+        XCTAssertTrue(start.waitForExistence(timeout: 10))
+        start.tap()
+        XCTAssertTrue(chatSurface(app).waitForExistence(timeout: 10))
+    }
+
+    func testHomeIsDefaultAndChatCanReturnHome() {
+        let app = launch()
+        XCTAssertTrue(
+            app.buttons["home-start-conversation"].waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(chatSurface(app).exists)
+
+        openChat(app)
+        tab(app, "conversation").tap()
+
+        XCTAssertTrue(
+            app.buttons["home-start-conversation"].waitForExistence(timeout: 5)
+        )
+        XCTAssertFalse(chatSurface(app).exists)
+    }
+
     func testThreeTabsKeepDiscoverySeparateFromTheAssistant() {
         let app = launch()
         XCTAssertTrue(tab(app, "conversation").waitForExistence(timeout: 10))
-        XCTAssertTrue(
-            app.descendants(matching: .any)
-                .matching(identifier: "whale-agent-chat-surface")
-                .firstMatch
-                .waitForExistence(timeout: 20)
-        )
+        XCTAssertTrue(app.buttons["home-primary-task"].exists)
+        XCTAssertTrue(app.buttons["home-start-conversation"].exists)
+        openChat(app)
         XCTAssertTrue(
             app.staticTexts.matching(
                 NSPredicate(format: "label CONTAINS %@", "我是鲸鱼")
@@ -55,12 +82,7 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(tab(app, "discover").isHittable)
         XCTAssertFalse(app.buttons["返回发现"].exists)
         tab(app, "conversation").tap()
-        XCTAssertTrue(
-            app.descendants(matching: .any)
-                .matching(identifier: "whale-agent-chat-surface")
-                .firstMatch
-                .waitForExistence(timeout: 5)
-        )
+        XCTAssertTrue(chatSurface(app).waitForExistence(timeout: 5))
     }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
@@ -107,7 +129,7 @@ final class InteractionUITests: XCTestCase {
         }
         tab(app, "conversation").tap()
         XCTAssertTrue(
-            app.buttons["agent-prompt-今天怎么安排？"]
+            app.buttons["home-start-conversation"]
                 .waitForExistence(timeout: 10)
         )
         tab(app, "discover").tap()
@@ -118,6 +140,9 @@ final class InteractionUITests: XCTestCase {
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
     private func openSettings(_ app: XCUIApplication) {
+        if !app.buttons["assistant-settings"].exists {
+            openChat(app)
+        }
         let more = app.buttons["assistant-settings"]
         XCTAssertTrue(more.waitForExistence(timeout: 10))
         more.tap()
@@ -127,6 +152,7 @@ final class InteractionUITests: XCTestCase {
     }
     func testDraftSurvivesTabSwitchAndAppRelaunchWithoutSending() {
         let app = launch()
+        openChat(app)
         let composer = chatComposer(app)
         XCTAssertTrue(composer.waitForExistence(timeout: 10))
         composer.tap()
@@ -140,6 +166,7 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue((chatComposer(app).value as? String ?? "").contains("draft preserved"))
         app.terminate()
         app.launch()
+        openChat(app)
         let restored = chatComposer(app)
         XCTAssertTrue(restored.waitForExistence(timeout: 10))
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
@@ -215,6 +242,7 @@ final class InteractionUITests: XCTestCase {
 
     func testLifeAgentSuggestionPrefillsDraft() {
         let app = launch()
+        openChat(app)
         let prompt = app.buttons["agent-prompt-今天怎么安排？"]
         XCTAssertTrue(prompt.waitForExistence(timeout: 10))
         prompt.tap()
@@ -228,6 +256,7 @@ final class InteractionUITests: XCTestCase {
 
     func testLifeAgentVoiceEntryOpensVoiceExperience() {
         let app = launch()
+        openChat(app)
         let voice = app.buttons["whale-chat-voice"]
         XCTAssertTrue(voice.waitForExistence(timeout: 10))
         voice.tap()

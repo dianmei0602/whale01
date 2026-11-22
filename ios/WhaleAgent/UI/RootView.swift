@@ -8,6 +8,7 @@ struct RootView: View {
     @StateObject private var appearanceStore = WhaleAppearanceStore()
     @StateObject private var keyboard = KeyboardObserver()
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
+    @State private var conversationMode = ConversationEntryMode.defaultMode
     @State private var showRecords = false
     @State private var showSettings = false
     @State private var showWorkspace = false
@@ -34,6 +35,7 @@ struct RootView: View {
                 onOpenTask: { task in
                     guard model.requestMessageFocus(for: task) else { return false }
                     showRecords = false
+                    conversationMode = .chat
                     page = .conversation
                     return true
                 },
@@ -56,6 +58,7 @@ struct RootView: View {
                 openDiscover(.music)
             }) { prompt in
                 showWorkspace = false
+                conversationMode = .chat
                 page = .conversation
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 250_000_000)
@@ -135,7 +138,10 @@ struct RootView: View {
             WhaleSystemChrome.apply(palette)
         }
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenChat)) { _ in
-            showRecords = false; showSettings = false; page = .conversation
+            showRecords = false
+            showSettings = false
+            conversationMode = .chat
+            page = .conversation
         }
         .onReceive(NotificationCenter.default.publisher(for: .whaleOpenWorkspace)) { _ in
             showRecords = false
@@ -169,7 +175,7 @@ struct RootView: View {
     }
 
     private var conversationPage: some View {
-        ConversationTabView(model: model, bottomInset: 0,
+        ConversationTabView(model: model, entryMode: $conversationMode, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records },
             onOpenDiscover: openDiscover, onOpenWorkspace: { showWorkspace = true })
@@ -185,7 +191,9 @@ struct RootView: View {
             composerFocused: false,
             keyboardVisible: keyboard.isVisible
         ) {
-            WhaleRootTabBar(selection: $page)
+            WhaleRootTabBar(selection: $page) {
+                conversationMode = .home
+            }
         }
     }
 
@@ -238,10 +246,11 @@ enum RootBottomChromePolicy {
 /// content above it can be paged horizontally.
 struct WhaleRootTabBar: View {
     @Binding var selection: AppTab
+    var onReselectConversation: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 0) {
-            item(.conversation, title: "对话", icon: "bubble.left.and.bubble.right")
+            item(.conversation, title: "首页", icon: "house")
             item(.discover, title: "发现", icon: "square.grid.2x2")
             item(.records, title: "待办", icon: "checklist")
         }
@@ -258,7 +267,12 @@ struct WhaleRootTabBar: View {
     private func item(_ tab: AppTab, title: String, icon: String) -> some View {
         let selected = selection == tab
         return Button {
-            guard selection != tab else { return }
+            if selection == tab {
+                if tab == .conversation {
+                    onReselectConversation()
+                }
+                return
+            }
             UISelectionFeedbackGenerator().selectionChanged()
             withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { selection = tab }
         } label: {

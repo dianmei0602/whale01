@@ -20,6 +20,8 @@ on:
       - "tools/test_release_identity.py"
       - "tools/test_whale_chat_layout.swift"
       - "tools/test_voice_overlay_state.swift"
+      - "tools/test_home_landing_state.swift"
+      - "tools/test_chat_header_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -39,6 +41,8 @@ on:
       - "tools/test_release_identity.py"
       - "tools/test_whale_chat_layout.swift"
       - "tools/test_voice_overlay_state.swift"
+      - "tools/test_home_landing_state.swift"
+      - "tools/test_chat_header_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -98,6 +102,20 @@ jobs:
             tools/test_voice_overlay_state.swift \
             -o /tmp/voice-overlay-state-test
           /tmp/voice-overlay-state-test
+      - name: Run home landing state contract
+        run: |
+          swiftc \
+            ios/WhaleAgent/Models/ConversationEntryMode.swift \
+            tools/test_home_landing_state.swift \
+            -o /tmp/home-landing-state-test
+          /tmp/home-landing-state-test
+      - name: Run chat header state contract
+        run: |
+          swiftc \
+            ios/WhaleAgent/Models/WhaleChatHeaderPresentation.swift \
+            tools/test_chat_header_state.swift \
+            -o /tmp/chat-header-state-test
+          /tmp/chat-header-state-test
       - name: Validate release identity
         run: python3 tools/release_identity.py --check --github-env
       - name: Generate source identity

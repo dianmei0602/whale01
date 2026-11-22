@@ -49,6 +49,7 @@ struct WhaleHomeCanvas: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 assistantCommandCenter
+                conversationEntryButton
                 if showQuote { dailyQuote }
                 workspaceLauncher
                 homeWidgetGrid
@@ -202,6 +203,30 @@ struct WhaleHomeCanvas: View {
                 .accessibilityIdentifier("home-primary-task")
             }
         }
+    }
+
+    private var conversationEntryButton: some View {
+        Button(action: onOpenConversation) {
+            HStack(spacing: 8) {
+                Image(systemName: "bubble.left.and.bubble.right.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                Text("开始对话")
+                    .whaleFont(size: 14, weight: .semibold)
+                Spacer()
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 12, weight: .bold))
+            }
+            .foregroundStyle(WhaleTheme.onAccent)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(
+                WhaleTheme.composerSendGradient,
+                in: Capsule()
+            )
+        }
+        .buttonStyle(.whalePress)
+        .accessibilityLabel("开始对话")
+        .accessibilityIdentifier("home-start-conversation")
     }
 
     private var activeContextCommand: AssistantCommandItem? {

@@ -69,6 +69,38 @@ final class InteractionHabitsTests: XCTestCase {
         XCTAssertEqual(NavigationHabits.restoredTab("discover"), .discover)
         XCTAssertEqual(NavigationHabits.restoredTab("unknown"), .conversation)
     }
+
+    func testConversationEntryStartsOnHomeAndRequiresExplicitChatAction() {
+        XCTAssertEqual(ConversationEntryMode.defaultMode, .home)
+        XCTAssertEqual(
+            ConversationEntryMode.transition(.home, action: .startChat),
+            .chat
+        )
+        XCTAssertEqual(
+            ConversationEntryMode.transition(.chat, action: .returnHome),
+            .home
+        )
+    }
+
+    func testChatHeaderKeepsPresenceAtLeadingEdgeAndShowsMusicBadge() {
+        let idle = WhaleChatHeaderPresenter.content(
+            isExecutingTool: false,
+            isBusy: false,
+            backendOnline: true,
+            isPlayingMusic: false
+        )
+        XCTAssertEqual(idle.statusText, "鲸鱼随时在")
+        XCTAssertFalse(idle.showsMusicIcon)
+
+        let playing = WhaleChatHeaderPresenter.content(
+            isExecutingTool: false,
+            isBusy: false,
+            backendOnline: true,
+            isPlayingMusic: true
+        )
+        XCTAssertEqual(playing.statusText, "鲸鱼随时在")
+        XCTAssertTrue(playing.showsMusicIcon)
+    }
     func testQuickActionsPreserveOrderAndStayWithinThreeSlots() {
         let (suite, storage) = defaults()
         defer { storage.removePersistentDomain(forName: suite) }

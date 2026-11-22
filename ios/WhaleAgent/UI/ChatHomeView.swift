@@ -5,6 +5,7 @@ import SwiftUI
 /// shell, theme and application state.
 struct ConversationTabView: View {
     @ObservedObject var model: AppModel
+    @Binding var entryMode: ConversationEntryMode
     let bottomInset: CGFloat
     let onOpenRecords: () -> Void
     let onOpenSettings: () -> Void
@@ -17,16 +18,16 @@ struct ConversationTabView: View {
     @State private var showsVoice = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            WhaleAgentChatSurface(
-                inputText: $chatDraft,
-                model: model,
-                bottomInset: bottomInset,
-                onOpenRecords: onOpenRecords,
-                onOpenMusic: onOpenMusic,
-                onOpenWorkspace: onOpenWorkspace
-            )
+        ZStack {
+            homePage
+                .opacity(entryMode == .home ? 1 : 0)
+                .allowsHitTesting(entryMode == .home)
+                .accessibilityHidden(entryMode != .home)
+
+            chatPage
+                .opacity(entryMode == .chat ? 1 : 0)
+                .allowsHitTesting(entryMode == .chat)
+                .accessibilityHidden(entryMode != .chat)
         }
         .background(WhaleIMessagePalette.canvas)
         .tint(WhaleIMessagePalette.outgoing)
@@ -40,10 +41,37 @@ struct ConversationTabView: View {
         }
     }
 
+    private var homePage: some View {
+        WhaleHomeCanvas(
+            model: model,
+            bottomInset: bottomInset,
+            onOpenRecords: onOpenRecords,
+            onOpenMusic: onOpenMusic,
+            onOpenTodo: onOpenTodo,
+            onOpenDiscover: onOpenDiscover,
+            onOpenConversation: { entryMode = .chat },
+            onOpenWorkspace: onOpenWorkspace
+        )
+    }
+
+    private var chatPage: some View {
+        VStack(spacing: 0) {
+            header
+            WhaleAgentChatSurface(
+                inputText: $chatDraft,
+                model: model,
+                bottomInset: bottomInset,
+                onOpenRecords: onOpenRecords,
+                onOpenMusic: onOpenMusic,
+                onOpenWorkspace: onOpenWorkspace
+            )
+        }
+    }
+
     private var header: some View {
         ZStack {
-            HStack {
-                Color.clear.frame(width: 44, height: 44)
+            HStack(spacing: 2) {
+                headerStatus
                 Spacer()
                 Button {
                     showsVoice = true
@@ -78,23 +106,12 @@ struct ConversationTabView: View {
             }
 
             HStack(spacing: 8) {
-                WhaleMarkView(size: 30)
-                VStack(spacing: 1) {
-                    Text("鲸鱼")
-                        .whaleFont(size: 16, weight: .semibold)
-                        .foregroundStyle(WhaleIMessagePalette.text)
-                    HStack(spacing: 5) {
-                        Circle()
-                            .fill(statusColor)
-                            .frame(width: 6, height: 6)
-                        Text(statusText)
-                            .whaleFont(size: 10)
-                            .foregroundStyle(WhaleIMessagePalette.muted)
-                            .lineLimit(1)
-                    }
-                }
+                WhaleMarkView(size: 28)
+                Text("鲸鱼")
+                    .whaleFont(size: 16, weight: .semibold)
+                    .foregroundStyle(WhaleIMessagePalette.text)
             }
-            .frame(maxWidth: 260)
+            .fixedSize()
             .allowsHitTesting(false)
         }
         .foregroundStyle(WhaleIMessagePalette.outgoing)
@@ -109,16 +126,47 @@ struct ConversationTabView: View {
     }
 
     private var statusText: String {
-        if model.isExecutingTool { return "正在执行设备操作…" }
-        if model.isBusy { return "正在处理…" }
-        if !model.backendOnline { return "当前离线" }
-        return "随时在"
+        headerState.statusText
     }
 
     private var statusColor: Color {
         if model.isBusy || model.isExecutingTool { return WhaleIMessagePalette.outgoing }
         if !model.backendOnline { return .orange }
         return .green
+    }
+
+    private var headerState: WhaleChatHeaderState {
+        WhaleChatHeaderPresenter.content(
+            isExecutingTool: model.isExecutingTool,
+            isBusy: model.isBusy,
+            backendOnline: model.backendOnline,
+            isPlayingMusic: model.playback.track != nil && model.playback.isPlaying
+        )
+    }
+
+    private var headerStatus: some View {
+        HStack(spacing: 5) {
+            Circle()
+                .fill(statusColor)
+                .frame(width: 7, height: 7)
+            Text(statusText)
+                .whaleFont(size: 11, weight: .medium)
+                .foregroundStyle(WhaleIMessagePalette.muted)
+                .lineLimit(1)
+
+            if headerState.showsMusicIcon,
+               let track = model.playback.track {
+                MiniVinylView(
+                    track: track,
+                    isPlaying: true,
+                    diameter: 20
+                )
+                .accessibilityLabel("正在播放 \(track.title)")
+                .accessibilityIdentifier("chat-now-playing")
+            }
+        }
+        .frame(maxWidth: 150, alignment: .leading)
+        .allowsHitTesting(false)
     }
 
     private func insertVoiceDraft(_ transcript: String) {
@@ -136,12 +184,12 @@ struct ConversationTabView: View {
 private struct MiniVinylView: View {
     let track: MusicTrackItem
     let isPlaying: Bool
+    var diameter: CGFloat = 38
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var anchor = Date()
     @State private var baseAngle: Double = 0
 
-    private let diameter: CGFloat = 38
     private let degreesPerSecond: Double = 36
 
     var body: some View {
@@ -207,7 +255,10 @@ private struct MiniVinylView: View {
 
                 Circle()
                     .fill(Color.black.opacity(0.82))
-                    .frame(width: 2.6, height: 2.6)
+                    .frame(
+                        width: max(1.8, diameter * 0.068),
+                        height: max(1.8, diameter * 0.068)
+                    )
             }
             .rotationEffect(.degrees(angle))
 
@@ -262,7 +313,7 @@ private struct MiniVinylView: View {
             )
             .overlay {
                 Image(systemName: "music.note")
-                    .whaleFont(size: 13, weight: .bold)
+                    .whaleFont(size: max(7, diameter * 0.34), weight: .bold)
                     .foregroundStyle(.white.opacity(0.92))
             }
         }
