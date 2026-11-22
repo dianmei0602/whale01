@@ -64,6 +64,7 @@ struct WhaleWorkspaceView: View {
     @State private var taskLoading = false
     @State private var taskSubmitting = false
     @State private var busyTaskIds: Set<String> = []
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
         Group {
             if embedded {
@@ -118,6 +119,7 @@ struct WhaleWorkspaceView: View {
             WhaleBackdrop().ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    workspaceIdentity
                     tasksOverview
                     sectionSelector
                     if let issue = store.loadIssue {
@@ -128,12 +130,21 @@ struct WhaleWorkspaceView: View {
                             .whaleCard(padding: 13)
                     }
                     sectionContent
+                        .id("workspace-top-\(section.rawValue)")
+                        .accessibilityIdentifier(
+                            "workspace-section-content-\(section.rawValue)"
+                        )
                 }
                 .padding(.horizontal, WhaleTheme.pagePadding)
                 .padding(.top, 8)
                 .padding(.bottom, 30)
             }
             .scrollIndicators(.hidden)
+            .background(
+                ScrollOffsetMemory(
+                    key: "workspace-section-\(section.rawValue)"
+                )
+            )
             .refreshable {
                 await loadTaskOverview(silent: true)
                 if section == .brief {
@@ -176,6 +187,23 @@ struct WhaleWorkspaceView: View {
             Image(systemName: "plus")
         }
         .accessibilityLabel("新增")
+    }
+
+    private var workspaceIdentity: some View {
+        HStack(spacing: 10) {
+            WhaleMarkView(size: 28)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("工作台")
+                    .whaleFont(size: 22, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Text("待办、记录、阅读都在这里")
+                    .whaleFont(size: 12)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+            Spacer()
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("workspace-title")
     }
 
     private var pendingTasks: [TodoReminder] {
@@ -387,7 +415,7 @@ struct WhaleWorkspaceView: View {
             HStack(spacing: 8) {
                 ForEach(WhaleWorkspaceSection.allCases) { item in
                     Button {
-                        withAnimation(.easeOut(duration: 0.18)) {
+                        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
                             section = item
                         }
                     } label: {

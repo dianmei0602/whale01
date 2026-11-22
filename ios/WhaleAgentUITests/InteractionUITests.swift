@@ -162,6 +162,33 @@ final class InteractionUITests: XCTestCase {
         tab(app, "records").tap()
         XCTAssertTrue(app.staticTexts["目前没有未完成事项。"].exists)
     }
+
+    func testWorkspaceSectionsKeepIndependentScrollPositions() {
+        let app = launch()
+        tab(app, "records").tap()
+
+        let inbox = app.buttons["workspace-section-inbox"]
+        XCTAssertTrue(inbox.waitForExistence(timeout: 10))
+        app.swipeUp()
+        app.swipeUp()
+
+        let reading = app.buttons["workspace-section-reading"]
+        if !reading.isHittable {
+            app.swipeDown()
+        }
+        reading.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["workspace-section-content-reading"]
+                .waitForExistence(timeout: 5)
+        )
+
+        inbox.tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["workspace-section-content-inbox"]
+                .waitForExistence(timeout: 5)
+        )
+    }
     func testChannelSwitchesKeepNavigationAndSelectorFramesFixed() {
         let app = launch()
         tab(app, "discover").tap()
