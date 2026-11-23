@@ -79,6 +79,7 @@ struct WhaleWorkspaceView: View {
                     .padding(.bottom, 30)
                 }
                 .scrollIndicators(.hidden)
+                .scrollDismissesKeyboard(.interactively)
                 .refreshable {
                     await refreshCurrentSurface()
                 }

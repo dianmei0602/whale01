@@ -230,6 +230,24 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(editor.exists)
     }
 
+    func testMorningFocusEditorCanDismissKeyboard() {
+        let app = launch()
+        tab(app, "records").tap()
+        app.buttons["workspace-section-brief"].tap()
+
+        let editor = app.textViews["workspace-morning-focus"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10))
+        editor.tap()
+        editor.typeText("先完成今天最重要的事")
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+
+        let done = app.buttons["workspace-brief-keyboard-done"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+    }
+
     func testHomeDoesNotRepeatWorkspaceEntryWhenWorkspaceIsEmpty() {
         let app = launch(additionalEnvironment: [
             "WHALE_DEMO_WORKSPACE_EMPTY": "1"

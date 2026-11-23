@@ -5,6 +5,9 @@ TODO = (ROOT / "ios/WhaleAgent/UI/TodoView.swift").read_text(encoding="utf-8")
 WORKSPACE = (ROOT / "ios/WhaleAgent/UI/WhaleWorkspaceView.swift").read_text(
     encoding="utf-8"
 )
+WORKSPACE_BRIEF = (
+    ROOT / "ios/WhaleAgent/UI/WorkspaceBriefSection.swift"
+).read_text(encoding="utf-8")
 VOICE = (
     ROOT / "ios/WhaleAgent/UI/WhaleVoiceCaptureSheet.swift"
 ).read_text(encoding="utf-8")
@@ -35,8 +38,23 @@ def test_voice_is_centralized_in_one_component():
     assert "whale-voice-cancel" in VOICE
 
 
+def test_workspace_brief_exposes_keyboard_dismissal():
+    required = [
+        "@FocusState private var focusedField",
+        ".focused($focusedField, equals: .morningFocus)",
+        ".focused($focusedField, equals: .eveningNote)",
+        "ToolbarItemGroup(placement: .keyboard)",
+        "workspace-brief-keyboard-done",
+        "focusedField = nil",
+    ]
+    for token in required:
+        assert token in WORKSPACE_BRIEF, token
+    assert ".scrollDismissesKeyboard(.interactively)" in WORKSPACE
+
+
 if __name__ == "__main__":
     test_todo_has_no_hidden_filter_machine()
     test_complete_todo_list_is_not_presented_as_a_sheet()
     test_voice_is_centralized_in_one_component()
+    test_workspace_brief_exposes_keyboard_dismissal()
     print("TODO_INTERACTION_CONTRACT_OK")

@@ -17,6 +17,12 @@ struct WorkspaceBriefSection: View {
     )
     @State private var morningFocus = ""
     @State private var eveningNote = ""
+    @FocusState private var focusedField: FocusField?
+
+    private enum FocusField {
+        case morningFocus
+        case eveningNote
+    }
 
     private var pending: [TodoReminder] {
         todoStore.pending
@@ -132,6 +138,8 @@ struct WorkspaceBriefSection: View {
                     .scrollContentBackground(.hidden)
                     .padding(8)
                     .background(WhaleTheme.field, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .focused($focusedField, equals: .morningFocus)
+                    .accessibilityIdentifier("workspace-morning-focus")
                 Text("这里只记录你的今日重点，不会自动改任务优先级。")
                     .whaleFont(size: 11)
                     .foregroundStyle(WhaleTheme.muted)
@@ -152,7 +160,10 @@ struct WorkspaceBriefSection: View {
                     .scrollContentBackground(.hidden)
                     .padding(8)
                     .background(WhaleTheme.field, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .focused($focusedField, equals: .eveningNote)
+                    .accessibilityIdentifier("workspace-evening-note")
                 Button {
+                    focusedField = nil
                     store.saveReview(review, morningFocus: morningFocus, eveningNote: eveningNote)
                     UINotificationFeedbackGenerator().notificationOccurred(.success)
                 } label: {
@@ -167,9 +178,21 @@ struct WorkspaceBriefSection: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("完成") {
+                    focusedField = nil
+                }
+                .accessibilityIdentifier("workspace-brief-keyboard-done")
+            }
+        }
         .task { await load() }
         .onReceive(NotificationCenter.default.publisher(for: .whaleWorkspaceBriefRefresh)) { _ in
             Task { await load() }
+        }
+        .onDisappear {
+            focusedField = nil
         }
     }
 
