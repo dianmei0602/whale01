@@ -22,6 +22,8 @@ on:
       - "tools/test_voice_overlay_state.swift"
       - "tools/test_home_landing_state.swift"
       - "tools/test_chat_header_state.swift"
+      - "tools/test_workspace_surface.swift"
+      - "tools/test_home_header_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -43,6 +45,8 @@ on:
       - "tools/test_voice_overlay_state.swift"
       - "tools/test_home_landing_state.swift"
       - "tools/test_chat_header_state.swift"
+      - "tools/test_workspace_surface.swift"
+      - "tools/test_home_header_state.swift"
       - "README.md"
       - "CHANGELOG.md"
       - "00_执行看板.md"
@@ -116,6 +120,20 @@ jobs:
             tools/test_chat_header_state.swift \
             -o /tmp/chat-header-state-test
           /tmp/chat-header-state-test
+      - name: Run workspace surface contract
+        run: |
+          swiftc -parse-as-library \
+            ios/WhaleAgent/Models/WorkspaceSurface.swift \
+            tools/test_workspace_surface.swift \
+            -o /tmp/workspace-surface-test
+          /tmp/workspace-surface-test
+      - name: Run home header state contract
+        run: |
+          swiftc -parse-as-library \
+            ios/WhaleAgent/Models/WhaleHomeHeaderPresentation.swift \
+            tools/test_home_header_state.swift \
+            -o /tmp/home-header-state-test
+          /tmp/home-header-state-test
       - name: Run UI interaction source contract
         run: python tools/test_ui_interaction_contract.py
       - name: Validate release identity

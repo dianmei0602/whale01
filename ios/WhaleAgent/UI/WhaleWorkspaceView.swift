@@ -3,63 +3,25 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-private enum WhaleWorkspaceSection: String, CaseIterable, Identifiable {
-    case inbox
-    case brief
-    case projects
-    case knowledge
-    case reading
-    case focus
-    case followUps
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .inbox: return "收件箱"
-        case .brief: return "晨晚报"
-        case .projects: return "项目"
-        case .knowledge: return "知识库"
-        case .reading: return "阅读"
-        case .focus: return "专注"
-        case .followUps: return "跟进"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .inbox: return "tray.full"
-        case .brief: return "sun.horizon"
-        case .projects: return "square.stack.3d.up"
-        case .knowledge: return "books.vertical"
-        case .reading: return "book.closed"
-        case .focus: return "scope"
-        case .followUps: return "arrow.triangle.branch"
-        }
-    }
-}
-
 struct WhaleWorkspaceView: View {
     @ObservedObject var model: AppModel
     var embedded: Bool = false
-    let onOpenMusic: () -> Void
-    let onOpenChat: (String) -> Void
 
     @StateObject private var store = WhaleWorkspaceStore.shared
-    @StateObject private var reading = DiscoverReadingLibrary.shared
     @EnvironmentObject private var todoStore: TodoTimelineStore
     @EnvironmentObject private var navigation: RootNavigationModel
     @Environment(\.dismiss) private var dismiss
-    @State private var section: WhaleWorkspaceSection = .inbox
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @State private var surface: WhaleWorkspaceSurface = .todos
     @State private var sheet: WorkspaceSheet?
-    @State private var readingFilter: ReadingStatus?
     @State private var toast: String?
     @State private var taskDraft = ""
     @State private var taskError: String?
     @State private var taskLoading = false
     @State private var taskSubmitting = false
     @State private var busyTaskIds: Set<String> = []
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         Group {
             if embedded {
@@ -72,9 +34,6 @@ struct WhaleWorkspaceView: View {
                         .toolbar {
                             ToolbarItem(placement: .cancellationAction) {
                                 Button("关闭") { dismiss() }
-                            }
-                            ToolbarItem(placement: .primaryAction) {
-                                addMenu
                             }
                         }
                 }
@@ -90,23 +49,8 @@ struct WhaleWorkspaceView: View {
                     WorkspaceCaptureDetailSheet(
                         item: item,
                         store: store,
-                        model: model,
-                        onOpenChat: onOpenChat,
                         onShowToast: showToast
                     )
-                }
-            case .projectEditor:
-                WorkspaceProjectEditor(store: store)
-            case .followUpEditor:
-                WorkspaceFollowUpEditor(store: store)
-            case .reader(let article):
-                NativeArticleReaderView(
-                    item: newsItem(for: article),
-                    library: reading
-                )
-            case .highlight(let article):
-                WorkspaceReadingHighlightSheet(article: article, store: store) {
-                    showToast("摘录已保存到私人知识库")
                 }
             }
         }
@@ -115,38 +59,33 @@ struct WhaleWorkspaceView: View {
     private var workspaceContent: some View {
         ZStack(alignment: .top) {
             WhaleBackdrop().ignoresSafeArea()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    workspaceIdentity
-                    tasksOverview
-                    sectionSelector
-                    if let issue = store.loadIssue {
-                        Label(issue, systemImage: "exclamationmark.triangle")
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.warm)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .whaleCard(padding: 13)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        workspaceIdentity
+                            .id("workspace-surface-top")
+                        surfaceSelector
+                        if let issue = store.loadIssue {
+                            Label(issue, systemImage: "exclamationmark.triangle")
+                                .whaleFont(size: 13)
+                                .foregroundStyle(WhaleTheme.warm)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .whaleCard(padding: 13)
+                        }
+                        surfaceContent
                     }
-                    sectionContent
-                        .id("workspace-top-\(section.rawValue)")
-                        .accessibilityIdentifier(
-                            "workspace-section-content-\(section.rawValue)"
-                        )
+                    .padding(.horizontal, WhaleTheme.pagePadding)
+                    .padding(.top, 8)
+                    .padding(.bottom, 30)
                 }
-                .padding(.horizontal, WhaleTheme.pagePadding)
-                .padding(.top, 8)
-                .padding(.bottom, 30)
-            }
-            .scrollIndicators(.hidden)
-            .background(
-                ScrollOffsetMemory(
-                    key: "workspace-section-\(section.rawValue)"
-                )
-            )
-            .refreshable {
-                await loadTaskOverview(silent: true)
-                if section == .brief {
-                    NotificationCenter.default.post(name: .whaleWorkspaceBriefRefresh, object: nil)
+                .scrollIndicators(.hidden)
+                .refreshable {
+                    await refreshCurrentSurface()
+                }
+                .onChange(of: surface) { _, _ in
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
+                        proxy.scrollTo("workspace-surface-top", anchor: .top)
+                    }
                 }
             }
             .task {
@@ -170,31 +109,14 @@ struct WhaleWorkspaceView: View {
         }
     }
 
-    private var addMenu: some View {
-        Menu {
-            Button("记录想法", systemImage: "square.and.pencil") {
-                sheet = .captureEditor
-            }
-            Button("新建项目", systemImage: "folder.badge.plus") {
-                sheet = .projectEditor
-            }
-            Button("新增跟进", systemImage: "arrow.triangle.branch") {
-                sheet = .followUpEditor
-            }
-        } label: {
-            Image(systemName: "plus")
-        }
-        .accessibilityLabel("新增")
-    }
-
     private var workspaceIdentity: some View {
         HStack(spacing: 10) {
-            WhaleMarkView(size: 28)
-            VStack(alignment: .leading, spacing: 1) {
+            WhaleMarkView(size: 30)
+            VStack(alignment: .leading, spacing: 2) {
                 Text("工作台")
                     .whaleFont(size: 22, weight: .bold, design: .rounded)
                     .foregroundStyle(WhaleTheme.ink)
-                Text("待办、记录、阅读都在这里")
+                Text("待办 · 记事 · 晨晚报")
                     .whaleFont(size: 12)
                     .foregroundStyle(WhaleTheme.muted)
             }
@@ -204,6 +126,73 @@ struct WhaleWorkspaceView: View {
         .accessibilityIdentifier("workspace-title")
     }
 
+    private var surfaceSelector: some View {
+        HStack(spacing: 6) {
+            ForEach(WhaleWorkspaceSurface.allCases) { item in
+                let selected = surface == item
+                Button {
+                    guard surface != item else { return }
+                    UISelectionFeedbackGenerator().selectionChanged()
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
+                        surface = item
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: item.icon)
+                            .font(.system(size: 14, weight: .semibold))
+                        Text(item.title)
+                            .whaleFont(size: 13, weight: .semibold)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                    .foregroundStyle(selected ? WhaleTheme.onAccent : WhaleTheme.ink)
+                    .frame(maxWidth: .infinity, minHeight: 40)
+                    .background(
+                        selected ? WhaleTheme.accent : WhaleTheme.card,
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .strokeBorder(
+                                selected ? Color.clear : WhaleTheme.line,
+                                lineWidth: 0.7
+                            )
+                    }
+                    .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.whalePress)
+                .accessibilityLabel(item.title)
+                .accessibilityIdentifier(item.accessibilityIdentifier)
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var surfaceContent: some View {
+        switch surface {
+        case .todos:
+            todosSection
+        case .notes:
+            notesSection
+        case .brief:
+            WorkspaceBriefSection(model: model, store: store)
+        }
+    }
+
+    private func refreshCurrentSurface() async {
+        switch surface {
+        case .todos:
+            await loadTaskOverview(silent: true)
+        case .notes:
+            return
+        case .brief:
+            NotificationCenter.default.post(name: .whaleWorkspaceBriefRefresh, object: nil)
+        }
+    }
+
+    // MARK: - Todos
+
     private var pendingTasks: [TodoReminder] {
         todoStore.pending
     }
@@ -212,11 +201,11 @@ struct WhaleWorkspaceView: View {
         todoStore.completed.count
     }
 
-    private var tasksOverview: some View {
+    private var todosSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Label("待办", systemImage: "checklist")
-                    .whaleFont(size: 16, weight: .bold)
+                    .whaleFont(size: 18, weight: .bold, design: .rounded)
                     .foregroundStyle(WhaleTheme.ink)
                 if !pendingTasks.isEmpty {
                     Text("\(pendingTasks.count)")
@@ -243,7 +232,11 @@ struct WhaleWorkspaceView: View {
                     .onSubmit { Task { await addTaskFromOverview() } }
                     .padding(.horizontal, 12)
                     .frame(minHeight: 42)
-                    .background(WhaleTheme.cardSolid, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .background(
+                        WhaleTheme.cardSolid,
+                        in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    )
+                    .accessibilityIdentifier("workspace-task-draft")
                 Button {
                     Task { await addTaskFromOverview() }
                 } label: {
@@ -272,11 +265,11 @@ struct WhaleWorkspaceView: View {
                     .whaleFont(size: 13)
                     .foregroundStyle(WhaleTheme.muted)
             } else {
-                ForEach(pendingTasks.prefix(4)) { item in
+                ForEach(pendingTasks.prefix(5)) { item in
                     taskOverviewRow(item)
                 }
-                if pendingTasks.count > 4 {
-                    Text("还有 \(pendingTasks.count - 4) 项未显示")
+                if pendingTasks.count > 5 {
+                    Text("还有 \(pendingTasks.count - 5) 项，可点“全部”查看")
                         .whaleFont(size: 12)
                         .foregroundStyle(WhaleTheme.muted)
                 }
@@ -288,13 +281,12 @@ struct WhaleWorkspaceView: View {
                     .foregroundStyle(WhaleTheme.muted)
             }
         }
-        .padding(14)
+        .padding(15)
         .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .strokeBorder(WhaleTheme.line.opacity(0.85), lineWidth: 0.7)
         }
-        .accessibilityIdentifier("workspace-tasks-overview")
     }
 
     private func taskOverviewRow(_ item: TodoReminder) -> some View {
@@ -408,252 +400,55 @@ struct WhaleWorkspaceView: View {
         return formatter.string(from: date)
     }
 
-    private var sectionSelector: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                ForEach(WhaleWorkspaceSection.allCases) { item in
-                    Button {
-                        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
-                            section = item
-                        }
-                    } label: {
-                        Label(item.title, systemImage: item.icon)
-                            .whaleFont(size: 13, weight: .semibold)
-                            .foregroundStyle(section == item ? WhaleTheme.onAccent : WhaleTheme.ink)
-                            .padding(.horizontal, 12)
-                            .frame(minHeight: 40)
-                            .background(
-                                section == item ? WhaleTheme.accent : WhaleTheme.card,
-                                in: Capsule()
-                            )
-                            .overlay {
-                                Capsule()
-                                    .strokeBorder(
-                                        section == item ? Color.clear : WhaleTheme.line,
-                                        lineWidth: 0.7
-                                    )
-                            }
-                    }
-                    .buttonStyle(.whalePress)
-                    .accessibilityIdentifier("workspace-section-" + item.rawValue)
-                }
-                if embedded {
-                    addMenu
-                }
-            }
-            .padding(.horizontal, 1)
-        }
-        .scrollIndicators(.hidden)
-    }
+    // MARK: - Notes
 
-    @ViewBuilder
-    private var sectionContent: some View {
-        switch section {
-        case .inbox:
-            inboxSection
-        case .brief:
-            WorkspaceBriefSection(model: model, store: store)
-        case .projects:
-            projectsSection
-        case .knowledge:
-            knowledgeSection
-        case .reading:
-            readingSection
-        case .focus:
-            WorkspaceFocusSection(model: model, store: store, onOpenMusic: onOpenMusic)
-        case .followUps:
-            followUpsSection
-        }
-    }
-
-    private var inboxSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            workspaceIntro(
-                title: "统一收件箱",
-                detail: "文字、网页分享、照片和文件先进入这里。只有你确认后才转为待办、日程或知识条目。",
-                icon: "tray.and.arrow.down.fill"
-            ) {
-                Button {
-                    sheet = .captureEditor
-                } label: {
-                    Label("记录或导入", systemImage: "plus")
-                        .whaleFont(size: 13, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.onAccent)
-                        .padding(.horizontal, 13)
-                        .frame(minHeight: 38)
-                        .background(WhaleTheme.accent, in: Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("workspace-open-capture-editor")
-            }
-
-            if store.inbox.isEmpty {
-                workspaceEmpty(
-                    title: "收件箱是空的",
-                    detail: "可以记录一句话，或从照片、PDF 和系统分享菜单收集内容。",
-                    icon: "tray"
-                )
-            } else {
-                ForEach(store.inbox) { item in
-                    captureRow(item)
-                }
-            }
-        }
-    }
-
-    private var projectsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            workspaceIntro(
-                title: "项目空间",
-                detail: "把同一件事的收件内容、知识条目和后续跟进放在一个项目里。",
-                icon: "square.stack.3d.up.fill"
-            ) {
-                Button {
-                    sheet = .projectEditor
-                } label: {
-                    Label("新建项目", systemImage: "folder.badge.plus")
-                        .whaleFont(size: 13, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.onAccent)
-                        .padding(.horizontal, 13)
-                        .frame(minHeight: 38)
-                        .background(WhaleTheme.accent, in: Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-
-            if store.projects.isEmpty {
-                workspaceEmpty(
-                    title: "还没有项目",
-                    detail: "例如“春节旅行”“装修”“求职”或“课程学习”。",
-                    icon: "folder"
-                )
-            } else {
-                ForEach(store.projects) { project in
-                    projectCard(project)
-                }
-            }
-        }
-    }
-
-    private var knowledgeSection: some View {
-        WorkspaceKnowledgeSection(
-            store: store,
-            onSelect: { sheet = .captureDetail($0.id) },
-            onAsk: { prompt in onOpenChat(prompt) }
-        )
-    }
-
-    private var readingSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            workspaceIntro(
-                title: "阅读工作台",
-                detail: "复用发现页的真实收藏。可以打开原文、标记读完，或把摘要保存到私人知识库。",
-                icon: "book.pages.fill"
-            ) {
-                Text("\(reading.saved.count) 篇")
-                    .whaleFont(size: 12, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.accent)
-                    .padding(.horizontal, 11)
-                    .frame(minHeight: 34)
-                    .background(WhaleTheme.accentSoft, in: Capsule())
-            }
-
-            HStack(spacing: 8) {
-                readingFilterButton(nil, title: "全部")
-                readingFilterButton(.toRead, title: "待读")
-                readingFilterButton(.reading, title: "在读")
-                readingFilterButton(.finished, title: "读完")
-            }
-
-            if reading.saved.isEmpty {
-                workspaceEmpty(
-                    title: "还没有稍后读内容",
-                    detail: "在发现页的资讯详情里点书签，内容会出现在这里。",
-                    icon: "bookmark"
-                )
-            } else {
-                ForEach(displayedReading) { article in
-                    readingCard(article)
-                }
-            }
-        }
-    }
-
-    private var followUpsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            workspaceIntro(
-                title: "重要跟进",
-                detail: "只保存你明确添加的人和事，不会主动读取通讯录或推断关系。",
-                icon: "arrow.triangle.branch"
-            ) {
-                Button {
-                    sheet = .followUpEditor
-                } label: {
-                    Label("新增跟进", systemImage: "plus")
-                        .whaleFont(size: 13, weight: .semibold)
-                        .foregroundStyle(WhaleTheme.onAccent)
-                        .padding(.horizontal, 13)
-                        .frame(minHeight: 38)
-                        .background(WhaleTheme.accent, in: Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-
-            if store.pendingFollowUps.isEmpty {
-                workspaceEmpty(
-                    title: "没有待跟进事项",
-                    detail: "可以记录需要回访、确认或继续联系的事情。",
-                    icon: "checkmark.circle"
-                )
-            } else {
-                ForEach(store.pendingFollowUps) { item in
-                    followUpRow(item)
-                }
-            }
-
-            let completed = store.followUps.filter(\.isCompleted)
-            if !completed.isEmpty {
-                Text("已完成")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.muted)
-                    .padding(.top, 5)
-                ForEach(completed.prefix(8)) { item in
-                    followUpRow(item)
-                }
-            }
-        }
-    }
-
-    private func workspaceIntro<Accessory: View>(
-        title: String,
-        detail: String,
-        icon: String,
-        @ViewBuilder accessory: () -> Accessory
-    ) -> some View {
+    private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: icon)
+                Image(systemName: "note.text")
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundStyle(WhaleTheme.accent)
                     .frame(width: 44, height: 44)
-                    .background(WhaleTheme.accentSoft, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                    .background(
+                        WhaleTheme.accentSoft,
+                        in: RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    )
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
+                    Text("记事")
                         .whaleFont(size: 19, weight: .bold, design: .rounded)
                         .foregroundStyle(WhaleTheme.ink)
-                    Text(detail)
+                    Text("记录一句话、网页、照片或文件。")
                         .whaleFont(size: 13)
                         .foregroundStyle(WhaleTheme.muted)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 4)
+                Button {
+                    sheet = .captureEditor
+                } label: {
+                    Label("记一笔", systemImage: "plus")
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.onAccent)
+                        .padding(.horizontal, 12)
+                        .frame(minHeight: 38)
+                        .background(WhaleTheme.accent, in: Capsule())
+                }
+                .buttonStyle(.whalePress)
+                .accessibilityIdentifier("workspace-open-capture-editor")
             }
-            HStack {
-                Spacer()
-                accessory()
+            .whaleCard(padding: 15)
+
+            if store.inbox.isEmpty {
+                workspaceEmpty(
+                    title: "还没有记事",
+                    detail: "点“记一笔”，留下想法、链接或导入一份文件。",
+                    icon: "note.text"
+                )
+            } else {
+                ForEach(store.inbox) { item in
+                    noteRow(item)
+                }
             }
         }
-        .whaleCard(padding: 16)
     }
 
     private func workspaceEmpty(title: String, detail: String, icon: String) -> some View {
@@ -680,7 +475,7 @@ struct WhaleWorkspaceView: View {
         }
     }
 
-    private func captureRow(_ item: WorkspaceCapture) -> some View {
+    private func noteRow(_ item: WorkspaceCapture) -> some View {
         Button {
             sheet = .captureDetail(item.id)
         } label: {
@@ -689,7 +484,10 @@ struct WhaleWorkspaceView: View {
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(WhaleTheme.accent)
                     .frame(width: 38, height: 38)
-                    .background(WhaleTheme.accentSoft, in: RoundedRectangle(cornerRadius: 11, style: .continuous))
+                    .background(
+                        WhaleTheme.accentSoft,
+                        in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    )
                 VStack(alignment: .leading, spacing: 5) {
                     Text(item.title)
                         .whaleFont(size: 15, weight: .semibold)
@@ -706,10 +504,7 @@ struct WhaleWorkspaceView: View {
                     HStack(spacing: 6) {
                         Text(item.kind.title)
                         Text("·")
-                        Text(item.createdAt.formatted(.relative(presentation: .named)))
-                        if item.isKnowledge {
-                            Label("知识库", systemImage: "books.vertical")
-                        }
+                        Text(item.updatedAt.formatted(.relative(presentation: .named)))
                     }
                     .whaleFont(size: 11, weight: .medium)
                     .foregroundStyle(WhaleTheme.muted)
@@ -730,205 +525,16 @@ struct WhaleWorkspaceView: View {
         .buttonStyle(.whalePress)
     }
 
-    private func projectCard(_ project: WorkspaceProject) -> some View {
-        let captures = store.captures.filter { $0.projectID == project.id && !$0.isArchived }
-        let followUps = store.followUps.filter { $0.projectID == project.id && !$0.isCompleted }
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Image(systemName: "folder.fill")
-                    .foregroundStyle(WhaleTheme.accent)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(project.name)
-                        .whaleFont(size: 17, weight: .bold)
-                        .foregroundStyle(WhaleTheme.ink)
-                    if !project.summary.isEmpty {
-                        Text(project.summary)
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.muted)
-                            .lineLimit(2)
-                    }
-                }
-                Spacer()
-                Text("\(captures.count) 条 · \(followUps.count) 跟进")
-                    .whaleFont(size: 11, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.accent)
-            }
-            ForEach(captures.prefix(3)) { item in
-                Button {
-                    sheet = .captureDetail(item.id)
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: item.kind.icon)
-                            .foregroundStyle(WhaleTheme.muted)
-                        Text(item.title)
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.ink)
-                            .lineLimit(1)
-                        Spacer()
-                        Text(item.updatedAt.formatted(.dateTime.month().day()))
-                            .whaleFont(size: 11)
-                            .foregroundStyle(WhaleTheme.muted)
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(WhaleTheme.muted)
-                    }
-                    .frame(minHeight: 34)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-            if captures.isEmpty && followUps.isEmpty {
-                Text("还没有内容。在收件箱详情里把条目分配到这个项目。")
-                    .whaleFont(size: 12)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-        }
-        .whaleCard(padding: 15)
-    }
-
-    private func readingCard(_ article: SavedArticle) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(article.title)
-                .whaleFont(size: 16, weight: .semibold)
-                .foregroundStyle(WhaleTheme.ink)
-                .lineLimit(3)
-            Text(article.summary)
-                .whaleFont(size: 13)
-                .foregroundStyle(WhaleTheme.muted)
-                .lineLimit(2)
-            HStack(spacing: 8) {
-                Text(article.source)
-                Text("·")
-                Text(article.status.title)
-                Text("· \(Int(article.progress * 100))%")
-                Spacer()
-                if article.status != .finished {
-                    Button("读完") {
-                        let placeholder = NewsItem(
-                            id: article.id,
-                            title: article.title,
-                            summary: article.summary,
-                            source: article.source,
-                            link: article.link,
-                            publishedAt: nil,
-                            channel: article.channel,
-                            rank: nil
-                        )
-                        reading.markRead(placeholder)
-                    }
-                    .foregroundStyle(WhaleTheme.accent)
-                }
-                Button("摘录") {
-                    sheet = .highlight(article)
-                }
-                .foregroundStyle(WhaleTheme.accent)
-                Button("打开") {
-                    sheet = .reader(article)
-                }
-                .foregroundStyle(WhaleTheme.accent)
-            }
-            .whaleFont(size: 12, weight: .semibold)
-            ProgressView(value: article.progress)
-                .tint(article.status == .finished ? WhaleTheme.success : WhaleTheme.accent)
-        }
-        .whaleCard(padding: 14)
-    }
-
-    private var displayedReading: [SavedArticle] {
-        guard let readingFilter else { return reading.saved }
-        return reading.articles(with: readingFilter)
-    }
-
-    private func newsItem(for article: SavedArticle) -> NewsItem {
-        NewsItem(
-            id: article.id,
-            title: article.title,
-            summary: article.summary,
-            source: article.source,
-            link: article.link,
-            publishedAt: nil,
-            channel: article.channel,
-            rank: nil
-        )
-    }
-
-    private func readingFilterButton(_ status: ReadingStatus?, title: String) -> some View {
-        Button {
-            readingFilter = status
-        } label: {
-            Text(title)
-                .whaleFont(size: 12, weight: .semibold)
-                .foregroundStyle(readingFilter == status ? WhaleTheme.onAccent : WhaleTheme.ink)
-                .padding(.horizontal, 11)
-                .frame(minHeight: 34)
-                .background(
-                    readingFilter == status ? WhaleTheme.accent : WhaleTheme.card,
-                    in: Capsule()
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func followUpRow(_ item: WorkspaceFollowUp) -> some View {
-        HStack(alignment: .top, spacing: 10) {
-            Button {
-                store.toggleFollowUp(item)
-            } label: {
-                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(item.isCompleted ? WhaleTheme.success : WhaleTheme.muted)
-                    .frame(width: 38, height: 38)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(item.isCompleted ? "恢复跟进" : "标记跟进完成")
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.subject)
-                    .whaleFont(size: 15, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.ink)
-                    .strikethrough(item.isCompleted)
-                if !item.detail.isEmpty {
-                    Text(item.detail)
-                        .whaleFont(size: 13)
-                        .foregroundStyle(WhaleTheme.muted)
-                        .lineLimit(2)
-                }
-                if let dueAt = item.dueAt {
-                    Text(dueAt.formatted(.dateTime.month().day().hour().minute()))
-                        .whaleFont(size: 12, weight: .medium)
-                        .foregroundStyle(dueAt < Date() && !item.isCompleted ? WhaleTheme.warm : WhaleTheme.muted)
-                }
-            }
-            Spacer(minLength: 4)
-            Menu {
-                Button("删除", systemImage: "trash", role: .destructive) {
-                    store.deleteFollowUp(item)
-                }
-            } label: {
-                Image(systemName: "ellipsis")
-                    .frame(width: 38, height: 38)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-        }
-        .padding(13)
-        .background(WhaleTheme.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(WhaleTheme.line, lineWidth: 0.7)
-        }
-    }
-
     private func showToast(_ text: String) {
         WhaleAccessibility.announce(text)
-        withAnimation(.easeOut(duration: 0.18)) {
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) {
             toast = text
         }
         Task { @MainActor in
             try? await Task.sleep(nanoseconds: 2_200_000_000)
-            if toast == text {
-                withAnimation(.easeIn(duration: 0.18)) {
-                    toast = nil
-                }
+            guard toast == text else { return }
+            withAnimation(reduceMotion ? nil : .easeIn(duration: 0.18)) {
+                toast = nil
             }
         }
     }
@@ -939,9 +545,6 @@ private struct WorkspaceCaptureEditor: View {
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
     @State private var captureText = ""
-    @State private var kind: WorkspaceCaptureKind = .note
-    @State private var projectID: String?
-    @State private var saveToKnowledge = false
     @State private var photoItem: PhotosPickerItem?
     @State private var showPhotoPicker = false
     @State private var showFileImporter = false
@@ -951,15 +554,13 @@ private struct WorkspaceCaptureEditor: View {
     @FocusState private var focused: Bool
 
     private var hasChanges: Bool {
-        !title.isEmpty
-            || !captureText.isEmpty
-            || showsVoice
+        !title.isEmpty || !captureText.isEmpty || showsVoice
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("收件内容") {
+                Section("内容") {
                     TextField("标题（可留空自动生成）", text: $title)
                     TextEditor(text: $captureText)
                         .frame(minHeight: 150)
@@ -969,10 +570,7 @@ private struct WorkspaceCaptureEditor: View {
                             focused = false
                             showsVoice = true
                         } label: {
-                            Label(
-                                "语音补一句",
-                                systemImage: "mic"
-                            )
+                            Label("语音补一句", systemImage: "mic")
                         }
                         .disabled(isImporting)
                         .accessibilityIdentifier("workspace-capture-voice")
@@ -983,12 +581,7 @@ private struct WorkspaceCaptureEditor: View {
                     }
                 }
 
-                Section("来源") {
-                    Picker("类型", selection: $kind) {
-                        ForEach(WorkspaceCaptureKind.allCases) { value in
-                            Label(value.title, systemImage: value.icon).tag(value)
-                        }
-                    }
+                Section("补充来源") {
                     Button {
                         photoItem = nil
                         showPhotoPicker = true
@@ -1002,16 +595,6 @@ private struct WorkspaceCaptureEditor: View {
                     }
                 }
 
-                Section("归档方式") {
-                    Picker("项目", selection: $projectID) {
-                        Text("未分配").tag(String?.none)
-                        ForEach(store.projects) { project in
-                            Text(project.name).tag(Optional(project.id))
-                        }
-                    }
-                    Toggle("同时保存到私人知识库", isOn: $saveToKnowledge)
-                }
-
                 if let errorText {
                     Section {
                         Label(errorText, systemImage: "exclamationmark.triangle")
@@ -1021,7 +604,7 @@ private struct WorkspaceCaptureEditor: View {
             }
             .scrollContentBackground(.hidden)
             .background(WhaleBackdrop())
-            .navigationTitle("记录到收件箱")
+            .navigationTitle("记一笔")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1071,16 +654,13 @@ private struct WorkspaceCaptureEditor: View {
 
     private func save() {
         let cleanBody = captureText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let finalKind: WorkspaceCaptureKind = {
-            guard kind == .note, cleanBody.contains("http") else { return kind }
-            return .link
-        }()
+        let kind: WorkspaceCaptureKind = cleanBody.localizedCaseInsensitiveContains("http")
+            ? .link
+            : .note
         _ = store.capture(
             title: title,
             body: cleanBody,
-            kind: finalKind,
-            projectID: projectID,
-            isKnowledge: saveToKnowledge
+            kind: kind
         )
         dismiss()
     }
@@ -1089,7 +669,10 @@ private struct WorkspaceCaptureEditor: View {
         guard !isImporting else { return }
         isImporting = true
         errorText = nil
-        defer { isImporting = false; photoItem = nil }
+        defer {
+            isImporting = false
+            photoItem = nil
+        }
         do {
             guard let data = try await item.loadTransferable(type: Data.self) else {
                 throw ToolExecutionError(code: "empty_photo", message: "没有读到照片数据。")
@@ -1100,7 +683,11 @@ private struct WorkspaceCaptureEditor: View {
             try data.write(to: url, options: .atomic)
             defer { try? FileManager.default.removeItem(at: url) }
             let document = try await DocumentTextExtractor.extract(url: url)
-            saveImported(text: document.text, title: "图片记录 · \(Date().formatted(.dateTime.month().day()))", kind: .image)
+            saveImported(
+                text: document.text,
+                title: "图片记录 · \(Date().formatted(.dateTime.month().day()))",
+                kind: .image
+            )
         } catch {
             errorText = error.localizedDescription
         }
@@ -1138,9 +725,7 @@ private struct WorkspaceCaptureEditor: View {
         _ = store.capture(
             title: title,
             body: cleaned,
-            kind: kind,
-            projectID: projectID,
-            isKnowledge: saveToKnowledge
+            kind: kind
         )
         dismiss()
     }
@@ -1164,49 +749,28 @@ private struct WorkspaceCaptureEditor: View {
 private struct WorkspaceCaptureDetailSheet: View {
     let item: WorkspaceCapture
     @ObservedObject var store: WhaleWorkspaceStore
-    @ObservedObject var model: AppModel
-    let onOpenChat: (String) -> Void
     let onShowToast: (String) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var title: String
     @State private var bodyText: String
-    @State private var kind: WorkspaceCaptureKind
-    @State private var projectID: String?
-    @State private var isKnowledge: Bool
-    @State private var followUpEnabled = false
-    @State private var followUpDue = Date().addingTimeInterval(86_400)
-    @State private var isSavingTodo = false
     @State private var errorText: String?
-    @State private var confirmTodo = false
-    @State private var destructiveAction: WorkspaceCaptureDestructiveAction?
+    @State private var confirmDelete = false
 
     init(
         item: WorkspaceCapture,
         store: WhaleWorkspaceStore,
-        model: AppModel,
-        onOpenChat: @escaping (String) -> Void,
         onShowToast: @escaping (String) -> Void
     ) {
         self.item = item
         _store = ObservedObject(wrappedValue: store)
-        _model = ObservedObject(wrappedValue: model)
-        self.onOpenChat = onOpenChat
         self.onShowToast = onShowToast
         _title = State(initialValue: item.title)
         _bodyText = State(initialValue: item.body)
-        _kind = State(initialValue: item.kind)
-        _projectID = State(initialValue: item.projectID)
-        _isKnowledge = State(initialValue: item.isKnowledge)
     }
 
     private var hasChanges: Bool {
-        title != item.title
-            || bodyText != item.body
-            || kind != item.kind
-            || projectID != item.projectID
-            || isKnowledge != item.isKnowledge
-            || followUpEnabled
+        title != item.title || bodyText != item.body
     }
 
     var body: some View {
@@ -1215,31 +779,10 @@ private struct WorkspaceCaptureDetailSheet: View {
                 Section("内容") {
                     TextField("标题", text: $title, axis: .vertical)
                         .lineLimit(1...3)
+                        .accessibilityIdentifier("workspace-note-title")
                     TextEditor(text: $bodyText)
                         .frame(minHeight: 180)
-                }
-
-                Section("归档") {
-                    Picker("类型", selection: $kind) {
-                        ForEach(WorkspaceCaptureKind.allCases) { value in
-                            Label(value.title, systemImage: value.icon).tag(value)
-                        }
-                    }
-                    Picker("项目", selection: $projectID) {
-                        Text("未分配").tag(String?.none)
-                        ForEach(store.projects) { project in
-                            Text(project.name).tag(Optional(project.id))
-                        }
-                    }
-                    Toggle("保存到私人知识库", isOn: $isKnowledge)
-                    Toggle("加入重要跟进", isOn: $followUpEnabled)
-                    if followUpEnabled {
-                        DatePicker(
-                            "跟进日期",
-                            selection: $followUpDue,
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                    }
+                        .accessibilityIdentifier("workspace-note-body")
                 }
 
                 if let source = item.sourceURL, !source.isEmpty {
@@ -1247,20 +790,6 @@ private struct WorkspaceCaptureDetailSheet: View {
                         Text(source)
                             .font(.footnote.monospaced())
                             .textSelection(.enabled)
-                    }
-                }
-
-                Section("下一步") {
-                    Button {
-                        confirmTodo = true
-                    } label: {
-                        Label(isSavingTodo ? "正在写入…" : "转为待办", systemImage: "checklist")
-                    }
-                    .disabled(isSavingTodo)
-                    Button {
-                        askWhaleToSchedule()
-                    } label: {
-                        Label("让鲸鱼帮我安排日程", systemImage: "calendar.badge.plus")
                     }
                 }
 
@@ -1273,7 +802,7 @@ private struct WorkspaceCaptureDetailSheet: View {
             }
             .scrollContentBackground(.hidden)
             .background(WhaleBackdrop())
-            .navigationTitle("收件详情")
+            .navigationTitle("记事详情")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -1281,306 +810,48 @@ private struct WorkspaceCaptureDetailSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("保存") { save() }
+                        .disabled(
+                            title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                && bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        )
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Button("移入归档") {
-                        destructiveAction = .archive
-                    }
-                    Spacer()
+                ToolbarItem(placement: .bottomBar) {
                     Button("删除", role: .destructive) {
-                        destructiveAction = .delete
+                        confirmDelete = true
                     }
                 }
             }
             .confirmationDialog(
-                "写入系统提醒事项？",
-                isPresented: $confirmTodo,
+                "删除这条记事？",
+                isPresented: $confirmDelete,
                 titleVisibility: .visible
             ) {
-                Button("确认写入") {
-                    Task { await createTodo() }
+                Button("确认删除", role: .destructive) {
+                    store.delete(item)
+                    dismiss()
                 }
                 Button("取消", role: .cancel) {}
-            } message: {
-                Text("会创建：\(title)。这一步会请求提醒事项权限，并真实写入系统。")
-            }
-            .confirmationDialog(
-                "处理这条记录？",
-                isPresented: Binding(
-                    get: { destructiveAction != nil },
-                    set: { if !$0 { destructiveAction = nil } }
-                ),
-                titleVisibility: .visible
-            ) {
-                if destructiveAction == .archive {
-                    Button("移入归档") {
-                        store.archive(item)
-                        destructiveAction = nil
-                        dismiss()
-                    }
-                }
-                if destructiveAction == .delete {
-                    Button("确认删除", role: .destructive) {
-                        store.delete(item)
-                        destructiveAction = nil
-                        dismiss()
-                    }
-                }
-                Button("取消", role: .cancel) {
-                    destructiveAction = nil
-                }
             } message: {
                 Text(item.title)
             }
         }
         .presentationDetents([.large])
-        .whaleDraftGuard(
-            hasChanges: hasChanges,
-            isBusy: isSavingTodo
-        )
+        .whaleDraftGuard(hasChanges: hasChanges)
     }
 
     private func save() {
-        var next = item
-        next.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        next.body = bodyText
-        next.kind = kind
-        next.projectID = projectID
-        next.isKnowledge = isKnowledge
-        store.update(next)
-        if followUpEnabled {
-            _ = store.addFollowUp(
-                subject: next.title,
-                detail: String(next.body.prefix(400)),
-                dueAt: followUpDue,
-                projectID: projectID
-            )
+        let cleanBody = bodyText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanBody.isEmpty || !cleanTitle.isEmpty else {
+            errorText = "标题和内容不能同时为空。"
+            return
         }
+        var next = item
+        next.title = cleanTitle.isEmpty ? String(cleanBody.prefix(36)) : cleanTitle
+        next.body = cleanBody
+        store.update(next)
         onShowToast("已保存")
         dismiss()
-    }
-
-    private func createTodo() async {
-        guard !isSavingTodo else { return }
-        isSavingTodo = true
-        errorText = nil
-        defer { isSavingTodo = false }
-        do {
-            let projectName = store.projects.first { $0.id == projectID }?.name
-            _ = try await model.createTodoReminder(
-                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-                dueAt: nil,
-                project: projectName
-            )
-            var next = item
-            next.isArchived = true
-            store.update(next)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
-            onShowToast("已写入系统提醒事项")
-            dismiss()
-        } catch {
-            errorText = error.localizedDescription
-        }
-    }
-
-    private func askWhaleToSchedule() {
-        save()
-        let prompt = "请先读取我的真实日历，再为这件事给出 1～3 个候选时间；在写入前让我确认。不要自行创建日程。\n\n标题：\(title)\n内容：\(String(bodyText.prefix(1200)))"
-        onOpenChat(prompt)
-    }
-}
-
-private struct WorkspaceProjectEditor: View {
-    @ObservedObject var store: WhaleWorkspaceStore
-    @Environment(\.dismiss) private var dismiss
-    @State private var name = ""
-    @State private var summary = ""
-
-    private var hasChanges: Bool {
-        !name.isEmpty || !summary.isEmpty
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("项目名称") {
-                    TextField("例如：春节旅行、装修、求职", text: $name)
-                }
-                Section("说明") {
-                    TextEditor(text: $summary)
-                        .frame(minHeight: 120)
-                }
-            }
-            .scrollContentBackground(.hidden)
-            .background(WhaleBackdrop())
-            .navigationTitle("新建项目")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("创建") {
-                        _ = store.addProject(name: name, summary: summary)
-                        dismiss()
-                    }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium])
-        .whaleDraftGuard(hasChanges: hasChanges)
-    }
-}
-
-private struct WorkspaceReadingHighlightSheet: View {
-    let article: SavedArticle
-    @ObservedObject var store: WhaleWorkspaceStore
-    let onSaved: () -> Void
-    @Environment(\.dismiss) private var dismiss
-    @State private var excerpt: String
-    @State private var note = ""
-
-    private var hasChanges: Bool {
-        excerpt != article.summary || !note.isEmpty
-    }
-
-    init(article: SavedArticle, store: WhaleWorkspaceStore, onSaved: @escaping () -> Void) {
-        self.article = article
-        _store = ObservedObject(wrappedValue: store)
-        self.onSaved = onSaved
-        _excerpt = State(initialValue: article.summary)
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("原文") {
-                    Text(article.title)
-                        .font(.headline)
-                    Text(article.source)
-                        .font(.caption)
-                        .foregroundStyle(WhaleTheme.muted)
-                }
-                Section("摘录") {
-                    TextEditor(text: $excerpt)
-                        .frame(minHeight: 130)
-                }
-                Section("我的批注") {
-                    TextEditor(text: $note)
-                        .frame(minHeight: 90)
-                }
-                Section {
-                    Text("保存后会进入私人知识库，并保留原文链接。")
-                        .font(.footnote)
-                        .foregroundStyle(WhaleTheme.muted)
-                }
-            }
-            .scrollContentBackground(.hidden)
-            .background(WhaleBackdrop())
-            .navigationTitle("阅读摘录")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
-                        let combined = [excerpt, note.isEmpty ? "" : "批注：\(note)"]
-                            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                            .joined(separator: "\n\n")
-                        _ = store.capture(
-                            title: "摘录 · \(article.title)",
-                            body: combined,
-                            kind: .reading,
-                            sourceURL: article.link,
-                            isKnowledge: true
-                        )
-                        onSaved()
-                        dismiss()
-                    }
-                    .disabled(excerpt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-        .whaleDraftGuard(hasChanges: hasChanges)
-    }
-}
-
-private struct WorkspaceFollowUpEditor: View {
-    @ObservedObject var store: WhaleWorkspaceStore
-    @Environment(\.dismiss) private var dismiss
-    @State private var subject = ""
-    @State private var detail = ""
-    @State private var dueAt = Date().addingTimeInterval(86_400)
-    @State private var useDueDate = true
-    @State private var projectID: String?
-
-    private var hasChanges: Bool {
-        !subject.isEmpty
-            || !detail.isEmpty
-            || projectID != nil
-            || !useDueDate
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("跟进事项") {
-                    TextField("跟进对象或事项", text: $subject)
-                    Text("例如：王老师 / 酒店前台 / 合同回访。不会从通讯录自动猜测。")
-                        .font(.caption)
-                        .foregroundStyle(WhaleTheme.muted)
-                    TextEditor(text: $detail)
-                        .frame(minHeight: 100)
-                }
-                Section("时间与项目") {
-                    Toggle("设置跟进日期", isOn: $useDueDate)
-                    if useDueDate {
-                        DatePicker(
-                            "跟进日期",
-                            selection: $dueAt,
-                            displayedComponents: [.date, .hourAndMinute]
-                        )
-                    }
-                    Picker("项目", selection: $projectID) {
-                        Text("未分配").tag(String?.none)
-                        ForEach(store.projects) { project in
-                            Text(project.name).tag(Optional(project.id))
-                        }
-                    }
-                }
-                Section {
-                    Text("这是本机跟进清单。只有在 App 内选择转为待办时，才会写入系统提醒事项。")
-                        .font(.footnote)
-                        .foregroundStyle(WhaleTheme.muted)
-                }
-            }
-            .scrollContentBackground(.hidden)
-            .background(WhaleBackdrop())
-            .navigationTitle("新增跟进")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("添加") {
-                        _ = store.addFollowUp(
-                            subject: subject,
-                            detail: detail,
-                            dueAt: useDueDate ? dueAt : nil,
-                            projectID: projectID
-                        )
-                        dismiss()
-                    }
-                    .disabled(subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-        .whaleDraftGuard(hasChanges: hasChanges)
     }
 }
 

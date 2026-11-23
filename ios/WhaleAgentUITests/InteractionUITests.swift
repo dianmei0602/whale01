@@ -54,6 +54,14 @@ final class InteractionUITests: XCTestCase {
         let app = launch()
 
         XCTAssertTrue(
+            app.staticTexts["home-header-title"]
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertTrue(
+            app.descendants(matching: .any)["home-header-whale"]
+                .exists
+        )
+        XCTAssertTrue(
             app.descendants(matching: .any)["home-inspiration-card"]
                 .waitForExistence(timeout: 10)
         )
@@ -86,10 +94,10 @@ final class InteractionUITests: XCTestCase {
         XCTAssertLessThan(tab(app, "discover").frame.midX, tab(app, "records").frame.midX)
         tab(app, "records").tap()
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-tasks-overview"]
+            app.textFields["workspace-task-draft"]
                 .waitForExistence(timeout: 5)
         )
-        XCTAssertTrue(app.buttons["workspace-section-inbox"].exists)
+        XCTAssertTrue(app.buttons["workspace-section-todos"].exists)
         tab(app, "discover").tap()
         let capture = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         capture.name = "discovery-after-tab-tap"; capture.lifetime = .keepAlways; add(capture)
@@ -113,14 +121,36 @@ final class InteractionUITests: XCTestCase {
         tab(app, "records").tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-tasks-overview"]
+            app.textFields["workspace-task-draft"]
                 .waitForExistence(timeout: 10)
         )
         XCTAssertTrue(
-            app.buttons["workspace-section-inbox"].waitForExistence(timeout: 10)
+            app.buttons["workspace-section-todos"].waitForExistence(timeout: 10)
         )
         XCTAssertTrue(app.buttons["workspace-open-todo"].exists)
         attach("workspace-tasks-and-content")
+    }
+
+    func testWorkspaceOnlyExposesThreePrimarySurfaces() {
+        let app = launch()
+        tab(app, "records").tap()
+
+        XCTAssertTrue(
+            app.buttons["workspace-section-todos"].waitForExistence(timeout: 10)
+        )
+        XCTAssertTrue(app.buttons["workspace-section-notes"].exists)
+        XCTAssertTrue(app.buttons["workspace-section-brief"].exists)
+        for removed in ["inbox", "projects", "knowledge", "reading", "focus", "followUps"] {
+            XCTAssertFalse(app.buttons["workspace-section-" + removed].exists)
+        }
+
+        app.buttons["workspace-section-notes"].tap()
+        XCTAssertTrue(
+            app.buttons["workspace-open-capture-editor"].waitForExistence(timeout: 5)
+        )
+
+        app.buttons["workspace-section-brief"].tap()
+        XCTAssertTrue(app.staticTexts["晚间复盘"].waitForExistence(timeout: 5))
     }
 
     func testWorkspaceTodoPageCanReturnToWorkspaceOverview() {
@@ -141,7 +171,7 @@ final class InteractionUITests: XCTestCase {
         navigationBar.buttons.element(boundBy: 0).tap()
 
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-tasks-overview"]
+            app.textFields["workspace-task-draft"]
                 .waitForExistence(timeout: 5)
         )
     }
@@ -164,37 +194,31 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["目前没有未完成事项。"].exists)
     }
 
-    func testWorkspaceSectionsKeepIndependentScrollPositions() {
+    func testWorkspaceSurfacesSwitchWithoutHorizontalScrolling() {
         let app = launch()
         tab(app, "records").tap()
 
-        let inbox = app.buttons["workspace-section-inbox"]
-        XCTAssertTrue(inbox.waitForExistence(timeout: 10))
-        app.swipeUp()
-        app.swipeUp()
+        let todos = app.buttons["workspace-section-todos"]
+        let notes = app.buttons["workspace-section-notes"]
+        let brief = app.buttons["workspace-section-brief"]
+        XCTAssertTrue(todos.waitForExistence(timeout: 10))
+        XCTAssertTrue(notes.isHittable)
+        XCTAssertTrue(brief.isHittable)
 
-        let reading = app.buttons["workspace-section-reading"]
-        if !reading.isHittable {
-            app.swipeDown()
-        }
-        reading.tap()
-
+        notes.tap()
         XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-section-content-reading"]
-                .waitForExistence(timeout: 5)
+            app.buttons["workspace-open-capture-editor"].waitForExistence(timeout: 5)
         )
-
-        inbox.tap()
-        XCTAssertTrue(
-            app.descendants(matching: .any)["workspace-section-content-inbox"]
-                .waitForExistence(timeout: 5)
-        )
+        brief.tap()
+        XCTAssertTrue(app.staticTexts["晚间复盘"].waitForExistence(timeout: 5))
+        todos.tap()
+        XCTAssertTrue(app.textFields["workspace-task-draft"].waitForExistence(timeout: 5))
     }
 
     func testWorkspaceEditorRejectsAccidentalSwipeDismiss() {
         let app = launch()
         tab(app, "records").tap()
-        app.buttons["workspace-section-inbox"].tap()
+        app.buttons["workspace-section-notes"].tap()
         app.buttons["workspace-open-capture-editor"].tap()
 
         let editor = app.textViews["workspace-capture-body"]
@@ -214,6 +238,7 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(
             app.descendants(matching: .any)["home-inspiration-card"].exists
         )
+        XCTAssertTrue(app.staticTexts["home-header-title"].exists)
         XCTAssertFalse(app.buttons["home-workspace"].exists)
         XCTAssertTrue(app.buttons["home-start-conversation"].exists)
     }

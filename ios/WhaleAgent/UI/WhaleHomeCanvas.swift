@@ -46,19 +46,27 @@ struct WhaleHomeCanvas: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                if showQuote { dailyQuote }
-                assistantCommandCenter
-                homeWidgetGrid
-                categoryGrid
-                conversationEntryButton
-                if workspaceNeedsAttention {
-                    workspaceLauncher
+        VStack(spacing: 0) {
+            homeHeader
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    if showQuote { dailyQuote }
+                    assistantCommandCenter
+                    homeWidgetGrid
+                    categoryGrid
+                    conversationEntryButton
+                    if workspaceNeedsAttention {
+                        workspaceLauncher
+                    }
                 }
-            }.frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, WhaleTheme.pagePadding).padding(.top, 12).padding(.bottom, 24)
-        }.scrollIndicators(.hidden).scrollDismissesKeyboard(.interactively)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, WhaleTheme.pagePadding)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
+            }
+            .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
+        }
             .background(WhaleBackdrop())
             .task {
                 await loadWeatherIfNeeded()
@@ -84,6 +92,49 @@ struct WhaleHomeCanvas: View {
                         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { showWeatherDetail = false } } }
                 }
             }
+    }
+
+    private var homeHeader: some View {
+        let presentation = WhaleHomeHeaderPresentation.content(
+            isPlayingMusic: model.playback.track != nil && model.playback.isPlaying,
+            trackTitle: model.playback.track?.title
+        )
+        return HStack(spacing: 10) {
+            WhaleMarkView(size: 30)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("鲸鱼")
+                .accessibilityIdentifier("home-header-whale")
+            VStack(alignment: .leading, spacing: 1) {
+                Text("鲸鱼")
+                    .whaleFont(size: 16, weight: .semibold)
+                    .foregroundStyle(WhaleIMessagePalette.text)
+                    .accessibilityIdentifier("home-header-title")
+                Text("生活助理")
+                    .whaleFont(size: 11, weight: .medium)
+                    .foregroundStyle(WhaleIMessagePalette.muted)
+            }
+            Spacer()
+            if presentation.showsMusicIcon {
+                Button(action: onOpenMusic) {
+                    Image(systemName: "music.note")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(WhaleTheme.accent)
+                        .frame(width: 32, height: 32)
+                        .background(WhaleTheme.accentSoft, in: Circle())
+                }
+                .buttonStyle(.whalePress)
+                .accessibilityLabel(presentation.musicAccessibilityLabel ?? "正在播放")
+                .accessibilityIdentifier("home-now-playing")
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(minHeight: 52)
+        .background(WhaleIMessagePalette.header)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(WhaleIMessagePalette.line)
+                .frame(height: 0.5)
+        }
     }
 
     private var assistantCommandCenter: some View {
@@ -671,11 +722,10 @@ struct WhaleHomeCanvas: View {
 
     private var workspaceSubtitle: String {
         let inbox = workspaceStore.inbox.count
-        let followUps = workspaceStore.pendingFollowUps.count
-        if inbox == 0 && followUps == 0 {
-            return "收件箱 · 项目 · 知识库 · 晨晚报"
+        if inbox == 0 {
+            return "待办 · 记事 · 晨晚报"
         }
-        return "\(inbox) 条待整理 · \(followUps) 项跟进 · 晨晚报"
+        return "\(inbox) 条记事 · 晨晚报"
     }
 
     private var workspaceNeedsAttention: Bool {
@@ -685,7 +735,6 @@ struct WhaleHomeCanvas: View {
         }
 #endif
         return !workspaceStore.inbox.isEmpty
-            || !workspaceStore.pendingFollowUps.isEmpty
     }
 
     private func syncWidgetSnapshot() {

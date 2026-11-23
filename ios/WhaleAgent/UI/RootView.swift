@@ -201,20 +201,7 @@ struct RootView: View {
         NavigationStack(path: $navigation.workspacePath) {
             WhaleWorkspaceView(
                 model: model,
-                embedded: true,
-                onOpenMusic: { openDiscover(.music) },
-                onOpenChat: { prompt in
-                    navigation.conversationMode = .chat
-                    navigation.selectedTab = .conversation
-                    Task { @MainActor in
-                        try? await Task.sleep(nanoseconds: 250_000_000)
-                        NotificationCenter.default.post(
-                            name: .whalePrefillDraft,
-                            object: nil,
-                            userInfo: ["text": prompt]
-                        )
-                    }
-                }
+                embedded: true
             )
             .navigationDestination(for: WorkspaceRoute.self) { route in
                 WhaleWorkspaceRouteView(route: route, model: model)

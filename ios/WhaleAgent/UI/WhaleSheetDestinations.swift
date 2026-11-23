@@ -3,10 +3,6 @@ import SwiftUI
 enum WorkspaceSheet: Identifiable {
     case captureEditor
     case captureDetail(String)
-    case projectEditor
-    case followUpEditor
-    case reader(SavedArticle)
-    case highlight(SavedArticle)
 
     var id: String {
         switch self {
@@ -14,23 +10,8 @@ enum WorkspaceSheet: Identifiable {
             return "capture-editor"
         case .captureDetail(let id):
             return "capture-" + id
-        case .projectEditor:
-            return "project-editor"
-        case .followUpEditor:
-            return "follow-up-editor"
-        case .reader(let article):
-            return "reader-" + article.id
-        case .highlight(let article):
-            return "highlight-" + article.id
         }
     }
-}
-
-enum WorkspaceCaptureDestructiveAction: String, Identifiable {
-    case archive
-    case delete
-
-    var id: String { rawValue }
 }
 
 private struct WhaleDraftDismissGuard: ViewModifier {
