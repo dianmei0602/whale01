@@ -10,6 +10,10 @@ enum InteractionMotion {
         reduceMotion ? nil : .spring(response: 0.30, dampingFraction: 0.88)
     }
 
+    static func press(reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : .spring(response: 0.20, dampingFraction: 0.70)
+    }
+
     static func waveformEnabled(reduceMotion: Bool) -> Bool {
         !reduceMotion
     }

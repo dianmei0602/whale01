@@ -91,6 +91,9 @@ struct WhaleHomeCanvas: View {
                         .navigationTitle("天气详情").navigationBarTitleDisplayMode(.inline)
                         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { showWeatherDetail = false } } }
                 }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
             }
     }
 
@@ -554,7 +557,7 @@ struct WhaleHomeCanvas: View {
             if locationStatus == "granted", weatherDays.isEmpty, !weatherLoading {
                 Task { await loadWeather(force: true) }
             } else {
-                weatherExpanded = true; showWeatherDetail = true
+                openWeatherDetail()
             }
         } label: {
             HStack(spacing: 4) {
@@ -572,6 +575,14 @@ struct WhaleHomeCanvas: View {
         .buttonStyle(.plain)
         .accessibilityIdentifier("home-today-weather")
             .accessibilityHint("查看天气详情；天气未获取时重新查询")
+    }
+
+    private func openWeatherDetail() {
+        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        weatherExpanded = true
+        withAnimation(InteractionMotion.sheet(reduceMotion: reduceMotion)) {
+            showWeatherDetail = true
+        }
     }
 
     private var compactWeatherText: String {
@@ -856,7 +867,9 @@ struct WhaleHomeCanvas: View {
     private func weatherSummary(_ today: WeatherDaySummary) -> some View {
         VStack(alignment: .leading, spacing: 13) {
             Button {
-                withAnimation(.snappy(duration: 0.2)) { weatherExpanded.toggle() }
+                withAnimation(InteractionMotion.sheet(reduceMotion: reduceMotion)) {
+                    weatherExpanded.toggle()
+                }
             } label: {
                 HStack(alignment: .center, spacing: 14) {
                     Image(systemName: today.icon)

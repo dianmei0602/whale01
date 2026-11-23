@@ -22,4 +22,14 @@ final class InteractionMotionTests: XCTestCase {
             InteractionMotion.waveformEnabled(reduceMotion: false)
         )
     }
+
+    func testSheetAnimationHonorsReducedMotion() {
+        XCTAssertNil(InteractionMotion.sheet(reduceMotion: true))
+        XCTAssertNotNil(InteractionMotion.sheet(reduceMotion: false))
+    }
+
+    func testPressAnimationHonorsReducedMotion() {
+        XCTAssertNil(InteractionMotion.press(reduceMotion: true))
+        XCTAssertNotNil(InteractionMotion.press(reduceMotion: false))
+    }
 }

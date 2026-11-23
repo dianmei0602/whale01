@@ -256,13 +256,21 @@ struct MusicView: View {
             }
             .onEnded { value in
                 guard !isSwitchingAlbum, !model.isMusicBusy else {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) { dragOffset = 0 }
+                    withAnimation(
+                        reduceMotion
+                            ? nil
+                            : .spring(response: 0.3, dampingFraction: 0.86)
+                    ) { dragOffset = 0 }
                     return
                 }
                 let dx = value.translation.width
                 let projected = dx + value.predictedEndTranslation.width
                 guard abs(dx) > abs(value.translation.height), abs(projected) > 60 else {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.86)) { dragOffset = 0 }
+                    withAnimation(
+                        reduceMotion
+                            ? nil
+                            : .spring(response: 0.3, dampingFraction: 0.86)
+                    ) { dragOffset = 0 }
                     return
                 }
                 completeSwipe(dx < 0 ? 1 : -1)

@@ -257,6 +257,7 @@ enum RootBottomChromePolicy {
 struct WhaleRootTabBar: View {
     @Binding var selection: AppTab
     var onReselect: (AppTab) -> Void = { _ in }
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 0) {
@@ -282,7 +283,13 @@ struct WhaleRootTabBar: View {
                 return
             }
             UISelectionFeedbackGenerator().selectionChanged()
-            withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { selection = tab }
+            withAnimation(
+                reduceMotion
+                    ? nil
+                    : .interactiveSpring(response: 0.34, dampingFraction: 0.88)
+            ) {
+                selection = tab
+            }
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: icon)
@@ -296,7 +303,10 @@ struct WhaleRootTabBar: View {
             .frame(maxWidth: .infinity)
             .frame(height: 46)
             .contentShape(Rectangle())
-            .animation(.spring(response: 0.28, dampingFraction: 0.72), value: selected)
+            .animation(
+                InteractionMotion.page(reduceMotion: reduceMotion),
+                value: selected
+            )
         }
         .buttonStyle(.whalePress)
         .accessibilityLabel(title)

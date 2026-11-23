@@ -146,7 +146,7 @@ struct WhalePressButtonStyle: ButtonStyle {
             .brightness(configuration.isPressed ? -0.035 : 0)
             .opacity(configuration.isPressed ? 0.90 : 1)
             .animation(
-                reduceMotion ? nil : .spring(response: 0.20, dampingFraction: 0.70),
+                InteractionMotion.press(reduceMotion: reduceMotion),
                 value: configuration.isPressed
             )
     }
