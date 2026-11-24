@@ -266,7 +266,11 @@ struct WhalePalette {
             case .channelWeibo: return [(0xD34747, 0x5A1A1A), (0xD77B3D, 0x5B3216)]
             }
         case .flat:
-            let page = [(0xF7F9FC, 0x101720), (0xF7F9FC, 0x101720), (0xF0F4FA, 0x0D141C)]
+            let page: [(UInt32, UInt32)] = [
+                (0xF7F9FC, 0x101720),
+                (0xF7F9FC, 0x101720),
+                (0xF0F4FA, 0x0D141C)
+            ]
             switch name {
             case .page: return page
             case .hero, .channelAI: return [(0x2D6CDF, 0x4C86FF), (0x2D6CDF, 0x4C86FF)]

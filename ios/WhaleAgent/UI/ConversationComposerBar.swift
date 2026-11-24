@@ -9,6 +9,7 @@ struct ConversationComposerBar: View {
     static let reservedHeight: CGFloat = 66
 
     @ObservedObject var model: AppModel
+    @Binding var externalFocused: Bool
     @StateObject private var voice = VoiceInputController()
     @FocusState private var focused: Bool
 
@@ -64,6 +65,9 @@ struct ConversationComposerBar: View {
             guard !text.isEmpty else { return }
             draft = voicePrefix.isEmpty ? text : voicePrefix + "\n" + text
         }
+        .onChange(of: focused) { _, value in
+            externalFocused = value
+        }
         .onChange(of: voice.isRecording) { wasRecording, isRecording in
             guard wasRecording, !isRecording else { return }
             guard voice.errorText == nil else { return }
@@ -91,7 +95,11 @@ struct ConversationComposerBar: View {
             draft = draft.isEmpty ? text : draft + "\n" + text
             focused = true
         }
-        .onDisappear { if let context = draftContext { drafts.save(draft, context: context) }; voice.cancel() }
+        .onDisappear {
+            if let context = draftContext { drafts.save(draft, context: context) }
+            externalFocused = false
+            voice.cancel()
+        }
     }
 
     // MARK: - Composer
