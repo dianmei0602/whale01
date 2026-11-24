@@ -5,11 +5,14 @@ import UIKit
 @MainActor
 struct RootView: View {
     @StateObject private var model = AppModel()
+    @StateObject private var keyboard = KeyboardObserver()
+    @StateObject private var theme = ThemeManager.shared
     @State private var page = NavigationHabits.restoredTab(UserDefaults.standard.string(forKey: "whale.root.tab"))
     @State private var showRecords = false
     @State private var showSettings = false
     @State private var settingsDetailOpen = false
     @State private var composerDraft = ""
+    @State private var composerFocused = false
     @AppStorage("whale.discover.selectedChannel") private var discoverChannel: DiscoverChannel = .ai
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
@@ -17,17 +20,23 @@ struct RootView: View {
     @GestureState private var pagerDrag: CGFloat = 0
 
     var body: some View {
-        pager
-        .safeAreaInset(edge: .bottom, spacing: 0) { WhaleRootTabBar(selection: $page) }
-        .tint(WhaleTheme.accent)
-        .preferredColorScheme(colorScheme)
-        .dynamicTypeSize(preferredTextSize)
-        .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
-        .sheet(isPresented: $showRecords) { RecordsView(model: model, showsClose: true, onClose: { showRecords = false }) }
-        .sheet(isPresented: $showSettings) {
-            SettingsView(model: model, isDetailOpen: $settingsDetailOpen, onBackToChat: { showSettings = false })
-                .presentationDragIndicator(.visible)
+        Group {
+            pager
+            .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
+            .tint(WhaleTheme.accent)
+            .preferredColorScheme(colorScheme)
+            .dynamicTypeSize(preferredTextSize)
+            .sheet(item: $model.presentedConfirmation) { item in ConfirmationSheet(model: model, item: item) }
+            .sheet(isPresented: $showRecords) { RecordsView(model: model, showsClose: true, onClose: { showRecords = false }) }
+            .sheet(isPresented: $showSettings) {
+                SettingsView(model: model, isDetailOpen: $settingsDetailOpen, onBackToChat: { showSettings = false })
+                    .presentationDragIndicator(.visible)
+            }
         }
+        // 样式切换时重建整棵子树，让所有 WhaleTheme 计算属性取到新 Token。
+        // 外观（系统/浅/深）不需要这里参与：动态色随系统自动更新。
+        .id(theme.style)
+        .environmentObject(theme)
         .task {
 #if DEBUG
             let environment = ProcessInfo.processInfo.environment
@@ -55,6 +64,7 @@ struct RootView: View {
         }
         .onChange(of: page) { _, tab in
             UserDefaults.standard.set(tab.rawValue, forKey: "whale.root.tab")
+            composerFocused = false
             UISelectionFeedbackGenerator().selectionChanged()
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
@@ -94,7 +104,32 @@ struct RootView: View {
         ConversationTabView(model: model, bottomInset: 0,
             onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
             onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
-            .safeAreaInset(edge: .bottom, spacing: 0) { ConversationComposerBar(model: model, draft: $composerDraft) }
+    }
+
+    /// Composer and tabs share one bottom inset. This avoids nested safe-area
+    /// insets placing the composer underneath the tab bar. While the keyboard
+    /// is present the tab bar yields its space to the composer.
+    @ViewBuilder
+    private var bottomChrome: some View {
+        if page == .conversation {
+            VStack(spacing: 0) {
+                ConversationComposerBar(model: model, externalFocused: $composerFocused, draft: $composerDraft)
+                if RootBottomChromePolicy.tabBarVisible(
+                    page: page,
+                    composerFocused: composerFocused,
+                    keyboardVisible: keyboard.isVisible
+                ) {
+                    WhaleRootTabBar(selection: $page)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+        } else if RootBottomChromePolicy.tabBarVisible(
+            page: page,
+            composerFocused: composerFocused,
+            keyboardVisible: keyboard.isVisible
+        ) {
+            WhaleRootTabBar(selection: $page)
+        }
     }
 
     private var discoverPage: some View {
@@ -153,6 +188,17 @@ struct RootView: View {
         if ProcessInfo.processInfo.environment["WHALE_DEMO_LARGE_TEXT"] == "1" { return .accessibility3 }
 #endif
         return systemTextSize
+    }
+}
+
+enum RootBottomChromePolicy {
+    static func tabBarVisible(
+        page: AppTab,
+        composerFocused: Bool,
+        keyboardVisible: Bool
+    ) -> Bool {
+        guard !keyboardVisible else { return false }
+        return page != .conversation || !composerFocused
     }
 }
 

@@ -62,13 +62,7 @@ fileprivate enum SettingsChrome {
     }
 
     static var cardBackground: some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(WhaleTheme.card)
-            .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(WhaleTheme.line.opacity(0.9), lineWidth: 0.8)
-            }
-            .shadow(color: Color.black.opacity(0.05), radius: 14, y: 6)
+        SettingsCardBackground()
     }
 
     static func label(title: String, subtitle: String, icon: String, tone: SettingsTone) -> some View {
@@ -113,6 +107,26 @@ fileprivate enum SettingsChrome {
     }
 }
 
+private struct SettingsCardBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        let radius = WhaleTheme.cardRadius
+        let shadowScale = colorScheme == .dark ? WhaleTheme.shadowDarkMultiplier : 1
+        RoundedRectangle(cornerRadius: radius, style: .continuous)
+            .fill(WhaleTheme.card)
+            .overlay {
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
+            }
+            .shadow(
+                color: .black.opacity(WhaleTheme.shadowOpacity * shadowScale),
+                radius: 14,
+                y: 6
+            )
+    }
+}
+
 fileprivate enum PermissionCatalog {
     static let primary: [SettingsRowSpec] = [
         SettingsRowSpec(key: "location", title: "位置", subtitle: "精确位置 · 使用期间", icon: "location.fill", tone: .mint),
@@ -135,6 +149,7 @@ fileprivate enum PermissionCatalog {
 struct SettingsView: View {
     @ObservedObject var model: AppModel
     @Binding var isDetailOpen: Bool
+    @EnvironmentObject private var theme: ThemeManager
     var onBackToChat: () -> Void = {}
 
     @AppStorage("whale.appearance") private var appearance = "system"
@@ -149,6 +164,7 @@ struct SettingsView: View {
                     header
                     profileCard
                     appearanceSection
+                    themeStyleSection
                     categorySection
                 }
                 .padding(.horizontal, 16)
@@ -339,8 +355,8 @@ struct SettingsView: View {
             SettingsChrome.header("外观", trailing: "跟随当日光线")
 
             HStack(spacing: 9) {
-                appearanceOption("深海", "深色", mode: "dark", swatch: .dark)
-                appearanceOption("晨雾", "浅色", mode: "light", swatch: .light)
+                appearanceOption("深色", "强制深色", mode: "dark", swatch: .dark)
+                appearanceOption("浅色", "强制浅色", mode: "light", swatch: .light)
                 appearanceOption("自动", "跟随系统", mode: "system", swatch: .auto)
             }
         }
@@ -379,9 +395,9 @@ struct SettingsView: View {
             .padding(8)
             .frame(maxWidth: .infinity)
             .background(WhaleTheme.card)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
                     .strokeBorder(
                         selected ? WhaleTheme.accent : WhaleTheme.line,
                         lineWidth: selected ? 1.5 : 0.8
@@ -393,34 +409,117 @@ struct SettingsView: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
-    @ViewBuilder
-    private func swatchPreview(_ swatch: AppearanceSwatch) -> some View {
-        ZStack {
-            switch swatch {
-            case .dark:
-                LinearGradient(
-                    colors: [Color(red: 0.04, green: 0.12, blue: 0.14), Color(red: 0.07, green: 0.23, blue: 0.24)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            case .light:
-                LinearGradient(
-                    colors: [Color(red: 0.93, green: 0.98, blue: 0.97), .white],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            case .auto:
-                HStack(spacing: 0) {
-                    Color(red: 0.05, green: 0.15, blue: 0.17)
-                    Color(red: 0.97, green: 0.99, blue: 0.98)
+    // MARK: - 主题风格（扁平 / 有质感，随系统深浅自动切换）
+
+    private var themeStyleSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SettingsChrome.header("主题风格", trailing: "浅色深色自动跟随")
+            HStack(spacing: 9) {
+                ForEach(WhaleThemeStyle.allCases) { style in
+                    themeStyleOption(style)
                 }
             }
+            Text("当前：\(theme.style.title) · 系统切换浅色/深色时自动换成对应版本，无需重开 App")
+                .whaleFont(size: 12)
+                .foregroundStyle(WhaleTheme.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
 
-            VStack(spacing: 4) {
-                Capsule().fill(WhaleTheme.accent.opacity(0.8)).frame(width: 24, height: 3)
-                Capsule().fill(WhaleTheme.muted.opacity(0.35)).frame(width: 34, height: 3)
-                Capsule().fill(WhaleTheme.muted.opacity(0.22)).frame(width: 18, height: 3)
+    private func themeStyleOption(_ style: WhaleThemeStyle) -> some View {
+        let selected = theme.style == style
+        let palette = WhalePalette(style: style)
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) { theme.style = style }
+        } label: {
+            VStack(spacing: 7) {
+                HStack(spacing: 3) {
+                    styleSwatch(bg: palette.light.background, accent: palette.light.accent)
+                    styleSwatch(bg: palette.dark.background, accent: palette.dark.accent)
+                }
+                .frame(height: 48)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+                VStack(spacing: 1) {
+                    Text(style.title)
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.ink)
+                    Text(style.subtitle)
+                        .whaleFont(size: 12)
+                        .foregroundStyle(WhaleTheme.muted)
+                }
             }
+            .padding(8)
+            .frame(maxWidth: .infinity)
+            .background(WhaleTheme.card)
+            .clipShape(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: WhaleTheme.cardRadius, style: .continuous)
+                    .strokeBorder(selected ? WhaleTheme.accent : WhaleTheme.line,
+                                  lineWidth: selected ? 1.5 : 0.8)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(style.title)主题")
+        .accessibilityHint(style == .flat ? "纯色分区，零阴影" : style == .premium ? "香槟金与衬线标题" : "极光玻璃")
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
+    private func styleSwatch(bg: UInt32, accent: UInt32) -> some View {
+        ZStack(alignment: .topLeading) {
+            Color(hex: bg)
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(Color(hex: accent))
+                .frame(width: 26, height: 5)
+                .padding(7)
+        }
+    }
+
+    @ViewBuilder
+    private func swatchPreview(_ swatch: AppearanceSwatch) -> some View {
+        let palette = theme.palette
+        switch swatch {
+        case .dark:
+            appearanceSwatchSurface(
+                background: palette.dark.background,
+                accent: palette.dark.accent,
+                muted: palette.dark.muted
+            )
+        case .light:
+            appearanceSwatchSurface(
+                background: palette.light.background,
+                accent: palette.light.accent,
+                muted: palette.light.muted
+            )
+        case .auto:
+            HStack(spacing: 0) {
+                appearanceSwatchSurface(
+                    background: palette.dark.background,
+                    accent: palette.dark.accent,
+                    muted: palette.dark.muted
+                )
+                appearanceSwatchSurface(
+                    background: palette.light.background,
+                    accent: palette.light.accent,
+                    muted: palette.light.muted
+                )
+            }
+        }
+    }
+
+    private func appearanceSwatchSurface(
+        background: UInt32,
+        accent: UInt32,
+        muted: UInt32
+    ) -> some View {
+        ZStack(alignment: .topLeading) {
+            Color(hex: background)
+            VStack(alignment: .leading, spacing: 4) {
+                Capsule().fill(Color(hex: accent).opacity(0.85)).frame(width: 24, height: 3)
+                Capsule().fill(Color(hex: muted).opacity(0.42)).frame(width: 34, height: 3)
+                Capsule().fill(Color(hex: muted).opacity(0.24)).frame(width: 18, height: 3)
+            }
+            .padding(9)
         }
     }
 }

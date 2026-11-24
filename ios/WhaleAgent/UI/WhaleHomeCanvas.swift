@@ -108,10 +108,11 @@ struct WhaleHomeCanvas: View {
                         .foregroundStyle(.white).padding(9)
                             .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
                             .background {
-                                let shape = RoundedRectangle(cornerRadius: 19, style: .continuous)
-                                shape.fill(channel.entryGradient).overlay(shape.fill(.black.opacity(0.30)))
+                                let shape = RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous)
+                                shape.fill(channel.entryGradient)
+                                if WhaleTheme.usesMaterial { shape.fill(.black.opacity(0.30)) }
                             }
-                            .overlay(RoundedRectangle(cornerRadius: 19, style: .continuous).strokeBorder(.white.opacity(0.18), lineWidth: 0.8))
+                            .overlay(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
                             .whaleSoftElevation()
                     }.buttonStyle(.plain).accessibilityLabel(channel.title)
                         .accessibilityIdentifier("home-channel-" + channel.rawValue)
@@ -168,7 +169,7 @@ struct WhaleHomeCanvas: View {
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "quote.opening").font(.system(size: 22, weight: .semibold)).foregroundStyle(WhaleTheme.accent)
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(quote.text).whaleFont(size: 20, weight: .semibold)
+                        Text(quote.text).whaleFont(size: 20, weight: WhaleTheme.quoteWeight, design: WhaleTheme.displayDesign)
                             .foregroundStyle(WhaleTheme.ink).lineSpacing(4)
                             .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
                         Text(quote.source).font(.system(size: 12, weight: .medium))

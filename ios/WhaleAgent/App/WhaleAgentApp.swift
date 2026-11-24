@@ -5,12 +5,8 @@ import UIKit
 @MainActor
 struct WhaleAgentApp: App {
     init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(WhaleTheme.chrome)
-        appearance.shadowColor = UIColor(WhaleTheme.glassStroke)
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
+        // 首次启动即按持久化样式设置 TabBar；样式切换由 ThemeManager.didSet 负责刷新。
+        ThemeManager.shared.applyTabBarAppearance()
     }
 
     var body: some Scene {

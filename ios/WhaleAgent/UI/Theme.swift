@@ -19,116 +19,69 @@ extension Color {
     }
 }
 
+/// 语义 Token 门面。所有视图只认这里，不关心当前是哪套样式。
+/// 每个属性都是计算属性：样式切换后全树重建时自动取到新值；
+/// 颜色本身由 Color(light:dark:) 生成，系统深浅切换时自动更新。
 enum WhaleTheme {
-    // Abyss Aurora: deep-sea surfaces, mint aurora, moonlit blue and only a
-    // little coral for time/weather/attention states.
-    static let accent = Color(light: 0x087C75, dark: 0x62EAD6)
-    static let accentDeep = Color(light: 0x0B756F, dark: 0x3CCFC4)
-    static let accentSoft = Color(light: 0xDFF6F2, dark: 0x123B3D)
-    static let moon = Color(light: 0x2E73C8, dark: 0x78B9FF)
-    static let coral = Color(light: 0xD77B3D, dark: 0xFFB27A)
-    static let ink = Color(light: 0x102522, dark: 0xF2F8F7)
-    static let muted = Color(light: 0x53645F, dark: 0xA6B9B6)
-    static let background = Color(light: 0xF2F8F7, dark: 0x071311)
-    static let card = Color(light: 0xFFFFFF, dark: 0x0D201E)
-    static let cardSolid = Color(light: 0xE7F1EE, dark: 0x142C29)
-    static let soft = Color(light: 0xE7F2EF, dark: 0x132724)
-    static let line = Color(light: 0xD8E6E2, dark: 0x25403C)
-    static let field = Color(light: 0xEAF3F0, dark: 0x0C1D1B)
-    static let chrome = Color(light: 0xF7FBFA, dark: 0x091714)
-    static let onAccent = Color(light: 0x062521, dark: 0x04211E)
-    static let buttonInk = Color(light: 0x062521, dark: 0x04211E)
-    static let glassStroke = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor.white.withAlphaComponent(0.16)
-            : UIColor.white.withAlphaComponent(0.72)
-    })
-    static let warm = Color(light: 0xC68136, dark: 0xF3BC77)
-    static let success = Color(light: 0x168F68, dark: 0x54DFAF)
-    static let danger = Color(light: 0xD34747, dark: 0xF07A7A)
+    private static var palette: WhalePalette { ThemeManager.shared.palette }
 
-    static let cardRadius: CGFloat = 20
-    static let controlRadius: CGFloat = 16
-    static let pagePadding: CGFloat = 20
+    static var accent: Color { palette.color(\.accent) }
+    static var accentDeep: Color { palette.color(\.accentDeep) }
+    static var accentSoft: Color { palette.color(\.accentSoft) }
+    static var moon: Color { palette.color(\.moon) }
+    static var coral: Color { palette.color(\.coral) }
+    static var ink: Color { palette.color(\.ink) }
+    static var muted: Color { palette.color(\.muted) }
+    static var background: Color { palette.color(\.background) }
+    static var card: Color { palette.color(\.card) }
+    static var cardSolid: Color { palette.color(\.cardSolid) }
+    static var soft: Color { palette.color(\.soft) }
+    static var line: Color { palette.color(\.line) }
+    static var field: Color { palette.color(\.field) }
+    static var chrome: Color { palette.color(\.chrome) }
+    static var onAccent: Color { palette.color(\.onAccent) }
+    static var buttonInk: Color { palette.color(\.buttonInk) }
+    static var warm: Color { palette.color(\.warm) }
+    static var success: Color { palette.color(\.success) }
+    static var danger: Color { palette.color(\.danger) }
+    static var rose: Color { palette.color(\.rose) }
+    static var blueSoft: Color { palette.color(\.blueSoft) }
+    static var amberSoft: Color { palette.color(\.amberSoft) }
+    static var roseSoft: Color { palette.color(\.roseSoft) }
+    static var bubble: Color { palette.color(\.bubble) }
+    static var glassStroke: Color { palette.glassStroke }
 
-    static let pageGradient = LinearGradient(
-        colors: [
-            Color(light: 0xE8F5F2, dark: 0x06110F),
-            Color(light: 0xEDF7F7, dark: 0x0A1A19),
-            Color(light: 0xF8FBF7, dark: 0x0B1714)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static var cardRadius: CGFloat { palette.radiusCard }
+    static var controlRadius: CGFloat { palette.radiusControl }
+    static var pagePadding: CGFloat { palette.pagePadding }
 
-    static let heroGradient = LinearGradient(
-        colors: [
-            Color(light: 0x139C91, dark: 0x0B4647),
-            Color(light: 0x1D777C, dark: 0x103338),
-            Color(light: 0x315D74, dark: 0x0B2028)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    /// 扁平风格为 0，因此不会出现阴影；有质感风格加深阴影。
+    static var shadowOpacity: Double { palette.shadowOpacity }
+    static var accentShadowOpacity: Double { palette.accentShadowOpacity }
+    static var shadowDarkMultiplier: Double { palette.shadowDarkMultiplier }
+    /// 扁平风格用实心色块，其余风格保留系统材质。
+    static var usesMaterial: Bool { palette.usesMaterial }
+    /// 有质感风格标题/金句走衬线，其余走系统默认。
+    static var displayDesign: Font.Design { palette.displayDesign }
+    static var quoteWeight: Font.Weight { palette.quoteWeight }
 
-    static let auroraGradient = LinearGradient(
-        colors: [accent, moon],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let gameGradient = LinearGradient(
-        colors: [
-            Color(light: 0xB85C2E, dark: 0x6B2C12),
-            Color(light: 0xD79A3F, dark: 0x4A3510)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let musicGradient = LinearGradient(
-        colors: [
-            Color(light: 0x8A4B8F, dark: 0x3A1E45),
-            Color(light: 0xC0566F, dark: 0x5A2436)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let headlineGradient = LinearGradient(
-        colors: [
-            Color(light: 0x1E8A7A, dark: 0x0C4A42),
-            Color(light: 0x2E73C8, dark: 0x143352)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let weiboGradient = LinearGradient(
-        colors: [
-            Color(light: 0xD34747, dark: 0x5A1A1A),
-            Color(light: 0xD77B3D, dark: 0x5B3216)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    /// Composer send button. Matches the v9 reference: mint-to-sky paper plane
-    /// tile that stays legible on both the abyss and the morning-mist surface.
-    static let composerSendGradient = LinearGradient(
-        colors: [
-            Color(light: 0x3FCDBE, dark: 0x2FBFB2),
-            Color(light: 0x4E9BE8, dark: 0x4E9BE8)
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let rose = Color(light: 0xC0566F, dark: 0xF292A6)
-    static let blueSoft = Color(light: 0xE6EFFC, dark: 0x14283F)
-    static let amberSoft = Color(light: 0xFBF0DC, dark: 0x33260E)
-    static let roseSoft = Color(light: 0xFBE8EC, dark: 0x341A20)
-    static let bubble = Color(light: 0xFFFFFF, dark: 0x102622)
+    static var pageGradient: LinearGradient { palette.gradient(.page) }
+    static var heroGradient: LinearGradient { palette.gradient(.hero) }
+    static var auroraGradient: LinearGradient {
+        switch ThemeManager.shared.style {
+        case .abyss:
+            return LinearGradient(colors: [accent, moon], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case .flat:
+            return palette.gradient(.composer)
+        case .premium:
+            return palette.gradient(.hero)
+        }
+    }
+    static var gameGradient: LinearGradient { palette.gradient(.game) }
+    static var musicGradient: LinearGradient { palette.gradient(.music) }
+    static var headlineGradient: LinearGradient { palette.gradient(.headline) }
+    static var weiboGradient: LinearGradient { palette.gradient(.weibo) }
+    static var composerSendGradient: LinearGradient { palette.gradient(.composer) }
 }
 
 extension View {
@@ -164,24 +117,10 @@ extension View {
 
 extension DiscoverChannel {
     var entryGradient: LinearGradient {
-        switch self {
-        case .ai: return WhaleTheme.heroGradient
-        case .market: return LinearGradient(colors: [Color(light: 0x2E73C8, dark: 0x326DA6), Color(light: 0x0B756F, dark: 0x267E74)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .game: return WhaleTheme.gameGradient
-        case .music: return WhaleTheme.musicGradient
-        case .headline: return WhaleTheme.headlineGradient
-        case .weibo: return WhaleTheme.weiboGradient
-        }
+        ThemeManager.shared.palette.channelGradient(self)
     }
     var entryInk: Color {
-        switch self {
-        case .ai: return Color(light: 0x096D65, dark: 0x82EAD5)
-        case .market: return Color(light: 0x225DA0, dark: 0x99C7FF)
-        case .game: return Color(light: 0x8D421D, dark: 0xF9C183)
-        case .music: return Color(light: 0x82447E, dark: 0xF0B5D8)
-        case .headline: return Color(light: 0x216D91, dark: 0x8DD9F4)
-        case .weibo: return Color(light: 0xAA3737, dark: 0xFFB1A2)
-        }
+        ThemeManager.shared.palette.channelInk(self)
     }
 }
 
@@ -195,7 +134,8 @@ private struct ChannelLabelStyle: ViewModifier {
             .background {
                 let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
                 if selected {
-                    shape.fill(channel.entryGradient).overlay(shape.fill(.black.opacity(0.30)))
+                    shape.fill(channel.entryGradient)
+                    if WhaleTheme.usesMaterial { shape.fill(.black.opacity(0.30)) }
                 } else {
                     shape.fill(WhaleTheme.cardSolid).overlay(shape.fill(channel.entryInk.opacity(0.10)))
                 }
@@ -210,9 +150,12 @@ private struct SoftElevation: ViewModifier {
     let selected: Bool
     @Environment(\.colorScheme) private var scheme
     func body(content: Content) -> some View {
+        let k = scheme == .dark ? WhaleTheme.shadowDarkMultiplier : 1
         content
-            .shadow(color: .black.opacity(scheme == .dark ? 0.24 : 0.075), radius: selected ? 10 : 8, x: 0, y: 4)
-            .shadow(color: WhaleTheme.accent.opacity(selected ? 0.14 : 0.045), radius: selected ? 16 : 12, x: 0, y: 7)
+            .shadow(color: .black.opacity(WhaleTheme.shadowOpacity * k),
+                    radius: selected ? 10 : 8, x: 0, y: 4)
+            .shadow(color: WhaleTheme.accent.opacity(WhaleTheme.accentShadowOpacity * k * (selected ? 2.2 : 1)),
+                    radius: selected ? 16 : 12, x: 0, y: 7)
     }
 }
 
@@ -224,7 +167,7 @@ private struct RaisedPillStyle: ViewModifier {
             .padding(.horizontal, 10).frame(minHeight: 44).fixedSize(horizontal: true, vertical: false)
             .background {
                 if selected { Capsule().fill(WhaleTheme.composerSendGradient) }
-                else if reduceTransparency { Capsule().fill(WhaleTheme.cardSolid) }
+                else if reduceTransparency || !WhaleTheme.usesMaterial { Capsule().fill(WhaleTheme.cardSolid) }
                 else {
                     Capsule().fill(.ultraThinMaterial)
                         .overlay(Capsule().fill(WhaleTheme.card.opacity(0.6)))
@@ -245,8 +188,8 @@ struct GlassCardStyle: ViewModifier {
         content
             .padding(padding)
             .background {
-                if reduceTransparency {
-                    RoundedRectangle(cornerRadius: radius, style: .continuous).fill(WhaleTheme.cardSolid)
+                if reduceTransparency || !WhaleTheme.usesMaterial {
+                    RoundedRectangle(cornerRadius: radius, style: .continuous).fill(WhaleTheme.card)
                 } else {
                     RoundedRectangle(cornerRadius: radius, style: .continuous).fill(.ultraThinMaterial)
                         .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(WhaleTheme.card.opacity(0.62)))
@@ -268,12 +211,14 @@ struct WhaleBackdrop: View {
     var body: some View {
         ZStack {
             WhaleTheme.pageGradient
-            Circle().fill(WhaleTheme.accent.opacity(colorScheme == .dark ? 0.18 : 0.20))
-                .frame(width: 360, height: 360).blur(radius: 82).offset(x: -150, y: -300)
-            Circle().fill(WhaleTheme.moon.opacity(colorScheme == .dark ? 0.13 : 0.12))
-                .frame(width: 320, height: 320).blur(radius: 92).offset(x: 168, y: -150)
-            Ellipse().fill(WhaleTheme.accentDeep.opacity(colorScheme == .dark ? 0.13 : 0.08))
-                .frame(width: 420, height: 240).blur(radius: 110).offset(x: 80, y: 360)
+            if ThemeManager.shared.style == .abyss {
+                Circle().fill(WhaleTheme.accent.opacity(colorScheme == .dark ? 0.18 : 0.20))
+                    .frame(width: 360, height: 360).blur(radius: 82).offset(x: -150, y: -300)
+                Circle().fill(WhaleTheme.moon.opacity(colorScheme == .dark ? 0.13 : 0.12))
+                    .frame(width: 320, height: 320).blur(radius: 92).offset(x: 168, y: -150)
+                Ellipse().fill(WhaleTheme.accentDeep.opacity(colorScheme == .dark ? 0.13 : 0.08))
+                    .frame(width: 420, height: 240).blur(radius: 110).offset(x: 80, y: 360)
+            }
         }.ignoresSafeArea().allowsHitTesting(false).accessibilityHidden(true)
     }
 }
@@ -298,7 +243,7 @@ struct WhaleMarkView: View {
                     .scaledToFill()
             } else {
                 ZStack {
-                    Circle().fill(WhaleTheme.auroraGradient)
+                    Circle().fill(WhaleTheme.usesMaterial ? WhaleTheme.auroraGradient : WhaleTheme.composerSendGradient)
                     Image(systemName: "fish.fill")
                         .font(.system(size: size * 0.44, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.92))
@@ -308,9 +253,13 @@ struct WhaleMarkView: View {
         .frame(width: size, height: size)
         .clipShape(Circle())
         .overlay {
-            Circle().strokeBorder(.white.opacity(0.5), lineWidth: 0.8)
+            Circle().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
         }
-        .shadow(color: WhaleTheme.accent.opacity(0.22), radius: 10, y: 4)
+        .shadow(
+            color: WhaleTheme.accent.opacity(WhaleTheme.accentShadowOpacity),
+            radius: 10,
+            y: 4
+        )
         .accessibilityHidden(true)
     }
 }
@@ -320,8 +269,8 @@ struct WhaleChromeBackground: View {
 
     var body: some View {
         ZStack {
-            if !reduceTransparency { Rectangle().fill(.ultraThinMaterial) }
-            Rectangle().fill(WhaleTheme.chrome.opacity(reduceTransparency ? 1 : 0.82))
+            if !reduceTransparency && WhaleTheme.usesMaterial { Rectangle().fill(.ultraThinMaterial) }
+            Rectangle().fill(WhaleTheme.chrome.opacity(reduceTransparency || !WhaleTheme.usesMaterial ? 1 : 0.82))
         }
     }
 }
@@ -357,7 +306,7 @@ struct WhaleSectionTitle: View {
     var body: some View {
         HStack {
             Text(title)
-                .whaleFont(size: 17, weight: .semibold)
+                .whaleFont(size: 17, weight: .semibold, design: WhaleTheme.displayDesign)
                 .foregroundStyle(WhaleTheme.ink)
             Spacer()
             if let action, let onAction {
@@ -391,7 +340,7 @@ struct GlassChipStyle: ViewModifier {
             .padding(.horizontal, 14)
             .padding(.vertical, 9)
             .background {
-                if reduceTransparency {
+                if reduceTransparency || !WhaleTheme.usesMaterial {
                     Capsule().fill(WhaleTheme.cardSolid)
                 } else {
                     Capsule().fill(.ultraThinMaterial)
@@ -404,19 +353,34 @@ struct GlassChipStyle: ViewModifier {
     }
 }
 
+private struct GlassCircleStyle: ViewModifier {
+    let size: CGFloat
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    func body(content: Content) -> some View {
+        content
+            .frame(width: size, height: size)
+            .background {
+                if reduceTransparency || !WhaleTheme.usesMaterial {
+                    Circle().fill(WhaleTheme.cardSolid)
+                } else {
+                    Circle().fill(.ultraThinMaterial)
+                }
+            }
+            .overlay {
+                Circle().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
+            }
+            .whaleSoftElevation()
+    }
+}
+
 extension View {
     func whaleChip() -> some View {
         modifier(GlassChipStyle())
     }
 
     func whaleGlassCircle(size: CGFloat = 44) -> some View {
-        self
-            .frame(width: size, height: size)
-            .background(.ultraThinMaterial, in: Circle())
-            .overlay {
-                Circle().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
-            }
-            .whaleSoftElevation()
+        modifier(GlassCircleStyle(size: size))
     }
 }
 
