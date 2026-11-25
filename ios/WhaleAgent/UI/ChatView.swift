@@ -7,7 +7,7 @@ struct ChatView: View {
     @ObservedObject var model: AppModel
     @Binding var startVoiceOnAppear: Bool
     @Binding var focusOnAppear: Bool
-    @StateObject private var voice = VoiceInputController()
+    @State private var showVoiceSheet = false
     @FocusState private var inputFocused: Bool
 
     var body: some View {
@@ -25,6 +25,25 @@ struct ChatView: View {
         .background(SwipeBackEnabler().frame(width: 0, height: 0))
         .navigationTitle("对话")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showVoiceSheet) {
+            WhaleVoiceInputSheet(
+                onSend: { text in
+                    showVoiceSheet = false
+                    model.input = text
+                    inputFocused = false
+                    Task { await model.send() }
+                },
+                onUseText: { text in
+                    showVoiceSheet = false
+                    model.input = text
+                    inputFocused = !text.isEmpty
+                },
+                onCancel: {
+                    showVoiceSheet = false
+                    inputFocused = false
+                }
+            )
+        }
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(.regularMaterial, for: .navigationBar)
         .toolbar {
@@ -57,7 +76,7 @@ struct ChatView: View {
         .task {
             if startVoiceOnAppear {
                 startVoiceOnAppear = false
-                await voice.start()
+                showVoiceSheet = true
             } else if focusOnAppear {
                 focusOnAppear = false
                 inputFocused = true
@@ -66,7 +85,6 @@ struct ChatView: View {
     }
 
     private var activityState: AgentActivityState {
-        if voice.isRecording { return .listening }
         if model.isExecutingTool { return .executing }
         if model.isBusy { return .thinking }
         if model.presentedConfirmation != nil { return .waiting }
@@ -176,38 +194,20 @@ struct ChatView: View {
 
     private var inputBar: some View {
         VStack(spacing: 0) {
-            if voice.isRecording {
-                HStack(spacing: 8) {
-                    Circle()
-                        .fill(WhaleTheme.danger)
-                        .frame(width: 8, height: 8)
-                    Text(voice.transcript.isEmpty ? "正在听你说…" : voice.transcript)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                    Spacer(minLength: 8)
-                    Button("停止") { voice.stop() }
-                        .font(.caption.weight(.semibold))
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(WhaleTheme.danger.opacity(0.07))
-            }
-
             HStack(alignment: .bottom, spacing: 9) {
                 Button {
                     inputFocused = false
-                    Task { await voice.toggle() }
+                    showVoiceSheet = true
                 } label: {
-                    Image(systemName: voice.isRecording ? "waveform" : "mic")
+                    Image(systemName: "mic")
                         .whaleFont(size: 20, weight: .medium)
-                        .foregroundStyle(voice.isRecording ? WhaleTheme.danger : WhaleTheme.ink)
+                        .foregroundStyle(WhaleTheme.ink)
                         .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
                 .disabled(model.isBusy)
                 .opacity(model.isBusy ? 0.45 : 1)
-                .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音输入")
+                .accessibilityLabel("语音输入")
 
                 TextField("告诉鲸鱼你想做什么", text: $model.input, axis: .vertical)
                     .lineLimit(1...4)
@@ -252,14 +252,6 @@ struct ChatView: View {
             .padding(.top, 9)
             .padding(.bottom, 10)
 
-            if let voiceError = voice.errorText {
-                Text(voiceError)
-                    .font(.caption2)
-                    .foregroundStyle(.orange)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-            }
         }
         .background {
             Rectangle()
@@ -271,14 +263,9 @@ struct ChatView: View {
                 .fill(WhaleTheme.glassStroke)
                 .frame(height: 0.5)
         }
-        .onChange(of: voice.transcript) { _, text in
-            guard !text.isEmpty else { return }
-            model.input = text
-        }
     }
 
     private func submitFromKeyboard() {
-        if voice.isRecording { voice.stop() }
         inputFocused = false
         Task { await model.send() }
     }
@@ -738,6 +725,7 @@ struct ToolLinkCard: View {
     private var icon: String {
         switch tool {
         case "search_web": return "magnifyingglass"
+        case "research_web": return "text.magnifyingglass"
         case "fetch_web_content": return "safari"
         case "search_merchant_prices": return "tag"
         default: return "link"

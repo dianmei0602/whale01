@@ -272,7 +272,7 @@ struct TodoView: View {
                         await reload()
                         if reminderStatus != "granted" {
                             guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-                            UIApplication.shared.open(url)
+                            await UIApplication.shared.open(url)
                         }
                     }
                 }
