@@ -88,7 +88,6 @@ struct TodoView: View {
     var bottomBarInset: CGFloat = 0
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var voice = VoiceInputController()
 
     @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
     @State private var items: [TodoReminder] = []
@@ -104,6 +103,7 @@ struct TodoView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let drafts = ComposerDraftStore()
     @State private var pendingDeletion: TodoReminder?
+    @State private var showVoiceSheet = false
     @FocusState private var composerFocused: Bool
 
     private var reminderStatus: String { model.permissionsSnapshot["reminder"] ?? "unknown" }
@@ -197,14 +197,24 @@ struct TodoView: View {
                     Task { await reload() }
                 }
             }
-            .onChange(of: voice.transcript) { _, text in
-                if !text.isEmpty { draft = text }
+            .sheet(isPresented: $showVoiceSheet) {
+                WhaleVoiceInputSheet(
+                    onSend: { text in
+                        showVoiceSheet = false
+                        draft = text
+                        submitText(text)
+                    },
+                    onUseText: { text in
+                        showVoiceSheet = false
+                        draft = text
+                        composerFocused = !text.isEmpty
+                    },
+                    onCancel: {
+                        showVoiceSheet = false
+                        composerFocused = false
+                    }
+                )
             }
-            .onChange(of: voice.finalResult) { _, result in
-                guard let result, voice.errorText == nil, !result.text.isEmpty else { return }
-                draft = result.text
-            }
-            .onDisappear { voice.cancel() }
             .alert("删除这条待办？", isPresented: Binding(get: { pendingDeletion != nil }, set: { if !$0 { pendingDeletion = nil } })) {
                 Button("取消", role: .cancel) { pendingDeletion = nil }
                 Button("删除", role: .destructive) {
@@ -247,25 +257,27 @@ struct TodoView: View {
                 .whaleFont(size: 15, weight: .semibold)
                 .foregroundStyle(WhaleTheme.ink)
 
-            Text(reminderStatus == "denied"
-                 ? "权限已被拒绝。请到 设置 › 隐私与安全性 › 提醒事项 中允许鲸鱼访问；返回后会自动刷新。"
-                 : "允许后，这里会直接显示手机里真实的提醒事项，新增和勾选也会写回系统。")
+            Text(reminderPermissionDescription)
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted)
                 .fixedSize(horizontal: false, vertical: true)
 
             Button {
-                if reminderStatus == "denied" {
+                if reminderStatus == "denied" || reminderStatus == "restricted" {
                     guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                     UIApplication.shared.open(url)
                 } else {
                     Task {
                         await model.requestPermission("reminder")
                         await reload()
+                        if reminderStatus != "granted" {
+                            guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+                            UIApplication.shared.open(url)
+                        }
                     }
                 }
             } label: {
-                Text(reminderStatus == "denied" ? "打开系统设置" : "允许访问提醒事项")
+                Text(reminderPermissionAction)
                     .whaleFont(size: 14, weight: .semibold)
                     .foregroundStyle(WhaleTheme.onAccent)
                     .frame(maxWidth: .infinity)
@@ -275,6 +287,27 @@ struct TodoView: View {
             .buttonStyle(.plain)
         }
         .whaleCard(padding: 16)
+    }
+
+    private var reminderPermissionDescription: String {
+        switch reminderStatus {
+        case "denied":
+            return "权限已被拒绝。请到 设置 › 隐私与安全性 › 提醒事项 中允许鲸鱼访问；返回后会自动刷新。"
+        case "restricted":
+            return "系统当前限制了提醒事项访问。请检查屏幕使用时间、设备管理或家长控制设置。"
+        case "addOnly":
+            return "当前只允许“添加”，鲸鱼无法读取已有待办。请升级为完整访问，才能显示和勾选提醒事项。"
+        default:
+            return "允许后，这里会直接显示手机里真实的提醒事项，新增和勾选也会写回系统。"
+        }
+    }
+
+    private var reminderPermissionAction: String {
+        switch reminderStatus {
+        case "denied", "restricted": return "打开系统设置"
+        case "addOnly": return "升级为完整访问"
+        default: return "允许访问提醒事项"
+        }
     }
 
     private func stepFilter(_ delta: Int) {
@@ -547,33 +580,21 @@ struct TodoView: View {
 
     private var composer: some View {
         VStack(spacing: 7) {
-            if let voiceError = voice.errorText {
-                Label(voiceError, systemImage: "mic.slash.fill")
-                    .whaleFont(size: 13)
-                    .foregroundStyle(WhaleTheme.danger)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            if voice.isRecording {
-                voiceStrip
-            }
             HStack(spacing: 8) {
                 Button {
                     composerFocused = false
-                    Task { await voice.toggle() }
+                    showVoiceSheet = true
                 } label: {
-                    Image(systemName: voice.isRecording ? "waveform" : "mic.fill")
+                    Image(systemName: "mic.fill")
                         .whaleFont(size: 17, weight: .semibold)
-                        .foregroundStyle(voice.isRecording ? WhaleTheme.onAccent : WhaleTheme.accent)
+                        .foregroundStyle(WhaleTheme.accent)
                         .frame(width: 44, height: 44)
-                        .background(
-                            voice.isRecording ? WhaleTheme.danger : WhaleTheme.accentSoft,
-                            in: Circle()
-                        )
+                        .background(WhaleTheme.accentSoft, in: Circle())
                 }
                 .buttonStyle(.plain)
-                .disabled(isSubmitting || voice.isFinalizing)
-                .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音新增待办")
+                .disabled(isSubmitting)
+                .accessibilityLabel("语音新增待办")
+                .accessibilityIdentifier("open-todo-voice-sheet")
 
                 TextField("记一件事，或点击麦克风", text: $draft, axis: .vertical)
                     .lineLimit(1...4)
@@ -621,37 +642,6 @@ struct TodoView: View {
         .padding(.top, 9)
         .padding(.bottom, 8)
         .background(.ultraThinMaterial)
-    }
-
-    private var voiceStrip: some View {
-        HStack(spacing: 9) {
-            Circle()
-                .fill(WhaleTheme.danger)
-                .frame(width: 8, height: 8)
-            Text(voice.transcript.isEmpty ? "正在听你说…" : voice.transcript)
-                .whaleFont(size: 13, weight: .medium)
-                .foregroundStyle(WhaleTheme.ink)
-                .lineLimit(2)
-            Spacer(minLength: 6)
-            Button {
-                voice.stop()
-            } label: {
-                Text("停止")
-                    .whaleFont(size: 13, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.danger)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(WhaleTheme.danger.opacity(0.1), in: Capsule())
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 11)
-        .padding(.vertical, 8)
-        .background(WhaleTheme.card.opacity(0.9), in: RoundedRectangle(cornerRadius: 13, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-                .strokeBorder(WhaleTheme.danger.opacity(0.22), lineWidth: 0.8)
-        )
     }
 
     private func submitDraft() {

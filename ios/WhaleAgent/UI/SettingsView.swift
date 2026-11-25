@@ -601,7 +601,7 @@ private struct PermissionsSettingsView: View {
 
     private func handle(_ spec: SettingsRowSpec) {
         let current = status(for: spec)
-        if current == "granted" || current == "denied" || current == "unavailable" {
+        if current == "granted" || current == "denied" || current == "restricted" || current == "unavailable" {
             openSystemSettings()
             return
         }
@@ -936,6 +936,10 @@ private struct ServiceSettingsView: View {
                             }
                         }
                         if let xfyunMessage { Text(xfyunMessage).font(.footnote) }
+                        XfyunSpeechDiagnostics(
+                            speech: model.speech,
+                            configured: XfyunConfig.isConfigured
+                        )
                     }
                     .padding(.vertical, 12)
                 }
@@ -1004,6 +1008,44 @@ private struct ServiceSettingsView: View {
             )
         }
         .frame(minHeight: 56)
+    }
+}
+
+private struct XfyunSpeechDiagnostics: View {
+    @ObservedObject var speech: SpeechPlaybackController
+    let configured: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(configured ? "当前引擎：讯飞 \(XfyunConfig.ttsVoiceName)" : "当前引擎：系统中文语音")
+                    .whaleFont(size: 13, weight: .medium)
+                    .foregroundStyle(configured ? WhaleTheme.accent : WhaleTheme.muted)
+                Spacer()
+                Button(speech.isSpeaking ? "停止试听" : "试听 x4_yezi") {
+                    if speech.isSpeaking {
+                        speech.stop()
+                    } else {
+                        speech.speak("你好，我是叶子。")
+                    }
+                }
+                .whaleFont(size: 13, weight: .semibold)
+                .disabled(!configured && !speech.isSpeaking)
+            }
+            if speech.isSpeaking {
+                Text("正在播放 · \(speech.engineLabel)")
+                    .whaleFont(size: 12)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+            if let error = speech.lastError {
+                Text(error)
+                    .whaleFont(size: 12)
+                    .foregroundStyle(WhaleTheme.danger)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(12)
+        .background(WhaleTheme.soft, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
@@ -1137,7 +1179,9 @@ private struct PermissionSettingsRow: View {
     private var statusText: String {
         switch status {
         case "granted": return connectedLabel ? "已连接" : "已授权"
+        case "addOnly": return "仅添加"
         case "denied": return "已拒绝"
+        case "restricted": return "受限"
         case "unavailable": return "不可用"
         default: return "未开启"
         }
@@ -1146,7 +1190,8 @@ private struct PermissionSettingsRow: View {
     private var statusColor: Color {
         switch status {
         case "granted": return WhaleTheme.success
-        case "denied": return WhaleTheme.danger
+        case "denied", "restricted": return WhaleTheme.danger
+        case "addOnly": return WhaleTheme.warm
         case "unavailable": return WhaleTheme.muted
         default: return WhaleTheme.muted
         }

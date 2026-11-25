@@ -79,6 +79,7 @@ final class EventKitExecutor {
     }
 
     func listReminders(arguments: [String: JSONValue]) async throws -> JSONValue {
+        store.refreshSourcesIfNecessary()
         let timezone = arguments.optionalString("timezone") ?? TimeZone.current.identifier
         let calendar = arguments.optionalString("listId").flatMap { store.calendar(withIdentifier: $0) }
         let calendars: [EKCalendar]? = calendar.map { [$0] }

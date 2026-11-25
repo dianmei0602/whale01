@@ -6,6 +6,14 @@ import HealthKit
 import MessageUI
 import MediaPlayer
 
+enum ReminderAccessState: String {
+    case granted
+    case addOnly
+    case denied
+    case restricted
+    case notDetermined
+}
+
 @MainActor
 final class PermissionCenter: ObservableObject {
     static let labels: [String: String] = [
@@ -47,6 +55,7 @@ final class PermissionCenter: ObservableObject {
         "set_memory": [],
         "delete_memory": [],
         "search_web": [],
+        "research_web": [],
         "fetch_web_content": [],
         "search_merchant_prices": []
     ]
@@ -78,7 +87,7 @@ final class PermissionCenter: ObservableObject {
         next["calendarWrite"] = mapEventStatus(eventStatus, readRequired: false)
 
         let reminderStatus = EKEventStore.authorizationStatus(for: .reminder)
-        next["reminder"] = mapEventStatus(reminderStatus, readRequired: true)
+        next["reminder"] = Self.reminderState(for: reminderStatus).rawValue
         #if FREE_SIGNING
         next["activityRead"] = "unavailable"
         #else
@@ -181,23 +190,28 @@ final class PermissionCenter: ObservableObject {
     }
 
     private func ensureReminder() async -> Bool {
-        switch EKEventStore.authorizationStatus(for: .reminder) {
-        case .fullAccess:
+        let current = Self.reminderState(for: EKEventStore.authorizationStatus(for: .reminder))
+        switch current {
+        case .granted:
             statuses["reminder"] = "granted"
             return true
-        case .denied, .restricted:
-            statuses["reminder"] = "denied"
+        case .denied:
+            statuses["reminder"] = ReminderAccessState.denied.rawValue
             return false
-        default:
+        case .restricted:
+            statuses["reminder"] = ReminderAccessState.restricted.rawValue
+            return false
+        case .addOnly, .notDetermined:
             break
         }
 
         do {
-            let granted = try await requestFullAccessToReminders()
-            statuses["reminder"] = granted ? "granted" : "denied"
-            return granted
+            _ = try await requestFullAccessToReminders()
+            let next = Self.reminderState(for: EKEventStore.authorizationStatus(for: .reminder))
+            statuses["reminder"] = next.rawValue
+            return next == .granted
         } catch {
-            statuses["reminder"] = "denied"
+            statuses["reminder"] = current.rawValue
             return false
         }
     }
@@ -399,6 +413,23 @@ final class PermissionCenter: ObservableObject {
             return "unknown"
         @unknown default:
             return "unknown"
+        }
+    }
+
+    static func reminderState(for status: EKAuthorizationStatus) -> ReminderAccessState {
+        switch status {
+        case .fullAccess:
+            return .granted
+        case .writeOnly:
+            return .addOnly
+        case .denied:
+            return .denied
+        case .restricted:
+            return .restricted
+        case .notDetermined:
+            return .notDetermined
+        @unknown default:
+            return .notDetermined
         }
     }
 }

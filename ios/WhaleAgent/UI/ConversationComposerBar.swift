@@ -84,7 +84,7 @@ struct ConversationComposerBar: View {
             externalFocused = false
         }
         .sheet(isPresented: $showVoiceSheet) {
-            VoiceConversationSheet(
+            WhaleVoiceInputSheet(
                 onSend: sendVoiceText,
                 onUseText: useVoiceText,
                 onCancel: {
@@ -92,10 +92,6 @@ struct ConversationComposerBar: View {
                     focused = false
                 }
             )
-            .presentationDetents([.height(460)])
-            .presentationDragIndicator(.visible)
-            .presentationCornerRadius(28)
-            .presentationBackground(WhaleTheme.card)
         }
     }
 
@@ -308,27 +304,5 @@ struct ConversationComposerBar: View {
         showVoiceSheet = false
         draft = composed
         focused = !composed.isEmpty
-    }
-}
-
-private struct VoiceConversationSheet: View {
-    @StateObject private var voice = VoiceInputController()
-    let onSend: (String) -> Void
-    let onUseText: (String) -> Void
-    let onCancel: () -> Void
-
-    var body: some View {
-        VoiceView(
-            voice: voice,
-            onSend: onSend,
-            onClose: onUseText,
-            onCancel: onCancel
-        )
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("voice-sheet")
-        .task {
-            guard !voice.isRecording else { return }
-            await voice.start()
-        }
     }
 }
