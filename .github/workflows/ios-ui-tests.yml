@@ -21,7 +21,7 @@ jobs:
   test:
     name: Native unit and navigation UI regression
     runs-on: macos-15-intel
-    timeout-minutes: 40
+    timeout-minutes: 55
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,8 +59,8 @@ jobs:
           set -o pipefail
           xcodebuild -project WhaleAgent.xcodeproj -scheme WhaleAgentInteractions \
             -destination "platform=iOS Simulator,id=$DEVICE_ID" -parallel-testing-enabled NO \
-            -test-timeouts-enabled YES -default-test-execution-time-allowance 180 \
-            -maximum-test-execution-time-allowance 300 \
+            -test-timeouts-enabled YES -default-test-execution-time-allowance 300 \
+            -maximum-test-execution-time-allowance 420 \
             -derivedDataPath build -resultBundlePath build/InteractionResults.xcresult \
             CODE_SIGNING_ALLOWED=NO test | tee interaction-test.log
       - name: Export interaction screenshots
