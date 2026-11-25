@@ -18,7 +18,6 @@ struct NewsDetailView: View {
                             .whaleFont(size: 25, weight: .bold, design: .rounded)
                             .foregroundStyle(WhaleTheme.ink)
                             .fixedSize(horizontal: false, vertical: true)
-                            .textSelection(.enabled)
                             .whaleSpeakable(item.displayTitle)
                         summaryCard
                         sourceButton
@@ -131,7 +130,6 @@ struct NewsDetailView: View {
                 .foregroundStyle(WhaleTheme.ink.opacity(0.9))
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
                 .whaleSpeakable(item.displaySummary.isEmpty ? "这条资讯只提供标题，原文摘要需要打开来源查看。" : item.displaySummary)
             Text("基于来源摘要整理，不替代原文。")
                 .whaleFont(size: 13)
