@@ -135,7 +135,7 @@ struct ConversationComposerBar: View {
                 .frame(minHeight: 44)
                 .padding(.horizontal, 4)
                 .focused($focused)
-                .disabled(voice.isRecording || voice.isFinalizing || finishingVoice)
+                .disabled(finishingVoice)
                 .submitLabel(.return)
                 .accessibilityLabel("消息草稿")
                 .accessibilityIdentifier("assistant-composer")
