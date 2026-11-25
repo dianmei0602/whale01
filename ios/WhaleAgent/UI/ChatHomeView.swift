@@ -50,7 +50,7 @@ struct ConversationTabView: View {
                     }
                 }
             }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: showingStarter)
+            .animation(reduceMotion ? nil : WhaleMotion.channel, value: showingStarter)
         }
         .onChange(of: model.messages.count) { oldCount, newCount in
             if newCount == 0 {
@@ -66,7 +66,7 @@ struct ConversationTabView: View {
 
     private func goToStarter() {
         guard showConversation || !model.messages.isEmpty else { return }
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(WhaleMotion.channel) {
             showConversation = false
             browsingStarter = true
         }
@@ -74,7 +74,7 @@ struct ConversationTabView: View {
 
     private func enterConversation() {
         guard showingStarter else { return }
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(WhaleMotion.channel) {
             browsingStarter = false
             showConversation = true
         }

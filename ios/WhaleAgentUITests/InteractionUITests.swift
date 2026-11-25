@@ -124,4 +124,26 @@ final class InteractionUITests: XCTestCase {
         XCTAssertTrue(restored.waitForExistence(timeout: 10))
         XCTAssertTrue((restored.value as? String ?? "").contains("draft preserved"))
     }
+
+    func testDailyQuoteTextStartsReadAloud() {
+        let app = launch()
+        let quote = app.descendants(matching: .any)
+            .matching(identifier: "home-daily-quote-text")
+            .firstMatch
+        XCTAssertTrue(quote.waitForExistence(timeout: 10))
+        quote.tap()
+
+        let speaking = NSPredicate(format: "value == %@", "正在朗读")
+        let expectation = XCTNSPredicateExpectation(predicate: speaking, object: quote)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 6), .completed)
+    }
+
+    func testHorizontalPageSwipeUsesNativeSpeedThreshold() {
+        let app = launch()
+        app.swipeLeft()
+        XCTAssertTrue(app.otherElements["discover-content-ai"].waitForExistence(timeout: 8))
+        app.swipeRight()
+        XCTAssertTrue(app.staticTexts["常用操作"].waitForExistence(timeout: 8))
+    }
+
 }

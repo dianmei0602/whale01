@@ -282,6 +282,7 @@ struct GameDetailView: View {
                     .foregroundStyle(WhaleTheme.ink.opacity(0.86))
                     .lineSpacing(3)
                     .lineLimit(showFullDescription ? nil : 6)
+                    .whaleSpeakable(detail.descriptionText)
             }
         }
         .padding(15)

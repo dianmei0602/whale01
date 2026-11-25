@@ -79,6 +79,19 @@ final class SpeechPlaybackController: NSObject, ObservableObject {
         }
     }
 
+    /// A second tap on the same reading content is a stop gesture. This keeps
+    /// tap-to-read predictable across cards where no dedicated speaker button
+    /// is visible.
+    func speakOrStop(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        if isSpeaking && currentText == trimmed {
+            stop()
+        } else {
+            speak(trimmed)
+        }
+    }
+
     private func startSystemSpeech(_ text: String) {
         synthesisTask = nil
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)

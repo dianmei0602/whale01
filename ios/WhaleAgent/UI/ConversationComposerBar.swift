@@ -119,7 +119,7 @@ struct ConversationComposerBar: View {
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.whalePress)
             .disabled(model.isBusy || model.isExtractingDocument)
             .opacity(model.isBusy || model.isExtractingDocument ? 0.4 : 1)
             .accessibilityLabel("导入照片或文件识别文字")
@@ -146,7 +146,7 @@ struct ConversationComposerBar: View {
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
                 .accessibilityLabel("收起键盘")
             } else {
                 Button {
@@ -161,7 +161,7 @@ struct ConversationComposerBar: View {
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
                 .disabled(model.isBusy || finishingVoice)
                 .opacity(model.isBusy ? 0.4 : 1)
                 .accessibilityLabel("语音输入")
@@ -176,7 +176,7 @@ struct ConversationComposerBar: View {
                     .background(WhaleTheme.composerSendGradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     .whaleSoftElevation(selected: true)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.whalePress)
             .disabled(model.isBusy || isDraftEmpty || finishingVoice)
             .opacity(model.isBusy || isDraftEmpty ? 0.5 : 1)
             .accessibilityLabel("发送")
@@ -192,7 +192,7 @@ struct ConversationComposerBar: View {
                         .strokeBorder(WhaleTheme.line, lineWidth: 0.8)
                 }
         }
-        .animation(.easeInOut(duration: 0.16), value: focused)
+        .animation(WhaleMotion.control, value: focused)
     }
 
     private func notice(_ text: String) -> some View {

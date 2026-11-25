@@ -110,6 +110,12 @@ extension View {
         modifier(SoftElevation(selected: selected))
     }
 
+    /// A single shallow shadow for cards repeated inside a scrolling feed.
+    /// Two blurred shadow layers per row add visible cost during long flings.
+    func whaleListElevation() -> some View {
+        modifier(ListElevation())
+    }
+
     func whaleRaisedPill(selected: Bool) -> some View {
         modifier(RaisedPillStyle(selected: selected))
     }
@@ -156,6 +162,24 @@ private struct SoftElevation: ViewModifier {
                     radius: selected ? 10 : 8, x: 0, y: 4)
             .shadow(color: WhaleTheme.accent.opacity(WhaleTheme.accentShadowOpacity * k * (selected ? 2.2 : 1)),
                     radius: selected ? 16 : 12, x: 0, y: 7)
+    }
+}
+
+private struct ListElevation: ViewModifier {
+    @Environment(\.colorScheme) private var scheme
+
+    func body(content: Content) -> some View {
+        if WhaleTheme.shadowOpacity == 0 {
+            content
+        } else {
+            let multiplier = scheme == .dark ? WhaleTheme.shadowDarkMultiplier : 1
+            content.shadow(
+                color: .black.opacity(WhaleTheme.shadowOpacity * multiplier * 0.55),
+                radius: 3,
+                x: 0,
+                y: 1
+            )
+        }
     }
 }
 

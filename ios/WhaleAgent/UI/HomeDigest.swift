@@ -134,6 +134,7 @@ struct RollingSummaryText: View {
         .frame(height: lineHeight * CGFloat(maxLines), alignment: .topLeading)
         .clipped()
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.42), value: index)
+        .whaleSpeakable(current)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(lines.first ?? "")
         .accessibilityHint(lines.count > 1 ? "共 \(lines.count) 条摘要，自动轮播" : "")

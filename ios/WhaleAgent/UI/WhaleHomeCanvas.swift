@@ -52,7 +52,9 @@ struct WhaleHomeCanvas: View {
                 }
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 20).padding(.top, 16).padding(.bottom, 24)
-        }.scrollIndicators(.hidden).scrollDismissesKeyboard(.interactively)
+        }.scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
+            .scrollBounceBehavior(.basedOnSize)
             .background(WhaleBackdrop())
             .task {
                 await loadWeatherIfNeeded()
@@ -114,7 +116,7 @@ struct WhaleHomeCanvas: View {
                             }
                             .overlay(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
                             .whaleSoftElevation()
-                    }.buttonStyle(.plain).accessibilityLabel(channel.title)
+                    }.buttonStyle(.whalePress).accessibilityLabel(channel.title)
                         .accessibilityIdentifier("home-channel-" + channel.rawValue)
                 }
             }
@@ -157,32 +159,53 @@ struct WhaleHomeCanvas: View {
                 Image(systemName: "chevron.right").font(.caption)
             }.font(.subheadline).foregroundStyle(WhaleTheme.muted)
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-        }.buttonStyle(.plain).accessibilityIdentifier("home-today-weather")
+        }.buttonStyle(.whalePress).accessibilityIdentifier("home-today-weather")
             .accessibilityHint("查看天气详情；天气未获取时重新查询")
     }
     private var dailyQuote: some View {
         TimelineView(.periodic(from: Date(), by: 60)) { context in
-            Button {
-                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.18)) { quoteExpanded.toggle() }
-            } label: {
-                let quote = DailyQuote.item(at: context.date)
-                HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: "quote.opening").font(.system(size: 22, weight: .semibold)).foregroundStyle(WhaleTheme.accent)
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(quote.text).whaleFont(size: 20, weight: WhaleTheme.quoteWeight, design: WhaleTheme.displayDesign)
-                            .foregroundStyle(WhaleTheme.ink).lineSpacing(4)
-                            .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
-                        Text(quote.source).font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(WhaleTheme.muted).lineLimit(1)
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                        .accessibilityElement(children: .combine)
+            let quote = DailyQuote.item(at: context.date)
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "quote.opening")
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(WhaleTheme.accent)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(quote.text)
+                        .whaleFont(size: 20, weight: WhaleTheme.quoteWeight, design: WhaleTheme.displayDesign)
+                        .foregroundStyle(WhaleTheme.ink)
+                        .lineSpacing(4)
+                        .lineLimit(quoteExpanded || textSize.isAccessibilitySize ? nil : 3)
+                        .whaleSpeakable(quote.text)
+                        .accessibilityIdentifier("home-daily-quote-text")
+                    Text(quote.source)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(WhaleTheme.muted)
+                        .lineLimit(1)
+                        .whaleSpeakable("\(quote.text)。\(quote.source)")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Button {
+                    withAnimation(reduceMotion ? nil : WhaleMotion.control) { quoteExpanded.toggle() }
+                } label: {
                     Image(systemName: quoteExpanded ? "chevron.up" : "chevron.down")
-                        .font(.caption).foregroundStyle(WhaleTheme.muted)
-                }.frame(minHeight: 44, alignment: .center).whaleCard(padding: 16).overlay(alignment: .leading) { RoundedRectangle(cornerRadius: 2, style: .continuous).fill(WhaleTheme.accent.opacity(0.85)).frame(width: 3).padding(.vertical, 14) }
-            }.buttonStyle(.plain)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(WhaleTheme.muted)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.whalePress)
                 .accessibilityIdentifier("home-inspiration-card")
-                .accessibilityHint("点击展开每日一句")
-                .contextMenu { Button("隐藏今日一句") { showQuote = false } }
+                .accessibilityLabel(quoteExpanded ? "收起每日一句" : "展开每日一句")
+            }
+            .frame(minHeight: 44, alignment: .center)
+            .whaleCard(padding: 16)
+            .overlay(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(WhaleTheme.accent.opacity(0.85))
+                    .frame(width: 3)
+                    .padding(.vertical, 14)
+            }
+            .contextMenu { Button("隐藏今日一句") { showQuote = false } }
         }
     }
     private func loadHomeTodos() async {
@@ -675,7 +698,7 @@ struct WhaleHomeCanvas: View {
                             if let due = item.dueAt { Text(due.formatted(date: .abbreviated, time: .shortened)).font(.subheadline).foregroundStyle(WhaleTheme.muted) }
                         }
                     }.frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                }.buttonStyle(.plain)
+                }.buttonStyle(.whalePress)
             }
             if let error = model.dashboardError { Text(error).font(.subheadline).foregroundStyle(WhaleTheme.warm) }
         }.whaleCard().accessibilityElement(children: .contain).accessibilityIdentifier("home-today-card")

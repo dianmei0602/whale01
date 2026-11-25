@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DiscoverView: View {
     @Binding var selection: DiscoverChannel
@@ -8,6 +9,7 @@ struct DiscoverView: View {
     @State private var path = NavigationPath()
     @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
+    @GestureState private var channelDrag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
@@ -32,6 +34,8 @@ struct DiscoverView: View {
                             DiscoverChannelPage(model: model, appModel: appModel)
                                 .id(selection)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                                .offset(x: channelDrag * 0.12)
+                                .opacity(1 - min(abs(channelDrag) / 2_800, 0.08))
                                 .accessibilityElement(children: .contain)
                                 .accessibilityIdentifier("discover-content-" + selection.rawValue)
                                 .transition(.asymmetric(
@@ -41,7 +45,7 @@ struct DiscoverView: View {
                         }
                     }
                     .simultaneousGesture(channelSwipe)
-                    .animation(reduceMotion ? nil : .easeOut(duration: 0.22), value: selection)
+                    .animation(reduceMotion ? nil : WhaleMotion.channel, value: selection)
                     .background(Color.clear)
                     .toolbar(.hidden, for: .navigationBar)
                     .task {
@@ -109,10 +113,17 @@ struct DiscoverView: View {
     /// Swiping inside a channel steps to the neighbouring channel; past the
     /// first or last channel it hands the swipe back to the main pager.
     private var channelSwipe: some Gesture {
-        DragGesture(minimumDistance: 18)
+        DragGesture(minimumDistance: 10)
+            .updating($channelDrag) { value, state, _ in
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.2 else { return }
+                state = dx
+            }
             .onEnded { value in
                 let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15, abs(dx) > 56 else { return }
+                let projected = value.predictedEndTranslation.width
+                guard abs(dx) > abs(value.translation.height) * 1.2 else { return }
+                guard abs(dx) > 28 || abs(projected) > 58 else { return }
                 stepChannel(dx < 0 ? 1 : -1)
             }
     }
@@ -122,11 +133,13 @@ struct DiscoverView: View {
         guard let index = all.firstIndex(of: selection) else { return }
         let next = index + delta
         guard all.indices.contains(next) else {
+            UISelectionFeedbackGenerator().selectionChanged()
             onSwitchTab(delta > 0 ? .records : .conversation)
             return
         }
         slideFrom = delta > 0 ? .trailing : .leading
-        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) { selection = all[next] }
+        UISelectionFeedbackGenerator().selectionChanged()
+        withAnimation(reduceMotion ? nil : WhaleMotion.channel) { selection = all[next] }
     }
 
     private var header: some View {
@@ -155,7 +168,7 @@ struct DiscoverChannelBar: View {
                         Button { selection = channel } label: {
                             Text(channel.tabTitle).whaleFont(size: 14, weight: .semibold)
                                 .whaleChannelLabel(channel, selected: selection == channel)
-                        }.buttonStyle(.plain).id(channel)
+                        }.buttonStyle(.whalePress).id(channel)
                             .accessibilityLabel(channel.title)
                             .accessibilityAddTraits(selection == channel ? .isSelected : [])
                             .accessibilityIdentifier("discover-channel-" + channel.rawValue)
@@ -165,7 +178,7 @@ struct DiscoverChannelBar: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("discover-channel-selector")
                 .onChange(of: selection) { _, channel in
-                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { proxy.scrollTo(channel, anchor: .center) }
+                    withAnimation(reduceMotion ? nil : WhaleMotion.control) { proxy.scrollTo(channel, anchor: .center) }
                 }
                 .onAppear { proxy.scrollTo(selection, anchor: .center) }
         }

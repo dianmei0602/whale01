@@ -76,9 +76,14 @@ struct ScrollOffsetMemory: UIViewRepresentable {
         coordinator.observation = scrollView.observe(\.contentOffset, options: [.new]) { [weak coordinator] scrollView, _ in
             guard let coordinator, !coordinator.isRestoring else { return }
             coordinator.lastOffset = scrollView.contentOffset.y
-            coordinator.saveWork?.cancel()
+            // During a long fling this callback runs every frame. Reuse one
+            // scheduled save instead of cancelling and allocating a new
+            // DispatchWorkItem for every offset change.
+            guard coordinator.saveWork == nil else { return }
             let work = DispatchWorkItem { [weak coordinator] in
-                guard let coordinator, !coordinator.isRestoring else { return }
+                guard let coordinator else { return }
+                coordinator.saveWork = nil
+                guard !coordinator.isRestoring else { return }
                 coordinator.persist(coordinator.lastOffset)
             }
             coordinator.saveWork = work

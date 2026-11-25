@@ -19,6 +19,7 @@ struct NewsDetailView: View {
                             .foregroundStyle(WhaleTheme.ink)
                             .fixedSize(horizontal: false, vertical: true)
                             .textSelection(.enabled)
+                            .whaleSpeakable(item.displayTitle)
                         summaryCard
                         sourceButton
                         copyrightNote
@@ -28,6 +29,7 @@ struct NewsDetailView: View {
                     .padding(.bottom, 36)
                 }
                 .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
                 .background(ScrollOffsetMemory(key: "article-" + item.id))
             }
         }
@@ -130,6 +132,7 @@ struct NewsDetailView: View {
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
                 .textSelection(.enabled)
+                .whaleSpeakable(item.displaySummary.isEmpty ? "这条资讯只提供标题，原文摘要需要打开来源查看。" : item.displaySummary)
             Text("基于来源摘要整理，不替代原文。")
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted)

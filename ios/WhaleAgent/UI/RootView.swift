@@ -36,6 +36,7 @@ struct RootView: View {
         // 外观（系统/浅/深）不需要这里参与：动态色随系统自动更新。
         .id(theme.style)
         .environmentObject(theme)
+        .environmentObject(model.speech)
         .task {
 #if DEBUG
             let environment = ProcessInfo.processInfo.environment
@@ -115,7 +116,7 @@ struct RootView: View {
     private func move(to tab: AppTab) {
         guard tab != page else { return }
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { page = tab }
+        withAnimation(WhaleMotion.page) { page = tab }
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {
@@ -146,7 +147,8 @@ private struct RootPagerView: View {
     let onOpenDiscover: (DiscoverChannel) -> Void
     let onMove: (AppTab) -> Void
 
-    @GestureState private var pagerDrag: CGFloat = 0
+    @State private var pagerDrag: CGFloat = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { geo in
@@ -164,9 +166,8 @@ private struct RootPagerView: View {
                     .accessibilityHidden(page != .records)
                     .allowsHitTesting(page == .records)
             }
-            .compositingGroup()
             .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
-            .animation(.interactiveSpring(response: 0.34, dampingFraction: 0.88), value: page)
+            .animation(reduceMotion ? nil : WhaleMotion.page, value: page)
             .simultaneousGesture(pagerGesture(width: geo.size.width))
         }
     }
@@ -197,29 +198,66 @@ private struct RootPagerView: View {
     }
 
     private func pagerGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 18)
-            .updating($pagerDrag) { value, state, _ in
-                guard page != .discover else { return }
+        DragGesture(minimumDistance: 8)
+            .onChanged { value in
+                guard page != .discover else {
+                    pagerDrag = 0
+                    return
+                }
                 let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                state = rubberBanded(dx)
+                guard abs(dx) > abs(value.translation.height) * 1.2 else {
+                    pagerDrag = 0
+                    return
+                }
+                pagerDrag = rubberBanded(dx, width: width)
             }
             .onEnded { value in
-                guard page != .discover else { return }
+                guard page != .discover else {
+                    pagerDrag = 0
+                    return
+                }
                 let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                let dy = value.translation.height
+                guard abs(dx) > abs(dy) * 1.2 else {
+                    settlePager()
+                    return
+                }
                 let projected = value.predictedEndTranslation.width
-                if projected < -width * 0.20 || dx < -width * 0.28 {
-                    onMove(page.pagerNext)
-                } else if projected > width * 0.20 || dx > width * 0.28 {
-                    onMove(page.pagerPrevious)
+                let commitDistance = width * 0.38
+                let fastFlickDistance = width * 0.24
+                let projection = projected
+
+                if projection < -commitDistance || dx < -fastFlickDistance {
+                    UISelectionFeedbackGenerator().selectionChanged()
+                    commitPager(to: page.pagerNext)
+                } else if projection > commitDistance || dx > fastFlickDistance {
+                    UISelectionFeedbackGenerator().selectionChanged()
+                    commitPager(to: page.pagerPrevious)
+                } else {
+                    settlePager()
                 }
             }
     }
 
-    private func rubberBanded(_ dx: CGFloat) -> CGFloat {
+    private func commitPager(to next: AppTab) {
+        withAnimation(reduceMotion ? nil : WhaleMotion.page) {
+            pagerDrag = 0
+            onMove(next)
+        }
+    }
+
+    private func settlePager() {
+        withAnimation(reduceMotion ? nil : WhaleMotion.page) {
+            pagerDrag = 0
+        }
+    }
+
+    private func rubberBanded(_ dx: CGFloat, width: CGFloat) -> CGFloat {
         if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
-            return dx / 3
+            let distance = abs(dx)
+            let ceiling = max(24, width * 0.16)
+            let resisted = ceiling * (1 - 1 / (distance / ceiling + 1))
+            return dx < 0 ? -resisted : resisted
         }
         return dx
     }
@@ -287,7 +325,7 @@ struct WhaleRootTabBar: View {
         return Button {
             guard selection != tab else { return }
             UISelectionFeedbackGenerator().selectionChanged()
-            withAnimation(.interactiveSpring(response: 0.34, dampingFraction: 0.88)) { selection = tab }
+            withAnimation(WhaleMotion.page) { selection = tab }
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: icon)
@@ -301,7 +339,7 @@ struct WhaleRootTabBar: View {
             .frame(height: 46)
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.whalePress)
         .accessibilityLabel(title)
         .accessibilityIdentifier("tab-" + tab.rawValue)
         .accessibilityAddTraits(selected ? .isSelected : [])

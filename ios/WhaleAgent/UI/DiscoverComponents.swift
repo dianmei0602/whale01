@@ -6,12 +6,14 @@ struct HorizontalTabSwipe: ViewModifier {
 
     func body(content: Content) -> some View {
         content.simultaneousGesture(
-            DragGesture(minimumDistance: 28)
+            DragGesture(minimumDistance: 10)
                 .onEnded { value in
                     let dx = value.translation.width
                     let dy = value.translation.height
-                    guard value.startLocation.x > 28, abs(dx) > 64, abs(dy) < 56, abs(dx) > abs(dy) * 1.4 else { return }
-                    if dx < 0 {
+                    let projected = value.predictedEndTranslation.width
+                    guard abs(dx) > abs(dy) * 1.2, abs(dy) < 72 else { return }
+                    guard abs(dx) > 28 || abs(projected) > 58 else { return }
+                    if projected < 0 || (projected == 0 && dx < 0) {
                         onNext()
                     } else {
                         onPrevious()
@@ -34,6 +36,7 @@ struct DiscoverChannelHeader: View {
     var body: some View {
         Text(detail ?? channel.subtitle).font(.subheadline).foregroundStyle(WhaleTheme.muted)
             .frame(maxWidth: .infinity, alignment: .leading).fixedSize(horizontal: false, vertical: true)
+            .whaleSpeakable(detail ?? channel.subtitle)
     }
 
 }
@@ -61,7 +64,7 @@ struct DiscoverSectionTitle: View {
                 Button(action) { onAction() }
                     .whaleFont(size: 13, weight: .semibold)
                     .foregroundStyle(WhaleTheme.accent)
-                    .buttonStyle(.plain)
+                    .buttonStyle(.whalePress)
             }
         }
     }
@@ -94,6 +97,7 @@ struct NewsFeatureCard: View {
                 .foregroundStyle(WhaleTheme.ink)
                 .lineLimit(4)
                 .multilineTextAlignment(.leading)
+                .whaleSpeakable(item.displayTitle)
 
             if !item.displaySummary.isEmpty {
                 Text(item.displaySummary)
@@ -101,6 +105,7 @@ struct NewsFeatureCard: View {
                     .foregroundStyle(WhaleTheme.muted)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(item.displaySummary)
             }
 
             HStack(spacing: 5) {
@@ -150,6 +155,7 @@ struct NewsRowCard: View {
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(item.displayTitle)
                 HStack(spacing: 6) {
                     Text(item.source)
                     Circle().fill(WhaleTheme.muted.opacity(0.5)).frame(width: 3, height: 3)
@@ -168,7 +174,7 @@ struct NewsRowCard: View {
         .padding(.horizontal, 14)
         .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 
     private var channelIcon: String {
@@ -259,7 +265,7 @@ struct MarketIndexCard: View {
         .padding(13)
         .background(WhaleTheme.card.opacity(0.82), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 }
 
@@ -310,7 +316,7 @@ struct QuoteRowCard: View {
         .padding(.horizontal, 15)
         .background(WhaleTheme.card.opacity(0.74), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 }
 
@@ -391,6 +397,7 @@ struct AIPaperCard: View {
                 .foregroundStyle(WhaleTheme.ink)
                 .lineLimit(3)
                 .multilineTextAlignment(.leading)
+                .whaleSpeakable(paper.displayTitle)
 
             if !paper.displaySummary.isEmpty {
                 Text(paper.displaySummary)
@@ -398,6 +405,7 @@ struct AIPaperCard: View {
                     .foregroundStyle(WhaleTheme.muted)
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(paper.displaySummary)
             }
 
             if let url = paper.url {
@@ -690,6 +698,7 @@ struct GameRankRowCard: View {
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(item.name)
                 HStack(spacing: 6) {
                     Text(item.category.isEmpty ? "游戏" : item.category)
                     if !item.releaseText.isEmpty {
@@ -711,7 +720,7 @@ struct GameRankRowCard: View {
         .padding(.horizontal, 12)
         .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 }
 
@@ -782,12 +791,14 @@ struct WeiboHotRowCard: View {
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(item.note.isEmpty || item.note == item.word ? item.word : "\(item.word)。\(item.note)")
 
                 if !item.note.isEmpty && item.note != item.word {
                     Text(item.note)
                         .whaleFont(size: 13)
                         .foregroundStyle(WhaleTheme.muted)
                         .lineLimit(1)
+                        .whaleSpeakable(item.note)
                 }
 
                 HStack(spacing: 6) {
@@ -821,6 +832,6 @@ struct WeiboHotRowCard: View {
         .padding(.horizontal, 12)
         .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 }

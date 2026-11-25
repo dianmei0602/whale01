@@ -32,11 +32,11 @@ struct InlinePlaybackView: View {
                             Text(model.playback.isPlaying ? "正在播放" : "已暂停").font(.subheadline).foregroundStyle(WhaleTheme.muted)
                         }
                     }.frame(maxWidth: .infinity, alignment: .leading)
-                }.buttonStyle(.plain)
+                }.buttonStyle(.whalePress)
                 Button { Task { await model.togglePlayback() } } label: {
                     Image(systemName: model.playback.isPlaying ? "pause.fill" : "play.fill")
                         .foregroundStyle(WhaleTheme.accent).whaleTouchTarget()
-                }.buttonStyle(.plain).disabled(model.isMusicBusy)
+                }.buttonStyle(.whalePress).disabled(model.isMusicBusy)
                     .accessibilityLabel(model.playback.isPlaying ? "暂停音乐" : "继续播放")
             }.whaleCard(padding: 14)
         }
@@ -88,7 +88,7 @@ struct DiscoverHubView: View {
                                 Spacer(minLength: 0)
                                 Image(systemName: "chevron.right").foregroundStyle(WhaleTheme.muted)
                             }.padding(.vertical, 13).contentShape(Rectangle())
-                        }.buttonStyle(.plain)
+                        }.buttonStyle(.whalePress)
                             .accessibilityLabel(channel.title).accessibilityHint(channel.subtitle)
                             .accessibilityIdentifier("discover-channel-" + channel.rawValue)
                         if channel != DiscoverChannel.allCases.last { Divider() }

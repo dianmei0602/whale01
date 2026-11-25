@@ -294,6 +294,7 @@ struct MessageRow: View {
                         .whaleFont(size: 16, weight: .medium)
                         .foregroundStyle(.white)
                         .textSelection(.enabled)
+                        .whaleSpeakable(message.text)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 12)
                         .background(WhaleTheme.accentDeep, in: UnevenRoundedRectangle(
@@ -323,12 +324,14 @@ struct MessageRow: View {
                         .foregroundStyle(WhaleTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
                         .textSelection(.enabled)
+                        .whaleSpeakable(message.text)
                     HStack(alignment: .bottom, spacing: 10) {
                         if let detail = message.detail, !detail.isEmpty {
                             Text(detail)
                                 .whaleFont(size: 13)
                                 .foregroundStyle(WhaleTheme.muted)
                                 .frame(maxWidth: .infinity, alignment: .leading)
+                                .whaleSpeakable(detail)
                         } else {
                             Spacer(minLength: 0)
                         }
@@ -373,8 +376,9 @@ struct MessageRow: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Label(message.text, systemImage: message.executionStatus == "success" ? "checkmark.circle" : message.executionStatus == nil ? "iphone" : "exclamationmark.circle")
                                 .font(.headline).foregroundStyle(WhaleTheme.accent)
+                                .whaleSpeakable(message.text)
                             if let detail = message.detail, !detail.isEmpty {
-                                Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled)
+                                Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled).whaleSpeakable(detail)
                             }
                         }.frame(maxWidth: .infinity, alignment: .leading).whaleCard(padding: 14)
                     }
@@ -454,6 +458,7 @@ struct WeatherResultCard: View {
                         Text(today.summary)
                             .whaleFont(size: 22, weight: .bold, design: .rounded)
                             .foregroundStyle(WhaleTheme.ink)
+                            .whaleSpeakable(today.summary)
                         HStack(spacing: 8) {
                             Text(today.temperatureText)
                                 .whaleFont(size: 13, weight: .semibold, design: .rounded)
@@ -477,6 +482,7 @@ struct WeatherResultCard: View {
                         .foregroundStyle(WhaleTheme.muted)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 1)
+                        .whaleSpeakable(today.advice)
                 }
             }
 

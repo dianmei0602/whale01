@@ -34,7 +34,7 @@ struct WhaleTabBar: View {
     private func item(_ tab: AppTab, title: String, icon: String) -> some View {
         let selected = selection == tab
         return Button {
-            withAnimation(.snappy(duration: 0.26)) {
+            withAnimation(WhaleMotion.channel) {
                 selection = tab
             }
         } label: {
@@ -59,7 +59,7 @@ struct WhaleTabBar: View {
             }
             .contentShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.whalePress)
         .accessibilityLabel(title)
         .accessibilityAddTraits(selected ? .isSelected : [])
     }

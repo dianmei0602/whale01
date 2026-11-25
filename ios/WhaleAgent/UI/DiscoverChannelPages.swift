@@ -57,6 +57,7 @@ struct AIChannelPage: View {
                     .padding(.bottom, 30)
                 }
                 .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
 
                 .background(ScrollOffsetMemory(key: "ai-all"))
                 .accessibilityElement(children: .contain)
@@ -78,7 +79,7 @@ struct AIChannelPage: View {
             NavigationLink(value: DiscoverRoute.news(feature)) {
                 NewsFeatureCard(item: feature)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.whalePress)
         } else if model.newsState == .loaded {
             Text("暂时没有新的资讯，下拉刷新试试。")
                 .whaleFont(size: 13)
@@ -95,7 +96,7 @@ struct AIChannelPage: View {
                 NavigationLink(value: DiscoverRoute.news(item)) {
                     NewsRowCard(item: item)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
             }
         }
     }
@@ -130,6 +131,7 @@ struct MarketChannelPage: View {
                 .padding(.bottom, 30)
             }
             .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
             .background(ScrollOffsetMemory(key: "market"))
             .scrollDismissesKeyboard(.interactively)
             .refreshable { await model.loadMarket(force: true) }
@@ -185,7 +187,7 @@ struct MarketChannelPage: View {
                             .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
                     }
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
             }
         }
     }
@@ -207,12 +209,13 @@ struct MarketChannelPage: View {
                             NavigationLink(value: DiscoverRoute.stock(quote)) {
                                 MarketIndexCard(quote: quote)
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.whalePress)
                         }
                     }
                     .padding(.vertical, 1)
                 }
                 .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
             }
 
             if model.watchQuotes.isEmpty {
@@ -238,7 +241,7 @@ struct MarketChannelPage: View {
                     NavigationLink(value: DiscoverRoute.stock(quote)) {
                         QuoteRowCard(quote: quote, flow: model.watchFlows[quote.symbol])
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.whalePress)
                     .contextMenu {
                         Button(role: .destructive) {
                             model.removeFromWatchlist(quote.symbol)
@@ -389,11 +392,11 @@ struct GameChannelPage: View {
                     .padding(.bottom, 30)
                 }
                 .scrollIndicators(.hidden)
-
+                .scrollBounceBehavior(.basedOnSize)
                 .background(ScrollOffsetMemory(key: "game-news"))
                 .refreshable { await model.refresh() }
                 .onChange(of: model.gameNewsSection) { _, _ in
-                    withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("game-news-top", anchor: .top) }
+                    withAnimation(WhaleMotion.channel) { proxy.scrollTo("game-news-top", anchor: .top) }
                 }
             }
         }
@@ -418,13 +421,13 @@ struct GameChannelPage: View {
                 NavigationLink(value: DiscoverRoute.news(feature)) {
                     NewsFeatureCard(item: feature)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
             }
             ForEach(Array(model.gameNews.dropFirst())) { item in
                 NavigationLink(value: DiscoverRoute.news(item)) {
                     NewsRowCard(item: item)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.whalePress)
             }
         }
     }
@@ -446,7 +449,7 @@ struct GameChannelPage: View {
                             Button { safari = SafariTarget(url: url) } label: {
                                 SteamRowCard(item: item, rank: index + 1)
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.whalePress)
                         } else {
                             SteamRowCard(item: item, rank: index + 1)
                         }
@@ -473,6 +476,7 @@ struct GameChannelPage: View {
             .padding(.bottom, 30)
         }
         .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
         .background(ScrollOffsetMemory(key: "game-steam-\(kind.rawValue)"))
         .refreshable { await model.loadSteam(kind: kind, force: true) }
     }
@@ -501,7 +505,7 @@ struct GameChannelPage: View {
                             NavigationLink(value: DiscoverRoute.game(item, board)) {
                                 GameRankRowCard(item: item)
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.whalePress)
                         } else {
                             GameRankRowCard(item: item)
                         }
@@ -519,6 +523,7 @@ struct GameChannelPage: View {
             .padding(.bottom, 30)
         }
         .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
         .background(ScrollOffsetMemory(key: "game-rank-\(model.gameSection.rawValue)"))
         .refreshable {
             if let board = model.gameSection.board {
@@ -572,13 +577,13 @@ struct HeadlineChannelPage: View {
                                     NavigationLink(value: DiscoverRoute.news(feature)) {
                                         NewsFeatureCard(item: feature)
                                     }
-                                    .buttonStyle(.plain)
+                                    .buttonStyle(.whalePress)
                                 }
                                 ForEach(Array(model.headlineNews.dropFirst())) { item in
                                     NavigationLink(value: DiscoverRoute.news(item)) {
                                         NewsRowCard(item: item)
                                     }
-                                    .buttonStyle(.plain)
+                                    .buttonStyle(.whalePress)
                                 }
                             }
                         }
@@ -589,6 +594,7 @@ struct HeadlineChannelPage: View {
                     .padding(.bottom, 30)
                 }
                 .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
 
                 .background(ScrollOffsetMemory(key: "headline-all"))
                 .accessibilityElement(children: .contain)
@@ -632,7 +638,7 @@ struct WeiboChannelPage: View {
                                 Button { safari = SafariTarget(url: url) } label: {
                                     WeiboHotRowCard(item: item)
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(.whalePress)
                             } else {
                                 WeiboHotRowCard(item: item)
                             }
@@ -654,6 +660,7 @@ struct WeiboChannelPage: View {
                 )
             }
             .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
 
             .background(ScrollOffsetMemory(key: "weibo"))
             .refreshable { await model.loadHot(force: true) }
@@ -707,7 +714,7 @@ struct NewsSectionBar: View {
                         Button { onSelect(option.id) } label: {
                             Text(option.title).whaleFont(size: 13, weight: .semibold)
                                 .whaleRaisedPill(selected: selection == option.id)
-                        }.buttonStyle(.plain).id(option.id)
+                        }.buttonStyle(.whalePress).id(option.id)
                             .accessibilityAddTraits(selection == option.id ? .isSelected : [])
                             .accessibilityIdentifier("discover-section-" + channel.rawValue + "-" + option.id)
                     }
@@ -732,7 +739,7 @@ struct HotBoardBar: View {
                 Button { onSelect(board) } label: {
                     Label(board.title, systemImage: board.icon).whaleFont(size: 13, weight: .semibold)
                         .whaleRaisedPill(selected: selection == board)
-                }.buttonStyle(.plain)
+                }.buttonStyle(.whalePress)
                     .accessibilityAddTraits(selection == board ? .isSelected : [])
                     .accessibilityIdentifier("discover-hot-" + board.rawValue)
             }
@@ -818,6 +825,7 @@ struct SteamRowCard: View {
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
+                    .whaleSpeakable(item.name)
                 HStack(spacing: 6) {
                     if let discount = item.discountText {
                         Text(discount)
@@ -849,6 +857,6 @@ struct SteamRowCard: View {
         .padding(.horizontal, 12)
         .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay { RoundedRectangle(cornerRadius: 17, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7) }
-        .whaleSoftElevation()
+        .whaleListElevation()
     }
 }
