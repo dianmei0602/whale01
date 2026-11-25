@@ -37,8 +37,8 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath build/WhaleAgent.xcarchive \
-          MARKETING_VERSION=0.7.17 \
-            CURRENT_PROJECT_VERSION="130.${{ github.run_attempt }}" \
+          MARKETING_VERSION=0.7.21 \
+            CURRENT_PROJECT_VERSION="134.${{ github.run_attempt }}" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -88,6 +88,16 @@ jobs:
           path: |
             ios/build/WhaleAgent-Sideload.ipa.enc
             ios/build/WhaleAgent-pass.enc
+            ios/build/WhaleAgent-Sideload.sha256
+            ios/build/WhaleAgent-Sideload.manifest.json
+
+      - name: Upload direct unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhaleAgent-Sideload-ipa-0.7.21-direct
+          retention-days: 3
+          path: |
+            ios/build/WhaleAgent-Sideload.ipa
             ios/build/WhaleAgent-Sideload.sha256
             ios/build/WhaleAgent-Sideload.manifest.json
 
