@@ -8,7 +8,6 @@ struct DiscoverView: View {
     @State private var path = NavigationPath()
     @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
-    @GestureState private var channelDrag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
@@ -29,14 +28,12 @@ struct DiscoverView: View {
                 DiscoverChannelBar(selection: $selection)
                 NavigationStack(path: $path) {
                     ZStack {
-                        WhaleBackdrop()
                         if let model = models[selection] {
                             DiscoverChannelPage(model: model, appModel: appModel)
                                 .id(selection)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                                 .accessibilityElement(children: .contain)
                                 .accessibilityIdentifier("discover-content-" + selection.rawValue)
-                                .offset(x: reduceMotion ? 0 : channelDrag * 0.18)
                                 .transition(.asymmetric(
                                     insertion: .move(edge: slideFrom).combined(with: .opacity),
                                     removal: .move(edge: slideFrom == .trailing ? .leading : .trailing).combined(with: .opacity)
@@ -113,11 +110,6 @@ struct DiscoverView: View {
     /// first or last channel it hands the swipe back to the main pager.
     private var channelSwipe: some Gesture {
         DragGesture(minimumDistance: 18)
-            .updating($channelDrag) { value, state, _ in
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                state = dx
-            }
             .onEnded { value in
                 let dx = value.translation.width
                 guard abs(dx) > abs(value.translation.height) * 1.15, abs(dx) > 56 else { return }

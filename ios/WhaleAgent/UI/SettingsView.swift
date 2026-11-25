@@ -813,6 +813,10 @@ private struct ServiceSettingsView: View {
     @ObservedObject var model: AppModel
     @State private var personalKey = ""
     @State private var keyMessage: String?
+    @State private var xfyunAppID = ""
+    @State private var xfyunAPIKey = ""
+    @State private var xfyunAPISecret = ""
+    @State private var xfyunMessage: String?
 
     var body: some View {
         ScrollView {
@@ -883,6 +887,58 @@ private struct ServiceSettingsView: View {
                         if let keyMessage { Text(keyMessage).font(.footnote) }
                     }.padding(.vertical, 12)
                 }
+                SettingsChrome.card {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("讯飞语音合成").font(.headline)
+                            Spacer()
+                            Text(XfyunConfig.ttsVoiceName)
+                                .whaleFont(size: 12, weight: .semibold)
+                                .foregroundStyle(WhaleTheme.accent)
+                        }
+                        Text("凭据保存在本机钥匙串。三项完整后优先使用讯飞在线合成；网络、授权或音色失败时自动回退系统中文语音。")
+                            .font(.footnote).foregroundStyle(WhaleTheme.muted)
+                        TextField("XFYUN_APP_ID", text: $xfyunAppID)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                        SecureField("XFYUN_API_KEY", text: $xfyunAPIKey)
+                        SecureField("XFYUN_API_SECRET", text: $xfyunAPISecret)
+                        HStack {
+                            Button("保存讯飞凭据") {
+                                do {
+                                    try XfyunCredentialStore.save(
+                                        appId: xfyunAppID,
+                                        apiKey: xfyunAPIKey,
+                                        apiSecret: xfyunAPISecret
+                                    )
+                                    xfyunAPIKey = ""
+                                    xfyunAPISecret = ""
+                                    xfyunMessage = "已保存，并将语音合成切换为 \(XfyunConfig.ttsVoiceName)"
+                                } catch {
+                                    xfyunMessage = error.localizedDescription
+                                }
+                            }
+                            .disabled(
+                                xfyunAppID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                || xfyunAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                || xfyunAPISecret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            )
+                            Spacer()
+                            Button("删除本机讯飞凭据", role: .destructive) {
+                                do {
+                                    try XfyunCredentialStore.clear()
+                                    xfyunAppID = ""
+                                    xfyunAPIKey = ""
+                                    xfyunAPISecret = ""
+                                    xfyunMessage = "已删除本机讯飞凭据"
+                                } catch {
+                                    xfyunMessage = error.localizedDescription
+                                }
+                            }
+                        }
+                        if let xfyunMessage { Text(xfyunMessage).font(.footnote) }
+                    }
+                    .padding(.vertical, 12)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 14)
@@ -892,6 +948,11 @@ private struct ServiceSettingsView: View {
         .scrollIndicators(.hidden)
         .navigationTitle("服务连接")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            if xfyunAppID.isEmpty, let config = XfyunConfig.current {
+                xfyunAppID = config.appId
+            }
+        }
     }
 
     private var deepSeekConnected: Bool {

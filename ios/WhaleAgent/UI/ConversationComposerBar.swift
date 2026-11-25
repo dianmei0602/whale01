@@ -10,7 +10,6 @@ struct ConversationComposerBar: View {
 
     @ObservedObject var model: AppModel
     @Binding var externalFocused: Bool
-    @StateObject private var voice = VoiceInputController()
     @FocusState private var focused: Bool
 
     @Binding var draft: String
@@ -20,20 +19,16 @@ struct ConversationComposerBar: View {
     @State private var importError: String?
     @State private var finishingVoice = false
     @State private var draftContext: String?
-    @State private var voicePrefix = ""
+    @State private var showVoiceSheet = false
+    @State private var voiceDraftPrefix = ""
+    @State private var voiceContext: String?
     @Environment(\.scenePhase) private var scenePhase
     private let drafts = ComposerDraftStore()
 
     var body: some View {
         VStack(spacing: 7) {
-            if let voiceError = voice.errorText {
-                notice(voiceError)
-            }
             if let importError {
                 notice(importError)
-            }
-            if voice.isRecording {
-                voiceStrip
             }
             composer
             if model.isBusy && !draft.isEmpty {
@@ -61,19 +56,8 @@ struct ConversationComposerBar: View {
         ) { result in
             handleImportedFile(result)
         }
-        .onChange(of: voice.transcript) { _, text in
-            guard !text.isEmpty else { return }
-            draft = voicePrefix.isEmpty ? text : voicePrefix + "\n" + text
-        }
         .onChange(of: focused) { _, value in
             externalFocused = value
-        }
-        .onChange(of: voice.isRecording) { wasRecording, isRecording in
-            guard wasRecording, !isRecording else { return }
-            guard voice.errorText == nil else { return }
-            if !voice.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                focused = true
-            }
         }
         .task {
             if draftContext == nil { draftContext = model.composerContextID; draft = drafts.load(context: model.composerContextID) }
@@ -88,7 +72,7 @@ struct ConversationComposerBar: View {
             draftContext = context; draft = drafts.load(context: context)
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active, let context = draftContext { drafts.save(draft, context: context); voice.cancel() }
+            if phase != .active, let context = draftContext { drafts.save(draft, context: context) }
         }
         .onReceive(NotificationCenter.default.publisher(for: .whalePrefillDraft)) { notification in
             guard let text = notification.userInfo?["text"] as? String else { return }
@@ -98,7 +82,20 @@ struct ConversationComposerBar: View {
         .onDisappear {
             if let context = draftContext { drafts.save(draft, context: context) }
             externalFocused = false
-            voice.cancel()
+        }
+        .sheet(isPresented: $showVoiceSheet) {
+            VoiceConversationSheet(
+                onSend: sendVoiceText,
+                onUseText: useVoiceText,
+                onCancel: {
+                    showVoiceSheet = false
+                    focused = false
+                }
+            )
+            .presentationDetents([.height(460)])
+            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(28)
+            .presentationBackground(WhaleTheme.card)
         }
     }
 
@@ -158,19 +155,21 @@ struct ConversationComposerBar: View {
             } else {
                 Button {
                     focused = false
-                    if !voice.isRecording { voicePrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines) }
-                    Task { await voice.toggle() }
+                    voiceDraftPrefix = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+                    voiceContext = draftContext
+                    showVoiceSheet = true
                 } label: {
-                    Image(systemName: voice.isRecording ? "waveform" : "mic")
+                    Image(systemName: "mic")
                         .whaleFont(size: 19, weight: .medium)
-                        .foregroundStyle(voice.isRecording ? WhaleTheme.danger : WhaleTheme.ink)
+                        .foregroundStyle(WhaleTheme.ink)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .disabled(model.isBusy || voice.isFinalizing || finishingVoice)
+                .disabled(model.isBusy || finishingVoice)
                 .opacity(model.isBusy ? 0.4 : 1)
-                .accessibilityLabel(voice.isRecording ? "停止语音输入" : "语音输入")
+                .accessibilityLabel("语音输入")
+                .accessibilityIdentifier("open-voice-sheet")
             }
 
             Button(action: submit) {
@@ -218,57 +217,14 @@ struct ConversationComposerBar: View {
         draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private var voiceStrip: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Circle()
-                .fill(WhaleTheme.danger)
-                .frame(width: 8, height: 8)
-                .padding(.top, 5)
-            Text(voice.transcript.isEmpty ? "正在听你说…" : voice.transcript)
-                .whaleFont(size: 13)
-                .foregroundStyle(WhaleTheme.ink)
-                .lineLimit(3)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Button("停止") { voice.stop() }
-                .whaleFont(size: 13, weight: .semibold)
-                .tint(WhaleTheme.danger)
-                .frame(minHeight: 44)
-        }
-        .padding(.horizontal, 13)
-        .padding(.vertical, 9)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(WhaleTheme.danger.opacity(0.24), lineWidth: 0.8)
-        }
-    }
-
     private func submit() {
         guard !finishingVoice else { return }
-        if voice.isRecording || voice.isFinalizing {
-            finishingVoice = true
-            Task {
-                defer { finishingVoice = false }
-                guard let final = await voice.finishRecognition(), !final.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                    draft = voicePrefix.isEmpty ? voice.transcript : voicePrefix + "\n" + voice.transcript
-                    focused = true
-                    return
-                }
-                focused = false
-                let composed = voicePrefix.isEmpty ? final : voicePrefix + "\n" + final
-                draft = composed
-                voicePrefix = ""
-                finishingVoice = false
-                await sendDraft(composed, original: composed, context: draftContext)
-            }
-        } else {
-            let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !text.isEmpty else { return }
-            focused = false
-            let original = draft
-            let context = draftContext
-            Task { await sendDraft(text, original: original, context: context) }
-        }
+        let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        focused = false
+        let original = draft
+        let context = draftContext
+        Task { await sendDraft(text, original: original, context: context) }
     }
 
     private func sendDraft(_ text: String, original: String, context: String?) async {
@@ -327,5 +283,52 @@ struct ConversationComposerBar: View {
             return "照片读取失败：\(error.localizedDescription)。请在相册中先下载到本机后重试。"
         }
         return "照片读取失败：\(error.localizedDescription)"
+    }
+
+    private func composedVoiceText(_ text: String) -> String {
+        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        return voiceDraftPrefix.isEmpty ? text : voiceDraftPrefix + "\n" + text
+    }
+
+    private func sendVoiceText(_ text: String) {
+        let composed = composedVoiceText(text)
+        guard !composed.isEmpty else { return }
+        showVoiceSheet = false
+        draft = composed
+        let context = voiceContext
+        finishingVoice = true
+        Task {
+            await sendDraft(composed, original: composed, context: context)
+            finishingVoice = false
+        }
+    }
+
+    private func useVoiceText(_ text: String) {
+        let composed = composedVoiceText(text)
+        showVoiceSheet = false
+        draft = composed
+        focused = !composed.isEmpty
+    }
+}
+
+private struct VoiceConversationSheet: View {
+    @StateObject private var voice = VoiceInputController()
+    let onSend: (String) -> Void
+    let onUseText: (String) -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        VoiceView(
+            voice: voice,
+            onSend: onSend,
+            onClose: onUseText,
+            onCancel: onCancel
+        )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("voice-sheet")
+        .task {
+            guard !voice.isRecording else { return }
+            await voice.start()
+        }
     }
 }

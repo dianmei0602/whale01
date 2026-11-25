@@ -17,7 +17,6 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
-    @GestureState private var pagerDrag: CGFloat = 0
 
     var body: some View {
         Group {
@@ -73,37 +72,18 @@ struct RootView: View {
         }
     }
 
-    // MARK: - Horizontal pager
-
-    /// Three main entries sit side by side. The pager follows the finger and
-    /// settles on the nearest page; Discover owns its own horizontal gestures,
-    /// so the root pager stands down while that tab is visible.
     private var pager: some View {
-        GeometryReader { geo in
-            HStack(spacing: 0) {
-                conversationPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .conversation)
-                    .allowsHitTesting(page == .conversation)
-                discoverPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .discover)
-                    .allowsHitTesting(page == .discover)
-                recordsPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .records)
-                    .allowsHitTesting(page == .records)
-            }
-            .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
-            .animation(.interactiveSpring(response: 0.34, dampingFraction: 0.88), value: page)
-            .simultaneousGesture(pagerGesture(width: geo.size.width))
-        }
-    }
-
-    private var conversationPage: some View {
-        ConversationTabView(model: model, bottomInset: 0,
-            onOpenRecords: { showRecords = true }, onOpenSettings: { showSettings = true },
-            onOpenMusic: { openDiscover(.music) }, onOpenTodo: { page = .records }, onOpenDiscover: openDiscover)
+        RootPagerView(
+            page: $page,
+            discoverChannel: $discoverChannel,
+            model: model,
+            onOpenRecords: { showRecords = true },
+            onOpenSettings: { showSettings = true },
+            onOpenMusic: { openDiscover(.music) },
+            onOpenTodo: { move(to: .records) },
+            onOpenDiscover: { openDiscover($0) },
+            onMove: { move(to: $0) }
+        )
     }
 
     /// Composer and tabs share one bottom inset. This avoids nested safe-area
@@ -132,44 +112,6 @@ struct RootView: View {
         }
     }
 
-    private var discoverPage: some View {
-        DiscoverView(selection: $discoverChannel, appModel: model,
-                     onSettings: { showSettings = true },
-                     onSwitchTab: { tab in move(to: tab) })
-    }
-
-    private var recordsPage: some View {
-        TodoView(model: model, embedded: true, onBackToChat: { page = .conversation }, bottomBarInset: 0)
-    }
-
-    private func pagerGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 18)
-            .updating($pagerDrag) { value, state, _ in
-                guard page != .discover else { return }
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                state = rubberBanded(dx)
-            }
-            .onEnded { value in
-                guard page != .discover else { return }
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
-                let projected = value.predictedEndTranslation.width
-                if projected < -width * 0.20 || dx < -width * 0.28 {
-                    move(to: page.pagerNext)
-                } else if projected > width * 0.20 || dx > width * 0.28 {
-                    move(to: page.pagerPrevious)
-                }
-            }
-    }
-
-    private func rubberBanded(_ dx: CGFloat) -> CGFloat {
-        if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
-            return dx / 3
-        }
-        return dx
-    }
-
     private func move(to tab: AppTab) {
         guard tab != page else { return }
         UISelectionFeedbackGenerator().selectionChanged()
@@ -188,6 +130,98 @@ struct RootView: View {
         if ProcessInfo.processInfo.environment["WHALE_DEMO_LARGE_TEXT"] == "1" { return .accessibility3 }
 #endif
         return systemTextSize
+    }
+}
+
+/// Keeps high-frequency drag state away from RootView. Only this subtree is
+/// invalidated while a horizontal swipe is in progress.
+private struct RootPagerView: View {
+    @Binding var page: AppTab
+    @Binding var discoverChannel: DiscoverChannel
+    @ObservedObject var model: AppModel
+    let onOpenRecords: () -> Void
+    let onOpenSettings: () -> Void
+    let onOpenMusic: () -> Void
+    let onOpenTodo: () -> Void
+    let onOpenDiscover: (DiscoverChannel) -> Void
+    let onMove: (AppTab) -> Void
+
+    @GestureState private var pagerDrag: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                conversationPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .conversation)
+                    .allowsHitTesting(page == .conversation)
+                discoverPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .discover)
+                    .allowsHitTesting(page == .discover)
+                recordsPage
+                    .frame(width: geo.size.width)
+                    .accessibilityHidden(page != .records)
+                    .allowsHitTesting(page == .records)
+            }
+            .compositingGroup()
+            .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
+            .animation(.interactiveSpring(response: 0.34, dampingFraction: 0.88), value: page)
+            .simultaneousGesture(pagerGesture(width: geo.size.width))
+        }
+    }
+
+    private var conversationPage: some View {
+        ConversationTabView(
+            model: model,
+            bottomInset: 0,
+            onOpenRecords: onOpenRecords,
+            onOpenSettings: onOpenSettings,
+            onOpenMusic: onOpenMusic,
+            onOpenTodo: onOpenTodo,
+            onOpenDiscover: onOpenDiscover
+        )
+    }
+
+    private var discoverPage: some View {
+        DiscoverView(
+            selection: $discoverChannel,
+            appModel: model,
+            onSettings: onOpenSettings,
+            onSwitchTab: onMove
+        )
+    }
+
+    private var recordsPage: some View {
+        TodoView(model: model, embedded: true, onBackToChat: { onMove(.conversation) }, bottomBarInset: 0)
+    }
+
+    private func pagerGesture(width: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 18)
+            .updating($pagerDrag) { value, state, _ in
+                guard page != .discover else { return }
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                state = rubberBanded(dx)
+            }
+            .onEnded { value in
+                guard page != .discover else { return }
+                let dx = value.translation.width
+                guard abs(dx) > abs(value.translation.height) * 1.15 else { return }
+                let projected = value.predictedEndTranslation.width
+                if projected < -width * 0.20 || dx < -width * 0.28 {
+                    onMove(page.pagerNext)
+                } else if projected > width * 0.20 || dx > width * 0.28 {
+                    onMove(page.pagerPrevious)
+                }
+            }
+    }
+
+    private func rubberBanded(_ dx: CGFloat) -> CGFloat {
+        if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
+            return dx / 3
+        }
+        return dx
     }
 }
 

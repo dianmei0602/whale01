@@ -219,7 +219,11 @@ struct WhaleBackdrop: View {
                 Ellipse().fill(WhaleTheme.accentDeep.opacity(colorScheme == .dark ? 0.13 : 0.08))
                     .frame(width: 420, height: 240).blur(radius: 110).offset(x: 80, y: 360)
             }
-        }.ignoresSafeArea().allowsHitTesting(false).accessibilityHidden(true)
+        }
+        .drawingGroup(opaque: false, colorMode: .nonLinear)
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
