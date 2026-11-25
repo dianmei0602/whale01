@@ -77,47 +77,51 @@ struct WhaleHomeCanvas: View {
             Text("常用操作").font(.headline).foregroundStyle(WhaleTheme.ink)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: textSize.isAccessibilitySize ? 1 : 2), spacing: 8) {
                 ForEach(Array(DiscoverChannel.allCases.enumerated()), id: \.element) { offset, channel in
-                    Button {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ZStack {
+                            HStack {
+                                Image(systemName: channel.icon)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .frame(width: 32, height: 32)
+                                    .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
+                                Spacer(minLength: 0)
+                            }
+                            Text(channel.title)
+                                .whaleFont(size: 17, weight: .bold, design: .rounded)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+
+                        Spacer(minLength: 4)
+
+                        RollingSummaryText(
+                            lines: summaryLines(for: channel),
+                            delay: Double(offset) * 0.55,
+                            maxLines: 1,
+                            fontSize: 13
+                        )
+                    }
+                    .foregroundStyle(.white)
+                    .padding(9)
+                    .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
+                    .background {
+                        let shape = RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous)
+                        shape.fill(channel.entryGradient)
+                        if WhaleTheme.usesMaterial { shape.fill(.black.opacity(0.30)) }
+                    }
+                    .overlay(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
+                    .whaleSoftElevation()
+                    .contentShape(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous))
+                    .onTapGesture {
                         if channel == .music { onOpenMusic() }
                         else { onOpenDiscover(channel) }
-                    } label: {
-                        VStack(alignment: .leading, spacing: 0) {
-                            ZStack {
-                                HStack {
-                                    Image(systemName: channel.icon)
-                                        .font(.system(size: 15, weight: .semibold))
-                                        .frame(width: 32, height: 32)
-                                        .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
-                                    Spacer(minLength: 0)
-                                }
-                                Text(channel.title)
-                                    .whaleFont(size: 17, weight: .bold, design: .rounded)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                            }
-
-                            Spacer(minLength: 4)
-
-                            RollingSummaryText(
-                                lines: summaryLines(for: channel),
-                                delay: Double(offset) * 0.55,
-                                maxLines: 1,
-                                fontSize: 13
-                            )
-                        }
-                        .foregroundStyle(.white).padding(9)
-                            .frame(maxWidth: .infinity, minHeight: 84, alignment: .leading)
-                            .background {
-                                let shape = RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous)
-                                shape.fill(channel.entryGradient)
-                                if WhaleTheme.usesMaterial { shape.fill(.black.opacity(0.30)) }
-                            }
-                            .overlay(RoundedRectangle(cornerRadius: WhaleTheme.cardRadius - 1, style: .continuous).strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8))
-                            .whaleSoftElevation()
-                    }.buttonStyle(.whalePress).accessibilityLabel(channel.title)
-                        .accessibilityIdentifier("home-channel-" + channel.rawValue)
+                    }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityLabel(channel.title)
+                    .accessibilityIdentifier("home-channel-" + channel.rawValue)
                 }
             }
         }
