@@ -17,6 +17,7 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Group {
@@ -116,7 +117,7 @@ struct RootView: View {
     private func move(to tab: AppTab) {
         guard tab != page else { return }
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(WhaleMotion.page) { page = tab }
+        withAnimation(reduceMotion ? nil : WhaleMotion.page) { page = tab }
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {
@@ -301,6 +302,7 @@ private extension AppTab {
 /// content above it can be paged horizontally.
 struct WhaleRootTabBar: View {
     @Binding var selection: AppTab
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 0) {
@@ -323,7 +325,7 @@ struct WhaleRootTabBar: View {
         return Button {
             guard selection != tab else { return }
             UISelectionFeedbackGenerator().selectionChanged()
-            withAnimation(WhaleMotion.page) { selection = tab }
+            withAnimation(reduceMotion ? nil : WhaleMotion.page) { selection = tab }
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: icon)

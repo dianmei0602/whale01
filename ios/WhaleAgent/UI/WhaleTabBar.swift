@@ -4,6 +4,7 @@ struct WhaleTabBar: View {
     static let height: CGFloat = 66
 
     @Binding var selection: AppTab?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 4) {
@@ -34,7 +35,7 @@ struct WhaleTabBar: View {
     private func item(_ tab: AppTab, title: String, icon: String) -> some View {
         let selected = selection == tab
         return Button {
-            withAnimation(WhaleMotion.channel) {
+            withAnimation(reduceMotion ? nil : WhaleMotion.channel) {
                 selection = tab
             }
         } label: {
