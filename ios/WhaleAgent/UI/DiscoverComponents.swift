@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct HorizontalTabSwipe: ViewModifier {
     var onPrevious: () -> Void
@@ -14,6 +15,7 @@ struct HorizontalTabSwipe: ViewModifier {
                     guard abs(dx) > abs(dy) * 1.2, abs(dy) < 72 else { return }
                     guard abs(dx) > 28 || abs(projected) > 58 else { return }
                     let direction = abs(projected) > abs(dx) ? projected : dx
+                    UISelectionFeedbackGenerator().selectionChanged()
                     if direction < 0 {
                         onNext()
                     } else {
