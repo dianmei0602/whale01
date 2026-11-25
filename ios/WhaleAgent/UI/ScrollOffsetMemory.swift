@@ -56,6 +56,7 @@ struct ScrollOffsetMemory: UIViewRepresentable {
         context.coordinator.onRestored = onRestored
         if context.coordinator.key != key {
             context.coordinator.saveWork?.cancel()
+            context.coordinator.saveWork = nil
             context.coordinator.persist(context.coordinator.lastOffset)
             context.coordinator.key = key
             context.coordinator.generation += 1
