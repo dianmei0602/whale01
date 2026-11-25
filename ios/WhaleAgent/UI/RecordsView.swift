@@ -162,6 +162,7 @@ struct RecordsView: View {
                     .whaleFont(size: 13, weight: .semibold)
                     .foregroundStyle(WhaleTheme.accent)
                 Text(task.goal)
+                    .whaleSpeakable(task.goal)
                     .whaleFont(size: 15, weight: .semibold)
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(2)
@@ -271,6 +272,7 @@ struct OperationRecordCard: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(action.title)
+                    .whaleSpeakable(action.title)
                     .whaleFont(size: 13, weight: .medium)
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(1)
@@ -308,6 +310,7 @@ struct OperationRecordCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(action.title)
+                        .whaleSpeakable(action.title)
                         .whaleFont(size: 15, weight: .semibold)
                         .foregroundStyle(WhaleTheme.ink)
                         .lineLimit(3)
@@ -328,6 +331,7 @@ struct OperationRecordCard: View {
 
             if !action.detail.isEmpty {
                 Text(action.detail)
+                    .whaleSpeakable(action.detail)
                     .whaleFont(size: 13)
                     .foregroundStyle(WhaleTheme.muted)
                     .fixedSize(horizontal: false, vertical: true)

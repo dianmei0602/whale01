@@ -46,7 +46,10 @@ final class SpeechPlaybackController: NSObject, ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         stop()
-        guard activateSession() else { return }
+        guard activateSession() else {
+            lastError = "无法启动语音播放音频会话，请检查是否正在录音或接听电话。"
+            return
+        }
 
         requestToken = UUID()
         let token = requestToken

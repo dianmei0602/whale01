@@ -47,9 +47,9 @@ private struct WhaleSpeakableTextModifier: ViewModifier {
                 speech.speakOrStop(text)
             }
             .accessibilityAddTraits(.isButton)
-            .accessibilityHint(isCurrent ? "再次点按停止朗读" : "点按朗读这段文字")
-            .accessibilityValue(isCurrent ? "正在朗读" : "点按朗读")
-            .accessibilityAction(named: isCurrent ? "停止朗读" : "朗读") {
+            .accessibilityHint(Text(isCurrent ? "再次点按停止朗读" : "点按朗读这段文字"))
+            .accessibilityValue(Text(isCurrent ? "正在朗读" : "点按朗读"))
+            .accessibilityAction(named: Text(isCurrent ? "停止朗读" : "朗读")) {
                 speech.speakOrStop(text)
             }
     }

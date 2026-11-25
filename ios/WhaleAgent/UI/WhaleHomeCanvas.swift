@@ -721,6 +721,7 @@ struct WhaleHomeCanvas: View {
                     .whaleFont(size: 14, weight: .semibold)
                     .foregroundStyle(WhaleTheme.ink)
                     .lineLimit(2)
+                    .whaleSpeakable(event.title)
                 Text(event.calendarTitle)
                     .whaleFont(size: 13)
                     .foregroundStyle(WhaleTheme.muted)

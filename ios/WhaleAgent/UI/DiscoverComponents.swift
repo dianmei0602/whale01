@@ -13,7 +13,8 @@ struct HorizontalTabSwipe: ViewModifier {
                     let projected = value.predictedEndTranslation.width
                     guard abs(dx) > abs(dy) * 1.2, abs(dy) < 72 else { return }
                     guard abs(dx) > 28 || abs(projected) > 58 else { return }
-                    if projected < 0 || (projected == 0 && dx < 0) {
+                    let direction = abs(projected) > abs(dx) ? projected : dx
+                    if direction < 0 {
                         onNext()
                     } else {
                         onPrevious()

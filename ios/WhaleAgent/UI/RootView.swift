@@ -228,10 +228,8 @@ private struct RootPagerView: View {
                 let projection = projected
 
                 if projection < -commitDistance || dx < -fastFlickDistance {
-                    UISelectionFeedbackGenerator().selectionChanged()
                     commitPager(to: page.pagerNext)
                 } else if projection > commitDistance || dx > fastFlickDistance {
-                    UISelectionFeedbackGenerator().selectionChanged()
                     commitPager(to: page.pagerPrevious)
                 } else {
                     settlePager()

@@ -133,7 +133,6 @@ struct DiscoverView: View {
         guard let index = all.firstIndex(of: selection) else { return }
         let next = index + delta
         guard all.indices.contains(next) else {
-            UISelectionFeedbackGenerator().selectionChanged()
             onSwitchTab(delta > 0 ? .records : .conversation)
             return
         }
@@ -165,7 +164,11 @@ struct DiscoverChannelBar: View {
             ScrollView(.horizontal) {
                 HStack(spacing: 6) {
                     ForEach(DiscoverChannel.allCases) { channel in
-                        Button { selection = channel } label: {
+                        Button {
+                            guard selection != channel else { return }
+                            UISelectionFeedbackGenerator().selectionChanged()
+                            selection = channel
+                        } label: {
                             Text(channel.tabTitle).whaleFont(size: 14, weight: .semibold)
                                 .whaleChannelLabel(channel, selected: selection == channel)
                         }.buttonStyle(.whalePress).id(channel)

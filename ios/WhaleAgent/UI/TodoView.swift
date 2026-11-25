@@ -502,6 +502,11 @@ struct TodoView: View {
                     .strikethrough(item.completed, color: WhaleTheme.muted)
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
+                    .whaleSpeakable(
+                        item.notes?.isEmpty == false
+                            ? "\(item.title)。备注：\(item.notes ?? "")"
+                            : item.title
+                    )
 
                 HStack(spacing: 7) {
                     if let due = item.dueAt {
