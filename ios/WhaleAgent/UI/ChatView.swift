@@ -293,7 +293,6 @@ struct MessageRow: View {
                     Text(message.text)
                         .whaleFont(size: 16, weight: .medium)
                         .foregroundStyle(.white)
-                        .textSelection(.enabled)
                         .whaleSpeakable(message.text)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 12)
@@ -323,7 +322,6 @@ struct MessageRow: View {
                         .lineSpacing(4)
                         .foregroundStyle(WhaleTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
-                        .textSelection(.enabled)
                         .whaleSpeakable(message.text)
                     HStack(alignment: .bottom, spacing: 10) {
                         if let detail = message.detail, !detail.isEmpty {
@@ -378,7 +376,7 @@ struct MessageRow: View {
                                 .font(.headline).foregroundStyle(WhaleTheme.accent)
                                 .whaleSpeakable(message.text)
                             if let detail = message.detail, !detail.isEmpty {
-                                Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).textSelection(.enabled).whaleSpeakable(detail)
+                                Text(detail).font(.body).foregroundStyle(WhaleTheme.ink).whaleSpeakable(detail)
                             }
                         }.frame(maxWidth: .infinity, alignment: .leading).whaleCard(padding: 14)
                     }
