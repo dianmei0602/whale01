@@ -9,7 +9,7 @@ struct DiscoverView: View {
     @State private var path = NavigationPath()
     @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
-    @GestureState private var channelDrag: CGFloat = 0
+    @State private var channelDrag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
@@ -34,13 +34,12 @@ struct DiscoverView: View {
                             DiscoverChannelPage(model: model, appModel: appModel)
                                 .id(selection)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                                .offset(x: channelDrag * 0.12)
-                                .opacity(1 - min(abs(channelDrag) / 2_800, 0.08))
+                                .offset(x: channelDrag * 0.24)
                                 .accessibilityElement(children: .contain)
                                 .accessibilityIdentifier("discover-content-" + selection.rawValue)
                                 .transition(.asymmetric(
-                                    insertion: .move(edge: slideFrom).combined(with: .opacity),
-                                    removal: .move(edge: slideFrom == .trailing ? .leading : .trailing).combined(with: .opacity)
+                                    insertion: .move(edge: slideFrom),
+                                    removal: .move(edge: slideFrom == .trailing ? .leading : .trailing)
                                 ))
                         }
                     }
@@ -114,16 +113,22 @@ struct DiscoverView: View {
     /// first or last channel it hands the swipe back to the main pager.
     private var channelSwipe: some Gesture {
         DragGesture(minimumDistance: 10)
-            .updating($channelDrag) { value, state, _ in
+            .onChanged { value in
                 let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.2 else { return }
-                state = dx
+                guard abs(dx) > abs(value.translation.height) * 1.2 else {
+                    channelDrag = 0
+                    return
+                }
+                channelDrag = dx
             }
             .onEnded { value in
                 let dx = value.translation.width
                 let projected = value.predictedEndTranslation.width
-                guard abs(dx) > abs(value.translation.height) * 1.2 else { return }
-                guard abs(dx) > 28 || abs(projected) > 58 else { return }
+                guard abs(dx) > abs(value.translation.height) * 1.2,
+                      abs(dx) > 28 || abs(projected) > 58 else {
+                    settleChannel()
+                    return
+                }
                 stepChannel(dx < 0 ? 1 : -1)
             }
     }
@@ -133,12 +138,22 @@ struct DiscoverView: View {
         guard let index = all.firstIndex(of: selection) else { return }
         let next = index + delta
         guard all.indices.contains(next) else {
+            settleChannel()
             onSwitchTab(delta > 0 ? .records : .conversation)
             return
         }
         slideFrom = delta > 0 ? .trailing : .leading
         UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(reduceMotion ? nil : WhaleMotion.channel) { selection = all[next] }
+        withAnimation(reduceMotion ? nil : WhaleMotion.channel) {
+            channelDrag = 0
+            selection = all[next]
+        }
+    }
+
+    private func settleChannel() {
+        withAnimation(reduceMotion ? nil : WhaleMotion.channel) {
+            channelDrag = 0
+        }
     }
 
     private var header: some View {
