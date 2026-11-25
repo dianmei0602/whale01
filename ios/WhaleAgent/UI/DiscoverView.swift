@@ -191,8 +191,13 @@ struct DiscoverChannelBar: View {
                             .accessibilityAddTraits(selection == channel ? .isSelected : [])
                             .accessibilityIdentifier("discover-channel-" + channel.rawValue)
                     }
-                }.padding(.horizontal, 16).padding(.vertical, 8)
-            }.scrollIndicators(.hidden).scrollClipDisabled()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .scrollTargetLayout()
+            }.scrollIndicators(.hidden)
+                .scrollClipDisabled()
+                .scrollTargetBehavior(.viewAligned)
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("discover-channel-selector")
                 .onChange(of: selection) { _, channel in
