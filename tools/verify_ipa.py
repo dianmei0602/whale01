@@ -15,7 +15,13 @@ with zipfile.ZipFile(args.ipa) as archive:
     identity = json.loads(archive.read(app + '/build-identity.json'))
     tools = archive.read(app + '/tools.v1.json')
     present = lambda value: isinstance(value, str) and bool(value.strip()) and not value.startswith('$(')
-    embedded = any(present(info.get(k)) for k in ['DeepSeekAPIKey', 'WhaleAPIToken', 'XfyunAPIKey', 'XfyunAPISecret'])
+    embedded = any(
+        present(info.get(k))
+        for k in [
+            'DeepSeekAPIKey', 'WhaleAPIToken', 'XfyunAPIKey', 'XfyunAPISecret',
+            'XFYUN_APP_ID', 'XFYUN_API_KEY', 'XFYUN_API_SECRET',
+        ]
+    )
     assert identity['gitSHA'] == args.sha, 'IPA source SHA mismatch'
     assert info['CFBundleShortVersionString'] == identity['version'], 'IPA version mismatch'
     assert hashlib.sha256(tools).hexdigest() == identity['toolSHA256'], 'Tool manifest mismatch'
