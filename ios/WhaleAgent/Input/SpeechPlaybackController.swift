@@ -55,7 +55,8 @@ final class SpeechPlaybackController: NSObject, ObservableObject {
         isSpeaking = true
         onStateChange?(true)
 
-        if let config = XfyunConfig.current, let client = XfyunTTSClient(config: config) {
+        if let credentials = XfyunConfig.currentCredentials,
+           let client = XfyunTTSClient(config: credentials) {
             engineLabel = "讯飞 \(XfyunConfig.ttsVoiceName)"
             synthesisTask = Task { [weak self] in
                 guard let self else { return }
