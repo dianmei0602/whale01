@@ -60,9 +60,8 @@ final class InteractionUITests: XCTestCase {
             XCTAssertEqual(navigation.frame.height, navFrame.height, accuracy: 1)
             XCTAssertEqual(tab(app, "conversation").frame.minY, tabsFrame.minY, accuracy: 1)
             XCTAssertEqual(app.buttons["discover-channel-ai"].frame.minY, selectorY, accuracy: 1)
-            // The root pager keeps all three pages mounted side by side, so the
-            // composer still exists in the tree; it must simply not be reachable
-            // while Discover is the visible page.
+            // Root tabs keep all pages mounted, so the composer still exists in
+            // the tree; it must simply not be reachable while Discover is active.
             XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.isHittable)
             attach("fixed-shell-" + channel)
         }
@@ -138,11 +137,14 @@ final class InteractionUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 6), .completed)
     }
 
-    func testHorizontalPageSwipeUsesNativeSpeedThreshold() {
+    func testRootTabsUseDirectIOSSelection() {
         let app = launch()
-        app.swipeLeft()
+        tab(app, "discover").tap()
         XCTAssertTrue(app.otherElements["discover-content-ai"].waitForExistence(timeout: 8))
         app.swipeRight()
+        XCTAssertTrue(app.otherElements["discover-content-ai"].exists)
+        XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.isHittable)
+        tab(app, "conversation").tap()
         XCTAssertTrue(app.staticTexts["常用操作"].waitForExistence(timeout: 8))
     }
 
