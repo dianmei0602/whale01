@@ -24,12 +24,14 @@ struct DiscoverView: View {
                 header
                 DiscoverChannelBar(selection: $selection)
                 NavigationStack(path: $path) {
-                    if let model = models[selection] {
-                        DiscoverChannelPage(model: model, appModel: appModel)
-                            .id(selection)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                            .accessibilityElement(children: .contain)
-                            .accessibilityIdentifier("discover-content-" + selection.rawValue)
+                    Group {
+                        if let model = models[selection] {
+                            DiscoverChannelPage(model: model, appModel: appModel)
+                                .id(selection)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                                .accessibilityElement(children: .contain)
+                                .accessibilityIdentifier("discover-content-" + selection.rawValue)
+                        }
                     }
                     .background(Color.clear)
                     .toolbar(.hidden, for: .navigationBar)
