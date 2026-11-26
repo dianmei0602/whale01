@@ -3,7 +3,8 @@ import UIKit
 
 enum WhaleMotion {
     static let channel = Animation.easeInOut(duration: 0.16)
-    static let control = Animation.easeOut(duration: 0.08)
+    static let control = Animation.easeInOut(duration: 0.14)
+    static let press = Animation.easeOut(duration: 0.08)
 }
 
 /// Native-feeling pressed state for cards, tabs and compact controls.
@@ -16,7 +17,7 @@ struct WhalePressButtonStyle: ButtonStyle {
         configuration.label
             .scaleEffect(configuration.isPressed && !reduceMotion ? pressedScale : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
-            .animation(WhaleMotion.control, value: configuration.isPressed)
+            .animation(WhaleMotion.press, value: configuration.isPressed)
     }
 }
 

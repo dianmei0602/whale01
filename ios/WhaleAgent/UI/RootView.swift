@@ -157,6 +157,7 @@ private struct RootTabContent: View {
                 .accessibilityHidden(page != .records)
                 .zIndex(page == .records ? 1 : 0)
         }
+        .animation(nil, value: page)
     }
 
     private var conversationPage: some View {
