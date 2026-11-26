@@ -217,7 +217,7 @@ final class DiscoverModel: ObservableObject {
     }
 
     func select(_ next: DiscoverChannel) async {
-        withAnimation(.snappy(duration: 0.24)) { channel = next }
+        withAnimation(.easeInOut(duration: 0.16)) { channel = next }
         if next == .market {
             await loadMarket(force: false)
         } else if next == .game {
@@ -232,7 +232,7 @@ final class DiscoverModel: ObservableObject {
     }
 
     func selectGameSection(_ next: GameSection) async {
-        withAnimation(.snappy(duration: 0.22)) { gameSection = next }
+        withAnimation(.easeInOut(duration: 0.16)) { gameSection = next }
         await loadGameSection(next, force: false)
     }
 
@@ -330,7 +330,7 @@ final class DiscoverModel: ObservableObject {
 
     func selectHotBoard(_ next: HotBoard) async {
         guard next != hotBoard else { return }
-        withAnimation(.snappy(duration: 0.22)) { hotBoard = next }
+        withAnimation(.easeInOut(duration: 0.16)) { hotBoard = next }
         await loadHot(board: next, force: false)
     }
 

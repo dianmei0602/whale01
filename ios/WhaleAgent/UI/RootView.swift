@@ -17,11 +17,10 @@ struct RootView: View {
     @AppStorage("whale.appearance") private var appearance = "system"
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var systemTextSize
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Group {
-            pager
+            tabContent
             .safeAreaInset(edge: .bottom, spacing: 0) { bottomChrome }
             .tint(WhaleTheme.accent)
             .preferredColorScheme(colorScheme)
@@ -74,8 +73,8 @@ struct RootView: View {
         }
     }
 
-    private var pager: some View {
-        RootPagerView(
+    private var tabContent: some View {
+        RootTabContent(
             page: $page,
             discoverChannel: $discoverChannel,
             model: model,
@@ -93,31 +92,23 @@ struct RootView: View {
     /// is present the tab bar yields its space to the composer.
     @ViewBuilder
     private var bottomChrome: some View {
-        if page == .conversation {
-            VStack(spacing: 0) {
+        VStack(spacing: 0) {
+            if page == .conversation {
                 ConversationComposerBar(model: model, externalFocused: $composerFocused, draft: $composerDraft)
-                if RootBottomChromePolicy.tabBarVisible(
-                    page: page,
-                    composerFocused: composerFocused,
-                    keyboardVisible: keyboard.isVisible
-                ) {
-                    WhaleRootTabBar(selection: $page)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
             }
-        } else if RootBottomChromePolicy.tabBarVisible(
-            page: page,
-            composerFocused: composerFocused,
-            keyboardVisible: keyboard.isVisible
-        ) {
-            WhaleRootTabBar(selection: $page)
+            if RootBottomChromePolicy.tabBarVisible(
+                page: page,
+                composerFocused: composerFocused,
+                keyboardVisible: keyboard.isVisible
+            ) {
+                WhaleRootTabBar(selection: $page)
+            }
         }
     }
 
     private func move(to tab: AppTab) {
         guard tab != page else { return }
-        UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(reduceMotion ? nil : WhaleMotion.page) { page = tab }
+        page = tab
     }
 
     private func openDiscover(_ channel: DiscoverChannel) {
@@ -135,9 +126,9 @@ struct RootView: View {
     }
 }
 
-/// Keeps high-frequency drag state away from RootView. Only this subtree is
-/// invalidated while a horizontal swipe is in progress.
-private struct RootPagerView: View {
+/// iOS bottom tabs switch the selected page directly. Hidden pages stay mounted
+/// so drafts, scroll positions and in-flight work survive tab changes.
+private struct RootTabContent: View {
     @Binding var page: AppTab
     @Binding var discoverChannel: DiscoverChannel
     @ObservedObject var model: AppModel
@@ -148,28 +139,23 @@ private struct RootPagerView: View {
     let onOpenDiscover: (DiscoverChannel) -> Void
     let onMove: (AppTab) -> Void
 
-    @State private var pagerDrag: CGFloat = 0
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     var body: some View {
-        GeometryReader { geo in
-            HStack(spacing: 0) {
-                conversationPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .conversation)
-                    .allowsHitTesting(page == .conversation)
-                discoverPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .discover)
-                    .allowsHitTesting(page == .discover)
-                recordsPage
-                    .frame(width: geo.size.width)
-                    .accessibilityHidden(page != .records)
-                    .allowsHitTesting(page == .records)
-            }
-            .offset(x: -CGFloat(page.pagerIndex) * geo.size.width + pagerDrag)
-            .animation(reduceMotion ? nil : WhaleMotion.page, value: page)
-            .simultaneousGesture(pagerGesture(width: geo.size.width))
+        ZStack {
+            conversationPage
+                .opacity(page == .conversation ? 1 : 0)
+                .allowsHitTesting(page == .conversation)
+                .accessibilityHidden(page != .conversation)
+                .zIndex(page == .conversation ? 1 : 0)
+            discoverPage
+                .opacity(page == .discover ? 1 : 0)
+                .allowsHitTesting(page == .discover)
+                .accessibilityHidden(page != .discover)
+                .zIndex(page == .discover ? 1 : 0)
+            recordsPage
+                .opacity(page == .records ? 1 : 0)
+                .allowsHitTesting(page == .records)
+                .accessibilityHidden(page != .records)
+                .zIndex(page == .records ? 1 : 0)
         }
     }
 
@@ -189,76 +175,12 @@ private struct RootPagerView: View {
         DiscoverView(
             selection: $discoverChannel,
             appModel: model,
-            onSettings: onOpenSettings,
-            onSwitchTab: onMove
+            onSettings: onOpenSettings
         )
     }
 
     private var recordsPage: some View {
         TodoView(model: model, embedded: true, onBackToChat: { onMove(.conversation) }, bottomBarInset: 0)
-    }
-
-    private func pagerGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 8)
-            .onChanged { value in
-                guard page != .discover else {
-                    pagerDrag = 0
-                    return
-                }
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.2 else {
-                    pagerDrag = 0
-                    return
-                }
-                pagerDrag = rubberBanded(dx, width: width)
-            }
-            .onEnded { value in
-                guard page != .discover else {
-                    pagerDrag = 0
-                    return
-                }
-                let dx = value.translation.width
-                let dy = value.translation.height
-                guard abs(dx) > abs(dy) * 1.2 else {
-                    settlePager()
-                    return
-                }
-                let projected = value.predictedEndTranslation.width
-                let commitDistance = width * 0.38
-                let fastFlickDistance = width * 0.24
-                let projection = projected
-
-                if projection < -commitDistance || dx < -fastFlickDistance {
-                    commitPager(to: page.pagerNext)
-                } else if projection > commitDistance || dx > fastFlickDistance {
-                    commitPager(to: page.pagerPrevious)
-                } else {
-                    settlePager()
-                }
-            }
-    }
-
-    private func commitPager(to next: AppTab) {
-        withAnimation(reduceMotion ? nil : WhaleMotion.page) {
-            pagerDrag = 0
-            onMove(next)
-        }
-    }
-
-    private func settlePager() {
-        withAnimation(reduceMotion ? nil : WhaleMotion.page) {
-            pagerDrag = 0
-        }
-    }
-
-    private func rubberBanded(_ dx: CGFloat, width: CGFloat) -> CGFloat {
-        if (page == .conversation && dx > 0) || (page == .records && dx < 0) {
-            let distance = abs(dx)
-            let ceiling = max(24, width * 0.16)
-            let resisted = ceiling * (1 - 1 / (distance / ceiling + 1))
-            return dx < 0 ? -resisted : resisted
-        }
-        return dx
     }
 }
 
@@ -273,36 +195,9 @@ enum RootBottomChromePolicy {
     }
 }
 
-private extension AppTab {
-    var pagerIndex: Int {
-        switch self {
-        case .conversation: return 0
-        case .discover: return 1
-        case .records: return 2
-        case .settings: return 0
-        }
-    }
-    var pagerNext: AppTab {
-        switch self {
-        case .conversation: return .discover
-        case .discover: return .records
-        default: return .records
-        }
-    }
-    var pagerPrevious: AppTab {
-        switch self {
-        case .records: return .discover
-        case .discover: return .conversation
-        default: return .conversation
-        }
-    }
-}
-
-/// Opaque bottom bar that keeps the old native tab bar metrics while the
-/// content above it can be paged horizontally.
+/// Opaque bottom bar using direct iOS tab selection.
 struct WhaleRootTabBar: View {
     @Binding var selection: AppTab
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 0) {
@@ -324,8 +219,7 @@ struct WhaleRootTabBar: View {
         let selected = selection == tab
         return Button {
             guard selection != tab else { return }
-            UISelectionFeedbackGenerator().selectionChanged()
-            withAnimation(reduceMotion ? nil : WhaleMotion.page) { selection = tab }
+            selection = tab
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: icon)

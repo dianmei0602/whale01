@@ -279,7 +279,7 @@ struct WhaleHomeCanvas: View {
     private func weatherSummary(_ today: WeatherDaySummary) -> some View {
         VStack(alignment: .leading, spacing: 13) {
             Button {
-                withAnimation(.snappy(duration: 0.2)) { weatherExpanded.toggle() }
+                withAnimation(WhaleMotion.control) { weatherExpanded.toggle() }
             } label: {
                 HStack(alignment: .center, spacing: 14) {
                     Image(systemName: today.icon)
@@ -483,7 +483,7 @@ struct WhaleHomeCanvas: View {
         .background(WhaleTheme.soft.opacity(0.5), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .contentShape(Rectangle())
         .onTapGesture {
-            withAnimation(.snappy(duration: 0.2)) { weatherExpanded.toggle() }
+            withAnimation(WhaleMotion.control) { weatherExpanded.toggle() }
         }
     }
 

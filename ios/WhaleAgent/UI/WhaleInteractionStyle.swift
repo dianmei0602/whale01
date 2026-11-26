@@ -2,21 +2,20 @@ import SwiftUI
 import UIKit
 
 enum WhaleMotion {
-    static let page = Animation.snappy(duration: 0.26, extraBounce: 0)
-    static let channel = Animation.snappy(duration: 0.22, extraBounce: 0)
-    static let control = Animation.easeOut(duration: 0.12)
+    static let channel = Animation.easeInOut(duration: 0.16)
+    static let control = Animation.easeOut(duration: 0.08)
 }
 
 /// Native-feeling pressed state for cards, tabs and compact controls.
 struct WhalePressButtonStyle: ButtonStyle {
-    var pressedScale: CGFloat = 0.975
+    var pressedScale: CGFloat = 0.985
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .scaleEffect(configuration.isPressed && !reduceMotion ? pressedScale : 1)
-            .opacity(configuration.isPressed ? 0.88 : 1)
+            .opacity(configuration.isPressed ? 0.82 : 1)
             .animation(WhaleMotion.control, value: configuration.isPressed)
     }
 }

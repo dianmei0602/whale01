@@ -5,18 +5,13 @@ struct DiscoverView: View {
     @Binding var selection: DiscoverChannel
     @ObservedObject var appModel: AppModel
     let onSettings: () -> Void
-    let onSwitchTab: (AppTab) -> Void
     @State private var path = NavigationPath()
-    @State private var slideFrom: Edge = .trailing
     @StateObject private var store: DiscoverChannelStore
-    @State private var channelDrag: CGFloat = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void,
-         onSwitchTab: @escaping (AppTab) -> Void) {
+    init(selection: Binding<DiscoverChannel>, appModel: AppModel, onSettings: @escaping () -> Void) {
         _selection = selection
         self.onSettings = onSettings
-        self.onSwitchTab = onSwitchTab
         _store = StateObject(wrappedValue: DiscoverChannelStore.shared)
         self.appModel = appModel
     }
@@ -29,22 +24,13 @@ struct DiscoverView: View {
                 header
                 DiscoverChannelBar(selection: $selection)
                 NavigationStack(path: $path) {
-                    ZStack {
-                        if let model = models[selection] {
-                            DiscoverChannelPage(model: model, appModel: appModel)
-                                .id(selection)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                                .offset(x: channelDrag * 0.24)
-                                .accessibilityElement(children: .contain)
-                                .accessibilityIdentifier("discover-content-" + selection.rawValue)
-                                .transition(.asymmetric(
-                                    insertion: .move(edge: slideFrom),
-                                    removal: .move(edge: slideFrom == .trailing ? .leading : .trailing)
-                                ))
-                        }
+                    if let model = models[selection] {
+                        DiscoverChannelPage(model: model, appModel: appModel)
+                            .id(selection)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                            .accessibilityElement(children: .contain)
+                            .accessibilityIdentifier("discover-content-" + selection.rawValue)
                     }
-                    .simultaneousGesture(channelSwipe)
-                    .animation(reduceMotion ? nil : WhaleMotion.channel, value: selection)
                     .background(Color.clear)
                     .toolbar(.hidden, for: .navigationBar)
                     .task {
@@ -106,53 +92,6 @@ struct DiscoverView: View {
                     .onChange(of: selection) { _, _ in path = NavigationPath() }
                 }
             }
-        }
-    }
-
-    /// Swiping inside a channel steps to the neighbouring channel; past the
-    /// first or last channel it hands the swipe back to the main pager.
-    private var channelSwipe: some Gesture {
-        DragGesture(minimumDistance: 10)
-            .onChanged { value in
-                let dx = value.translation.width
-                guard abs(dx) > abs(value.translation.height) * 1.2 else {
-                    channelDrag = 0
-                    return
-                }
-                channelDrag = dx
-            }
-            .onEnded { value in
-                let dx = value.translation.width
-                let projected = value.predictedEndTranslation.width
-                guard abs(dx) > abs(value.translation.height) * 1.2,
-                      abs(dx) > 28 || abs(projected) > 58 else {
-                    settleChannel()
-                    return
-                }
-                stepChannel(dx < 0 ? 1 : -1)
-            }
-    }
-
-    private func stepChannel(_ delta: Int) {
-        let all = DiscoverChannel.allCases
-        guard let index = all.firstIndex(of: selection) else { return }
-        let next = index + delta
-        guard all.indices.contains(next) else {
-            settleChannel()
-            onSwitchTab(delta > 0 ? .records : .conversation)
-            return
-        }
-        slideFrom = delta > 0 ? .trailing : .leading
-        UISelectionFeedbackGenerator().selectionChanged()
-        withAnimation(reduceMotion ? nil : WhaleMotion.channel) {
-            channelDrag = 0
-            selection = all[next]
-        }
-    }
-
-    private func settleChannel() {
-        withAnimation(reduceMotion ? nil : WhaleMotion.channel) {
-            channelDrag = 0
         }
     }
 

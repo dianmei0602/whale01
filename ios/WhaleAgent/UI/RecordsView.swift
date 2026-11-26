@@ -77,7 +77,7 @@ struct RecordsView: View {
         guard let index = keys.firstIndex(of: filter) else { return }
         let next = min(max(index + delta, 0), keys.count - 1)
         guard next != index else { return }
-        withAnimation(.snappy(duration: 0.22)) { filter = keys[next] }
+        withAnimation(WhaleMotion.control) { filter = keys[next] }
     }
 
     private var recentWeekActions: [OperationRecord] {
@@ -128,7 +128,7 @@ struct RecordsView: View {
 
     private func filterChip(_ key: String, title: String) -> some View {
         Button {
-            withAnimation(.snappy(duration: 0.22)) { filter = key }
+            withAnimation(WhaleMotion.control) { filter = key }
         } label: {
             Text(title)
                 .whaleFont(size: 13, weight: .semibold)
