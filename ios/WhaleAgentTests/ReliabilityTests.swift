@@ -37,18 +37,33 @@ final class ReliabilityTests: XCTestCase {
         XCTAssertTrue(RealDataGuard.finalReply(for: .stock, usedTools: ["search_stock"], proposed: "股价20元").contains("没有取得真实行情"))
     }
 
-    func testTodoKeepsIncompleteTimesAsDraftsAndDoesNotAddEdits() throws {
+    func testTodoRelaxesIncompleteTimesAndDoesNotAddEdits() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
         let now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 13, hour: 10))!
-        for text in ["今晚取快递", "明天取快递", "三点取快递", "明天25点取快递", "明天123点取快递", "明天晚上十二点取快递", "把买菜改到明天", "我想把买菜改到明天下午三点", "帮我把买菜标记完成", "先别添加买菜", "每周五买菜"] {
+        for text in ["把买菜改到明天", "我想把买菜改到明天下午三点", "帮我把买菜标记完成", "先别添加买菜", "每周五买菜"] {
             let result = TodoQuickParser.parseAdd(text, now: now, calendar: calendar)
             XCTAssertNotNil(result.validationError, text)
             XCTAssertNil(result.dueAt, text)
         }
+        let incompleteTimes = ["今晚取快递", "明天取快递", "三点取快递", "明天25点取快递", "明天123点取快递", "明天晚上十二点取快递", "稍后取快递"]
+        for text in incompleteTimes {
+            XCTAssertNil(TodoQuickParser.parseAdd(text, now: now, calendar: calendar).validationError, text)
+        }
+        let tonight = TodoQuickParser.parseAdd("今晚取快递", now: now, calendar: calendar)
+        XCTAssertEqual(calendar.component(.day, from: tonight.dueAt!), 13)
+        XCTAssertEqual(calendar.component(.hour, from: tonight.dueAt!), 20)
+        XCTAssertEqual(tonight.title, "取快递")
+        let tomorrow = TodoQuickParser.parseAdd("明天取快递", now: now, calendar: calendar)
+        XCTAssertEqual(calendar.component(.day, from: tomorrow.dueAt!), 14)
+        XCTAssertEqual(calendar.component(.hour, from: tomorrow.dueAt!), 9)
+        XCTAssertEqual(tomorrow.title, "取快递")
+        XCTAssertNil(TodoQuickParser.parseAdd("三点取快递", now: now, calendar: calendar).dueAt)
+        XCTAssertNil(TodoQuickParser.parseAdd("稍后取快递", now: now, calendar: calendar).dueAt)
         let simple = TodoQuickParser.parseAdd("买菜", now: now, calendar: calendar)
         XCTAssertNil(simple.validationError)
         XCTAssertEqual(simple.title, "买菜")
+        XCTAssertNil(simple.dueAt)
         for title in ["后期剪辑", "购买时钟", "画重点", "对比前两版"] {
             let plain = TodoQuickParser.parseAdd(title, now: now, calendar: calendar)
             XCTAssertNil(plain.validationError, title)

@@ -70,12 +70,50 @@ enum TodoQuickParser {
             }
         }
 
+        if let day = resolveDay(in: text, now: now, calendar: calendar) {
+            var components = calendar.dateComponents([.year, .month, .day], from: day.date)
+            components.hour = day.defaultHour ?? 9
+            components.minute = day.defaultMinute ?? 0
+            components.second = 0
+            if var date = calendar.date(from: components) {
+                if date <= now, day.isWeekday {
+                    date = calendar.date(byAdding: .day, value: 7, to: date) ?? date
+                }
+                return Added(
+                    title: cleanedTitle(text, removing: day.tokens),
+                    dueAt: date
+                )
+            }
+        }
+
+        if let time = resolveTime(in: text) {
+            var components = calendar.dateComponents([.year, .month, .day], from: now)
+            components.hour = time.hour
+            components.minute = time.minute
+            components.second = 0
+            if let date = calendar.date(from: components) {
+                return Added(
+                    title: cleanedTitle(text, removing: time.tokens),
+                    dueAt: date
+                )
+            }
+        }
+
         let temporalMarker = #"([0-9一二三四五六七八九十两半几]+\s*个?\s*(分钟|小时|天|周)(后|前)|[0-9一二三四五六七八九十两]+\s*[点时]|[:：][0-9]|下周|下个月|月底|周末|早上|晚上|下午|中午|今晚|明早|明晚|稍后|待会|等会|[0-9]+月[0-9]+[日号])"#
         if resolveDay(in: text, now: now, calendar: calendar) != nil || resolveTime(in: text) != nil || text.range(of: temporalMarker, options: .regularExpression) != nil {
-            return Added(title: text, dueAt: nil, validationError: "提醒时间不完整、已过去或暂时无法解析。请写清日期和时间，例如“明天下午三点取快递”；草稿已保留。")
+            return Added(title: cleanedTitle(text, removing: []), dueAt: nil)
         }
         let cleaned = text.replacingOccurrences(of: "提醒我", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         return Added(title: cleaned.isEmpty ? text : cleaned, dueAt: nil)
+    }
+
+    private static func cleanedTitle(_ text: String, removing tokens: [String]) -> String {
+        var title = text
+        for token in tokens + ["提醒我"] {
+            title = title.replacingOccurrences(of: token, with: " ")
+        }
+        title = title.trimmingCharacters(in: CharacterSet(charactersIn: " ，,。.:："))
+        return title.isEmpty ? text : title
     }
 
     private static func resolveDay(in text: String, now: Date, calendar: Calendar) -> DayMatch? {
