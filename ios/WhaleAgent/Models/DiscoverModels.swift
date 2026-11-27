@@ -104,8 +104,6 @@ enum AIPaperCategory: String, CaseIterable, Identifiable, Hashable {
 enum GameSection: String, CaseIterable, Identifiable, Hashable {
     case news
     case steamTop
-    case steamDeals
-    case comingSoon
     case free
     case grossing
 
@@ -115,8 +113,6 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .news: return "游戏资讯"
         case .steamTop: return "Steam畅销"
-        case .steamDeals: return "Steam折扣"
-        case .comingSoon: return "新作预告"
         case .free: return "免费榜"
         case .grossing: return "畅销榜"
         }
@@ -124,7 +120,7 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
 
     var board: GameRankBoard? {
         switch self {
-        case .news, .steamTop, .steamDeals, .comingSoon: return nil
+        case .news, .steamTop: return nil
         case .free: return .free
         case .grossing: return .grossing
         }
@@ -133,8 +129,6 @@ enum GameSection: String, CaseIterable, Identifiable, Hashable {
     var steamKind: SteamKind? {
         switch self {
         case .steamTop: return .topSellers
-        case .steamDeals: return .specials
-        case .comingSoon: return .comingSoon
         case .news, .free, .grossing: return nil
         }
     }
@@ -263,11 +257,7 @@ extension DiscoverChannel {
                 NewsSectionOption(id: "auto", title: "汽车")
             ]
         case .game:
-            return [
-                NewsSectionOption(id: "all", title: "全部"),
-                NewsSectionOption(id: "cn", title: "国内"),
-                NewsSectionOption(id: "global", title: "国际")
-            ]
+            return []
         case .market, .music, .weibo:
             return []
         }

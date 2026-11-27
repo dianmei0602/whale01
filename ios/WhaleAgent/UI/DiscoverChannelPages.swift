@@ -343,10 +343,6 @@ struct GameChannelPage: View {
                 }
             }
             .id(model.gameSection.rawValue)
-            .horizontalTabSwipe(
-                onPrevious: swipePrevious,
-                onNext: swipeNext
-            )
         }
         .task { await model.loadInitial() }
         .sheet(item: $safari) { target in
@@ -355,49 +351,23 @@ struct GameChannelPage: View {
         }
     }
 
-    private func swipePrevious() {
-        if model.gameSection == .news,
-           let index = DiscoverChannel.game.newsSections.firstIndex(where: { $0.id == model.gameNewsSection }),
-           index > 0 {
-            model.stepNewsSection(.game, by: -1)
-        } else {
-            Task { await model.stepGameSection(by: -1) }
-        }
-    }
-
-    private func swipeNext() {
-        let sections = DiscoverChannel.game.newsSections
-        if model.gameSection == .news,
-           let index = sections.firstIndex(where: { $0.id == model.gameNewsSection }),
-           index < sections.count - 1 {
-            model.stepNewsSection(.game, by: 1)
-        } else {
-            Task { await model.stepGameSection(by: 1) }
-        }
-    }
-
     private var newsContent: some View {
-        VStack(spacing: 0) {
-            NewsSectionBar(channel: .game, selection: model.gameNewsSection) { section in
-                Task { await model.selectNewsSection(section, for: .game) }
-            }.padding(.horizontal, 16).padding(.bottom, 6)
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 11) {
-                        Color.clear.frame(height: 1).id("game-news-top")
-                        newsBody
-                        NewsSourceFooter(model: model, extra: "游戏频道来自游戏媒体公开 RSS，不是微信公众号。")
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 30)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 11) {
+                    Color.clear.frame(height: 1).id("game-news-top")
+                    newsBody
+                    NewsSourceFooter(model: model, extra: "游戏频道来自游戏媒体公开 RSS，不是微信公众号。")
                 }
-                .scrollIndicators(.hidden)
-                .scrollBounceBehavior(.basedOnSize)
-                .background(ScrollOffsetMemory(key: "game-news"))
-                .refreshable { await model.refresh() }
-                .onChange(of: model.gameNewsSection) { _, _ in
-                    withAnimation(WhaleMotion.channel) { proxy.scrollTo("game-news-top", anchor: .top) }
-                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 30)
+            }
+            .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
+            .background(ScrollOffsetMemory(key: "game-news"))
+            .refreshable { await model.refresh() }
+            .onChange(of: model.gameSection) { _, _ in
+                withAnimation(WhaleMotion.channel) { proxy.scrollTo("game-news-top", anchor: .top) }
             }
         }
     }

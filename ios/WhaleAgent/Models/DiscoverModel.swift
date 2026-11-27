@@ -104,7 +104,7 @@ final class DiscoverModel: ObservableObject {
         headlineSection = "all"
         saved.removeObject(forKey: Self.aiSectionKey)
         saved.removeObject(forKey: Self.headlineSectionKey)
-        gameNewsSection = saved.string(forKey: Self.gameNewsSectionKey) ?? "all"
+        gameNewsSection = "all"
         paperCategory = AIPaperCategory(rawValue: saved.string(forKey: Self.paperCategoryKey) ?? "") ?? .ai
         hotBoard = HotBoard(rawValue: saved.string(forKey: Self.hotBoardKey) ?? "") ?? .weibo
         gameSection = GameSection(rawValue: saved.string(forKey: Self.gameSectionKey) ?? "") ?? .news
@@ -150,7 +150,7 @@ final class DiscoverModel: ObservableObject {
     }
 
     var gameNews: [NewsItem] {
-        newsItems.filter { DiscoverChannel.game.matches(section: gameNewsSection, itemSection: $0.section, topics: $0.topics) }
+        newsItems
     }
 
     func selectNewsSection(_ section: String, for channel: DiscoverChannel) async {

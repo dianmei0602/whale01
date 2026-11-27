@@ -100,6 +100,25 @@ final class InteractionUITests: XCTestCase {
         app.buttons["home-channel-ai"].tap()
         XCTAssertTrue(app.otherElements["discover-content-ai"].waitForExistence(timeout: 10))
     }
+
+    func testGameUsesRequestedSectionsOnly() {
+        let app = launch()
+        tab(app, "discover").tap()
+        XCTAssertTrue(app.buttons["discover-channel-game"].waitForExistence(timeout: 10))
+        app.buttons["discover-channel-game"].tap()
+        XCTAssertTrue(app.otherElements["discover-content-game"].waitForExistence(timeout: 10))
+
+        for section in ["news", "steamTop", "free", "grossing"] {
+            XCTAssertTrue(app.buttons["discover-game-" + section].exists)
+        }
+        XCTAssertFalse(app.buttons["discover-game-steamDeals"].exists)
+        XCTAssertFalse(app.buttons["discover-game-comingSoon"].exists)
+
+        XCTAssertFalse(app.buttons["discover-section-game-all"].exists)
+        XCTAssertFalse(app.buttons["discover-section-game-cn"].exists)
+        XCTAssertFalse(app.buttons["discover-section-game-global"].exists)
+        attach("game-requested-sections")
+    }
     private func attach(_ name: String) {
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
@@ -146,6 +165,25 @@ final class InteractionUITests: XCTestCase {
         XCTAssertFalse(app.descendants(matching: .any).matching(identifier: "assistant-composer").firstMatch.isHittable)
         tab(app, "conversation").tap()
         XCTAssertTrue(app.staticTexts["常用操作"].waitForExistence(timeout: 8))
+    }
+
+    func testTodoUsesDashboardAndFullTaskEditor() {
+        let app = launch()
+        tab(app, "records").tap()
+
+        XCTAssertTrue(app.otherElements["todo-progress-card"].waitForExistence(timeout: 10))
+        let create = app.buttons["todo-new-task"]
+        XCTAssertTrue(create.waitForExistence(timeout: 10))
+        create.tap()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)
+                .matching(identifier: "todo-task-editor")
+                .firstMatch
+                .waitForExistence(timeout: 8)
+        )
+        XCTAssertTrue(app.textFields["todo-task-title"].exists)
+        XCTAssertTrue(app.buttons["todo-create-task"].exists)
     }
 
 }

@@ -19,7 +19,10 @@ final class EventKitExecutor {
             dueDate = nil
         }
 
-        let calendar = try resolveReminderCalendar(arguments.optionalString("listId"))
+        let calendar = try resolveReminderCalendar(
+            arguments.optionalString("listId"),
+            listName: arguments.optionalString("listName")
+        )
 
         let recurrence = try recurrenceRule(from: arguments)
         if recurrence != nil, dueDate == nil {
@@ -73,6 +76,9 @@ final class EventKitExecutor {
         ]
         if let label = recurrenceLabel(from: arguments) {
             row["recurrence"] = .string(label)
+        }
+        if let notes = reminder.notes, !notes.isEmpty {
+            row["notes"] = .string(notes)
         }
         row["operationId"] = .string(operationId)
         return .object(row)
@@ -634,10 +640,22 @@ final class EventKitExecutor {
         return match?.eventIdentifier ?? match?.calendarItemIdentifier
     }
 
-    private func resolveReminderCalendar(_ listId: String?) throws -> EKCalendar {
+    private func resolveReminderCalendar(_ listId: String?, listName: String? = nil) throws -> EKCalendar {
         store.refreshSourcesIfNecessary()
         if let listId, let calendar = store.calendar(withIdentifier: listId), calendar.allowsContentModifications {
             return calendar
+        }
+        if let listName {
+            let target = listName.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let calendar = store.calendars(for: .reminder).first(where: {
+                $0.title.caseInsensitiveCompare(target) == .orderedSame && $0.allowsContentModifications
+            }) {
+                return calendar
+            }
+            throw ToolExecutionError(
+                code: "reminder_list_not_found",
+                message: "找不到可写入的提醒列表「\(target)」，请重新选择列表。"
+            )
         }
         if let calendar = store.defaultCalendarForNewReminders(), calendar.allowsContentModifications {
             return calendar

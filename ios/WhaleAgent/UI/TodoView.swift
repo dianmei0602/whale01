@@ -41,6 +41,41 @@ private enum TodoFilter: String, CaseIterable, Identifiable {
     }
 }
 
+private enum TodoTimeGroup: String, CaseIterable, Identifiable {
+    case morning
+    case afternoon
+    case evening
+    case unscheduled
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .morning: return "上午"
+        case .afternoon: return "下午"
+        case .evening: return "晚上"
+        case .unscheduled: return "未安排"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .morning: return "sunrise.fill"
+        case .afternoon: return "sun.max.fill"
+        case .evening: return "moon.stars.fill"
+        case .unscheduled: return "tray.fill"
+        }
+    }
+
+    static func resolve(_ date: Date?) -> TodoTimeGroup {
+        guard let date else { return .unscheduled }
+        let hour = Calendar.current.component(.hour, from: date)
+        if hour < 12 { return .morning }
+        if hour < 18 { return .afternoon }
+        return .evening
+    }
+}
+
 private enum TodoQuickCommand {
     case complete(String)
     case restore(String)
@@ -92,6 +127,8 @@ struct TodoView: View {
     @AppStorage("whale.todo.filter") private var filter: TodoFilter = .pending
     @State private var items: [TodoReminder] = []
     @AppStorage("whale.draft.todo") private var draft = ""
+    @State private var selectedDay: Date? = Calendar.current.startOfDay(for: .now)
+    @State private var selectedList: String?
     @State private var isLoading = false
     @State private var isSubmitting = false
     @State private var busyIds: Set<String> = []
@@ -118,11 +155,130 @@ struct TodoView: View {
     }
     private var completedItems: [TodoReminder] { items.filter(\.completed) }
     private var visibleItems: [TodoReminder] {
+        let statusFiltered: [TodoReminder]
         switch filter {
-        case .pending: return pendingItems
-        case .inProgress: return inProgressItems
-        case .completed: return completedItems
+        case .pending: statusFiltered = pendingItems
+        case .inProgress: statusFiltered = inProgressItems
+        case .completed: statusFiltered = completedItems
         }
+
+        return statusFiltered.filter { item in
+            if let selectedList, item.listName != selectedList { return false }
+            guard let selectedDay else { return true }
+            if let due = item.dueAt {
+                if Calendar.current.isDateInToday(selectedDay) {
+                    let tomorrow = Calendar.current.date(
+                        byAdding: .day,
+                        value: 1,
+                        to: Calendar.current.startOfDay(for: selectedDay)
+                    ) ?? selectedDay.addingTimeInterval(86_400)
+                    return due < tomorrow
+                }
+                return Calendar.current.isDate(due, inSameDayAs: selectedDay)
+            }
+            return Calendar.current.isDateInToday(selectedDay)
+        }
+    }
+
+    private var availableLists: [String] {
+        Array(Set(items.map(\.listName))).sorted { left, right in
+            left.localizedStandardCompare(right) == .orderedAscending
+        }
+    }
+
+    private var scopedItems: [TodoReminder] {
+        items.filter { item in
+            if let selectedList, item.listName != selectedList { return false }
+            guard let selectedDay else { return true }
+            if let due = item.dueAt {
+                if Calendar.current.isDateInToday(selectedDay) {
+                    let tomorrow = Calendar.current.date(
+                        byAdding: .day,
+                        value: 1,
+                        to: Calendar.current.startOfDay(for: selectedDay)
+                    ) ?? selectedDay.addingTimeInterval(86_400)
+                    return due < tomorrow
+                }
+                return Calendar.current.isDate(due, inSameDayAs: selectedDay)
+            }
+            return Calendar.current.isDateInToday(selectedDay)
+        }
+    }
+
+    private func scopedCount(for value: TodoFilter) -> Int {
+        switch value {
+        case .pending:
+            return scopedItems.filter { !$0.completed }.count
+        case .inProgress:
+            let endOfToday = Calendar.current.date(
+                byAdding: .day,
+                value: 1,
+                to: Calendar.current.startOfDay(for: .now)
+            ) ?? Date().addingTimeInterval(86_400)
+            return scopedItems.filter { item in
+                guard !item.completed, let due = item.dueAt else { return false }
+                return due < endOfToday
+            }.count
+        case .completed:
+            return scopedItems.filter(\.completed).count
+        }
+    }
+
+    private var dayScopeItems: [TodoReminder] {
+        items.filter { item in
+            guard let selectedDay else { return true }
+            if let due = item.dueAt {
+                if Calendar.current.isDateInToday(selectedDay) {
+                    let tomorrow = Calendar.current.date(
+                        byAdding: .day,
+                        value: 1,
+                        to: Calendar.current.startOfDay(for: selectedDay)
+                    ) ?? selectedDay.addingTimeInterval(86_400)
+                    return due < tomorrow
+                }
+                return Calendar.current.isDate(due, inSameDayAs: selectedDay)
+            }
+            return Calendar.current.isDateInToday(selectedDay)
+        }
+    }
+
+    private var dayScopeCompleted: Int {
+        dayScopeItems.filter(\.completed).count
+    }
+
+    private var dayProgress: Double {
+        guard !dayScopeItems.isEmpty else { return 0 }
+        return Double(dayScopeCompleted) / Double(dayScopeItems.count)
+    }
+
+    private var selectedDayTitle: String {
+        guard let selectedDay else { return "全部任务" }
+        if Calendar.current.isDateInToday(selectedDay) { return "今天" }
+        if Calendar.current.isDateInTomorrow(selectedDay) { return "明天" }
+        return selectedDay.formatted(.dateTime.month().day().weekday(.wide))
+    }
+
+    private var progressHeadline: String {
+        if dayScopeItems.isEmpty {
+            return selectedDay == nil ? "还没有任务" : "\(selectedDayTitle)还没有安排"
+        }
+        return "还剩 \(dayScopeItems.count - dayScopeCompleted) 项待完成"
+    }
+
+    private var progressSubtitle: String {
+        if !dayScopeItems.isEmpty, dayScopeCompleted == dayScopeItems.count {
+            return selectedDay == nil ? "所有任务都已完成" : "\(selectedDayTitle)的任务已经清空"
+        }
+        return "按自己的节奏，逐项完成"
+    }
+
+    private var weekDates: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let weekday = calendar.component(.weekday, from: today)
+        let offset = (weekday - calendar.firstWeekday + 7) % 7
+        let start = calendar.date(byAdding: .day, value: -offset, to: today) ?? today
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: start) }
     }
 
     var body: some View {
@@ -145,8 +301,10 @@ struct TodoView: View {
                             header
                                 .id("todo-top")
                             if reminderStatus != "granted" { permissionCard }
-                            statsCard
+                            progressCard
+                            weekStrip
                             filterBar
+                            categorySelector
                             content
                             if let errorText { errorBanner(errorText) }
                             hint
@@ -159,12 +317,14 @@ struct TodoView: View {
                     .scrollDismissesKeyboard(.interactively)
                     .refreshable { await reload() }
                     .onTapGesture { composerFocused = false }
-                    .horizontalTabSwipe(
-                        onPrevious: { stepFilter(-1) },
-                        onNext: { stepFilter(1) }
-                    )
                     .onChange(of: filter) { _, _ in
-                        withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo("todo-top", anchor: .top) }
+                        withAnimation(motion(0.16)) { proxy.scrollTo("todo-content", anchor: .top) }
+                    }
+                    .onChange(of: selectedDay) { _, _ in
+                        withAnimation(motion(0.16)) { proxy.scrollTo("todo-content", anchor: .top) }
+                    }
+                    .onChange(of: selectedList) { _, _ in
+                        withAnimation(motion(0.16)) { proxy.scrollTo("todo-content", anchor: .top) }
                     }
                 }
 
@@ -186,10 +346,19 @@ struct TodoView: View {
             .task { draft = drafts.load(context: "todo"); await reload() }
             .onChange(of: draft) { _, text in drafts.save(text, context: "todo") }
             .sheet(isPresented: $showTimeEditor) {
-                TodoTimeEditor(original: draft) { title, due in
-                    let item = try await model.createTodoReminder(title: title, dueAt: due)
-                    draft = ""; upsert(item); undoAction = item.deduplicated ? nil : .added(item)
+                TodoTimeEditor(originalTitle: draft, availableLists: availableLists) { title, notes, due, listName in
+                    let item = try await model.createTodoReminder(
+                        title: title,
+                        dueAt: due,
+                        notes: notes,
+                        listName: listName
+                    )
+                    draft = ""
+                    upsert(item)
+                    reveal(item)
+                    undoAction = item.deduplicated ? nil : .added(item)
                     showToast(item.deduplicated ? "已有相同提醒" : "已添加 · " + title, undo: !item.deduplicated)
+                    return item
                 }
             }
             .onChange(of: scenePhase) { _, phase in
@@ -228,26 +397,41 @@ struct TodoView: View {
 
     private var header: some View {
         HStack(spacing: 12) {
-            WhaleIconTile(systemName: "checklist", size: 46, tint: WhaleTheme.accent)
-            VStack(alignment: .leading, spacing: 3) {
-                Text("待办")
-                    .whaleFont(size: 24, weight: .bold, design: .rounded)
-                    .foregroundStyle(WhaleTheme.ink)
-                Text("新增、完成，随手就能记好")
-                    .whaleFont(size: 13)
-                    .foregroundStyle(WhaleTheme.muted)
-            }
-            Spacer(minLength: 8)
             Button {
                 if embedded { onBackToChat?() } else { dismiss() }
             } label: {
-                Image(systemName: embedded ? "bubble.left.and.bubble.right" : "xmark")
-                    .font(.system(size: embedded ? 15 : 14, weight: .semibold))
+                Image(systemName: embedded ? "chevron.left" : "xmark")
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(WhaleTheme.ink)
                     .whaleGlassCircle(size: 44)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.whalePress)
             .accessibilityLabel(embedded ? "回到对话" : "关闭待办")
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("待办")
+                    .whaleFont(size: 29, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Text(Date.now.formatted(.dateTime.weekday(.wide).month().day()))
+                    .whaleFont(size: 13)
+                    .foregroundStyle(WhaleTheme.muted)
+            }
+
+            Spacer(minLength: 8)
+
+            Button {
+                composerFocused = false
+                showTimeEditor = true
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color(uiColor: .systemBackground))
+                    .frame(width: 48, height: 48)
+                    .background(Color.primary, in: Circle())
+            }
+            .buttonStyle(.whalePress)
+            .accessibilityLabel("新建任务")
+            .accessibilityIdentifier("todo-new-task")
         }
     }
 
@@ -310,142 +494,343 @@ struct TodoView: View {
         }
     }
 
-    private func stepFilter(_ delta: Int) {
-        let all = TodoFilter.allCases
-        guard let index = all.firstIndex(of: filter) else { return }
-        let next = min(max(index + delta, 0), all.count - 1)
-        guard next != index else { return }
-        composerFocused = false
-        withAnimation(.easeInOut(duration: 0.18)) { filter = all[next] }
-    }
-
     private var filterBar: some View {
-        HStack(spacing: 8) {
-            filterButton(.pending, count: pendingItems.count)
-            filterButton(.inProgress, count: inProgressItems.count)
-            filterButton(.completed, count: completedItems.count)
-            Spacer(minLength: 0)
+        HStack(spacing: 4) {
+            filterButton(.pending, count: scopedCount(for: .pending))
+            filterButton(.inProgress, count: scopedCount(for: .inProgress))
+            filterButton(.completed, count: scopedCount(for: .completed))
         }
-    }
-
-    private var statsCard: some View {
-        VStack(spacing: 9) {
-            HStack(spacing: 0) {
-                statMetric(.pending, count: pendingItems.count, label: "待办事项", tint: WhaleTheme.ink)
-                statDivider
-                statMetric(.inProgress, count: inProgressItems.count, label: "进行中", tint: WhaleTheme.coral)
-                statDivider
-                statMetric(.completed, count: completedItems.count, label: "已完成", tint: WhaleTheme.success)
-            }
-            Text("进行中 = 今天到期或已逾期；待办 = 全部未完成")
-                .whaleFont(size: 13)
-                .foregroundStyle(WhaleTheme.muted.opacity(0.8))
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .padding(.vertical, 13)
-        .padding(.horizontal, 8)
-        .background(WhaleTheme.card.opacity(0.78), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(4)
+        .background(WhaleTheme.field, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.8)
+            RoundedRectangle(cornerRadius: 17, style: .continuous)
+                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
         }
     }
 
-    private func statMetric(_ value: TodoFilter, count: Int, label: String, tint: Color) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.18)) { filter = value }
+    private var progressCard: some View {
+        let cardColor = Color(light: 0x181C1D, dark: 0x0B1112)
+        return VStack(alignment: .leading, spacing: 17) {
+            HStack(spacing: 17) {
+                ZStack {
+                    Circle()
+                        .stroke(.white.opacity(0.12), lineWidth: 9)
+                    Circle()
+                        .trim(from: 0, to: dayProgress)
+                        .stroke(
+                            AngularGradient(
+                                colors: [WhaleTheme.success, WhaleTheme.accent, WhaleTheme.success],
+                                center: .center
+                            ),
+                            style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                        .animation(motion(0.24), value: dayProgress)
+                    VStack(spacing: 0) {
+                        Text("\(Int((dayProgress * 100).rounded()))%")
+                            .whaleFont(size: 21, weight: .bold, design: .rounded)
+                            .foregroundStyle(.white)
+                            .monospacedDigit()
+                        Text("完成")
+                            .whaleFont(size: 12, weight: .medium)
+                            .foregroundStyle(.white.opacity(0.62))
+                    }
+                }
+                .frame(width: 88, height: 88)
+
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(selectedDayTitle)
+                        .whaleFont(size: 13, weight: .semibold)
+                        .foregroundStyle(.white.opacity(0.62))
+                    Text(progressHeadline)
+                        .whaleFont(size: 21, weight: .bold, design: .rounded)
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(progressSubtitle)
+                        .whaleFont(size: 13)
+                        .foregroundStyle(.white.opacity(0.58))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+
+            Rectangle()
+                .fill(.white.opacity(0.10))
+                .frame(height: 0.7)
+
+            HStack(spacing: 0) {
+                progressMetric("\(dayScopeItems.count)", label: "全部")
+                progressDivider
+                progressMetric("\(dayScopeCompleted)", label: "已完成")
+                progressDivider
+                progressMetric("\(dayScopeItems.count - dayScopeCompleted)", label: "待完成")
+            }
+        }
+        .padding(18)
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(cardColor)
+                LinearGradient(
+                    colors: [WhaleTheme.accent.opacity(0.20), .clear, WhaleTheme.moon.opacity(0.12)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+            }
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(.white.opacity(0.10), lineWidth: 0.8)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(selectedDayTitle)完成进度，共 \(dayScopeItems.count) 项，已完成 \(dayScopeCompleted) 项")
+        .accessibilityIdentifier("todo-progress-card")
+    }
+
+    private func progressMetric(_ value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .whaleFont(size: 18, weight: .bold, design: .rounded)
+                .foregroundStyle(.white)
+                .monospacedDigit()
+            Text(label)
+                .whaleFont(size: 12, weight: .medium)
+                .foregroundStyle(.white.opacity(0.56))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var progressDivider: some View {
+        Rectangle()
+            .fill(.white.opacity(0.12))
+            .frame(width: 0.7, height: 28)
+    }
+
+    private var weekStrip: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(Date.now.formatted(.dateTime.month(.wide)))
+                    .whaleFont(size: 17, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer(minLength: 8)
+                Button {
+                    withAnimation(motion(0.14)) { selectedDay = nil }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "calendar")
+                        Text("全部")
+                    }
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(selectedDay == nil ? Color(uiColor: .systemBackground) : WhaleTheme.ink)
+                    .padding(.horizontal, 12)
+                    .frame(minHeight: 36)
+                    .background {
+                        Capsule().fill(selectedDay == nil ? Color.primary : WhaleTheme.card.opacity(0.74))
+                    }
+                    .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
+                }
+                .buttonStyle(.whalePress)
+                .accessibilityLabel("查看全部日期")
+            }
+
+            HStack(spacing: 5) {
+                ForEach(weekDates, id: \.self) { day in
+                    dayButton(day)
+                }
+            }
+        }
+    }
+
+    private func dayButton(_ day: Date) -> some View {
+        let selected = selectedDay.map { Calendar.current.isDate($0, inSameDayAs: day) } ?? false
+        let isToday = Calendar.current.isDateInToday(day)
+        return Button {
+            withAnimation(motion(0.14)) {
+                selectedDay = Calendar.current.startOfDay(for: day)
+            }
         } label: {
-            VStack(spacing: 2) {
-                Text("\(count)")
-                    .whaleFont(size: 23, weight: .bold, design: .rounded)
-                    .foregroundStyle(tint)
+            VStack(spacing: 6) {
+                Text(day.formatted(.dateTime.weekday(.narrow)))
+                    .whaleFont(size: 12, weight: .semibold)
+                    .foregroundStyle(selected ? Color(uiColor: .secondarySystemBackground) : WhaleTheme.muted)
+                Text(day.formatted(.dateTime.day()))
+                    .whaleFont(size: 18, weight: .bold, design: .rounded)
+                    .foregroundStyle(selected ? Color(uiColor: .systemBackground) : WhaleTheme.ink)
                     .monospacedDigit()
-                Text(label)
-                    .whaleFont(size: 13, weight: .medium)
-                    .foregroundStyle(WhaleTheme.muted)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 3)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(filter == value ? tint.opacity(0.08) : Color.clear)
-            )
-            .contentShape(Rectangle())
+            .frame(height: 58)
+            .background {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(selected ? Color.primary : WhaleTheme.card.opacity(0.72))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .strokeBorder(
+                        isToday && !selected ? WhaleTheme.accent.opacity(0.62) : WhaleTheme.glassStroke,
+                        lineWidth: isToday && !selected ? 1.2 : 0.7
+                    )
+            }
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(label) \(count) 条")
+        .buttonStyle(.whalePress)
+        .accessibilityLabel(day.formatted(.dateTime.month().day().weekday(.wide)))
     }
 
-    private var statDivider: some View {
-        Rectangle()
-            .fill(WhaleTheme.line.opacity(0.55))
-            .frame(width: 0.6, height: 34)
+    @ViewBuilder
+    private var categorySelector: some View {
+        if availableLists.count > 1 {
+            VStack(alignment: .leading, spacing: 9) {
+                Text("列表")
+                    .whaleFont(size: 13, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.muted)
+                WhaleFlowLayout(spacing: 8, lineSpacing: 8) {
+                    categoryButton(nil, title: "全部", icon: "square.grid.2x2")
+                    ForEach(availableLists, id: \.self) { list in
+                        categoryButton(list, title: list, icon: categoryIcon(for: list))
+                    }
+                }
+            }
+        }
+    }
+
+    private func categoryButton(_ list: String?, title: String, icon: String) -> some View {
+        let selected = selectedList == list
+        return Button {
+            withAnimation(motion(0.14)) { selectedList = list }
+        } label: {
+            Label(title, systemImage: icon)
+                .whaleFont(size: 13, weight: .semibold)
+                .foregroundStyle(selected ? Color(uiColor: .systemBackground) : WhaleTheme.ink)
+                .padding(.horizontal, 13)
+                .frame(minHeight: 38)
+                .background(
+                    Capsule().fill(selected ? Color.primary : WhaleTheme.card.opacity(0.78))
+                )
+                .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
+                .contentShape(Capsule())
+        }
+        .buttonStyle(.whalePress)
+    }
+
+    private func categoryIcon(for name: String) -> String {
+        let lower = name.lowercased()
+        if lower.contains("工作") || lower.contains("work") { return "briefcase.fill" }
+        if lower.contains("生活") || lower.contains("personal") { return "person.fill" }
+        if lower.contains("学习") || lower.contains("study") { return "book.fill" }
+        return "folder.fill"
     }
 
     private func filterButton(_ value: TodoFilter, count: Int) -> some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.18)) { filter = value }
+            withAnimation(motion(0.14)) { filter = value }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 5) {
                 Text(value.title)
                 Text("\(count)")
-                    .whaleFont(size: 13, weight: .bold, design: .rounded)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background((filter == value ? WhaleTheme.onAccent : WhaleTheme.muted).opacity(0.12), in: Capsule())
+                    .whaleFont(size: 12, weight: .bold, design: .rounded)
+                    .monospacedDigit()
+                    .opacity(0.68)
             }
             .whaleFont(size: 13, weight: .semibold)
-            .foregroundStyle(filter == value ? WhaleTheme.onAccent : WhaleTheme.ink)
-            .padding(.horizontal, 13)
-            .padding(.vertical, 8)
-            .background {
-                if filter == value {
-                    Capsule().fill(WhaleTheme.auroraGradient)
-                } else {
-                    Capsule().fill(WhaleTheme.card.opacity(0.8))
-                }
-            }
-            .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
+            .foregroundStyle(filter == value ? Color(uiColor: .systemBackground) : WhaleTheme.muted)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 40)
+            .background(
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    .fill(filter == value ? Color.primary : .clear)
+            )
+            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.whalePress)
     }
 
     @ViewBuilder
     private var content: some View {
-        if isLoading && items.isEmpty {
-            HStack(spacing: 9) {
-                ProgressView().scaleEffect(0.8)
-                Text("正在读取提醒事项…")
-                    .whaleFont(size: 13)
+        VStack(alignment: .leading, spacing: 13) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("\(selectedDayTitle)任务")
+                    .whaleFont(size: 20, weight: .bold, design: .rounded)
+                    .foregroundStyle(WhaleTheme.ink)
+                Spacer(minLength: 8)
+                Text("\(visibleItems.count) 项")
+                    .whaleFont(size: 13, weight: .medium)
                     .foregroundStyle(WhaleTheme.muted)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 40)
-        } else if visibleItems.isEmpty {
-            emptyState
-        } else {
-            LazyVStack(spacing: 9) {
-                ForEach(visibleItems) { item in
-                    row(item)
+
+            if isLoading && items.isEmpty {
+                HStack(spacing: 9) {
+                    ProgressView().scaleEffect(0.8)
+                    Text("正在读取提醒事项…")
+                        .whaleFont(size: 13)
+                        .foregroundStyle(WhaleTheme.muted)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
+            } else if visibleItems.isEmpty {
+                emptyState
+            } else {
+                LazyVStack(alignment: .leading, spacing: 15) {
+                    ForEach(TodoTimeGroup.allCases) { group in
+                        let grouped = visibleItems
+                            .filter { TodoTimeGroup.resolve($0.dueAt) == group }
+                            .sorted(by: reminderSort)
+
+                        if !grouped.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Label(group.title, systemImage: group.icon)
+                                    .whaleFont(size: 13, weight: .semibold)
+                                    .foregroundStyle(WhaleTheme.muted)
+                                    .padding(.leading, 2)
+
+                                ForEach(grouped) { item in
+                                    row(item)
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+        .id("todo-content")
     }
 
     private var emptyState: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 11) {
             Image(systemName: emptyIcon)
-                .whaleFont(size: 28, weight: .light)
-                .foregroundStyle(WhaleTheme.muted.opacity(0.7))
+                .whaleFont(size: 30, weight: .light)
+                .foregroundStyle(WhaleTheme.accent)
             Text(emptyTitle)
                 .whaleFont(size: 15, weight: .semibold)
                 .foregroundStyle(WhaleTheme.ink)
             Text(emptyHint)
                 .whaleFont(size: 13)
                 .foregroundStyle(WhaleTheme.muted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Button {
+                composerFocused = false
+                showTimeEditor = true
+            } label: {
+                Label("新建任务", systemImage: "plus")
+                    .whaleFont(size: 14, weight: .semibold)
+                    .foregroundStyle(WhaleTheme.accent)
+                    .padding(.horizontal, 14)
+                    .frame(minHeight: 40)
+                    .background(WhaleTheme.accentSoft, in: Capsule())
+            }
+            .buttonStyle(.whalePress)
+            .padding(.top, 2)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 34)
+        .padding(.vertical, 28)
+        .padding(.horizontal, 18)
+        .background(WhaleTheme.card.opacity(0.72), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
+        }
     }
 
     private var emptyIcon: String {
@@ -466,107 +851,172 @@ struct TodoView: View {
 
     private var emptyHint: String {
         switch filter {
-        case .pending: return "在下面写一句，直接加到系统提醒事项。"
-        case .inProgress: return "今天到期或已逾期的未完成事项会出现在这里。"
+        case .pending: return "为新任务补充标题、描述和提醒时间，或直接使用下面的快速输入。"
+        case .inProgress: return "今天到期或已逾期的未完成事项会显示在这里。"
         case .completed: return "勾掉的事会出现在这里，可以再恢复。"
         }
     }
 
     private func row(_ item: TodoReminder) -> some View {
-        HStack(alignment: .center, spacing: 11) {
-            Button { toggle(item) } label: {
-                ZStack {
-                    Circle()
-                        .strokeBorder(item.completed ? WhaleTheme.success : WhaleTheme.line, lineWidth: 1.6)
-                        .background(Circle().fill(item.completed ? WhaleTheme.success.opacity(0.14) : Color.clear))
-                        .frame(width: 27, height: 27)
-                    if busyIds.contains(item.id) {
-                        ProgressView().scaleEffect(0.55)
-                    } else if item.completed {
-                        Image(systemName: "checkmark")
-                            .whaleFont(size: 13, weight: .bold)
-                            .foregroundStyle(WhaleTheme.success)
-                    }
-                }
-                .frame(width: 44, height: 44)
-                .contentShape(Rectangle())
+        HStack(alignment: .top, spacing: 9) {
+            VStack(spacing: 4) {
+                Text(item.dueAt?.formatted(date: .omitted, time: .shortened) ?? "待定")
+                    .whaleFont(size: 11, weight: .semibold, design: .rounded)
+                    .foregroundStyle(timeColor(item))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .frame(width: 46)
+
+                Circle()
+                    .fill(item.completed ? WhaleTheme.success.opacity(0.55) : statusColor(item))
+                    .frame(width: 8, height: 8)
+
+                Rectangle()
+                    .fill(WhaleTheme.line.opacity(0.62))
+                    .frame(width: 1, height: 42)
+                    .opacity(item.completed ? 0.35 : 1)
             }
-            .buttonStyle(.plain)
-            .disabled(busyIds.contains(item.id))
-            .accessibilityLabel(item.completed ? "恢复 \(item.title)" : "完成 \(item.title)")
+            .padding(.top, 4)
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text(item.title)
-                    .whaleFont(size: 14, weight: .medium)
-                    .foregroundStyle(item.completed ? WhaleTheme.muted : WhaleTheme.ink)
-                    .strikethrough(item.completed, color: WhaleTheme.muted)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .whaleSpeakable(
-                        item.notes?.isEmpty == false
-                            ? "\(item.title)。备注：\(item.notes ?? "")"
-                            : item.title
-                    )
-
-                HStack(spacing: 7) {
-                    if let due = item.dueAt {
-                        Label(dueText(due), systemImage: "clock")
-                            .whaleFont(size: 13, weight: .medium)
-                            .foregroundStyle(dueColor(item, due))
-                    } else {
-                        Text("无日期")
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.muted.opacity(0.75))
+            HStack(alignment: .top, spacing: 8) {
+                Button { toggle(item) } label: {
+                    ZStack {
+                        Circle()
+                            .strokeBorder(item.completed ? WhaleTheme.success : WhaleTheme.line, lineWidth: 1.6)
+                            .background(Circle().fill(item.completed ? WhaleTheme.success.opacity(0.14) : Color.clear))
+                            .frame(width: 27, height: 27)
+                        if busyIds.contains(item.id) {
+                            ProgressView().scaleEffect(0.55)
+                        } else if item.completed {
+                            Image(systemName: "checkmark")
+                                .whaleFont(size: 13, weight: .bold)
+                                .foregroundStyle(WhaleTheme.success)
+                        }
                     }
-                    Text(item.listName)
-                        .whaleFont(size: 13, weight: .medium)
-                        .foregroundStyle(WhaleTheme.muted)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(WhaleTheme.soft, in: Capsule())
-                    if let notes = item.notes, !notes.isEmpty {
-                        Image(systemName: "note.text")
-                            .whaleFont(size: 13)
-                            .foregroundStyle(WhaleTheme.muted.opacity(0.7))
-                            .accessibilityLabel("有备注")
-                    }
-                }
-            }
-
-            Spacer(minLength: 4)
-
-            Menu {
-                if item.completed {
-                    Button("恢复为待办", systemImage: "arrow.uturn.backward") { toggle(item) }
-                } else {
-                    Button("标记完成", systemImage: "checkmark.circle") { toggle(item) }
-                }
-                Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
-            } label: {
-                Image(systemName: "ellipsis")
-                    .whaleFont(size: 14, weight: .semibold)
-                    .foregroundStyle(WhaleTheme.muted)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 36, height: 36)
                     .contentShape(Rectangle())
+                }
+                .buttonStyle(.whalePress)
+                .disabled(busyIds.contains(item.id))
+                .accessibilityLabel(item.completed ? "恢复 \(item.title)" : "完成 \(item.title)")
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(item.title)
+                        .whaleFont(size: 15, weight: .semibold)
+                        .foregroundStyle(item.completed ? WhaleTheme.muted : WhaleTheme.ink)
+                        .strikethrough(item.completed, color: WhaleTheme.muted)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .whaleSpeakable(item.title)
+
+                    if let notes = item.notes, !notes.isEmpty {
+                        Text(notes)
+                            .whaleFont(size: 13)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .whaleSpeakable(notes)
+                    }
+
+                    HStack(spacing: 6) {
+                        Label(statusText(item), systemImage: statusIcon(item))
+                            .whaleFont(size: 13)
+                            .foregroundStyle(statusColor(item))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(statusColor(item).opacity(0.10), in: Capsule())
+
+                        Text(item.listName)
+                            .whaleFont(size: 12, weight: .medium)
+                            .foregroundStyle(WhaleTheme.muted)
+                            .lineLimit(1)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(WhaleTheme.soft, in: Capsule())
+                    }
+                }
+
+                Spacer(minLength: 0)
+
+                Menu {
+                    if item.completed {
+                        Button("恢复为待办", systemImage: "arrow.uturn.backward") { toggle(item) }
+                    } else {
+                        Button("标记完成", systemImage: "checkmark.circle") { toggle(item) }
+                    }
+                    Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .whaleFont(size: 14, weight: .semibold)
+                        .foregroundStyle(WhaleTheme.muted)
+                        .frame(width: 36, height: 36)
+                        .contentShape(Rectangle())
+                }
             }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 9)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(WhaleTheme.card.opacity(item.completed ? 0.55 : 0.86))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
-        )
-        .contextMenu {
-            Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 11)
+            .background(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(WhaleTheme.card.opacity(item.completed ? 0.58 : 0.88))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7)
+            )
+            .whaleListElevation()
+            .contextMenu {
+                Button("删除待办", systemImage: "trash", role: .destructive) { delete(item) }
+            }
         }
     }
 
+    private func reminderSort(_ left: TodoReminder, _ right: TodoReminder) -> Bool {
+        switch (left.dueAt, right.dueAt) {
+        case let (leftDate?, rightDate?):
+            return leftDate == rightDate
+                ? left.title.localizedStandardCompare(right.title) == .orderedAscending
+                : leftDate < rightDate
+        case (_?, nil):
+            return true
+        case (nil, _?):
+            return false
+        default:
+            return left.title.localizedStandardCompare(right.title) == .orderedAscending
+        }
+    }
+
+    private func timeColor(_ item: TodoReminder) -> Color {
+        if item.completed { return WhaleTheme.muted.opacity(0.65) }
+        guard let due = item.dueAt else { return WhaleTheme.muted.opacity(0.78) }
+        return dueColor(item, due)
+    }
+
+    private func statusText(_ item: TodoReminder) -> String {
+        if item.completed { return "已完成" }
+        guard let due = item.dueAt else { return "未安排" }
+        if due < Date() { return "已逾期" }
+        if Calendar.current.isDateInToday(due) { return "今天" }
+        return "计划"
+    }
+
+    private func statusIcon(_ item: TodoReminder) -> String {
+        if item.completed { return "checkmark.circle.fill" }
+        guard let due = item.dueAt else { return "tray" }
+        if due < Date() { return "exclamationmark.circle.fill" }
+        if Calendar.current.isDateInToday(due) { return "clock.fill" }
+        return "calendar"
+    }
+
+    private func statusColor(_ item: TodoReminder) -> Color {
+        if item.completed { return WhaleTheme.success }
+        guard let due = item.dueAt else { return WhaleTheme.moon }
+        if due < Date() { return WhaleTheme.danger }
+        if Calendar.current.isDateInToday(due) { return WhaleTheme.coral }
+        return WhaleTheme.moon
+    }
+
     private var hint: some View {
-        Text("直接写内容新增，或点麦克风说一句；输入「完成 买菜」勾掉，「删除 买菜」移除。")
+        Text("点击 + 新建完整任务；下方可快速输入或语音添加。「完成 买菜」勾掉，「删除 买菜」移除。")
             .whaleFont(size: 13)
             .foregroundStyle(WhaleTheme.muted.opacity(0.85))
             .fixedSize(horizontal: false, vertical: true)
@@ -678,8 +1128,8 @@ struct TodoView: View {
                     }
                     let item = try await model.createTodoReminder(title: title, dueAt: parsed.dueAt)
                     draft = ""
-                    filter = .pending
                     upsert(item)
+                    reveal(item)
                     undoAction = item.deduplicated ? nil : .added(item)
                     await reload(silent: true)
                     if let dueAt = parsed.dueAt {
@@ -738,7 +1188,9 @@ struct TodoView: View {
         Task {
             do {
                 let updated = try await model.setTodoReminder(item, completed: !item.completed)
-                upsert(updated)
+                withAnimation(motion(0.18)) {
+                    upsert(updated)
+                }
                 undoAction = .completion(before: item, after: updated)
                 await reload(silent: true)
                 showToast(item.completed ? "已恢复 · \(item.title)" : "已完成 · \(item.title)", undo: true)
@@ -760,7 +1212,9 @@ struct TodoView: View {
         Task {
             do {
                 try await model.deleteTodoReminder(item)
-                removeLocal(item.id)
+                withAnimation(motion(0.18)) {
+                    removeLocal(item.id)
+                }
                 await reload(silent: true)
                 showToast("已删除 · \(item.title)")
             } catch {
@@ -779,6 +1233,9 @@ struct TodoView: View {
         defer { isLoading = false }
         do {
             items = try await model.loadTodoReminders(includeCompleted: true)
+            if let selectedList, !items.contains(where: { $0.listName == selectedList }) {
+                self.selectedList = nil
+            }
             model.refreshPermissions()
         } catch {
             let permissionDenied = (error as? ToolExecutionError)?.code == "permission_denied"
@@ -804,6 +1261,16 @@ struct TodoView: View {
             default: return left.title.localizedStandardCompare(right.title) == .orderedAscending
             }
         }
+    }
+
+    private func reveal(_ item: TodoReminder) {
+        filter = .pending
+        selectedList = nil
+        selectedDay = Calendar.current.startOfDay(for: item.dueAt ?? .now)
+    }
+
+    private func motion(_ duration: Double) -> Animation? {
+        reduceMotion ? nil : .easeOut(duration: duration)
     }
 
     private func removeLocal(_ id: String) {

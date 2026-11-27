@@ -358,7 +358,12 @@ final class NativeToolRouter {
         ])
     }
 
-    func createReminder(title: String, dueAt: Date? = nil, notes: String? = nil) async throws -> JSONValue {
+    func createReminder(
+        title: String,
+        dueAt: Date? = nil,
+        notes: String? = nil,
+        listName: String? = nil
+    ) async throws -> JSONValue {
         var arguments: [String: JSONValue] = [
             "title": .string(title),
             "timezone": .string(TimeZone.current.identifier)
@@ -368,6 +373,9 @@ final class NativeToolRouter {
         }
         if let notes, !notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             arguments["notes"] = .string(notes)
+        }
+        if let listName, !listName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            arguments["listName"] = .string(listName)
         }
         return try await eventKit.createReminder(
             arguments: arguments,

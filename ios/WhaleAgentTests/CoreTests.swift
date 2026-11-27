@@ -31,8 +31,10 @@ final class CoreTests: XCTestCase {
         )
         XCTAssertTrue(DiscoverChannel.headline.newsSections.contains { $0.id == "military" })
         XCTAssertTrue(DiscoverChannel.headline.newsSections.contains { $0.id == "auto" })
-        XCTAssertEqual(GameSection.steamDeals.steamKind, .specials)
-        XCTAssertEqual(GameSection.comingSoon.title, "新作预告")
+        XCTAssertTrue(DiscoverChannel.game.newsSections.isEmpty)
+        XCTAssertEqual(GameSection.allCases.map(\.title), ["游戏资讯", "Steam畅销", "免费榜", "畅销榜"])
+        XCTAssertFalse(GameSection.allCases.contains { $0.title == "Steam折扣" })
+        XCTAssertFalse(GameSection.allCases.contains { $0.title == "新作预告" })
     }
 
     func testSteamPriceFormattingUsesStoreCents() {
