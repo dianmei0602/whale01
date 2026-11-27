@@ -361,20 +361,6 @@ struct TodoView: View {
             }
 
             Spacer(minLength: 8)
-
-            Button {
-                composerFocused = false
-                showTimeEditor = true
-            } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Color(uiColor: .systemBackground))
-                    .frame(width: 48, height: 48)
-                    .background(Color.primary, in: Circle())
-            }
-            .buttonStyle(.whalePress)
-            .accessibilityLabel("新建任务")
-            .accessibilityIdentifier("todo-new-task")
         }
     }
 
@@ -571,12 +557,16 @@ struct TodoView: View {
         } label: {
             Label(title, systemImage: icon)
                 .whaleFont(size: 13, weight: .semibold)
-                .foregroundStyle(selected ? Color(uiColor: .systemBackground) : WhaleTheme.ink)
+                .foregroundStyle(selected ? WhaleTheme.onAccent : WhaleTheme.ink)
                 .padding(.horizontal, 13)
                 .frame(minHeight: 38)
-                .background(
-                    Capsule().fill(selected ? Color.primary : WhaleTheme.card.opacity(0.78))
-                )
+                .background {
+                    if selected {
+                        Capsule().fill(WhaleTheme.auroraGradient)
+                    } else {
+                        Capsule().fill(WhaleTheme.card.opacity(0.78))
+                    }
+                }
                 .overlay(Capsule().strokeBorder(WhaleTheme.glassStroke, lineWidth: 0.7))
                 .contentShape(Capsule())
         }
@@ -603,13 +593,15 @@ struct TodoView: View {
                     .opacity(0.68)
             }
             .whaleFont(size: 13, weight: .semibold)
-            .foregroundStyle(filter == value ? Color(uiColor: .systemBackground) : WhaleTheme.muted)
+            .foregroundStyle(filter == value ? WhaleTheme.onAccent : WhaleTheme.muted)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 40)
-            .background(
-                RoundedRectangle(cornerRadius: 13, style: .continuous)
-                    .fill(filter == value ? Color.primary : .clear)
-            )
+            .background {
+                if filter == value {
+                    RoundedRectangle(cornerRadius: 13, style: .continuous)
+                        .fill(WhaleTheme.auroraGradient)
+                }
+            }
             .contentShape(Rectangle())
         }
         .buttonStyle(.whalePress)
@@ -697,6 +689,7 @@ struct TodoView: View {
                     .background(WhaleTheme.accentSoft, in: Capsule())
             }
             .buttonStyle(.whalePress)
+            .accessibilityIdentifier("todo-new-task")
             .padding(.top, 2)
         }
         .frame(maxWidth: .infinity)
